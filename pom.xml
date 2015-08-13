@@ -11,9 +11,11 @@
 
     <modules>
         <module>base</module>
+        <module>base_resource</module>
         <module>ef-system</module>
         <module>ef-model</module>
-        <module>base_resource</module>
+        <module>foundation-model</module>
+        <module>foundation-system</module>
     </modules>
 
     <repositories>
