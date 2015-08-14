@@ -14,7 +14,7 @@ import java.util.Date;
     private Industry industry;
     private String mode;//private public
     private String password;
-    private Date current;//当前进度 年/季度/月份 例如010205
+    private String current;//当前进度 年/季度/月份 例如010205
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -65,12 +65,11 @@ import java.util.Date;
     }
 
     @Column(name = "current")
-    public Date getCurrent() {
+    public String getCurrent() {
         return current;
     }
 
-    public void setCurrent(Date current) {
+    public void setCurrent(String current) {
         this.current = current;
     }
-
 }
