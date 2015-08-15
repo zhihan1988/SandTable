@@ -2,7 +2,6 @@ package com.rathink.ie.campaign.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
-import java.util.Date;
 
 
 @Entity
@@ -14,7 +13,7 @@ import java.util.Date;
     private Industry industry;
     private String mode;//private public
     private String password;
-    private String current;//当前进度 年/季度/月份 例如010205
+    private String currentCampaignDate;//当前进度 年/季度/月份 例如010205
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -64,12 +63,16 @@ import java.util.Date;
         this.password = password;
     }
 
-    @Column(name = "current")
-    public String getCurrent() {
-        return current;
+
+    @Column(name = "current_campaign_date")
+    public String getCurrentCampaignDate() {
+        return currentCampaignDate;
     }
 
-    public void setCurrent(String current) {
-        this.current = current;
+    public void setCurrentCampaignDate(String currentCampaignDate) {
+        this.currentCampaignDate = currentCampaignDate;
     }
+
 }
+
+
