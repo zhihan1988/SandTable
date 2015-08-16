@@ -13,7 +13,7 @@ public class CompanyInstruction {
     private String id;
     private String type;
     private String campaignDate;
-    private Campaign campagin;
+    private Campaign campaign;
     private Company company;
     private String dept;
     private CompanyChoice companyChoice;
@@ -51,12 +51,12 @@ public class CompanyInstruction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id")
-    public Campaign getCampagin() {
-        return campagin;
+    public Campaign getCampaign() {
+        return campaign;
     }
 
-    public void setCampagin(Campaign campagin) {
-        this.campagin = campagin;
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
