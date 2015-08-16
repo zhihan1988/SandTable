@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module name="campaign" label="比赛" version="" package="com.rathink.ie.campaign" path="">
+    <entities>
+        <entity name="Campaign" label="比赛"
+                basic="simple" others=""
+                model="com.rathink.ie.campaign.model.Campaign">
+            <does>
+                <do name="plistCampaign" access="" label="赛事列表"
+                    result="/campaign/campaignPList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="status" defaultValue="0" operation="ne" />
+                    </query>
+                </do>
+            </does>
+        </entity>
+    </entities>
+</module>

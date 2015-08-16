@@ -84,7 +84,7 @@ public class User {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "srouce_user_id")
     public User getSourceUser() {
         return sourceUser;
     }

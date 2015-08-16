@@ -2,6 +2,7 @@ package com.rathink.ie.campaign.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
+import java.util.Date;
 
 
 @Entity
@@ -10,9 +11,12 @@ import javax.persistence.*;
 
     private String id;
     private String name;
+    private String status; //1 未开始 2进行中  3一结束  0 删除
     private Industry industry;
     private String mode;//private public
     private String password;
+    private Date createDatetime;// 创建时间
+    private Date startDatetime;// 游戏开始时间
     private String currentCampaignDate;//当前进度 年/季度/月份 例如010205
 
     @Id
@@ -33,6 +37,15 @@ import javax.persistence.*;
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(name = "status")
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,6 +76,23 @@ import javax.persistence.*;
         this.password = password;
     }
 
+    @Column(name = "create_datetime")
+    public Date getCreateDatetime() {
+        return createDatetime;
+    }
+
+    public void setCreateDatetime(Date createDatetime) {
+        this.createDatetime = createDatetime;
+    }
+
+    @Column(name = "start_datetime")
+    public Date getStartDatetime() {
+        return startDatetime;
+    }
+
+    public void setStartDatetime(Date startDatetime) {
+        this.startDatetime = startDatetime;
+    }
 
     @Column(name = "current_campaign_date")
     public String getCurrentCampaignDate() {
