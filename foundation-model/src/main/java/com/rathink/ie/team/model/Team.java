@@ -19,6 +19,8 @@ public class Team {
     private String name;
     private User director;
     private Date createDatetime;
+    private String capital;
+    private String deposit;
     private Campaign campaign;
     private List<UserTeamPosition> userPositionList;
 
@@ -59,6 +61,24 @@ public class Team {
 
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
+    }
+
+    @Column(name = "capital")
+    public String getCapital() {
+        return capital;
+    }
+
+    public void setCapital(String capital) {
+        this.capital = capital;
+    }
+
+    @Column(name = "deposit")
+    public String getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(String deposit) {
+        this.deposit = deposit;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
