@@ -15,7 +15,7 @@
         <module>ef-system</module>
         <module>ef-model</module>
         <module>foundation-model</module>
-        <module>foundation-system</module>
+        <module>foundation-web</module>
     </modules>
 
     <repositories>
