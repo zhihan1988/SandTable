@@ -23,7 +23,10 @@
             <tbody>
             <c:forEach items="${companyList}" var="company" varStatus="vs">
                 <tr>
-                    <td><a href="<c:url value="#"/>">${company.name}</a></td>
+                    <td>
+                        <a href="<c:url value="#"/>">${company.name}</a>
+                        <a href="<c:url value="/campaign/main.do?companyId=${company.id}"/>">进入游戏</a>
+                    </td>
                     <td>${company.slogan}</td>
                 </tr>
             </c:forEach>
