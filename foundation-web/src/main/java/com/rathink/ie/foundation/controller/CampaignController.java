@@ -4,16 +4,21 @@ package com.rathink.ie.foundation.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.WorkService;
+import com.rathink.ie.ibase.property.model.CompanyStatus;
+import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -24,6 +29,8 @@ import java.util.List;
 public class CampaignController {
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private WorkService workService;
 
     @RequestMapping("/listCampaign.do")
     public String listCampaign(HttpServletRequest request, Model model) throws Exception {
@@ -57,9 +64,25 @@ public class CampaignController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
+
+        String hql = "from CompanyStatus where company.id = :companyId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        CompanyStatus companyStatus = (CompanyStatus) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.dispartCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
+
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
+        model.addAttribute("deptPropertyMap", deptPropertyMap);
         return "/campaign/main";
+    }
 
+    @RequestMapping("/begin")
+    @ResponseBody
+    public String begin(HttpServletRequest request, Model model) throws Exception {
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
+        workService.initCampaign(campaign);
+        return "success";
     }
 }

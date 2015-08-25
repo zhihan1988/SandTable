@@ -103,6 +103,9 @@ import java.util.Date;
         this.currentCampaignDate = currentCampaignDate;
     }
 
+    public enum Status {
+        PREPARE,RUN,EDN
+    }
 }
 
 

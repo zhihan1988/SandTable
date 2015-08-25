@@ -8,10 +8,19 @@ import javax.persistence.*;
 @Table(name = "company_status_property_value")
 public class CompanyStatusPropertyValue {
     private String id;
-    private String dept;
     private String name;
     private String value;
+    private String dept;
     private CompanyStatus companyStatus;
+
+    public CompanyStatusPropertyValue(){}
+
+    public CompanyStatusPropertyValue(String dept, String name, String value, CompanyStatus companyStatus) {
+        this.name = name;
+        this.value = value;
+        this.dept = dept;
+        this.companyStatus = companyStatus;
+    }
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")

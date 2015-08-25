@@ -5,14 +5,16 @@ import com.rathink.ie.team.model.Company;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "company_status")
 public class CompanyStatus {
     private String id;
-    private Campaign campagin;
+    private Campaign campaign;
     private Company company;
-    private String campaginDate;
+    private String campaignDate;
+    private List<CompanyStatusPropertyValue> companyStatusPropertyValueList;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -27,12 +29,12 @@ public class CompanyStatus {
 
     @ManyToOne
     @JoinColumn(name = "campaign_id")
-    public Campaign getCampagin() {
-        return campagin;
+    public Campaign getCampaign() {
+        return campaign;
     }
 
-    public void setCampagin(Campaign campagin) {
-        this.campagin = campagin;
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     @ManyToOne
@@ -46,11 +48,20 @@ public class CompanyStatus {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaginDate() {
-        return campaginDate;
+    public String getCampaignDate() {
+        return campaignDate;
     }
 
-    public void setCampaginDate(String campaginDate) {
-        this.campaginDate = campaginDate;
+    public void setCampaignDate(String campaignDate) {
+        this.campaignDate = campaignDate;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "companyStatus", cascade = CascadeType.ALL)
+    public List<CompanyStatusPropertyValue> getCompanyStatusPropertyValueList() {
+        return companyStatusPropertyValueList;
+    }
+
+    public void setCompanyStatusPropertyValueList(List<CompanyStatusPropertyValue> companyStatusPropertyValueList) {
+        this.companyStatusPropertyValueList = companyStatusPropertyValueList;
     }
 }
