@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "hr_instruction")
 public class HrInstruction extends CompanyInstruction {
     private Human human;
-    private String status;//1.��ȷ�� 2.δѡ�� 3.��ѡ��
+    private String status;// 1待确定   2未选中  3已选中
     private String salary;
     private String stock;
 
@@ -51,5 +51,33 @@ public class HrInstruction extends CompanyInstruction {
 
     public void setStock(String stock) {
         this.stock = stock;
+    }
+
+    public enum Status {
+        DQD("1","待确定"),WXZ("2","未选中"),YXZ("3","已选中");
+        private String value;
+        private String label;
+
+        private Status(String value, String label) {
+            this.value = value;
+            this.label = label;
+
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
     }
 }

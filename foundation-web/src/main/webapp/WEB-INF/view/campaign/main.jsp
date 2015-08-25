@@ -53,7 +53,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             人才
-            <a href="/work/">招聘</a>
+            <a href="<c:url value="/work/hrChoices?companyId=${company.id}"/>">招聘</a>
         </div>
         <div class="am-panel-bd">
             <p></p>

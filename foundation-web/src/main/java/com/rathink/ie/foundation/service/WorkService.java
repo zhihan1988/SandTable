@@ -25,11 +25,11 @@ public class WorkService {
     private ChoiceService choiceService;
 
     public void initCampaign(Campaign campaign) {
-       /* //1.±ÈÈü¿ªÊ¼
+        //1.æ¯”èµ›å¼€å§‹
         campaign.setCurrentCampaignDate(CampaignUtil.getCurrentCampaignDate());
-        campaign.setStatus(Campaign.Status.RUN.name());
+        campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        //2.×¼±¸Êı¾İ
+        //2.å‡†å¤‡å„éƒ¨é—¨å±æ€§æ•°æ®
         XQuery xQuery = new XQuery();
         xQuery.setHql("from Company where campaign.id = :campaignId");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
@@ -38,8 +38,8 @@ public class WorkService {
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
             initCompanyStatus(company);
-        }*/
-        //3.Éú³ÉËæ»úÑ¡Ïî
+        }
+        //3.å‡†å¤‡ä¾›å†³ç­–ç”¨çš„æ•°æ®
         choiceService.produceChoice(campaign);
 
     }
@@ -64,7 +64,7 @@ public class WorkService {
     }
 
     /**
-     * °ÑÊôĞÔ°´²¿ÃÅ·ÖÀà
+     * æŒ‰éƒ¨é—¨åˆ†ç¦»å±æ€§å€¼
      * @param companyStatusPropertyValueList
      * @return
      */
