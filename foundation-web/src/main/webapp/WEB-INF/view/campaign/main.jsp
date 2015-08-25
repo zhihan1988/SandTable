@@ -15,21 +15,38 @@
             <a href="#">资金投入</a>
         </div>
         <div class="am-panel-bd">
-            <p></p>
+            <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
+                <p>
+                    ${property.name}:${property.value}
+                </p>
+            </c:forEach>
         </div>
     </div>
     <div class="am-panel am-panel-default">
-        <div class="am-panel-hd">产品研发</div>
+        <div class="am-panel-hd">
+            产品研发
+            <a href="#">资金投入</a>
+        </div>
         <div class="am-panel-bd">
-            <p>资金投入</p>
+            <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
+                <p>
+                    ${property.name}:${property.value}
+                </p>
+            </c:forEach>
         </div>
     </div>
 
     <div class="am-panel am-panel-default">
-        <div class="am-panel-hd">运营</div>
+        <div class="am-panel-hd">
+            运营
+            <a href="#">资金投入</a>
+        </div>
         <div class="am-panel-bd">
-            <p>资金投入</p>
-            <p>用户数</p>
+            <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
+                <p>
+                    ${property.name}:${property.value}
+                </p>
+            </c:forEach>
         </div>
     </div>
 

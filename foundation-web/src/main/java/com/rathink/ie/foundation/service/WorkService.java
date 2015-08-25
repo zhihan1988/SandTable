@@ -21,9 +21,11 @@ public class WorkService {
 
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private ChoiceService choiceService;
 
     public void initCampaign(Campaign campaign) {
-        //1.比赛开始
+       /* //1.比赛开始
         campaign.setCurrentCampaignDate(CampaignUtil.getCurrentCampaignDate());
         campaign.setStatus(Campaign.Status.RUN.name());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
@@ -36,7 +38,10 @@ public class WorkService {
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
             initCompanyStatus(company);
-        }
+        }*/
+        //3.生成随机选项
+        choiceService.produceChoice(campaign);
+
     }
 
     public void initCompanyStatus(Company company) {
@@ -63,7 +68,7 @@ public class WorkService {
      * @param companyStatusPropertyValueList
      * @return
      */
-    public Map<String, List<CompanyStatusPropertyValue>> dispartCompanyStatusPropertyByDept(List<CompanyStatusPropertyValue> companyStatusPropertyValueList) {
+    public Map<String, List<CompanyStatusPropertyValue>> partCompanyStatusPropertyByDept(List<CompanyStatusPropertyValue> companyStatusPropertyValueList) {
         Map<String, List<CompanyStatusPropertyValue>> map = new HashMap();
         if (companyStatusPropertyValueList != null && !companyStatusPropertyValueList.isEmpty()) {
             for (CompanyStatusPropertyValue companyStatusPropertyValue : companyStatusPropertyValueList) {

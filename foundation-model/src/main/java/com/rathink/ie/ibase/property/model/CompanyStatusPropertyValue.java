@@ -15,7 +15,7 @@ public class CompanyStatusPropertyValue {
 
     public CompanyStatusPropertyValue(){}
 
-    public CompanyStatusPropertyValue(String dept, String name, String value, CompanyStatus companyStatus) {
+    public CompanyStatusPropertyValue(String name, String value, String dept, CompanyStatus companyStatus) {
         this.name = name;
         this.value = value;
         this.dept = dept;

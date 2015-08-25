@@ -70,7 +70,7 @@ public class CampaignController {
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         CompanyStatus companyStatus = (CompanyStatus) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.dispartCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
+        Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
 
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
