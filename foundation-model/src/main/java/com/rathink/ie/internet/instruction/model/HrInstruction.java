@@ -14,7 +14,7 @@ public class HrInstruction extends CompanyInstruction {
     private Human human;
     private String status;// 见页面下方枚举定义
     private String salary;
-    private String stock;
+//    private String stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "human_id")
@@ -44,14 +44,14 @@ public class HrInstruction extends CompanyInstruction {
         this.salary = salary;
     }
 
-    @Column(name = "stock")
+   /* @Column(name = "stock")
     public String getStock() {
         return stock;
     }
 
     public void setStock(String stock) {
         this.stock = stock;
-    }
+    }*/
 
     public enum Status {
         DQD("1","待确定"),WXZ("2","未选中"),YXZ("3","已选中");

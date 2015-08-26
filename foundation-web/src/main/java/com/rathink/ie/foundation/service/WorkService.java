@@ -10,6 +10,7 @@ import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
+import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class WorkService {
     private BaseManager baseManager;
     @Autowired
     private ChoiceService choiceService;
+    @Autowired
+    private InstructionService instructionService;
     @Autowired
     private CompanyStatusService companyStatusService;
 
@@ -48,7 +51,7 @@ public class WorkService {
 
     }
 
-    public void initCompanyStatus(Company company) {
+    public CompanyStatus initCompanyStatus(Company company) {
         CompanyStatus companyStatus = new CompanyStatus();
         companyStatus.setCampaign(company.getCampaign());
         companyStatus.setCompany(company);
@@ -56,6 +59,7 @@ public class WorkService {
         List<CompanyStatusPropertyValue> companyStatusPropertyValueList = prepareCompanyStatusProperty(companyStatus);
         companyStatus.setCompanyStatusPropertyValueList(companyStatusPropertyValueList);
         baseManager.saveOrUpdate(CompanyStatus.class.getName(), companyStatus);
+        return companyStatus;
     }
 
     public List<CompanyStatusPropertyValue> prepareCompanyStatusProperty(CompanyStatus companyStatus) {
@@ -96,6 +100,9 @@ public class WorkService {
     }
 
     public void nextCampaign(Campaign campaign) {
+        //产生人才竞标结果
+        instructionService.produceHumanDiddingResult(campaign);
+
         //回合结束 新回合开始
         String preCampaignDate = campaign.getCurrentCampaignDate();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(preCampaignDate));
@@ -109,10 +116,40 @@ public class WorkService {
         xQuery.setQueryParamMap(queryParamMap);
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
+            List<CompanyStatusPropertyValue> companyStatusPropertyValueList = new ArrayList<>();
             CompanyStatus preCompanyStatus = companyStatusService.getCompanyStatus(company, preCampaignDate);
-            CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
+            CompanyStatus companyStatus = new CompanyStatus();
+            companyStatus.setCampaign(company.getCampaign());
+            companyStatus.setCompany(company);
+            companyStatus.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
+            baseManager.saveOrUpdate(CompanyStatus.class.getName(), companyStatus);
+
+            //部门能力
+            String marketAbility = instructionService.getDeptAbilityValue(company, Edept.MARKET.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, marketAbility, companyStatus));
+            String operationAbility = instructionService.getDeptAbilityValue(company, Edept.OPERATION.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, operationAbility, companyStatus));
+            String productAbility = instructionService.getDeptAbilityValue(company, Edept.PRODUCT.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, productAbility, companyStatus));
+
+            //新用户数
+            String newUserAmount = instructionService.getNewUserAmount(company);
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, newUserAmount, companyStatus));
+
+            //满意度
+
+            //上一期用户数
+            CompanyStatusPropertyValue preUserAmount = companyStatusService
+                    .getCompanyStatusProperty(EPropertyName.USER_AMOUNT.name(), preCompanyStatus);
+            //满意度（产品能力*资金投入）
+            companyStatus.setCompanyStatusPropertyValueList(companyStatusPropertyValueList);
+            baseManager.saveOrUpdate(CompanyStatus.class.getName(), companyStatus);
+
         }
     }
 
+ /*   public CompanyStatusPropertyValue waitForPropertyProcess(String propertyName) {
+        companyStatusService.getCompanyStatusProperty(propertyName,)
+    }*/
 
 }

@@ -31,7 +31,7 @@ public class CompanyStatusService {
         String hql = "from CompanyStatusPropertyValue where name = :name and companyStatus.id = :companyStatusId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("name", propertyName);
-        queryParamMap.put("campaignId", companyStatus.getId());
+        queryParamMap.put("companyStatusId", companyStatus.getId());
         CompanyStatusPropertyValue companyStatusPropertyValue = (CompanyStatusPropertyValue) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         return companyStatusPropertyValue;
     }

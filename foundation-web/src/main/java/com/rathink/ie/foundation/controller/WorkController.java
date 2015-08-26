@@ -3,6 +3,7 @@ package com.rathink.ie.foundation.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.ChoiceService;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
@@ -24,21 +25,15 @@ import java.util.List;
 public class WorkController {
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private ChoiceService choiceService;
 
     @RequestMapping("/hrChoices")
     public String hrChoices(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        String campaignDate = campaign.getCurrentCampaignDate();
-
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from Human where campaign.id = :campaignId and campaignDate = :campaignDate");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaign.getId());
-        queryParamMap.put("campaignDate", campaignDate);
-        xQuery.setQueryParamMap(queryParamMap);
-        List humanList = baseManager.listObject(xQuery);
+        List<Human> humanList = choiceService.listHuman(campaign);
         model.addAttribute("humanList", humanList);
         model.addAttribute("company", company);
         return "/work/hrPanel";
@@ -60,7 +55,7 @@ public class WorkController {
                     hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
                     hrInstruction.setCampaign(campaign);
                     hrInstruction.setCompany(company);
-                    hrInstruction.setDept(Edept.HR.name());
+                    hrInstruction.setDept(human.getDept());
                     hrInstruction.setHuman(human);
                     hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
                     hrInstruction.setSalary(humanSalary);
