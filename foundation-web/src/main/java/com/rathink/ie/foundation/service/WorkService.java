@@ -3,10 +3,12 @@ package com.rathink.ie.foundation.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class WorkService {
     private BaseManager baseManager;
     @Autowired
     private ChoiceService choiceService;
+    @Autowired
+    private CompanyStatusService companyStatusService;
 
     public void initCampaign(Campaign campaign) {
         //1.比赛开始
@@ -56,10 +60,16 @@ public class WorkService {
 
     public List<CompanyStatusPropertyValue> prepareCompanyStatusProperty(CompanyStatus companyStatus) {
         List<CompanyStatusPropertyValue> companyStatusPropertyValueList = new ArrayList<CompanyStatusPropertyValue>();
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue("USER_AMOUNT", "2000", Edept.OPERATION.name(), companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue("OPERATION_ABILITY", "2000", Edept.OPERATION.name(), companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue("MARKET_ABILITY", "2000", Edept.MARKET.name(), companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue("PRODUCT_ABILITY", "2000", Edept.PRODUCT.name(), companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, "60", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, "0", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, "2000", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, "60", companyStatus));
         return companyStatusPropertyValueList;
     }
 
@@ -86,9 +96,9 @@ public class WorkService {
     }
 
     public void nextCampaign(Campaign campaign) {
-        //回合结束
-        String oldCampaignDate = campaign.getCurrentCampaignDate();
-        campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(oldCampaignDate));
+        //回合结束 新回合开始
+        String preCampaignDate = campaign.getCurrentCampaignDate();
+        campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(preCampaignDate));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
 
         //计算这一回合各公司属性
@@ -99,7 +109,8 @@ public class WorkService {
         xQuery.setQueryParamMap(queryParamMap);
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
-
+            CompanyStatus preCompanyStatus = companyStatusService.getCompanyStatus(company, preCampaignDate);
+            CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
         }
     }
 

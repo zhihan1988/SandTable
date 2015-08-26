@@ -1,5 +1,6 @@
 package com.rathink.ie.ibase.property.model;
 
+import com.rathink.ie.internet.EPropertyName;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,10 +16,10 @@ public class CompanyStatusPropertyValue {
 
     public CompanyStatusPropertyValue(){}
 
-    public CompanyStatusPropertyValue(String name, String value, String dept, CompanyStatus companyStatus) {
-        this.name = name;
+    public CompanyStatusPropertyValue(EPropertyName ePropertyName, String value, CompanyStatus companyStatus) {
+        this.name = ePropertyName.name();
         this.value = value;
-        this.dept = dept;
+        this.dept = ePropertyName.getDept();
         this.companyStatus = companyStatus;
     }
 

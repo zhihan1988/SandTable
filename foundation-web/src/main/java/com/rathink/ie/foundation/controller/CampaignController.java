@@ -4,6 +4,8 @@ package com.rathink.ie.foundation.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignService;
+import com.rathink.ie.foundation.service.CompanyStatusService;
 import com.rathink.ie.foundation.service.WorkService;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
@@ -32,6 +34,10 @@ public class CampaignController {
     private BaseManager baseManager;
     @Autowired
     private WorkService workService;
+    @Autowired
+    private CompanyStatusService companyStatusService;
+    @Autowired
+    private CampaignService campaignService;
 
     @RequestMapping("/listCampaign.do")
     public String listCampaign(HttpServletRequest request, Model model) throws Exception {
@@ -47,15 +53,8 @@ public class CampaignController {
     public String getCampaign(HttpServletRequest request, @PathVariable String campaignId,Model model) throws Exception {
         Campaign campaign = (Campaign)baseManager.getObject(Campaign.class.getName(), campaignId);
         model.addAttribute("campaign", campaign);
-
-        XQuery companyListQuery = new XQuery();
-        companyListQuery.setHql("from Company where campaign.id = :campaignId");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaignId);
-        companyListQuery.setQueryParamMap(queryParamMap);
-        List companyList = baseManager.listObject(companyListQuery);
+        List companyList = campaignService.listCompany(campaign);
         model.addAttribute("companyList", companyList);
-//        modelMap.addAttribute("pageMsg","6");
         return "/campaign/campaignView";
 
     }
@@ -65,12 +64,7 @@ public class CampaignController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-
-        String hql = "from CompanyStatus where company.id = :companyId and campaignDate = :campaignDate";
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("companyId", company.getId());
-        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
-        CompanyStatus companyStatus = (CompanyStatus) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
         Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
 
         XQuery xQuery = new XQuery();
