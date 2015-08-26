@@ -70,4 +70,15 @@ public class CompanyStatusPropertyValue {
     public void setCompanyStatus(CompanyStatus companyStatus) {
         this.companyStatus = companyStatus;
     }
+
+    @Transient
+    public String getLabel() {
+        String label = "";
+        for (EPropertyName ePropertyName: EPropertyName.values()) {
+            if (ePropertyName.name().equals(getName())) {
+                label = ePropertyName.getLabel();
+            }
+        }
+        return label;
+    }
 }

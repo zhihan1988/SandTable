@@ -17,9 +17,24 @@
         <div class="am-panel-bd">
             <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
                 <p>
-                    ${property.name}:${property.value}
+                    ${property.label}:${property.value}
                 </p>
             </c:forEach>
+            <div class="am-panel-group" id="accordion">
+                <div class="am-panel am-panel-default">
+                    <div class="am-panel-hd">
+                        <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
+                            待操作
+                        </h4>
+                    </div>
+                    <div id="do-not-say-2" class="am-panel-collapse am-collapse">
+                        <div class="am-panel-bd">
+                            ...
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
     <div class="am-panel am-panel-default">
@@ -30,7 +45,7 @@
         <div class="am-panel-bd">
             <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
                 <p>
-                    ${property.name}:${property.value}
+                    ${property.label}:${property.value}
                 </p>
             </c:forEach>
         </div>
@@ -44,7 +59,7 @@
         <div class="am-panel-bd">
             <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
                 <p>
-                    ${property.name}:${property.value}
+                    ${property.label}:${property.value}
                 </p>
             </c:forEach>
         </div>

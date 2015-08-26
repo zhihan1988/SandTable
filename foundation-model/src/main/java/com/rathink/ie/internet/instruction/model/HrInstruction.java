@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "hr_instruction")
 public class HrInstruction extends CompanyInstruction {
     private Human human;
-    private String status;// 1待确定   2未选中  3已选中
+    private String status;// 见页面下方枚举定义
     private String salary;
     private String stock;
 
