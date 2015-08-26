@@ -2,6 +2,7 @@ package com.rathink.ie.foundation.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
+
 import com.rathink.ie.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
@@ -10,7 +11,6 @@ import com.rathink.ie.internet.Edept;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 /**
@@ -29,7 +29,7 @@ public class WorkService {
         campaign.setCurrentCampaignDate(CampaignUtil.getCurrentCampaignDate());
         campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        //2.准备各部门属性数据
+        //2.初始化各公司基本属性
         XQuery xQuery = new XQuery();
         xQuery.setHql("from Company where campaign.id = :campaignId");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
@@ -39,7 +39,7 @@ public class WorkService {
         for (Company company : companyList) {
             initCompanyStatus(company);
         }
-        //3.准备供决策用的数据
+        //3.准备供用户决策用的随机数据
         choiceService.produceChoice(campaign);
 
     }
@@ -64,7 +64,7 @@ public class WorkService {
     }
 
     /**
-     * 按部门分离属性值
+     * 按部门分离公司属性
      * @param companyStatusPropertyValueList
      * @return
      */
@@ -84,4 +84,24 @@ public class WorkService {
         }
         return map;
     }
+
+    public void nextCampaign(Campaign campaign) {
+        //回合结束
+        String oldCampaignDate = campaign.getCurrentCampaignDate();
+        campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(oldCampaignDate));
+        baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
+
+        //计算这一回合各公司属性
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from Company where campaign.id = :campaignId");
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
+        queryParamMap.put("campaignId", campaign.getId());
+        xQuery.setQueryParamMap(queryParamMap);
+        List<Company> companyList = baseManager.listObject(xQuery);
+        for (Company company : companyList) {
+
+        }
+    }
+
+
 }

@@ -80,4 +80,16 @@ public class HrInstruction extends CompanyInstruction {
             this.label = label;
         }
     }
+
+    @Transient
+    public String getStatusLabel() {
+        String label = "";
+        for (Status status: Status.values()) {
+            if (status.getValue().equals(getStatus())) {
+                label = status.getLabel();
+            }
+        }
+        return label;
+    }
+
 }

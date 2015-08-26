@@ -56,7 +56,9 @@
             <a href="<c:url value="/work/hrChoices?companyId=${company.id}"/>">招聘</a>
         </div>
         <div class="am-panel-bd">
-            <p></p>
+            <c:forEach items="${hrInstructionList}" var="hrInstruction">
+                <p>${hrInstruction.human.name}(${hrInstruction.statusLabel})</p>
+            </c:forEach>
         </div>
     </div>
 

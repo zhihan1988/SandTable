@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 public class CampaignUtil {
 
     /**
-     * »ñµÃµ±Ç°±ÈÈüÊ±¼ä
+     * ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
      * @return
      */
     public static String getCurrentCampaignDate(){
@@ -21,7 +21,7 @@ public class CampaignUtil {
     }
 
     /**
-     * »ñµÃÉÏÒ»ÂÖ±ÈÈüµÄÊ±¼ä
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
      * @param campaignDate
      * @return
      */
@@ -30,7 +30,7 @@ public class CampaignUtil {
     }
 
     /**
-     * »ñµÃÏÂÒ»ÂÖ±ÈÈüµÄÊ±¼ä
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
      * @param campaignDate
      * @return
      */
@@ -49,17 +49,29 @@ public class CampaignUtil {
         String year = campaignDate.substring(0, 2);
         String month = campaignDate.substring(2, 4);
         String season;
-        Integer intMonth = Integer.parseInt(month);
-        if (intMonth >= 1 && intMonth <= 3) {
-            season = "01";
-        } else if (intMonth >= 4 && intMonth <= 6) {
-            season = "02";
-        } else if (intMonth >= 7 && intMonth <= 9) {
-            season = "03";
-        } else if (intMonth >= 10 && intMonth <= 12) {
-            season = "04";
-        } else {
-            season = "00";
+        switch (month) {
+            case "01":
+            case "02":
+            case "03":
+                season = "01";
+                break;
+            case "04":
+            case "05":
+            case "06":
+                season = "02";
+                break;
+            case "07":
+            case "08":
+            case "09":
+                season = "03";
+                break;
+            case "10":
+            case "11":
+            case "12":
+                season = "04";
+                break;
+            default:
+                season = "00";
         }
         campaignDate = year + season + month;
         return campaignDate;
@@ -79,7 +91,7 @@ public class CampaignUtil {
             date = CampaignUtil.getPreCampaignDate(date);
             System.out.println(date);
         }*/
-        System.out.println(CampaignUtil.getCurrentCampaignDate());
+        System.out.println(CampaignUtil.joinSeason("1501"));
     }
 
 }

@@ -7,6 +7,7 @@ import com.rathink.ie.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.WorkService;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.internet.instruction.model.HrInstruction;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,9 +73,17 @@ public class CampaignController {
         CompanyStatus companyStatus = (CompanyStatus) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
 
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from HrInstruction where company.id = :companyId");
+        LinkedHashMap<String, Object> hrInstructionParamMap = new LinkedHashMap<String, Object>();
+        hrInstructionParamMap.put("companyId", companyId);
+        xQuery.setQueryParamMap(hrInstructionParamMap);
+        List<HrInstruction> hrInstructionList = baseManager.listObject(xQuery);
+
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
+        model.addAttribute("hrInstructionList", hrInstructionList);
         return "/campaign/main";
     }
 
@@ -83,6 +92,14 @@ public class CampaignController {
     public String begin(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
         workService.initCampaign(campaign);
+        return "success";
+    }
+
+    @RequestMapping("/next")
+    @ResponseBody
+    public String next(HttpServletRequest request, Model model) throws Exception {
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
+        workService.nextCampaign(campaign);
         return "success";
     }
 }
