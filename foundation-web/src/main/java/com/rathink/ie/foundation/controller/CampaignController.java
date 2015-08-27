@@ -3,7 +3,7 @@ package com.rathink.ie.foundation.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignService;
 import com.rathink.ie.foundation.service.ChoiceService;
 import com.rathink.ie.foundation.service.CompanyStatusService;
@@ -11,8 +11,7 @@ import com.rathink.ie.foundation.service.WorkService;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.internet.choice.model.Human;
-import com.rathink.ie.team.model.Company;
-import com.rathink.ie.user.util.AuthorizationUtil;
+import com.rathink.ie.foundation.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,6 +90,14 @@ public class CampaignController {
     public String next(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
         workService.nextCampaign(campaign);
+        return "success";
+    }
+
+    @RequestMapping("/pre")
+    @ResponseBody
+    public String pre(HttpServletRequest request, Model model) throws Exception {
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
+        workService.preCampaign(campaign);
         return "success";
     }
 }

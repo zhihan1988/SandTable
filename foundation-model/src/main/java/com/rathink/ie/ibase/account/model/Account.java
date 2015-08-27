@@ -1,7 +1,7 @@
 package com.rathink.ie.ibase.account.model;
 
-import com.rathink.ie.campaign.model.Campaign;
-import com.rathink.ie.team.model.Company;
+import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.team.model.Company;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

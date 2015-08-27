@@ -1,4 +1,4 @@
-package com.rathink.ie.campaign.model;
+package com.rathink.ie.foundation.campaign.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
@@ -127,6 +127,17 @@ import java.util.Date;
         public void setLabel(String label) {
             this.label = label;
         }
+    }
+
+    @Transient
+    public String getStatusLabel(){
+        String label = "";
+        for (Status status: Status.values()) {
+            if (status.getValue().equals(getStatus())) {
+                label = status.getLabel();
+            }
+        }
+        return label;
     }
 }
 

@@ -1,6 +1,6 @@
 package com.rathink.ie.ibase.work.model;
 
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

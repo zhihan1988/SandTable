@@ -1,6 +1,6 @@
 package com.rathink.ie.ibase.work.model;
 
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,6 +15,7 @@ public class CompanyChoice {
     private String campaignDate;
     private Campaign campaign;
     private String dept;
+    private String fee;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -73,4 +74,14 @@ public class CompanyChoice {
     public void setDept(String dept) {
         this.dept = dept;
     }
+
+    @Column(name = "fee")
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
+    }
+
 }

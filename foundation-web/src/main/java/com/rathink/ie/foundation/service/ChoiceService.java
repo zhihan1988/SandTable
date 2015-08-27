@@ -2,7 +2,7 @@ package com.rathink.ie.foundation.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;

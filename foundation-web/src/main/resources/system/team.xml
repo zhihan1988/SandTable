@@ -4,7 +4,7 @@
     <entities>
         <entity name="team" label="团队"
                 basic="simple" others=""
-                model="com.rathink.ie.team.model.Team">
+                model="com.rathink.ie.foundation.team.model.Team">
             <does>
                 <do name="plistTeam" access="" label="团队列表"
                     result="/team/teamPList">
@@ -16,7 +16,7 @@
         </entity>
         <entity name="company" label="公司"
                 basic="simple" others=""
-                model="com.rathink.ie.team.model.Company">
+                model="com.rathink.ie.foundation.team.model.Company">
             <does>
                 <do name="plistCompany" access="" label="公司列表"
                     result="/company/companyList">

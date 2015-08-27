@@ -24,6 +24,7 @@
         <tr>
             <th>名称</th>
             <th>模式</th>
+            <th>状态</th>
             <th>开始时间</th>
         </tr>
         </thead>
@@ -41,6 +42,7 @@
                     </c:otherwise>
                 </c:choose>
                 </td>
+                <td>${campaign.statusLabel}</td>
                 <td><fmt:formatDate value="${campaign.startDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
         </c:forEach>

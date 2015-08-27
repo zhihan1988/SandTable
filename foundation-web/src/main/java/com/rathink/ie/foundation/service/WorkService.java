@@ -3,13 +3,16 @@ package com.rathink.ie.foundation.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 
-import com.rathink.ie.campaign.model.Campaign;
+import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.team.model.Company;
+import com.rathink.ie.foundation.team.model.Company;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -28,7 +31,8 @@ public class WorkService {
     private InstructionService instructionService;
     @Autowired
     private CompanyStatusService companyStatusService;
-
+    @Autowired
+    private CampaignService campaignService;
     /**
      * 开始游戏 定时任务执行
      * @param campaign
@@ -115,12 +119,7 @@ public class WorkService {
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
 
         //计算这一回合各公司属性
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from Company where campaign.id = :campaignId");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaign.getId());
-        xQuery.setQueryParamMap(queryParamMap);
-        List<Company> companyList = baseManager.listObject(xQuery);
+        List<Company> companyList = campaignService.listCompany(campaign);
         for (Company company : companyList) {
             List<CompanyStatusPropertyValue> companyStatusPropertyValueList = new ArrayList<>();
             CompanyStatus preCompanyStatus = companyStatusService.getCompanyStatus(company, preCampaignDate);
@@ -154,8 +153,18 @@ public class WorkService {
         }
     }
 
- /*   public CompanyStatusPropertyValue waitForPropertyProcess(String propertyName) {
-        companyStatusService.getCompanyStatusProperty(propertyName,)
-    }*/
+    public void preCampaign(Campaign campaign) {
+        SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
+        List<Company> companyList = campaignService.listCompany(campaign);
+        for (Company company : companyList) {
+            CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
+            Session session = sessionFactory.getCurrentSession();
+            session.delete(companyStatus);
+        }
+
+        /*String preCampaignDate = campaign.getCurrentCampaignDate();
+        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(preCampaignDate));
+        baseManager.saveOrUpdate(Campaign.class.getName(), campaign);*/
+    }
 
 }

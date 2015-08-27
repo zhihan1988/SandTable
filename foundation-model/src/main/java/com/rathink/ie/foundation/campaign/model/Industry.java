@@ -1,4 +1,4 @@
-package com.rathink.ie.campaign.model;
+package com.rathink.ie.foundation.campaign.model;
 
 import org.hibernate.annotations.GenericGenerator;
 

@@ -1,6 +1,6 @@
 package com.rathink.ie.user.model;
 
-import com.rathink.ie.team.model.Team;
+import com.rathink.ie.foundation.team.model.Team;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

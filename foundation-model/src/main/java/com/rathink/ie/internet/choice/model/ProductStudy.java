@@ -12,17 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "product_study")
 public class ProductStudy extends CompanyChoice {
-    private String fee;
     private String grade;//定位
-
-    @Column(name = "fee")
-    public String getFee() {
-        return fee;
-    }
-
-    public void setFee(String fee) {
-        this.fee = fee;
-    }
 
     @Column(name = "grade")
     public String getGrade() {

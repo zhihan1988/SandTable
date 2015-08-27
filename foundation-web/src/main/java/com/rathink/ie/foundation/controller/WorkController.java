@@ -1,20 +1,17 @@
 package com.rathink.ie.foundation.controller;
 
 import com.ming800.core.base.service.BaseManager;
-import com.ming800.core.does.model.XQuery;
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.ChoiceService;
-import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
-import com.rathink.ie.team.model.Company;
+import com.rathink.ie.foundation.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

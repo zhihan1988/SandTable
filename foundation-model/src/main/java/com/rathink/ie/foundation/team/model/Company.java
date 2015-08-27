@@ -1,4 +1,4 @@
-package com.rathink.ie.team.model;
+package com.rathink.ie.foundation.team.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

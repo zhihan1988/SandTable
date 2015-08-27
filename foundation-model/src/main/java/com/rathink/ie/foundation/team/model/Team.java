@@ -1,6 +1,6 @@
-package com.rathink.ie.team.model;
+package com.rathink.ie.foundation.team.model;
 
-import com.rathink.ie.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.user.model.User;
 import com.rathink.ie.user.model.UserTeamPosition;
 import org.hibernate.annotations.GenericGenerator;

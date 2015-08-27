@@ -1,10 +1,9 @@
 package com.rathink.ie.foundation.service;
 
 import com.ming800.core.base.service.BaseManager;
-import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
-import com.rathink.ie.team.model.Company;
+import com.rathink.ie.foundation.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
