@@ -7,6 +7,8 @@ import com.rathink.ie.foundation.service.ChoiceService;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
 import com.rathink.ie.team.model.Company;
+import com.rathink.ie.user.model.User;
+import com.rathink.ie.user.util.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,20 +16,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * Created by Hean on 2015/8/24.
  */
 @Controller
-@RequestMapping("/work")
+@RequestMapping("/company")
 public class CompanyController {
     @Autowired
     private BaseManager baseManager;
 
     @RequestMapping("/listCompany")
     public String listCompany(HttpServletRequest request, Model model) throws Exception {
+        User user = AuthorizationUtil.getMyUser();
         XQuery xQuery = new XQuery("plistCompany_default", request);
+        xQuery.setHql("from Company where director.id = :userId");
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("userId", user.getId());
+        xQuery.setQueryParamMap(queryParamMap);
         xQuery.addRequestParamToModel(model, request);
         List companyList = baseManager.listPageInfo(xQuery).getList();
         model.addAttribute("companyList", companyList);
@@ -36,7 +44,7 @@ public class CompanyController {
 
     @RequestMapping("/{companyId}")
     public String getCampaign(HttpServletRequest request, @PathVariable String companyId,Model model) throws Exception {
-        Company company = (Company)baseManager.getObject(Campaign.class.getName(), companyId);
+        Company company = (Company)baseManager.getObject(Company.class.getName(), companyId);
         model.addAttribute("company", company);
         return "/company/companyView";
 

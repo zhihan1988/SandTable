@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module name="campaign" label="比赛" version="" package="com.rathink.ie.team" path="">
+    <entities>
+        <entity name="Company" label="公司"
+                basic="simple" others=""
+                model="com.rathink.ie.team.model.Company">
+            <does>
+                <do name="plistCompany" access="" label="公司列表"
+                    result="/company/companyList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="director.id" defaultValue="" operation="eq" />
+                    </query>
+                </do>
+            </does>
+        </entity>
+    </entities>
+</module>

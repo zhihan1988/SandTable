@@ -1,7 +1,5 @@
 package com.rathink.ie.team.model;
 
-import com.rathink.ie.campaign.model.Campaign;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

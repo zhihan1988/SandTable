@@ -11,8 +11,8 @@
 
 <div>
     <ul class="am-nav am-nav-pills">
-        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">赛事列表</a></li>
-        <li><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
+        <li><a href="<c:url value="/campaign/listCampaign"/>">赛事列表</a></li>
+        <li class="am-active"><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
         <li><a href="#">我的资本</a></li>
     </ul>
 </div>
@@ -23,25 +23,18 @@
         <thead>
         <tr>
             <th>名称</th>
-            <th>模式</th>
+            <th>口号</th>
             <th>开始时间</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${campaignList}" var="campaign" varStatus="vs">
+        <c:forEach items="${companyList}" var="company" varStatus="vs">
             <tr>
-                <td><a href="<c:url value="/campaign/${campaign.id}"/>">${campaign.name}</a></td>
+                <td><a href="<c:url value="/company/${company.id}"/>">${company.name}</a></td>
                 <td>
-                <c:choose>
-                    <c:when test="${campaign.mode == 'private'}">
-                        私有
-                    </c:when>
-                    <c:otherwise>
-                      公开
-                    </c:otherwise>
-                </c:choose>
+                    ${company.slogan}
                 </td>
-                <td><fmt:formatDate value="${campaign.startDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                <td><fmt:formatDate value="${company.createDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
         </c:forEach>
         </tbody>
@@ -51,7 +44,7 @@
 
 </div>
 <div>
-    <ming800:pcPageList bean="${pageEntity}" url="${pageContext.request.contextPath}/campaign/campaignList">
+    <ming800:pcPageList bean="${pageEntity}" url="${pageContext.request.contextPath}/company/companyList">
         <%--<ming800:page-param2 name="qm" value="${requestScope.qm}"/>--%>
         <ming800:pcPageParam name="conditions"
                              value='<%=request.getParameter("conditions")!=null ? request.getParameter("conditions") : ""%>'/>
