@@ -3,14 +3,12 @@ package com.rathink.ie.foundation.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.team.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -133,16 +131,16 @@ public class WorkService {
             baseManager.saveOrUpdate(CompanyStatus.class.getName(), companyStatus);
 
             //部门能力
-            String marketAbility = instructionService.getDeptAbilityValue(company, Edept.MARKET.name());
-            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, marketAbility, companyStatus));
-            String operationAbility = instructionService.getDeptAbilityValue(company, Edept.OPERATION.name());
-            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, operationAbility, companyStatus));
-            String productAbility = instructionService.getDeptAbilityValue(company, Edept.PRODUCT.name());
-            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, productAbility, companyStatus));
+            Integer marketAbility = instructionService.getDeptAbilityValue(company, Edept.MARKET.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, String.valueOf(marketAbility), companyStatus));
+            Integer operationAbility = instructionService.getDeptAbilityValue(company, Edept.OPERATION.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, String.valueOf(operationAbility), companyStatus));
+            Integer productAbility = instructionService.getDeptAbilityValue(company, Edept.PRODUCT.name());
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, String.valueOf(productAbility), companyStatus));
 
             //新用户数
-            String newUserAmount = instructionService.getNewUserAmount(company);
-            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, newUserAmount, companyStatus));
+            Integer newUserAmount = instructionService.getNewUserAmount(company);
+            companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, String.valueOf(newUserAmount), companyStatus));
 
             //满意度
 

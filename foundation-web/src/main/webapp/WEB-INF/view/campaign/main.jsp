@@ -7,9 +7,10 @@
 <html class="no-js">
 <head></head>
 <body>
-
+<%--<div style="position:fixed;right: 0;bottom: 50px;">
+    <button class="am-btn am-btn-primary">结束回合</button>
+</div>--%>
 <h3>${campaign.name} -- ${campaign.currentCampaignDate}</h3>
-
 <div class="am-panel-group" id="accordion">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
@@ -68,14 +69,36 @@
                 人才
             </h4>
         </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
-            <c:forEach items="${hrInstructionList}" var="hrInstruction">
-                <p>${hrInstruction.human.name}(${hrInstruction.statusLabel})</p>
-            </c:forEach>
-        </div>
         <div id="do-not-say-4" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
-                定位
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>名字</th>
+                        <th>能力</th>
+                        <th>薪资要求</th>
+                        <th>出资</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${humanList}" var="human">
+                        <tr>
+                            <td><input type="hidden" name="humanId" value="${human.id}"/>${human.name}</td>
+                            <td>${human.ability}</td>
+                            <td>${human.salary}</td>
+                            <td>
+                                <select name="humanSalary" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <option value="15000">15000</option>
+                                    <option value="20000">20000</option>
+                                    <option value="25000">25000</option>
+                                    <option value="30000">30000</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

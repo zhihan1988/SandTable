@@ -35,5 +35,10 @@
     <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
-
+    <bean id="userDao" class="com.rathink.ie.user.dao.hibernate.UserDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="userManager" class="com.rathink.ie.user.service.UserManager">
+        <property name="userDao" ref="userDao"/>
+    </bean>
 </beans>

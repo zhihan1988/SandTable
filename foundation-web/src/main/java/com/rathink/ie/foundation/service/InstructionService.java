@@ -49,7 +49,7 @@ public class InstructionService {
         }
     }
 
-    public String getDeptAbilityValue(Company company, String dept) {
+    public Integer getDeptAbilityValue(Company company, String dept) {
         Integer deptAbility = 60;
         String hql = "from HrInstruction where status=:status and dept = :dept and company.id = :companyId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
@@ -62,25 +62,15 @@ public class InstructionService {
         List<HrInstruction> hrInstructionList = baseManager.listObject(xQuery);
         if (hrInstructionList != null) {
             for (HrInstruction hrInstruction : hrInstructionList) {
-                String level = hrInstruction.getHuman().getHard();
-                switch (level) {
-                    case "A":
-                        deptAbility += 10;
-                        break;
-                    case "B":
-                        deptAbility += 8;
-                        break;
-                    case "C":
-                        deptAbility += 6;
-                        break;
-                }
+                String level = hrInstruction.getHuman().getAbility();
+                deptAbility += Integer.valueOf(level);
             }
         }
-        return String.valueOf(deptAbility);
+        return deptAbility;
     }
 
-    public String getNewUserAmount(Company company) {
-        return String.valueOf(0);
+    public Integer getNewUserAmount(Company company) {
+        return 0;
     }
 
 }

@@ -1,14 +1,20 @@
 package com.rathink.ie.user.model;
 
 import org.hibernate.annotations.GenericGenerator;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable,UserDetails {
     private String id;
     private String name;
+    private String username;
     private String password;
     private String wechat;
     private String userTeamPosition;
@@ -38,6 +44,17 @@ public class User {
         this.name = name;
     }
 
+    @Override
+    @Column(name = "username")
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
     @Column(name = "password")
     public String getPassword() {
         return password;
@@ -109,5 +126,44 @@ public class User {
 
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode;
+    }
+
+    @Transient
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Transient
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Transient
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Transient
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Transient
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>(2);
+        GrantedAuthority grantedAuthority = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "ROLE_USER";
+            }
+        };
+        // 所有的用户默认拥有ROLE_USER权限
+        authList.add(grantedAuthority);
+        return authList;
     }
 }
