@@ -31,6 +31,10 @@ public class WorkService {
     @Autowired
     private CompanyStatusService companyStatusService;
 
+    /**
+     * 开始游戏 定时任务执行
+     * @param campaign
+     */
     public void initCampaign(Campaign campaign) {
         //1.比赛开始
         campaign.setCurrentCampaignDate(CampaignUtil.getCurrentCampaignDate());
@@ -99,6 +103,10 @@ public class WorkService {
         return map;
     }
 
+    /**
+     * 进入下一回合  定时任务执行
+     * @param campaign
+     */
     public void nextCampaign(Campaign campaign) {
         //产生人才竞标结果
         instructionService.produceHumanDiddingResult(campaign);

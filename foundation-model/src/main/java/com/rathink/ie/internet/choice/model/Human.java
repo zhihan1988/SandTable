@@ -14,8 +14,7 @@ import javax.persistence.Table;
 public class Human extends CompanyChoice {
     private String name;
     private String salary;
-    private String intelligent;
-    private String hard;
+    private String ability;
 
     @Column(name = "name")
     public String getName() {
@@ -35,21 +34,12 @@ public class Human extends CompanyChoice {
         this.salary = salary;
     }
 
-    @Column(name = "intelligent")
-    public String getIntelligent() {
-        return intelligent;
+    @Column(name = "ability")
+    public String getAbility() {
+        return ability;
     }
 
-    public void setIntelligent(String intelligent) {
-        this.intelligent = intelligent;
-    }
-
-    @Column(name = "hard")
-    public String getHard() {
-        return hard;
-    }
-
-    public void setHard(String hard) {
-        this.hard = hard;
+    public void setAbility(String ability) {
+        this.ability = ability;
     }
 }
