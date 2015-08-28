@@ -13,8 +13,6 @@ import javax.persistence.*;
 public class HrInstruction extends CompanyInstruction {
     private Human human;
     private String status;// 见页面下方枚举定义
-    private String salary;
-//    private String stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "human_id")
@@ -33,15 +31,6 @@ public class HrInstruction extends CompanyInstruction {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    @Column(name = "salary")
-    public String getSalary() {
-        return salary;
-    }
-
-    public void setSalary(String salary) {
-        this.salary = salary;
     }
 
    /* @Column(name = "stock")

@@ -1,16 +1,23 @@
-package com.rathink.ie.foundation.service;
+package com.rathink.ie.internet.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 
 import com.ming800.core.util.ApplicationContextUtil;
+import com.ming800.core.util.DateUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignService;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.ibase.service.CompanyStatusService;
+import com.rathink.ie.ibase.work.model.CompanyChoice;
+import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.internet.service.ChoiceService;
+import com.rathink.ie.internet.service.InstructionService;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,18 +160,47 @@ public class WorkService {
         }
     }
 
+    /**
+     * 测试方法
+     * 回到上一轮
+     * @param campaign
+     */
     public void preCampaign(Campaign campaign) {
         SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
+        Session session = sessionFactory.getCurrentSession();
+
+        String currentCampaignDate = campaign.getCurrentCampaignDate();
+        String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
+
+        //删除本轮属性信息
         List<Company> companyList = campaignService.listCompany(campaign);
         for (Company company : companyList) {
-            CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
-            Session session = sessionFactory.getCurrentSession();
+            CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, currentCampaignDate);
             session.delete(companyStatus);
         }
 
-        /*String preCampaignDate = campaign.getCurrentCampaignDate();
-        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(preCampaignDate));
-        baseManager.saveOrUpdate(Campaign.class.getName(), campaign);*/
+        //删除本轮以及上一轮的决策信息
+        XQuery instructionQuery = new XQuery();
+        instructionQuery.setHql("from CompanyInstruction where campaign.id = :campaignId and campaignDate in (:campaignDates)");
+        instructionQuery.put("campaignId", campaign.getId());
+        instructionQuery.put("campaignDates", new String[]{currentCampaignDate, preCampaignDate});
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(instructionQuery);
+        if (companyInstructionList != null) {
+            companyInstructionList.forEach(session::delete);
+        }
+
+        //删除本轮的随机选项
+        XQuery choiceQuery = new XQuery();
+        choiceQuery.setHql("from CompanyChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        choiceQuery.put("campaignId", campaign.getId());
+        choiceQuery.put("campaignDate", currentCampaignDate);
+        List<CompanyChoice> companyChoiceList = baseManager.listObject(choiceQuery);
+        if (companyChoiceList != null) {
+            companyChoiceList.forEach(session::delete);
+        }
+        //比赛时间回到上一轮
+        campaign.setCurrentCampaignDate(preCampaignDate);
+        baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
     }
 
 }

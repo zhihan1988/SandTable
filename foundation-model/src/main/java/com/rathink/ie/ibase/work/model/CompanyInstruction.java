@@ -20,6 +20,7 @@ public class CompanyInstruction {
     private CompanyChoice companyChoice;
     private String content;
     private User creator;
+    private String fee;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -106,5 +107,14 @@ public class CompanyInstruction {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    @Column(name = "fee")
+    public String getFee() {
+        return fee;
+    }
+
+    public void setFee(String fee) {
+        this.fee = fee;
     }
 }

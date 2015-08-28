@@ -169,7 +169,10 @@ public class XQuery {
     //更新查询参数
     public void put(String key, Object value) {
 //        if (queryParamMap.get(key) != null) {
-            queryParamMap.put(key, value);
+        if (queryParamMap == null) {
+            queryParamMap = new LinkedHashMap<>();
+        }
+        queryParamMap.put(key, value);
 //        } else {
 //            throw new RuntimeException("参数不存在!");
 //        }

@@ -1,4 +1,4 @@
-package com.rathink.ie.foundation.service;
+package com.rathink.ie.internet.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;

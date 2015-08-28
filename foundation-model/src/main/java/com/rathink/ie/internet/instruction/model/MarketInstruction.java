@@ -11,17 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "market_instruction")
 public class MarketInstruction extends CompanyInstruction {
-    private String fee;
     private MarketActivityChoice marketActivityChoice;
-
-    @Column(name = "fee")
-    public String getFee() {
-        return fee;
-    }
-
-    public void setFee(String fee) {
-        this.fee = fee;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "market_activity_choice_id")

@@ -35,14 +35,14 @@ public class CompanyController {
         xQuery.addRequestParamToModel(model, request);
         List companyList = baseManager.listPageInfo(xQuery).getList();
         model.addAttribute("companyList", companyList);
-        return "/company/companyList";
+        return "/foundation/company/companyList";
     }
 
     @RequestMapping("/{companyId}")
     public String getCampaign(HttpServletRequest request, @PathVariable String companyId,Model model) throws Exception {
         Company company = (Company)baseManager.getObject(Company.class.getName(), companyId);
         model.addAttribute("company", company);
-        return "/company/companyView";
+        return "/foundation/company/companyView";
 
     }
 }

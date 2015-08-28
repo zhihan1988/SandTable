@@ -12,8 +12,8 @@
     <title></title>
 </head>
 <body>
-    <div><a href="<c:url value="/campaign/begin?campaignId=1"/>">开始游戏</a></div>
-    <div><a href="<c:url value="/campaign/next?campaignId=1"/>">开始下一回合</a></div>
-    <div><a href="<c:url value="/campaign/pre?campaignId=1"/>">回到上一回合</a></div>
+    <div><a href="<c:url value="/work/begin?campaignId=1"/>">开始游戏</a></div>
+    <div><a href="<c:url value="/work/next?campaignId=1"/>">开始下一回合</a></div>
+    <div><a href="<c:url value="/work/pre?campaignId=1"/>">回到上一回合</a></div>
 </body>
 </html>

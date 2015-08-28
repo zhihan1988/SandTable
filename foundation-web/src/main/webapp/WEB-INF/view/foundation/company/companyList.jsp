@@ -32,7 +32,7 @@
             <tr>
                 <td>
                     <a href="<c:url value="/company/${company.id}"/>">${company.name}</a>
-                    <a href="<c:url value="/campaign/main.do?companyId=${company.id}"/>">进入游戏</a>
+                    <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入游戏</a>
                 </td>
                 <td>
                     ${company.slogan}

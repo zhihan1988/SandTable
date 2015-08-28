@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 public class CampaignUtil {
 
     /**
-     * ��õ�ǰ����ʱ��
+     * 获取当前赛季
      * @return
      */
     public static String getCurrentCampaignDate(){
@@ -21,7 +21,7 @@ public class CampaignUtil {
     }
 
     /**
-     * �����һ�ֱ�����ʱ��
+     * 获取上一轮赛季
      * @param campaignDate
      * @return
      */
@@ -30,7 +30,7 @@ public class CampaignUtil {
     }
 
     /**
-     * �����һ�ֱ�����ʱ��
+     * 获取下一轮赛季
      * @param campaignDate
      * @return
      */

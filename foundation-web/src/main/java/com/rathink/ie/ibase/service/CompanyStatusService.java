@@ -1,4 +1,4 @@
-package com.rathink.ie.foundation.service;
+package com.rathink.ie.ibase.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
