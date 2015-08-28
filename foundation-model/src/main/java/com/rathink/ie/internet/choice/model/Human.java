@@ -13,7 +13,6 @@ import javax.persistence.Table;
 @Table(name = "human")
 public class Human extends CompanyChoice {
     private String name;
-    private String salary;
     private String ability;
 
     @Column(name = "name")
@@ -23,15 +22,6 @@ public class Human extends CompanyChoice {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Column(name = "salary")
-    public String getSalary() {
-        return salary;
-    }
-
-    public void setSalary(String salary) {
-        this.salary = salary;
     }
 
     @Column(name = "ability")

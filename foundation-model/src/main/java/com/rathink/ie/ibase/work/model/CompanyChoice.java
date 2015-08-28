@@ -15,7 +15,7 @@ public class CompanyChoice {
     private String campaignDate;
     private Campaign campaign;
     private String dept;
-    private String fee;
+    private String fees;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -75,13 +75,12 @@ public class CompanyChoice {
         this.dept = dept;
     }
 
-    @Column(name = "fee")
-    public String getFee() {
-        return fee;
+    @Column(name = "fees")
+    public String getFees() {
+        return fees;
     }
 
-    public void setFee(String fee) {
-        this.fee = fee;
+    public void setFees(String fees) {
+        this.fees = fees;
     }
-
 }

@@ -2,8 +2,10 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
+import com.rathink.ie.internet.service.InstructionService;
 import com.rathink.ie.internet.service.WorkService;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
@@ -34,7 +36,8 @@ public class WorkController {
     private CompanyStatusService companyStatusService;
     @Autowired
     private ChoiceService choiceService;
-
+    @Autowired
+    private InstructionService instructionService;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -44,73 +47,31 @@ public class WorkController {
         CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
         Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
         List<Human> humanList = choiceService.listHuman(campaign);
-
+        List<MarketActivityChoice> marketActivityChoiceList = choiceService.listMarketActivityChoice(campaign);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
         model.addAttribute("humanList", humanList);
+        model.addAttribute("marketActivityChoiceList", marketActivityChoiceList);
         return "/internet/main";
     }
 
-    @RequestMapping("/begin")
-    @ResponseBody
-    public String begin(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.initCampaign(campaign);
-        return "success";
-    }
-
-    @RequestMapping("/next")
-    @ResponseBody
-    public String next(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.nextCampaign(campaign);
-        return "success";
-    }
-
-    @RequestMapping("/pre")
-    @ResponseBody
-    public String pre(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.preCampaign(campaign);
-        return "success";
-    }
-
-    @RequestMapping("/hrChoices")
-    public String hrChoices(HttpServletRequest request, Model model) throws Exception {
-        String companyId = request.getParameter("companyId");
-        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        List<Human> humanList = choiceService.listHuman(campaign);
-        model.addAttribute("humanList", humanList);
-        model.addAttribute("company", company);
-        return "/internet/hrPanel";
-    }
-
     @RequestMapping("/makeInstruction")
+    @ResponseBody
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
-        String[] humanIdArray = request.getParameterValues("humanId");
-        String[] humanSalaryArray = request.getParameterValues("humanSalary");
+        String entity = request.getParameter("entity");
+        String id = request.getParameter("id");
+        String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        if (humanSalaryArray != null) {
-            for (int i = 0; i < humanSalaryArray.length; i++) {
-                String humanSalary = humanSalaryArray[i];
-                if (!"-1".equals(humanSalary)) {
-                    Human human = (Human) baseManager.getObject(Human.class.getName(), humanIdArray[i]);
-                    HrInstruction hrInstruction = new HrInstruction();
-                    hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-                    hrInstruction.setCampaign(campaign);
-                    hrInstruction.setCompany(company);
-                    hrInstruction.setDept(human.getDept());
-                    hrInstruction.setHuman(human);
-                    hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
-                    hrInstruction.setFee(humanSalary);
-                    baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
-                }
-            }
+
+        switch (entity) {
+            case "HrInstruction":
+                Human human = (Human) baseManager.getObject(HrInstruction.class.getName(), id);
+                System.out.println("保存"+value);
+//                instructionService.saveOrUpdateHrInstruction(company, human, value);
         }
-        return "redirect:/campaign/main?companyId=" + companyId;
+
+        return "success";
     }
 }

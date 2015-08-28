@@ -73,4 +73,22 @@ public class InstructionService {
         return 0;
     }
 
+    /**
+     * 保存人才选择结果
+     * @param company
+     * @param human
+     * @param fee
+     */
+    public void saveOrUpdateHrInstruction(Company company, Human human, String fee) {
+        Campaign campaign = company.getCampaign();
+        HrInstruction hrInstruction = new HrInstruction();
+        hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+        hrInstruction.setCampaign(campaign);
+        hrInstruction.setCompany(company);
+        hrInstruction.setDept(human.getDept());
+        hrInstruction.setHuman(human);
+        hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
+        hrInstruction.setFee(fee);
+        baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
+    }
 }

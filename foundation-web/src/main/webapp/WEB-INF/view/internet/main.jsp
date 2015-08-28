@@ -7,6 +7,11 @@
 <html class="no-js">
 <head></head>
 <body>
+<header class="am-topbar am-topbar-inverse am-topbar-fixed-top">
+    <div class="am-topbar-left">
+        <button id="submit" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">结束回合</button>
+    </div>
+</header>
 <%--<div style="position:fixed;right: 0;bottom: 50px;">
     <button class="am-btn am-btn-primary">结束回合</button>
 </div>--%>
@@ -25,7 +30,31 @@
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse am-in">
             <div class="am-panel-bd">
-                投入
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>方式</th>
+                        <th>成本</th>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${marketActivityChoiceList}" var="marketActivityChoice">
+                        <tr>
+                            <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
+                            <td>${marketActivityChoice.cost}</td>
+                            <td>
+                                <select name="marketActivityChoiceFee_${marketActivityChoice.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(marketActivityChoice. fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -76,8 +105,7 @@
                     <tr>
                         <th>名字</th>
                         <th>能力</th>
-                        <th>薪资要求</th>
-                        <th>出资</th>
+                        <th>薪资</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -85,14 +113,12 @@
                         <tr>
                             <td><input type="hidden" name="humanId" value="${human.id}"/>${human.name}</td>
                             <td>${human.ability}</td>
-                            <td>${human.salary}</td>
                             <td>
-                                <select name="humanSalary" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select name="humanFee_${human.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
-                                    <option value="15000">15000</option>
-                                    <option value="20000">20000</option>
-                                    <option value="25000">25000</option>
-                                    <option value="30000">30000</option>
+                                    <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
                                 </select>
                             </td>
                         </tr>
@@ -103,5 +129,22 @@
         </div>
     </div>
 </div>
+<script>
+   /* $('#submit').click(function(){
+       var aaa = collectHrInstruction();
+        alert(aaa);
+    });*/
+    var companyId = ${company.id};
+    $(function(){
+        $("select[name^='humanFee_']").change(function(){
+            var humanFee = $(this);
+            var id = humanFee.attr("name").split("_")[0];
+            var value = humanFee.val();
+            if(value != -1) {
+                $.post("<c:url value="/work/makeInstruction"/>", {companyId:companyId, entity: "HrInstruction", id: id, value:value } );
+            }
+        });
+    })
+</script>
 </body>
 </html>

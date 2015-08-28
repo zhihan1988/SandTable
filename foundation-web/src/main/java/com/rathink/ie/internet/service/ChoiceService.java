@@ -31,6 +31,16 @@ public class ChoiceService {
         return humanList;
     }
 
+    public List<MarketActivityChoice> listMarketActivityChoice(Campaign campaign){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from MarketActivityChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.put("campaignId", campaign.getId());
+        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
+        List marketActivityChoiceList = baseManager.listObject(xQuery);
+        return marketActivityChoiceList;
+    }
+
+
     public void produceChoice(Campaign campaign) {
         produceHumanChoice(campaign);
         produceMarketActivityChoice(campaign);
@@ -41,13 +51,15 @@ public class ChoiceService {
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
         marketActivityChoice.setCost("20");
+        marketActivityChoice.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice);
 
         MarketActivityChoice marketActivityChoice2 = new MarketActivityChoice();
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
-        marketActivityChoice2.setCost("30");
+        marketActivityChoice2.setCost("100");
+        marketActivityChoice.setFees("100000,200000,500000");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
     }
     private void produceHumanChoice(Campaign campaign) {
@@ -56,7 +68,7 @@ public class ChoiceService {
         human.setCampaign(campaign);
         human.setDept(Edept.PRODUCT.name());
         human.setName("产品");
-        human.setSalary("15000");
+        human.setFees("15000,20000,25000");
         human.setAbility("8");
         baseManager.saveOrUpdate(Human.class.getName(), human);
         Human human2 = new Human();
@@ -64,7 +76,7 @@ public class ChoiceService {
         human2.setCampaign(campaign);
         human2.setDept(Edept.PRODUCT.name());
         human2.setName("技术");
-        human2.setSalary("15000");
+        human2.setFees("15000,20000,25000");
         human2.setAbility("8");
         baseManager.saveOrUpdate(Human.class.getName(), human2);
         Human human3 = new Human();
@@ -72,7 +84,7 @@ public class ChoiceService {
         human3.setCampaign(campaign);
         human3.setDept(Edept.OPERATION.name());
         human3.setName("运营");
-        human3.setSalary("20000");
+        human3.setFees("20000,25000,30000");
         human3.setAbility("10");
         baseManager.saveOrUpdate(Human.class.getName(), human3);
         Human human4 = new Human();
@@ -80,7 +92,7 @@ public class ChoiceService {
         human4.setCampaign(campaign);
         human4.setDept(Edept.MARKET.name());
         human4.setName("市场");
-        human4.setSalary("10000");
+        human4.setFees("10000,15000,20000");
         human4.setAbility("6");
         baseManager.saveOrUpdate(Human.class.getName(), human4);
     }
