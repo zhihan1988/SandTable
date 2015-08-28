@@ -71,7 +71,29 @@
         </div>
         <div id="do-not-say-2" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
-                研发投入
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>定位</th>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${productStudyList}" var="productStudy">
+                        <tr>
+                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.grade}</td>
+                            <td>
+                                <select name="productStudyFee_${productStudy.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(productStudy.fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -88,7 +110,28 @@
         </div>
         <div id="do-not-say-3" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
-                定位
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${operationChoiceList}" var="operationChoice">
+                        <tr>
+                            <td>
+                                <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
+                                <select name="operationChoiceFee_${operationChoice.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -3,6 +3,8 @@ package com.rathink.ie.internet.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
+import com.rathink.ie.internet.choice.model.OperationChoice;
+import com.rathink.ie.internet.choice.model.ProductStudy;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.internet.service.InstructionService;
@@ -48,11 +50,15 @@ public class WorkController {
         Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
         List<Human> humanList = choiceService.listHuman(campaign);
         List<MarketActivityChoice> marketActivityChoiceList = choiceService.listMarketActivityChoice(campaign);
+        List<ProductStudy> productStudyList = choiceService.listProductStudy(campaign);
+        List<OperationChoice> operationChoiceList = choiceService.listOperationChoice(campaign);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
         model.addAttribute("humanList", humanList);
         model.addAttribute("marketActivityChoiceList", marketActivityChoiceList);
+        model.addAttribute("productStudyList", productStudyList);
+        model.addAttribute("operationChoiceList", operationChoiceList);
         return "/internet/main";
     }
 

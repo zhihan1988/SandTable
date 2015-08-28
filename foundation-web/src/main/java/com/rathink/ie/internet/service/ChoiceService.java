@@ -6,6 +6,8 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
+import com.rathink.ie.internet.choice.model.OperationChoice;
+import com.rathink.ie.internet.choice.model.ProductStudy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,16 +42,57 @@ public class ChoiceService {
         return marketActivityChoiceList;
     }
 
+    public List<ProductStudy> listProductStudy(Campaign campaign){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from ProductStudy where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.put("campaignId", campaign.getId());
+        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
+        List productStudyList = baseManager.listObject(xQuery);
+        return productStudyList;
+    }
+
+    public List<OperationChoice> listOperationChoice(Campaign campaign) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from OperationChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.put("campaignId", campaign.getId());
+        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
+        List operationChoiceList = baseManager.listObject(xQuery);
+        return operationChoiceList;
+    }
 
     public void produceChoice(Campaign campaign) {
         produceHumanChoice(campaign);
         produceMarketActivityChoice(campaign);
+        produceProductStudyChoice(campaign);
+        produceOperationChoice(campaign);
     }
-    public void produceMarketActivityChoice(Campaign campaign) {
+
+    private void produceProductStudyChoice(Campaign campaign) {
+        ProductStudy productStudy = new ProductStudy();
+        productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
+        productStudy.setCampaign(campaign);
+        productStudy.setDept(Edept.PRODUCT.name());
+        productStudy.setGrade("中端");
+        productStudy.setFees("10000,20000,50000");
+        baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy);
+
+    }
+
+    private void produceOperationChoice(Campaign campaign) {
+        OperationChoice operationChoice = new OperationChoice();
+        operationChoice.setCampaignDate(campaign.getCurrentCampaignDate());
+        operationChoice.setCampaign(campaign);
+        operationChoice.setDept(Edept.OPERATION.name());
+        operationChoice.setFees("10000,20000,50000");
+        baseManager.saveOrUpdate(OperationChoice.class.getName(), operationChoice);
+    }
+
+    private void produceMarketActivityChoice(Campaign campaign) {
         MarketActivityChoice marketActivityChoice = new MarketActivityChoice();
         marketActivityChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
+        marketActivityChoice.setName("网络推广");
         marketActivityChoice.setCost("20");
         marketActivityChoice.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice);
@@ -58,6 +101,7 @@ public class ChoiceService {
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
+        marketActivityChoice2.setName("地面推广");
         marketActivityChoice2.setCost("100");
         marketActivityChoice.setFees("100000,200000,500000");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
