@@ -72,7 +72,7 @@ public class ChoiceService {
         productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
-        productStudy.setGrade("中端");
+        productStudy.setGrade("2");
         productStudy.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy);
 

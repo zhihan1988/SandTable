@@ -67,15 +67,14 @@ public class WorkController {
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         String entity = request.getParameter("entity");
-        String id = request.getParameter("id");
+        String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
 
         switch (entity) {
             case "HrInstruction":
-                Human human = (Human) baseManager.getObject(HrInstruction.class.getName(), id);
-                System.out.println("保存"+value);
-//                instructionService.saveOrUpdateHrInstruction(company, human, value);
+                Human human = (Human) baseManager.getObject(HrInstruction.class.getName(), choiceId);
+                instructionService.saveOrUpdateHrInstruction(company, human, value);
         }
 
         return "success";

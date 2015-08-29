@@ -8,7 +8,7 @@ public enum EPropertyName {
     SATISFACTION("满意度", Edept.OPERATION.name()),
     OLD_USER_AMOUNT("老用户数量", Edept.OPERATION.name()),
     USER_AMOUNT("用户数量", Edept.OPERATION.name()),
-    CURRENT_PERIOD_INCOME("本轮收入", Edept.OPERATION.name()),
+    CURRENT_PERIOD_INCOME("本期收入", Edept.OPERATION.name()),
 
     MARKET_ABILITY("市场能力", Edept.MARKET.name()),
     NEW_USER_AMOUNT("新用户数", Edept.MARKET.name()),

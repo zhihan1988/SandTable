@@ -1,3 +1,5 @@
+<%@ page import="com.rathink.ie.foundation.campaign.model.Campaign" %>
+<%@ page import="com.rathink.ie.foundation.util.CampaignUtil" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="ming800" uri="http://java.ming800.com/taglib" %>
@@ -7,15 +9,15 @@
 <html class="no-js">
 <head></head>
 <body>
-<header class="am-topbar am-topbar-inverse am-topbar-fixed-top">
+<%--<header class="am-topbar am-topbar-inverse am-topbar-fixed-top">
     <div class="am-topbar-left">
         <button id="submit" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">结束回合</button>
     </div>
-</header>
+</header>--%>
 <%--<div style="position:fixed;right: 0;bottom: 50px;">
     <button class="am-btn am-btn-primary">结束回合</button>
 </div>--%>
-<h3>${campaign.name} -- ${campaign.currentCampaignDate}</h3>
+<h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
 <div class="am-panel-group" id="accordion">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
@@ -173,19 +175,13 @@
     </div>
 </div>
 <script>
-   /* $('#submit').click(function(){
-       var aaa = collectHrInstruction();
-        alert(aaa);
-    });*/
     var companyId = ${company.id};
     $(function(){
         $("select[name^='humanFee_']").change(function(){
             var humanFee = $(this);
             var id = humanFee.attr("name").split("_")[0];
             var value = humanFee.val();
-            if(value != -1) {
-                $.post("<c:url value="/work/makeInstruction"/>", {companyId:companyId, entity: "HrInstruction", id: id, value:value } );
-            }
+            $.post("<c:url value="/work/makeInstruction"/>", {companyId:companyId, entity: "HrInstruction", choiceId: id, value:value } );
         });
     })
 </script>
