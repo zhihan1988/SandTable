@@ -159,7 +159,7 @@
                             <td><input type="hidden" name="humanId" value="${human.id}"/>${human.name}</td>
                             <td>${human.ability}</td>
                             <td>
-                                <select name="humanFee_${human.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
@@ -175,13 +175,21 @@
     </div>
 </div>
 <script>
-    var companyId = ${company.id};
+
     $(function(){
-        $("select[name^='humanFee_']").change(function(){
-            var humanFee = $(this);
-            var id = humanFee.attr("name").split("_")[0];
-            var value = humanFee.val();
-            $.post("<c:url value="/work/makeInstruction"/>", {companyId:companyId, entity: "HrInstruction", choiceId: id, value:value } );
+
+        var companyId = ${company.id};
+        //人才
+        $("select[id^='hrInstruction_fee']").change(function(){
+            var $humanFee = $(this);
+            var idArray = $humanFee.attr("id").split("_");
+            $.post("<c:url value="/work/makeInstruction"/>",
+                    {
+                        companyId: companyId,
+                        choiceId: idArray[2],
+                        entity: idArray[0],
+                        fields: idArray[1]+"="+$humanFee.val(),
+                    });
         });
     })
 </script>

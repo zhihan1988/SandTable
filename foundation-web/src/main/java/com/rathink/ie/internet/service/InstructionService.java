@@ -15,17 +15,21 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.internet.instruction.model.MarketInstruction;
 import com.rathink.ie.internet.instruction.model.OperationInstruction;
 import com.rathink.ie.internet.instruction.model.ProductStudyInstruction;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/26.
  */
 @Service
 public class InstructionService {
+    private static Logger logger = Logger.getLogger(InstructionService.class.getName());
+
     @Autowired
     private BaseManager baseManager;
     @Autowired
@@ -170,18 +174,30 @@ public class InstructionService {
      * 保存人才选择结果
      * @param company
      * @param human
-     * @param fee
+     * @param map
      */
-    public void saveOrUpdateHrInstruction(Company company, Human human, String fee) {
-        Campaign campaign = company.getCampaign();
-        HrInstruction hrInstruction = new HrInstruction();
-        hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-        hrInstruction.setCampaign(campaign);
-        hrInstruction.setCompany(company);
-        hrInstruction.setDept(human.getDept());
+    public void saveOrUpdateHrInstruction(Company company, Human human, Map<String, String> map) {
+        Campaign campaign =  company.getCampaign();
+        String hql = "from HrInstruction where human.id = :humanId" +
+                " and campaign.id = :campaignId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("humanId", human.getId());
+        queryParamMap.put("campaignId", campaign.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        HrInstruction hrInstruction = (HrInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if (hrInstruction == null) {
+            logger.info("save human, choiceId:" + human.getId());
+            hrInstruction = new HrInstruction();
+            hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+            hrInstruction.setCampaign(campaign);
+            hrInstruction.setCompany(company);
+            hrInstruction.setDept(human.getDept());
+            hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
+        } else {
+            logger.info("update human, choiceId:" + human.getId());
+        }
         hrInstruction.setHuman(human);
-        hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
-        hrInstruction.setFee(fee);
+        hrInstruction.setFee(map.get("fee"));
         baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
     }
 }

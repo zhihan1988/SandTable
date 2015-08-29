@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,15 +67,19 @@ public class WorkController {
     @ResponseBody
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
-        String entity = request.getParameter("entity");
         String choiceId = request.getParameter("choiceId");
-        String value = request.getParameter("value");
+        String entity = request.getParameter("entity");
+        String fields = request.getParameter("fields");
+        Map<String, String> fieldMap = new HashMap<>();
+        for (String field : fields.split(";")) {
+            fieldMap.put(field.split("=")[0], field.split("=")[1]);
+        }
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
 
         switch (entity) {
-            case "HrInstruction":
-                Human human = (Human) baseManager.getObject(HrInstruction.class.getName(), choiceId);
-                instructionService.saveOrUpdateHrInstruction(company, human, value);
+            case "hrInstruction":
+                Human human = (Human) baseManager.getObject(Human.class.getName(), choiceId);
+                instructionService.saveOrUpdateHrInstruction(company, human, fieldMap);
         }
 
         return "success";
