@@ -81,7 +81,7 @@
                     <tbody>
                     <c:forEach items="${productStudyList}" var="productStudy">
                         <tr>
-                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.grade}</td>
+                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.gradeLabel}</td>
                             <td>
                                 <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
