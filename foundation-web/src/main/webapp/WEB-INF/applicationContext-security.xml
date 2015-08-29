@@ -23,7 +23,7 @@
         <intercept-url pattern="/main.do" access="isAuthenticated()"/>
         <intercept-url pattern="/basic/**" access="isAuthenticated()"/>
         <anonymous key="cookie_key" username="ananoymous" granted-authority="anonymous,ROLE_ANONYMOUS"/>
-        <form-login login-page="/index" login-processing-url="/j_spring_security_check"
+        <form-login login-page="/index.jsp" login-processing-url="/j_spring_security_check"
                     authentication-success-handler-ref="loginSuccessHandler"
                     authentication-failure-handler-ref="loginFailureHandler"/>
         <logout invalidate-session="true" logout-url="/j_spring_security_logout"

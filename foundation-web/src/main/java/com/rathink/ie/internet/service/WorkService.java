@@ -10,6 +10,7 @@ import com.rathink.ie.foundation.service.CampaignService;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.ibase.service.AccountService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -41,6 +42,8 @@ public class WorkService {
     private CompanyStatusService companyStatusService;
     @Autowired
     private CampaignService campaignService;
+    @Autowired
+    private AccountService accountService;
     /**
      * 开始游戏 定时任务执行
      * @param campaign
@@ -60,6 +63,7 @@ public class WorkService {
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
             initCompanyStatus(company);
+            accountService.initCompanyAccount(company);
         }
         //3.准备供用户决策用的随机数据
         choiceService.produceChoice(campaign);
