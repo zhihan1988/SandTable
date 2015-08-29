@@ -98,7 +98,7 @@ public class WorkService {
      * @return
      */
     public Map<String, List<CompanyStatusPropertyValue>> partCompanyStatusPropertyByDept(List<CompanyStatusPropertyValue> companyStatusPropertyValueList) {
-        Map<String, List<CompanyStatusPropertyValue>> map = new HashMap();
+        Map<String, List<CompanyStatusPropertyValue>> map = new LinkedHashMap<>();
         if (companyStatusPropertyValueList != null && !companyStatusPropertyValueList.isEmpty()) {
             for (CompanyStatusPropertyValue companyStatusPropertyValue : companyStatusPropertyValueList) {
                 String dept = companyStatusPropertyValue.getDept();

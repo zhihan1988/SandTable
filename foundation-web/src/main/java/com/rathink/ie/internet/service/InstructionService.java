@@ -119,7 +119,7 @@ public class InstructionService {
         }
 
         Integer operationFeeRatio = operationFee / 10000 + 50;
-        satisfaction = operationAbility * (operationFeeRatio / 100);
+        satisfaction = operationAbility * operationFeeRatio / 100;
 
         return satisfaction;
     }

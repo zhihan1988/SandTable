@@ -57,6 +57,7 @@ public class CompanyStatus {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "companyStatus", cascade = CascadeType.ALL)
+    @OrderBy("id asc")
     public List<CompanyStatusPropertyValue> getCompanyStatusPropertyValueList() {
         return companyStatusPropertyValueList;
     }
