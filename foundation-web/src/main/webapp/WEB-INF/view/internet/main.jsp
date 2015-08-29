@@ -1,5 +1,3 @@
-<%@ page import="com.rathink.ie.foundation.campaign.model.Campaign" %>
-<%@ page import="com.rathink.ie.foundation.util.CampaignUtil" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="ming800" uri="http://java.ming800.com/taglib" %>
@@ -46,7 +44,7 @@
                             <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
                             <td>${marketActivityChoice.cost}</td>
                             <td>
-                                <select name="marketActivityChoiceFee_${marketActivityChoice.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select id="marketInstruction_fee_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(marketActivityChoice. fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
@@ -85,7 +83,7 @@
                         <tr>
                             <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.grade}</td>
                             <td>
-                                <select name="productStudyFee_${productStudy.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(productStudy.fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
@@ -123,7 +121,7 @@
                         <tr>
                             <td>
                                 <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
-                                <select name="operationChoiceFee_${operationChoice.id}" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select id="operationInstruction_fee_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
@@ -177,20 +175,19 @@
 <script>
 
     $(function(){
-
         var companyId = ${company.id};
-        //人才
-        $("select[id^='hrInstruction_fee']").change(function(){
-            var $humanFee = $(this);
-            var idArray = $humanFee.attr("id").split("_");
-            $.post("<c:url value="/work/makeInstruction"/>",
-                    {
-                        companyId: companyId,
-                        choiceId: idArray[2],
-                        entity: idArray[0],
-                        fields: idArray[1]+"="+$humanFee.val(),
-                    });
-        });
+        $("select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_fee'],select[id^='operationInstruction_fee']")
+                .change(function(){
+                    var $fee = $(this);
+                    var idArray = $fee.attr("id").split("_");
+                    $.post("<c:url value="/work/makeInstruction"/>",
+                            {
+                                companyId: companyId,
+                                choiceId: idArray[2],
+                                entity: idArray[0],
+                                fields: idArray[1]+"="+$fee.val(),
+                            });
+                });
     })
 </script>
 </body>

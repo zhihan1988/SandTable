@@ -5,6 +5,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.choice.model.OperationChoice;
 import com.rathink.ie.internet.choice.model.ProductStudy;
+import com.rathink.ie.internet.instruction.model.OperationInstruction;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.internet.service.InstructionService;
@@ -80,6 +81,19 @@ public class WorkController {
             case "hrInstruction":
                 Human human = (Human) baseManager.getObject(Human.class.getName(), choiceId);
                 instructionService.saveOrUpdateHrInstruction(company, human, fieldMap);
+                break;
+            case "marketInstruction":
+                MarketActivityChoice marketActivityChoice = (MarketActivityChoice) baseManager.getObject(MarketActivityChoice.class.getName(), choiceId);
+                instructionService.saveOrUpdateMarketInstruction(company, marketActivityChoice, fieldMap);
+                break;
+            case "productStudyInstruction":
+                ProductStudy productStudy = (ProductStudy) baseManager.getObject(ProductStudy.class.getName(), choiceId);
+                instructionService.saveOrUpdateProductStudyInstruction(company, productStudy, fieldMap);
+                break;
+            case "operationInstruction":
+                OperationChoice operationChoice = (OperationChoice) baseManager.getObject(OperationChoice.class.getName(), choiceId);
+                instructionService.saveOrUpdateOperationInstruction(company, operationChoice, fieldMap);
+                break;
         }
 
         return "success";

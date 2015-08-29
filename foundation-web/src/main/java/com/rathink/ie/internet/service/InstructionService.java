@@ -9,7 +9,9 @@ import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
+import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.choice.model.OperationChoice;
+import com.rathink.ie.internet.choice.model.ProductStudy;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.internet.instruction.model.MarketInstruction;
@@ -179,14 +181,14 @@ public class InstructionService {
     public void saveOrUpdateHrInstruction(Company company, Human human, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from HrInstruction where human.id = :humanId" +
-                " and campaign.id = :campaignId and campaignDate = :campaignDate";
+                " and company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("humanId", human.getId());
-        queryParamMap.put("campaignId", campaign.getId());
+        queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         HrInstruction hrInstruction = (HrInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         if (hrInstruction == null) {
-            logger.info("save human, choiceId:" + human.getId());
+            logger.info("save HrInstruction, choiceId:" + human.getId());
             hrInstruction = new HrInstruction();
             hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
             hrInstruction.setCampaign(campaign);
@@ -194,10 +196,83 @@ public class InstructionService {
             hrInstruction.setDept(human.getDept());
             hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
         } else {
-            logger.info("update human, choiceId:" + human.getId());
+            logger.info("update HrInstruction, choiceId:" + human.getId());
         }
         hrInstruction.setHuman(human);
         hrInstruction.setFee(map.get("fee"));
         baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
+    }
+
+    public void saveOrUpdateMarketInstruction(Company company, MarketActivityChoice marketActivityChoice, Map<String, String> map) {
+        Campaign campaign =  company.getCampaign();
+        String hql = "from MarketInstruction where marketActivityChoice.id = :marketActivityChoiceId" +
+                " and company.id = :companyId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("marketActivityChoiceId", marketActivityChoice.getId());
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        MarketInstruction marketInstruction = (MarketInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if (marketInstruction == null) {
+            logger.info("save MarketInstruction, choiceId:" + marketActivityChoice.getId());
+            marketInstruction = new MarketInstruction();
+            marketInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+            marketInstruction.setCampaign(campaign);
+            marketInstruction.setCompany(company);
+            marketInstruction.setDept(marketActivityChoice.getDept());
+        } else {
+            logger.info("update MarketInstruction, choiceId:" + marketActivityChoice.getId());
+        }
+        marketInstruction.setMarketActivityChoice(marketActivityChoice);
+        marketInstruction.setFee(map.get("fee"));
+        baseManager.saveOrUpdate(MarketInstruction.class.getName(), marketInstruction);
+    }
+
+    public void saveOrUpdateProductStudyInstruction(Company company, ProductStudy productStudy, Map<String, String> map) {
+        Campaign campaign =  company.getCampaign();
+        String hql = "from ProductStudyInstruction where productStudy.id = :productStudyId " +
+                " and company.id = :companyId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("productStudyId", productStudy.getId());
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        ProductStudyInstruction productStudyInstruction = (ProductStudyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if (productStudyInstruction == null) {
+            logger.info("save ProductStudyInstruction, choiceId:" + productStudy.getId());
+            productStudyInstruction = new ProductStudyInstruction();
+            productStudyInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+            productStudyInstruction.setCampaign(campaign);
+            productStudyInstruction.setCompany(company);
+            productStudyInstruction.setDept(productStudy.getDept());
+        } else {
+            logger.info("update ProductStudyInstruction, choiceId:" + productStudy.getId());
+        }
+        productStudyInstruction.setProductStudy(productStudy);
+        productStudyInstruction.setFee(map.get("fee"));
+        baseManager.saveOrUpdate(ProductStudyInstruction.class.getName(), productStudyInstruction);
+
+    }
+
+    public void saveOrUpdateOperationInstruction(Company company, OperationChoice operationChoice, Map<String, String> map) {
+        Campaign campaign =  company.getCampaign();
+        String hql = "from OperationInstruction where operationChoice.id = :operationChoiceId " +
+                " and company.id = :companyId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("operationChoiceId", operationChoice.getId());
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        OperationInstruction operationInstruction = (OperationInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if (operationInstruction == null) {
+            logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
+            operationInstruction = new OperationInstruction();
+            operationInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+            operationInstruction.setCampaign(campaign);
+            operationInstruction.setCompany(company);
+            operationInstruction.setDept(operationChoice.getDept());
+        } else{
+            logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
+        }
+        operationInstruction.setOperationChoice(operationChoice);
+        operationInstruction.setFee(map.get("fee"));
+        baseManager.saveOrUpdate(OperationInstruction.class.getName(), operationInstruction);
     }
 }
