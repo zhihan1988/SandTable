@@ -5,6 +5,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignService;
+import com.rathink.ie.user.util.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,6 +43,7 @@ public class CampaignController {
         model.addAttribute("campaign", campaign);
         List companyList = campaignService.listCompany(campaign);
         model.addAttribute("companyList", companyList);
+        model.addAttribute("myUser", AuthorizationUtil.getMyUser());
         return "/foundation/campaign/campaignView";
 
     }

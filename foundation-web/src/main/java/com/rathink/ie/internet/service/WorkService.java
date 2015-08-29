@@ -181,6 +181,9 @@ public class WorkService {
         //开始下一回合
         campaign.setCurrentCampaignDate(nextCampaignDate);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
+
+        //准备供用户决策用的随机数据
+        choiceService.produceChoice(campaign);
     }
 
     /**

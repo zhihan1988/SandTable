@@ -103,7 +103,7 @@ public class ChoiceService {
         marketActivityChoice2.setDept(Edept.MARKET.name());
         marketActivityChoice2.setName("地面推广");
         marketActivityChoice2.setCost("100");
-        marketActivityChoice.setFees("100000,200000,500000");
+        marketActivityChoice2.setFees("100000,200000,500000");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
     }
     private void produceHumanChoice(Campaign campaign) {

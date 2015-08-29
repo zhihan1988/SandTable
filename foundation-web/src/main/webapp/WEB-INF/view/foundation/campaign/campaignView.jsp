@@ -25,7 +25,9 @@
                 <tr>
                     <td>
                         <a href="<c:url value="#"/>">${company.name}</a>
-                        <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入游戏</a>
+                        <c:if test="${company.director.id == myUser.id}">
+                            <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入游戏</a>
+                        </c:if>
                     </td>
                     <td>${company.slogan}</td>
                 </tr>
