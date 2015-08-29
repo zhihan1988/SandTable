@@ -126,7 +126,7 @@ public class WorkService {
         //产生人才竞标结果
         instructionService.produceHumanDiddingResult(campaign);
 
-        //回合结束 新回合开始
+
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
 

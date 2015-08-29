@@ -146,7 +146,7 @@
                 <table class="am-table">
                     <thead>
                     <tr>
-                        <th>名字</th>
+                        <th>名字(部门)</th>
                         <th>能力</th>
                         <th>薪资</th>
                     </tr>
@@ -154,7 +154,10 @@
                     <tbody>
                     <c:forEach items="${humanList}" var="human">
                         <tr>
-                            <td><input type="hidden" name="humanId" value="${human.id}"/>${human.name}</td>
+                            <td>
+                                <input type="hidden" name="humanId" value="${human.id}"/>
+                                ${human.name}（${human.typeLabel}）
+                            </td>
                             <td>${human.ability}</td>
                             <td>
                                 <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">

@@ -1,10 +1,12 @@
 package com.rathink.ie.internet.choice.model;
 
 import com.rathink.ie.ibase.work.model.CompanyChoice;
+import com.rathink.ie.internet.Edept;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Created by Hean on 2015/8/24.
@@ -31,5 +33,16 @@ public class Human extends CompanyChoice {
 
     public void setAbility(String ability) {
         this.ability = ability;
+    }
+
+    @Transient
+    public String getTypeLabel(){
+        String label = "";
+        for (Edept edept: Edept.values()) {
+            if (edept.name().equals(getType())) {
+                label = edept.getLabel();
+            }
+        }
+        return label;
     }
 }

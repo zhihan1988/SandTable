@@ -66,12 +66,12 @@ public class InstructionService {
         }
     }
 
-    public Integer getDeptAbilityValue(Company company, String dept) {
+    public Integer getDeptAbilityValue(Company company, String type) {
         Integer deptAbility = 60;
-        String hql = "from HrInstruction where status=:status and dept = :dept and company.id = :companyId";
+        String hql = "from HrInstruction where status=:status and type = :type and company.id = :companyId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("status", HrInstruction.Status.YXZ.getValue());
-        queryParamMap.put("dept", dept);
+        queryParamMap.put("type", type);
         queryParamMap.put("companyId", company.getId());
         XQuery xQuery = new XQuery();
         xQuery.setHql(hql);
