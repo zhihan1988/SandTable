@@ -102,6 +102,6 @@ public class InternetPropertyService {
     }
 
     public Integer getCurrentPeriodIncome(Integer userAmount, Integer perOrdreCost) {
-        return userAmount * perOrdreCost;
+        return userAmount * perOrdreCost / 10;
     }
 }

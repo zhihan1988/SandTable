@@ -68,6 +68,7 @@ public class AccountService {
         outAccountEntity.setType(outType);
         outAccountEntity.setDirection("-1");
         outAccountEntity.setValue(String.valueOf(fee));
+        outAccountEntity.setAccount(account);
         accountEntryList.add(outAccountEntity);
         return accountEntryList;
     }
@@ -84,6 +85,7 @@ public class AccountService {
         outAccountEntity.setType(outType);
         outAccountEntity.setDirection("-1");
         outAccountEntity.setValue(String.valueOf(fee));
+        outAccountEntity.setAccount(account);
         accountEntryList.add(outAccountEntity);
         return accountEntryList;
     }
@@ -102,6 +104,24 @@ public class AccountService {
                 } else if (accountEntry.getDirection().equals("-1")){
                     companyCash -= Integer.valueOf(accountEntry.getValue());
                 }
+            }
+        }
+        return companyCash;
+    }
+
+    public Integer countAccountEntryFee(Company company, String campaignDate, String type, String direction) {
+        Integer companyCash = 0;
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from AccountEntry where account.company.id = :companyId and account.campaignDate = :campaignDate" +
+                " and type = :type and direction = :direction");
+        xQuery.put("companyId", company.getId());
+        xQuery.put("type", type);
+        xQuery.put("direction", direction);
+        xQuery.put("campaignDate", campaignDate);
+        List<AccountEntry> accountEntryList = baseManager.listObject(xQuery);
+        if (accountEntryList != null) {
+            for (AccountEntry accountEntry : accountEntryList) {
+                companyCash += Integer.valueOf(accountEntry.getValue());
             }
         }
         return companyCash;

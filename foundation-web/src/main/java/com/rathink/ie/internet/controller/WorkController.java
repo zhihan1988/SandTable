@@ -3,6 +3,7 @@ package com.rathink.ie.internet.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.service.AccountService;
+import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.choice.model.OperationChoice;
 import com.rathink.ie.internet.choice.model.ProductStudy;
@@ -58,6 +59,10 @@ public class WorkController {
         List<ProductStudy> productStudyList = choiceService.listProductStudy(campaign);
         List<OperationChoice> operationChoiceList = choiceService.listOperationChoice(campaign);
         Integer companyCash = accountService.getCompanyCash(company);
+        Integer campaignDateInCash = accountService.countAccountEntryFee(
+                company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
+        Integer campaignDateOutCash = accountService.countAccountEntryFee(
+                company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -66,6 +71,8 @@ public class WorkController {
         model.addAttribute("productStudyList", productStudyList);
         model.addAttribute("operationChoiceList", operationChoiceList);
         model.addAttribute("companyCash", companyCash);
+        model.addAttribute("campaignDateInCash", campaignDateInCash);
+        model.addAttribute("campaignDateOutCash", campaignDateOutCash);
         return "/internet/main";
     }
 

@@ -15,7 +15,14 @@
 <%--<div style="position:fixed;right: 0;bottom: 50px;">
     <button class="am-btn am-btn-primary">结束回合</button>
 </div>--%>
-<h3>${campaign.name}(${companyCash}) -- ${campaign.formatCampaignDate}</h3>
+<h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
+<div>
+    <ul>
+        <li>公司现金：${companyCash}</li>
+        <li>上个赛季收入：${campaignDateInCash}</li>
+        <li>上个赛季花费：${campaignDateOutCash}</li>
+    </ul>
+</div>
 <div class="am-panel-group" id="accordion">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
