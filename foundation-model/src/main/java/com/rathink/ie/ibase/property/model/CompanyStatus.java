@@ -13,7 +13,7 @@ public class CompanyStatus {
     private String id;
     private Campaign campaign;
     private Company company;
-    private String campaignDate;
+    private String campaignDate;//哪一季度展示（不是指在哪一季度产生的数据）
     private List<CompanyStatusPropertyValue> companyStatusPropertyValueList;
 
     @Id

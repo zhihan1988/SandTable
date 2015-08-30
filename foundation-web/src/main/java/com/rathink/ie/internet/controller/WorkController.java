@@ -2,6 +2,7 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.ibase.service.AccountService;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.choice.model.OperationChoice;
 import com.rathink.ie.internet.choice.model.ProductStudy;
@@ -42,6 +43,8 @@ public class WorkController {
     private ChoiceService choiceService;
     @Autowired
     private InstructionService instructionService;
+    @Autowired
+    private AccountService accountService;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -54,6 +57,7 @@ public class WorkController {
         List<MarketActivityChoice> marketActivityChoiceList = choiceService.listMarketActivityChoice(campaign);
         List<ProductStudy> productStudyList = choiceService.listProductStudy(campaign);
         List<OperationChoice> operationChoiceList = choiceService.listOperationChoice(campaign);
+        Integer companyCash = accountService.getCompanyCash(company);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -61,6 +65,7 @@ public class WorkController {
         model.addAttribute("marketActivityChoiceList", marketActivityChoiceList);
         model.addAttribute("productStudyList", productStudyList);
         model.addAttribute("operationChoiceList", operationChoiceList);
+        model.addAttribute("companyCash", companyCash);
         return "/internet/main";
     }
 

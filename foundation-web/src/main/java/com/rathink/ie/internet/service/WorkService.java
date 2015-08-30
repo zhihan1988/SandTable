@@ -8,15 +8,21 @@ import com.ming800.core.util.DateUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignService;
 import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.ibase.account.model.Account;
+import com.rathink.ie.ibase.account.model.AccountEntry;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.ibase.service.AccountService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.internet.instruction.model.HrInstruction;
+import com.rathink.ie.internet.instruction.model.MarketInstruction;
+import com.rathink.ie.internet.instruction.model.OperationInstruction;
 import com.rathink.ie.internet.instruction.model.ProductStudyInstruction;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.internet.service.InstructionService;
@@ -44,6 +50,8 @@ public class WorkService {
     private CampaignService campaignService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private InternetPropertyService internetPropertyService;
     /**
      * 开始游戏 定时任务执行
      * @param campaign
@@ -87,7 +95,7 @@ public class WorkService {
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, "60", companyStatus));
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, "2000", companyStatus));
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyStatus));
+//        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyStatus));
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, "2000", companyStatus));
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, "0", companyStatus));
         companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, "2000", companyStatus));
@@ -134,31 +142,46 @@ public class WorkService {
         //计算下一回合各公司属性
         List<Company> companyList = campaignService.listCompany(campaign);
         for (Company company : companyList) {
-            List<CompanyStatusPropertyValue> cspList = new ArrayList<>();
+
             CompanyStatus nextCompanyStatus = new CompanyStatus();
             nextCompanyStatus.setCampaign(company.getCampaign());
             nextCompanyStatus.setCompany(company);
             nextCompanyStatus.setCampaignDate(nextCampaignDate);
             baseManager.saveOrUpdate(CompanyStatus.class.getName(), nextCompanyStatus);
 
+            Account nextAccount = new Account();
+            nextAccount.setCampaign(campaign);
+            nextAccount.setCampaignDate(nextCampaignDate);
+            nextAccount.setCompany(company);
+            baseManager.saveOrUpdate(Account.class.getName(), nextAccount);
+
+            //1.获取公司各部门决策结果
+            List<HrInstruction> hrInstructionList = instructionService.listHrInstruction(company);
+            List<MarketInstruction> marketInstructionList = instructionService.listMarketInstruction(company, currentCampaignDate);
+            List<OperationInstruction> operationInstructionList = instructionService.listOperationInstruction(company, currentCampaignDate);
+            ProductStudyInstruction productStudyInstruction = instructionService.getProductStudyInstruction(company, currentCampaignDate);
+
+
+            //2.公司属性
             //部门能力
-            Integer marketAbility = instructionService.getDeptAbilityValue(company, Edept.MARKET.name());
+            List<CompanyStatusPropertyValue> cspList = new ArrayList<>();
+            Integer marketAbility = internetPropertyService.getAbilityValue(hrInstructionList, Edept.MARKET.name());
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, String.valueOf(marketAbility), nextCompanyStatus));
-            Integer operationAbility = instructionService.getDeptAbilityValue(company, Edept.OPERATION.name());
+            Integer operationAbility = internetPropertyService.getAbilityValue(hrInstructionList, Edept.OPERATION.name());
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, String.valueOf(operationAbility), nextCompanyStatus));
-            Integer productAbility = instructionService.getDeptAbilityValue(company, Edept.PRODUCT.name());
+            Integer productAbility = internetPropertyService.getAbilityValue(hrInstructionList, Edept.PRODUCT.name());
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, String.valueOf(productAbility), nextCompanyStatus));
 
             //新用户数
-            Integer newUserAmount = instructionService.getNewUserAmount(company);
+            Integer newUserAmount = internetPropertyService.getNewUserAmount(marketInstructionList);
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, String.valueOf(newUserAmount), nextCompanyStatus));
 
             //满意度
-            Integer satisfaction = instructionService.getSatisfaction(company, operationAbility);
+            Integer satisfaction = internetPropertyService.getSatisfaction(operationInstructionList, operationAbility);
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, String.valueOf(satisfaction), nextCompanyStatus));
 
             //老用户数
-            Integer oldUserAmount = instructionService.getOldUserAmount(company, satisfaction);
+            Integer oldUserAmount = internetPropertyService.getOldUserAmount(company, satisfaction);
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, String.valueOf(oldUserAmount), nextCompanyStatus));
 
             //总用户数
@@ -166,19 +189,51 @@ public class WorkService {
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, String.valueOf(userAmount), nextCompanyStatus));
 
             //产品系数
-            Integer productRadio = instructionService.getProductRadio(company, productAbility);
+            Integer productRadio = internetPropertyService.getProductRadio(company, productAbility, productStudyInstruction);
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, String.valueOf(productRadio), nextCompanyStatus));
 
             //客单价
-            Integer perOrderCost = instructionService.getPerOrderCost(company);
+            Integer perOrderCost = internetPropertyService.getPerOrderCost(company, productStudyInstruction);
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, String.valueOf(perOrderCost), nextCompanyStatus));
 
-            //本期收入（总用户数*客单价）
-            Integer currentPeriodIncome = instructionService.getCurrentPeriodIncome(userAmount, perOrderCost);
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, String.valueOf(currentPeriodIncome), nextCompanyStatus));
+//            Integer currentPeriodIncome = internetPropertyService.getCurrentPeriodIncome(userAmount, perOrderCost);
+//            cspList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, String.valueOf(currentPeriodIncome), nextCompanyStatus));
 
             nextCompanyStatus.setCompanyStatusPropertyValueList(cspList);
             baseManager.saveOrUpdate(CompanyStatus.class.getName(), nextCompanyStatus);
+
+            //2.部门资金使用情况
+            List<AccountEntry> accountEntryList = new ArrayList<>();
+            List<AccountEntry> hrAccountEntityList = accountService
+                    .prepareAccountEntity(hrInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
+            accountEntryList.addAll(hrAccountEntityList);
+
+            List<AccountEntry> marketAccountEntityList = accountService
+                    .prepareAccountEntity(marketInstructionList, EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
+            accountEntryList.addAll(marketAccountEntityList);
+
+            List<AccountEntry> operationAccountEntityList = accountService
+                    .prepareAccountEntity(operationInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
+            accountEntryList.addAll(operationAccountEntityList);
+
+
+
+            List<ProductStudyInstruction> productStudyInstructionList = new ArrayList<>();
+            if (productStudyInstruction != null) {
+                productStudyInstructionList.add(productStudyInstruction);
+            }
+            List<AccountEntry> productStudyEntityList = accountService
+                    .prepareAccountEntity(productStudyInstructionList, EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
+            accountEntryList.addAll(productStudyEntityList);
+
+            //本期收入（总用户数*客单价）
+            Integer currentPeriodIncome = internetPropertyService.getCurrentPeriodIncome(userAmount, perOrderCost);
+            List<AccountEntry> currentPeriodIncomeEntityList = accountService
+                    .prepareAccountEntity(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), nextAccount);
+            accountEntryList.addAll(currentPeriodIncomeEntityList);
+
+            nextAccount.setAccountEntryList(accountEntryList);
+            baseManager.saveOrUpdate(Account.class.getName(), nextAccount);
 
         }
 
@@ -228,6 +283,18 @@ public class WorkService {
         if (companyChoiceList != null) {
             companyChoiceList.forEach(session::delete);
         }
+
+        //删除本轮财务数据
+        for (Company company : companyList) {
+            String hql = "from Account where company.id = :companyId and campaignDate = :campaignDate";
+            LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+            queryParamMap.put("companyId", company.getId());
+            queryParamMap.put("campaignDate", currentCampaignDate);
+            Account account = (Account) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+            session.delete(account);
+        }
+
+
         //比赛时间回到上一轮
         campaign.setCurrentCampaignDate(preCampaignDate);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);

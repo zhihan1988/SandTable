@@ -36,8 +36,6 @@ public class InstructionService {
     private BaseManager baseManager;
     @Autowired
     private ChoiceService choiceService;
-    @Autowired
-    private CompanyStatusService companyStatusService;
 
     /**
      * 产生人才竞标结果
@@ -66,72 +64,34 @@ public class InstructionService {
         }
     }
 
-    public Integer getDeptAbilityValue(Company company, String type) {
-        Integer deptAbility = 60;
-        String hql = "from HrInstruction where status=:status and type = :type and company.id = :companyId";
+    public List<HrInstruction> listHrInstruction(Company company) {
+        String hql = "from HrInstruction where status=:status and company.id = :companyId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("status", HrInstruction.Status.YXZ.getValue());
-        queryParamMap.put("type", type);
         queryParamMap.put("companyId", company.getId());
         XQuery xQuery = new XQuery();
         xQuery.setHql(hql);
         xQuery.setQueryParamMap(queryParamMap);
         List<HrInstruction> hrInstructionList = baseManager.listObject(xQuery);
-        if (hrInstructionList != null) {
-            for (HrInstruction hrInstruction : hrInstructionList) {
-                String level = hrInstruction.getHuman().getAbility();
-                deptAbility += Integer.valueOf(level);
-            }
-        }
-        return deptAbility;
+        return hrInstructionList;
     }
 
-    public Integer getNewUserAmount(Company company) {
-        Integer newUserAmount = 0;
+    public List<MarketInstruction> listMarketInstruction(Company company, String campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from MarketInstruction where company.id = :companyId and campaignDate = :campaignDate");
         xQuery.put("companyId", company.getId());
-        xQuery.put("campaignDate", company.getCampaign().getCurrentCampaignDate());
+        xQuery.put("campaignDate", campaignDate);
         List<MarketInstruction> marketInstructionList = baseManager.listObject(xQuery);
-        if (marketInstructionList != null) {
-            for (MarketInstruction marketInstruction : marketInstructionList) {
-                Integer fee = Integer.valueOf(marketInstruction.getFee());
-                Integer cost = Integer.valueOf(marketInstruction.getMarketActivityChoice().getCost());
-                newUserAmount += fee / cost;
-            }
-        }
-        return newUserAmount;
+        return marketInstructionList;
     }
 
-    public Integer getSatisfaction(Company company, Integer operationAbility){
-        Integer satisfaction = 50;
-
-        Integer operationFee = 0;//资金投入
+    public List<OperationInstruction> listOperationInstruction(Company company, String campaignDate){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from OperationInstruction where company.id = :companyId and campaignDate = :campaignDate");
         xQuery.put("companyId", company.getId());
-        xQuery.put("campaignDate", company.getCampaign().getCurrentCampaignDate());
+        xQuery.put("campaignDate", campaignDate);
         List<OperationInstruction> operationInstructionList = baseManager.listObject(xQuery);
-        if (operationInstructionList != null) {
-            for (OperationInstruction operationInstruction : operationInstructionList) {
-                operationFee += Integer.valueOf(operationInstruction.getFee());
-            }
-        }
-
-        Integer operationFeeRatio = operationFee / 10000 + 50;
-        satisfaction = operationAbility * operationFeeRatio / 100;
-
-        return satisfaction;
-    }
-
-    public Integer getOldUserAmount(Company company, Integer satisfaction){
-        Integer oldUserAmount = 0;
-        CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
-        //上一期用户数
-        CompanyStatusPropertyValue preUserAmount = companyStatusService
-                .getCompanyStatusProperty(EPropertyName.USER_AMOUNT.name(), companyStatus);
-        oldUserAmount = Integer.valueOf(preUserAmount.getValue()) * satisfaction / 100;
-        return oldUserAmount;
+        return operationInstructionList;
     }
 
     public ProductStudyInstruction getProductStudyInstruction(Company company, String campaignDate) {
@@ -143,35 +103,6 @@ public class InstructionService {
         return productStudyInstruction;
     }
 
-    public Integer getProductRadio(Company company,Integer productAbility) {
-        Integer productRadio = 10;
-        //产品定位
-        ProductStudyInstruction productStudyInstruction = getProductStudyInstruction(company, company.getCampaign().getCurrentCampaignDate());
-        String fee = productStudyInstruction == null ? "0" : productStudyInstruction.getFee();
-        //资金投入系数
-        Integer feeRatio = Integer.valueOf(fee) / 1000 + 100;
-        //上一期的产品系数
-        CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyStatusPropertyValue preProductRatio = companyStatusService
-                .getCompanyStatusProperty(EPropertyName.PRODUCT_RATIO.name(), companyStatus);
-
-        productRadio = (productAbility * feeRatio)/100 + Integer.valueOf(preProductRatio.getValue());
-        return productRadio;
-    }
-
-    public Integer getPerOrderCost(Company company) {
-        final String DEFAULT_GRADE = "3";
-        Integer perOrderCost = 0;
-        //产品定位
-        ProductStudyInstruction productStudyInstruction = getProductStudyInstruction(company, company.getCampaign().getCurrentCampaignDate());
-        String grade = productStudyInstruction == null ? DEFAULT_GRADE : productStudyInstruction.getProductStudy().getGrade();
-        perOrderCost = Integer.valueOf(grade) * 10 + 60;
-        return perOrderCost;
-    }
-
-    public Integer getCurrentPeriodIncome(Integer userAmount, Integer perOrdreCost) {
-        return userAmount * perOrdreCost;
-    }
     /**
      * 保存人才选择结果
      * @param company
