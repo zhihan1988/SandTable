@@ -19,8 +19,8 @@
 <div>
     <ul>
         <li>公司现金：${companyCash}</li>
-        <li>上个赛季收入：${campaignDateInCash}</li>
-        <li>上个赛季花费：${campaignDateOutCash}</li>
+        <li>上期收入：${campaignDateInCash}</li>
+        <li>上期支出：${campaignDateOutCash}</li>
     </ul>
 </div>
 <div class="am-panel-group" id="accordion">

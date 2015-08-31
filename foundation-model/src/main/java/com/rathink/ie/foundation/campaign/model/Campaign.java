@@ -143,12 +143,10 @@ import java.util.Date;
     @Transient
     public String getFormatCampaignDate(){
         Integer year = Integer.parseInt(getCurrentCampaignDate().substring(0, 2));
-        Integer season = Integer.parseInt(getCurrentCampaignDate().substring(2, 4));
         Integer month = Integer.parseInt(getCurrentCampaignDate().substring(4, 6));
         StringBuffer formatCampaignDateBuffer = new StringBuffer(100);
         formatCampaignDateBuffer.append("第").append(year).append("年")
-                .append("第").append(season).append("季度")
-                .append(month).append("月份");
+                .append("第").append(month).append("月份");
         return formatCampaignDateBuffer.toString();
     }
 
