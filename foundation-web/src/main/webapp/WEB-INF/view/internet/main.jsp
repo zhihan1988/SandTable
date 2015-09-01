@@ -148,6 +148,30 @@
                 人才
             </h4>
         </div>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
+            <table class="am-table">
+                <thead>
+                <tr>
+                    <th>名字(部门)</th>
+                    <th>能力</th>
+                    <th>薪资</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${hrInstructionList}" var="hrInstruction">
+                    <tr>
+                        <td>
+                                ${hrInstruction.human.name}（${hrInstruction.human.typeLabel}）
+                        </td>
+                        <td>${hrInstruction.human.ability}</td>
+                        <td>
+                                ${hrInstruction.fee}
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
         <div id="do-not-say-4" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
                 <table class="am-table">

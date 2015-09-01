@@ -63,6 +63,7 @@ public class WorkController {
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
         Integer campaignDateOutCash = accountService.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
+        List<HrInstruction> hrInstructionList = instructionService.listHrInstruction(company);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -73,6 +74,7 @@ public class WorkController {
         model.addAttribute("companyCash", companyCash);
         model.addAttribute("campaignDateInCash", campaignDateInCash);
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
+        model.addAttribute("hrInstructionList", hrInstructionList);
         return "/internet/main";
     }
 
