@@ -18,6 +18,7 @@ public class Team {
     private String id;
     private String name;
     private User director;
+    private String currentCampaignDate;
     private Date createDatetime;
     private String capital;
     private String deposit;
@@ -52,6 +53,15 @@ public class Team {
 
     public void setDirector(User director) {
         this.director = director;
+    }
+
+    @Column(name = "current_campaign_date")
+    public String getCurrentCampaignDate() {
+        return currentCampaignDate;
+    }
+
+    public void setCurrentCampaignDate(String currentCampaignDate) {
+        this.currentCampaignDate = currentCampaignDate;
     }
 
     @Column(name = "create_datetime")

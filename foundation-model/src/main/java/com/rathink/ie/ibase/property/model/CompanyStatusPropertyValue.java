@@ -4,6 +4,7 @@ import com.rathink.ie.internet.EPropertyName;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "company_status_property_value")
@@ -81,4 +82,16 @@ public class CompanyStatusPropertyValue {
         }
         return label;
     }
+
+    @Transient
+    public String getDisplay() {
+        String display = "";
+        for (EPropertyName ePropertyName: EPropertyName.values()) {
+            if (ePropertyName.name().equals(getName())) {
+                display = ePropertyName.getDisplay();
+            }
+        }
+        return display;
+    }
+
 }

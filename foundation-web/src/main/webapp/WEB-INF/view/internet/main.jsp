@@ -16,6 +16,7 @@
     <button class="am-btn am-btn-primary">结束回合</button>
 </div>--%>
 <h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
+<button type="button" id="endCampaignDate" class="am-btn am-btn-primary">结束回合</button>
 <div>
     <ul>
         <li>公司现金：${companyCash}</li>
@@ -32,7 +33,16 @@
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
             <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
-                <p>${property.label}:${property.value}</p>
+                <c:choose>
+                    <c:when test="${property.display == 'PERCENT'}">
+                        <div class="am-progress">
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>${property.label}:${property.value}</p>
+                    </c:otherwise>
+                </c:choose>
             </c:forEach>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse am-in">
@@ -73,7 +83,16 @@
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
             <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
-                <p>${property.label}:${property.value}</p>
+                <c:choose>
+                    <c:when test="${property.display == 'PERCENT'}">
+                        <div class="am-progress">
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>${property.label}:${property.value}</p>
+                    </c:otherwise>
+                </c:choose>
             </c:forEach>
         </div>
         <div id="do-not-say-2" class="am-panel-collapse am-collapse">
@@ -112,7 +131,16 @@
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
             <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
-                <p>${property.label}:${property.value}</p>
+                <c:choose>
+                    <c:when test="${property.display == 'PERCENT'}">
+                        <div class="am-progress">
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>${property.label}:${property.value}</p>
+                    </c:otherwise>
+                </c:choose>
             </c:forEach>
         </div>
         <div id="do-not-say-3" class="am-panel-collapse am-collapse">
@@ -210,6 +238,19 @@
 
     $(function(){
         var companyId = ${company.id};
+
+        $("#endCampaignDate").click(function(){
+            $.post("<c:url value="/flow/companyNext.do"/>",
+                    {
+                        companyId: companyId
+                    },
+                    function (data) {
+                        if(data=='success'){
+                            alert("回合结束，等待其它企业完成操作");
+                        }
+                    }
+            )});
+
         $("select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_fee'],select[id^='operationInstruction_fee']")
                 .change(function(){
                     var $fee = $(this);
