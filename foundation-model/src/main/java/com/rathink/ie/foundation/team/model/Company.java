@@ -8,8 +8,18 @@ import javax.persistence.Table;
 @Table(name = "company")
 public class Company extends Team {
 
+    private String currentCampaignDate;
     private String slogan;
     private String memo;
+
+    @Column(name = "current_campaign_date")
+    public String getCurrentCampaignDate() {
+        return currentCampaignDate;
+    }
+
+    public void setCurrentCampaignDate(String currentCampaignDate) {
+        this.currentCampaignDate = currentCampaignDate;
+    }
 
     @Column(name = "slogan")
     public String getSlogan() {
