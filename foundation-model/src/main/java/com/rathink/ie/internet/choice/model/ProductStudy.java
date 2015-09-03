@@ -25,7 +25,7 @@ public class ProductStudy extends CompanyChoice {
     }
 
     private enum Grade{
-        low("1","低端"), hign("2", "高端"),;
+        low("1","中端"), high("2", "高端"), center("2", "低端"), centerLow("4", "中低端"),centerHigh("5","中高端");
         private String value;
         private String label;
 

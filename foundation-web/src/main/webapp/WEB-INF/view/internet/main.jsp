@@ -174,7 +174,8 @@
                         <tr>
                             <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.gradeLabel}</td>
                             <td>
-                                <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee"
+                                        data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(productStudy.fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>

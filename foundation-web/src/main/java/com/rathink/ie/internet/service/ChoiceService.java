@@ -3,11 +3,10 @@ package com.rathink.ie.internet.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignService;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.choice.model.Human;
-import com.rathink.ie.internet.choice.model.MarketActivityChoice;
-import com.rathink.ie.internet.choice.model.OperationChoice;
-import com.rathink.ie.internet.choice.model.ProductStudy;
+import com.rathink.ie.internet.choice.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +20,8 @@ import java.util.List;
 public class ChoiceService {
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private CampaignService campaignService;
 
     public List<Human> listHuman(Campaign campaign){
         XQuery xQuery = new XQuery();
@@ -72,9 +73,16 @@ public class ChoiceService {
         productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
-        productStudy.setGrade("2");
+        productStudy.setGrade("1");
         productStudy.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy);
+        ProductStudy productStudy2 = new ProductStudy();
+        productStudy2.setCampaignDate(campaign.getCurrentCampaignDate());
+        productStudy2.setCampaign(campaign);
+        productStudy2.setDept(Edept.PRODUCT.name());
+        productStudy2.setGrade("2");
+        productStudy2.setFees("10000,20000,50000");
+        baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy2);
 
     }
 
