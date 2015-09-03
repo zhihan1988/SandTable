@@ -70,6 +70,8 @@ public class WorkService {
         xQuery.setQueryParamMap(queryParamMap);
         List<Company> companyList = baseManager.listObject(xQuery);
         for (Company company : companyList) {
+            company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
+            baseManager.saveOrUpdate(Company.class.getName(), company);
             initCompanyStatus(company);
             accountService.initCompanyAccount(company);
         }

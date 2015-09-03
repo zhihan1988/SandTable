@@ -70,7 +70,7 @@ public class FlowController {
         List<Company> companyList = campaignService.listCompany(campaign);
         if (companyList != null) {
             for (Company c : companyList) {
-                if (currentCampaignDate.equals(c.getCurrentCampaignDate())) {
+                if (!nextCampaignDate.equals(c.getCurrentCampaignDate())) {
                     isAllNext = false;
                 }
             }

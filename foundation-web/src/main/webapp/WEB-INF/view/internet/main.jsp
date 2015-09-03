@@ -16,7 +16,9 @@
     <button class="am-btn am-btn-primary">结束回合</button>
 </div>--%>
 <h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
-<button type="button" id="endCampaignDate" class="am-btn am-btn-primary">结束回合</button>
+<div>
+    <button type="button" id="endCampaignDate" class="am-btn am-btn-primary">结束回合</button>
+</div>
 <div>
     <ul>
         <li>公司现金：${companyCash}</li>
@@ -245,9 +247,10 @@
                         companyId: companyId
                     },
                     function (data) {
-                        if(data=='success'){
+                        alert(data);
+                       /* if(data=='success'){
                             alert("回合结束，等待其它企业完成操作");
-                        }
+                        }*/
                     }
             )});
 
