@@ -23,6 +23,17 @@ public class ChoiceService {
     @Autowired
     private CampaignService campaignService;
 
+    public List<OfficeChoice> listOfficeChoice(Campaign campaign){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from OfficeChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
+        queryParamMap.put("campaignId", campaign.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        xQuery.setQueryParamMap(queryParamMap);
+        List officeChoiceList = baseManager.listObject(xQuery);
+        return officeChoiceList;
+    }
+
     public List<Human> listHuman(Campaign campaign){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from Human where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -62,6 +73,7 @@ public class ChoiceService {
     }
 
     public void produceChoice(Campaign campaign) {
+        productOfficeChoice(campaign);
         produceHumanChoice(campaign);
         produceMarketActivityChoice(campaign);
         produceProductStudyChoice(campaign);
@@ -112,12 +124,28 @@ public class ChoiceService {
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
         marketActivityChoice2.setName("地面推广");
-        marketActivityChoice2.setCost("100");
-        marketActivityChoice2.setFees("100000,200000,500000");
+        marketActivityChoice2.setCost("30");
+        marketActivityChoice2.setFees("20000,50000,100000");
         marketActivityChoice2.setRandomHigh("60");
         marketActivityChoice2.setRandomLow("40");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
     }
+
+    private void productOfficeChoice(Campaign campaign) {
+        OfficeChoice officeChoice = new OfficeChoice();
+        officeChoice.setCampaignDate(campaign.getCurrentCampaignDate());
+        officeChoice.setCampaign(campaign);
+        officeChoice.setFees("30000");
+        officeChoice.setDescription("近地铁");
+        baseManager.saveOrUpdate(OfficeChoice.class.getName(), officeChoice);
+        OfficeChoice officeChoice2 = new OfficeChoice();
+        officeChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
+        officeChoice2.setCampaign(campaign);
+        officeChoice2.setFees("20000");
+        officeChoice2.setDescription("安静");
+        baseManager.saveOrUpdate(OfficeChoice.class.getName(), officeChoice2);
+    }
+
     private void produceHumanChoice(Campaign campaign) {
         Human human = new Human();
         human.setCampaignDate(campaign.getCurrentCampaignDate());

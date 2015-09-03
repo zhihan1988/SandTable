@@ -20,10 +20,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.internet.instruction.model.HrInstruction;
-import com.rathink.ie.internet.instruction.model.MarketInstruction;
-import com.rathink.ie.internet.instruction.model.OperationInstruction;
-import com.rathink.ie.internet.instruction.model.ProductStudyInstruction;
+import com.rathink.ie.internet.instruction.model.*;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.internet.service.InstructionService;
 import org.hibernate.Session;
@@ -158,6 +155,7 @@ public class WorkService {
             baseManager.saveOrUpdate(Account.class.getName(), nextAccount);
 
             //1.获取公司各部门决策结果
+            List<OfficeInstruction> officeInstructionList = instructionService.listOfficeInstruction(company);
             List<HrInstruction> hrInstructionList = instructionService.listHrInstruction(company);
             List<MarketInstruction> marketInstructionList = instructionService.listMarketInstruction(company, currentCampaignDate);
             List<OperationInstruction> operationInstructionList = instructionService.listOperationInstruction(company, currentCampaignDate);
@@ -212,6 +210,9 @@ public class WorkService {
 
             //2.部门资金使用情况
             List<AccountEntry> accountEntryList = new ArrayList<>();
+            List<AccountEntry> adAccountEntityList = accountService
+                    .prepareAccountEntity(officeInstructionList, EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
+            accountEntryList.addAll(adAccountEntityList);
             List<AccountEntry> hrAccountEntityList = accountService
                     .prepareAccountEntity(hrInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), nextAccount);
             accountEntryList.addAll(hrAccountEntityList);

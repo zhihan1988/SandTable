@@ -46,6 +46,11 @@ public class InternetPropertyService {
         return deptAbility;
     }
 
+    /**
+     * 新用户数
+     * @param marketInstructionList
+     * @return
+     */
     public Integer getNewUserAmount(List<MarketInstruction> marketInstructionList) {
         Integer newUserAmount = 0;
         if(marketInstructionList == null) return 0;
@@ -55,10 +60,17 @@ public class InternetPropertyService {
             Integer cost = Integer.valueOf(marketInstruction.getMarketActivityChoice().getCost());
             int randomRatio = RandomUtil.random(Integer.valueOf(marketActivityChoice.getRandomLow()), Integer.valueOf(marketActivityChoice.getRandomHigh()));
             newUserAmount += fee * randomRatio / cost / 100;
+            System.out.println(marketInstruction.getCompany().getName() + ";市场投入:" + fee + ";成本:" + cost + ";市场随机系数：" + randomRatio + "新用户数");
         }
         return newUserAmount;
     }
 
+    /**
+     * 满意度
+     * @param operationInstructionList
+     * @param operationAbility
+     * @return
+     */
     public Integer getSatisfaction(List<OperationInstruction> operationInstructionList, Integer operationAbility){
         Integer satisfaction = 50;
         Integer operationFee = 0;
@@ -67,11 +79,18 @@ public class InternetPropertyService {
                 operationFee += Integer.valueOf(operationInstruction.getFee());
             }
         }
-        Integer operationFeeRatio = operationFee / 10000 + 50;
-        satisfaction = operationAbility * operationFeeRatio / 100;
+        Integer operationFeeRatio = operationFee / 10000 + 80;
+        satisfaction = operationAbility * operationFeeRatio / 100 + 30;
+        System.out.println("运营系数" + operationFeeRatio + ";满意度：" + satisfaction);
         return satisfaction;
     }
 
+    /**
+     * 老用户数
+     * @param company
+     * @param satisfaction
+     * @return
+     */
     public Integer getOldUserAmount(Company company, Integer satisfaction){
         Integer oldUserAmount = 0;
         CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
@@ -79,10 +98,17 @@ public class InternetPropertyService {
         CompanyStatusPropertyValue preUserAmount = companyStatusService
                 .getCompanyStatusProperty(EPropertyName.USER_AMOUNT.name(), companyStatus);
         oldUserAmount = Integer.valueOf(preUserAmount.getValue()) * satisfaction / 100;
+        System.out.println("上一期老用户数：" + preUserAmount.getValue() + ";满意度：" + satisfaction + ";本轮老用户数：" + oldUserAmount);
         return oldUserAmount;
     }
 
-
+    /**
+     * 产品系数
+     * @param company
+     * @param productAbility
+     * @param productStudyInstruction
+     * @return
+     */
     public Integer getProductRadio(Company company, Integer productAbility, ProductStudyInstruction productStudyInstruction) {
         Integer productRadio = 10;
         String fee = productStudyInstruction == null ? "0" : productStudyInstruction.getFee();
@@ -93,18 +119,31 @@ public class InternetPropertyService {
         CompanyStatusPropertyValue preProductRatio = companyStatusService
                 .getCompanyStatusProperty(EPropertyName.PRODUCT_RATIO.name(), companyStatus);
 
-        productRadio = (productAbility * feeRatio) / 100 + Integer.valueOf(preProductRatio.getValue());
+        productRadio = (productAbility * feeRatio) / 300 + Integer.valueOf(preProductRatio.getValue());
+        System.out.println("上一期产品系数：" + preProductRatio + ";产品能力：" + productAbility + ";资金投入系数：" + feeRatio+"本轮产品系数："+productRadio);
         return productRadio;
     }
 
+    /**
+     * 客单价
+     * @param company
+     * @param productStudyInstruction
+     * @return
+     */
     public Integer getPerOrderCost(Company company, ProductStudyInstruction productStudyInstruction) {
         final String DEFAULT_GRADE = "3";
         Integer perOrderCost = 0;
         String grade = productStudyInstruction == null ? DEFAULT_GRADE : productStudyInstruction.getProductStudy().getGrade();
-        perOrderCost = Integer.valueOf(grade) * 10 + 60;
+        perOrderCost = Integer.valueOf(grade) * 10 + 150;
         return perOrderCost;
     }
 
+    /**
+     * 本轮收入
+     * @param userAmount
+     * @param perOrdreCost
+     * @return
+     */
     public Integer getCurrentPeriodIncome(Integer userAmount, Integer perOrdreCost) {
         return userAmount * perOrdreCost / 10;
     }

@@ -4,9 +4,8 @@ import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.service.AccountService;
 import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.choice.model.MarketActivityChoice;
-import com.rathink.ie.internet.choice.model.OperationChoice;
-import com.rathink.ie.internet.choice.model.ProductStudy;
+import com.rathink.ie.internet.choice.model.*;
+import com.rathink.ie.internet.instruction.model.OfficeInstruction;
 import com.rathink.ie.internet.instruction.model.OperationInstruction;
 import com.rathink.ie.internet.service.ChoiceService;
 import com.rathink.ie.ibase.service.CompanyStatusService;
@@ -14,9 +13,9 @@ import com.rathink.ie.internet.service.InstructionService;
 import com.rathink.ie.internet.service.WorkService;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
-import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
 import com.rathink.ie.foundation.team.model.Company;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +33,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/work")
 public class WorkController {
+    private static Logger logger = Logger.getLogger(WorkController.class.getName());
     @Autowired
     private BaseManager baseManager;
     @Autowired
@@ -54,6 +54,7 @@ public class WorkController {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
         Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
+        List<OfficeChoice> officeChoiceList = choiceService.listOfficeChoice(campaign);
         List<Human> humanList = choiceService.listHuman(campaign);
         List<MarketActivityChoice> marketActivityChoiceList = choiceService.listMarketActivityChoice(campaign);
         List<ProductStudy> productStudyList = choiceService.listProductStudy(campaign);
@@ -64,9 +65,11 @@ public class WorkController {
         Integer campaignDateOutCash = accountService.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         List<HrInstruction> hrInstructionList = instructionService.listHrInstruction(company);
+        List<OfficeInstruction> officeInstructionList = instructionService.listOfficeInstruction(company);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
+        model.addAttribute("officeChoiceList", officeChoiceList);
         model.addAttribute("humanList", humanList);
         model.addAttribute("marketActivityChoiceList", marketActivityChoiceList);
         model.addAttribute("productStudyList", productStudyList);
@@ -74,6 +77,7 @@ public class WorkController {
         model.addAttribute("companyCash", companyCash);
         model.addAttribute("campaignDateInCash", campaignDateInCash);
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
+        model.addAttribute("officeInstructionList", officeInstructionList);
         model.addAttribute("hrInstructionList", hrInstructionList);
         return "/internet/main";
     }
@@ -92,6 +96,10 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
 
         switch (entity) {
+            case "officeInstruction":
+                OfficeChoice officeChoice = (OfficeChoice) baseManager.getObject(OfficeChoice.class.getName(), choiceId);
+                instructionService.saveOrUpdateOfficeInstruction(company, officeChoice, fieldMap);
+                break;
             case "hrInstruction":
                 Human human = (Human) baseManager.getObject(Human.class.getName(), choiceId);
                 instructionService.saveOrUpdateHrInstruction(company, human, fieldMap);

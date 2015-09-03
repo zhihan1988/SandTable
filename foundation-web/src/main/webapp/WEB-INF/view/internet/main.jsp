@@ -30,10 +30,69 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-                人才
+                办公室
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
+            <table class="am-table">
+                <thead>
+                <tr>
+                    <th>办公室描述</th>
+                    <th>房租</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${officeInstructionList}" var="officeInstruction">
+                    <tr>
+                        <td>
+                            ${officeInstruction.officeChoice.description}
+                        </td>
+                        <td>
+                            ${officeInstruction.fee}
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
+        <div id="do-not-say-0" class="am-panel-collapse am-collapse">
+            <div class="am-panel-bd">
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>办公室描述</th>
+                        <th>房租</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${officeChoiceList}" var="officeChoice">
+                        <tr>
+                            <td>
+                                <input type="hidden" name="officeId" value="${officeChoice.id}"/>${officeChoice.description}
+                            </td>
+                            <td>
+                                <select id="officeInstruction_fee_${officeChoice.id}" name="officeInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(officeChoice.fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
+                人才
+            </h4>
+        </div>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
             <table class="am-table">
                 <thead>
                 <tr>
@@ -57,7 +116,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="do-not-say-0" class="am-panel-collapse am-collapse">
+        <div id="do-not-say-1" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
                 <table class="am-table">
                     <thead>
@@ -79,56 +138,6 @@
                                 <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="am-panel am-panel-default">
-        <div class="am-panel-hd">
-            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
-                市场营销
-            </h4>
-        </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
-            <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
-                <c:choose>
-                    <c:when test="${property.display == 'PERCENT'}">
-                        <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <p>${property.label}:${property.value}</p>
-                    </c:otherwise>
-                </c:choose>
-            </c:forEach>
-        </div>
-        <div id="do-not-say-1" class="am-panel-collapse am-collapse am-in">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>方式</th>
-                        <th>成本</th>
-                        <th>投入</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${marketActivityChoiceList}" var="marketActivityChoice">
-                        <tr>
-                            <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
-                            <td>${marketActivityChoice.cost}</td>
-                            <td>
-                                <select id="marketInstruction_fee_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(marketActivityChoice. fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
@@ -236,6 +245,59 @@
             </div>
         </div>
     </div>
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
+                市场营销
+            </h4>
+        </div>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
+            <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
+                <c:choose>
+                    <c:when test="${property.display == 'PERCENT'}">
+                        <div class="am-progress">
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>${property.label}:${property.value}</p>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </div>
+        <div id="do-not-say-4" class="am-panel-collapse am-collapse am-in">
+            <div class="am-panel-bd">
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>方式</th>
+                        <th>成本</th>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${marketActivityChoiceList}" var="marketActivityChoice">
+                        <tr>
+                            <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
+                            <td>${marketActivityChoice.cost}</td>
+                            <td>
+                                <select id="marketInstruction_fee_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(marketActivityChoice. fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div style="margin: 200px;">
+
+    </div>
 </div>
 <script>
 
@@ -255,7 +317,7 @@
                     }
             )});
 
-        $("select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_fee'],select[id^='operationInstruction_fee']")
+        $("select[id^='officeInstruction_fee'],select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_fee'],select[id^='operationInstruction_fee']")
                 .change(function(){
                     var $fee = $(this);
                     var idArray = $fee.attr("id").split("_");

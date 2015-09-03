@@ -9,15 +9,9 @@ import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.choice.model.Human;
-import com.rathink.ie.internet.choice.model.MarketActivityChoice;
-import com.rathink.ie.internet.choice.model.OperationChoice;
-import com.rathink.ie.internet.choice.model.ProductStudy;
-import com.rathink.ie.internet.instruction.model.HrInstruction;
+import com.rathink.ie.internet.choice.model.*;
+import com.rathink.ie.internet.instruction.model.*;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.internet.instruction.model.MarketInstruction;
-import com.rathink.ie.internet.instruction.model.OperationInstruction;
-import com.rathink.ie.internet.instruction.model.ProductStudyInstruction;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +44,7 @@ public class InstructionService {
         if (humanList != null) {
             for (Human human : humanList) {
                 XQuery xQuery = new XQuery();
-                xQuery.setHql("from HrInstruction where human.id = :humanId order by salary desc, id asc");
+                xQuery.setHql("from HrInstruction where human.id = :humanId order by fee desc, id asc");
                 LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
                 queryParamMap.put("humanId", human.getId());
                 xQuery.setQueryParamMap(queryParamMap);
@@ -64,6 +58,17 @@ public class InstructionService {
                 }
             }
         }
+    }
+
+    public List<OfficeInstruction> listOfficeInstruction(Company company) {
+        String hql = "from OfficeInstruction where company.id = :companyId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyId", company.getId());
+        XQuery xQuery = new XQuery();
+        xQuery.setHql(hql);
+        xQuery.setQueryParamMap(queryParamMap);
+        List<OfficeInstruction> officeInstructionList = baseManager.listObject(xQuery);
+        return officeInstructionList;
     }
 
     public List<HrInstruction> listHrInstruction(Company company) {
@@ -103,6 +108,33 @@ public class InstructionService {
         queryParamMap.put("campaignDate", campaignDate);
         ProductStudyInstruction productStudyInstruction = (ProductStudyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         return productStudyInstruction;
+    }
+
+    public void saveOrUpdateOfficeInstruction(Company company, OfficeChoice officeChoice, Map<String, String> map) {
+        Campaign campaign =  company.getCampaign();
+        String hql = "from OfficeInstruction where officeChoice.id = :officeChoiceId" +
+                " and company.id = :companyId and campaignDate = :campaignDate";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("officeChoiceId", officeChoice.getId());
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        OfficeInstruction officeInstruction = (OfficeInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if ("-1".equals(map.get("fee"))) {
+            if (officeInstruction != null) {
+                baseManager.delete(OfficeInstruction.class.getName(), officeInstruction.getId());
+            }
+        } else {
+            if (officeInstruction == null) {
+                officeInstruction = new OfficeInstruction();
+                officeInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+                officeInstruction.setCampaign(campaign);
+                officeInstruction.setCompany(company);
+            } else {
+            }
+            officeInstruction.setOfficeChoice(officeChoice);
+            officeInstruction.setFee(map.get("fee"));
+            baseManager.saveOrUpdate(OfficeInstruction.class.getName(), officeInstruction);
+        }
     }
 
     /**
@@ -235,6 +267,8 @@ public class InstructionService {
 
     public Integer productGradeConflict(ProductStudyInstruction productStudyInstruction) {
         Integer productGradeConflictRatio = 100;
+        if (productStudyInstruction == null) return productGradeConflictRatio;
+
         XQuery xQuery = new XQuery();
         String hql = "from ProductStudyInstruction where campaignDate = :campaignDate and productStudy.grade = :grade";
         xQuery.setHql(hql);
@@ -252,6 +286,8 @@ public class InstructionService {
 
     public Integer getProductGradeChangeRatio(ProductStudyInstruction productStudyInstruction) {
         Integer ratio = 100;
+        if(productStudyInstruction==null) return ratio;
+
         String currentGrade = productStudyInstruction.getProductStudy().getGrade();
         String campaignDate = productStudyInstruction.getCampaignDate();
         String preCampaignDate = CampaignUtil.getPreCampaignDate(campaignDate);
