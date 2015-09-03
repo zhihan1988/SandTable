@@ -16,6 +16,8 @@ public class CompanyChoice {
     private Campaign campaign;
     private String dept;
     private String fees;
+    private String randomHigh;
+    private String randomLow;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -82,5 +84,23 @@ public class CompanyChoice {
 
     public void setFees(String fees) {
         this.fees = fees;
+    }
+
+    @Column(name = "random_high")
+    public String getRandomHigh() {
+        return randomHigh;
+    }
+
+    public void setRandomHigh(String randomHigh) {
+        this.randomHigh = randomHigh;
+    }
+
+    @Column(name = "random_low")
+    public String getRandomLow() {
+        return randomLow;
+    }
+
+    public void setRandomLow(String randomLow) {
+        this.randomLow = randomLow;
     }
 }

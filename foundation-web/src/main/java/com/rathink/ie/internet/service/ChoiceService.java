@@ -95,6 +95,8 @@ public class ChoiceService {
         marketActivityChoice.setName("网络推广");
         marketActivityChoice.setCost("20");
         marketActivityChoice.setFees("10000,20000,50000");
+        marketActivityChoice.setRandomHigh("100");
+        marketActivityChoice.setRandomLow("20");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice);
 
         MarketActivityChoice marketActivityChoice2 = new MarketActivityChoice();
@@ -104,6 +106,8 @@ public class ChoiceService {
         marketActivityChoice2.setName("地面推广");
         marketActivityChoice2.setCost("100");
         marketActivityChoice2.setFees("100000,200000,500000");
+        marketActivityChoice2.setRandomHigh("60");
+        marketActivityChoice2.setRandomLow("40");
         baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
     }
     private void produceHumanChoice(Campaign campaign) {

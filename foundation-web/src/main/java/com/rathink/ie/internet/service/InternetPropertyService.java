@@ -2,10 +2,12 @@ package com.rathink.ie.internet.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.ibase.service.CompanyStatusService;
 import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
 import com.rathink.ie.internet.instruction.model.MarketInstruction;
 import com.rathink.ie.internet.instruction.model.OperationInstruction;
@@ -46,11 +48,13 @@ public class InternetPropertyService {
 
     public Integer getNewUserAmount(List<MarketInstruction> marketInstructionList) {
         Integer newUserAmount = 0;
-        if(marketInstructionList==null) return 0;
+        if(marketInstructionList == null) return 0;
         for (MarketInstruction marketInstruction : marketInstructionList) {
+            MarketActivityChoice marketActivityChoice = marketInstruction.getMarketActivityChoice();
             Integer fee = Integer.valueOf(marketInstruction.getFee());
             Integer cost = Integer.valueOf(marketInstruction.getMarketActivityChoice().getCost());
-            newUserAmount += fee / cost;
+            int randomRatio = RandomUtil.random(Integer.valueOf(marketActivityChoice.getRandomLow()), Integer.valueOf(marketActivityChoice.getRandomHigh()));
+            newUserAmount += fee * randomRatio / cost / 100;
         }
         return newUserAmount;
     }
