@@ -176,6 +176,9 @@ public class WorkService {
 
             //新用户数
             Integer newUserAmount = internetPropertyService.getNewUserAmount(marketInstructionList);
+            //定位冲突导致的市场活动效果下降 降低市场营销系数
+            Integer productGradeConflictRatio = instructionService.productGradeConflict(productStudyInstruction);
+            newUserAmount = newUserAmount * productGradeConflictRatio / 100;
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, String.valueOf(newUserAmount), nextCompanyStatus));
 
             //满意度
@@ -184,6 +187,9 @@ public class WorkService {
 
             //老用户数
             Integer oldUserAmount = internetPropertyService.getOldUserAmount(company, satisfaction);
+            //定位变动导致老用户流失
+            Integer productGradeChangeRatio = instructionService.getProductGradeChangeRatio(productStudyInstruction);
+            oldUserAmount = oldUserAmount * productGradeChangeRatio / 100;
             cspList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, String.valueOf(oldUserAmount), nextCompanyStatus));
 
             //总用户数

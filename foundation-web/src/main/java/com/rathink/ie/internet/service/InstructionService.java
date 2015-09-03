@@ -3,6 +3,7 @@ package com.rathink.ie.internet.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.ibase.service.CompanyStatusService;
@@ -36,7 +37,8 @@ public class InstructionService {
     private BaseManager baseManager;
     @Autowired
     private ChoiceService choiceService;
-
+    @Autowired
+    private CompanyStatusService companyStatusService;
     /**
      * 产生人才竞标结果
      * 出价最高的一家中标
@@ -229,5 +231,37 @@ public class InstructionService {
             operationInstruction.setFee(map.get("fee"));
             baseManager.saveOrUpdate(OperationInstruction.class.getName(), operationInstruction);
         }
+    }
+
+    public Integer productGradeConflict(ProductStudyInstruction productStudyInstruction) {
+        Integer productGradeConflictRatio = 100;
+        XQuery xQuery = new XQuery();
+        String hql = "from ProductStudyInstruction where campaignDate = :campaignDate and productStudy.grade = :grade";
+        xQuery.setHql(hql);
+        xQuery.put("campaignDate", productStudyInstruction.getCampaignDate());
+        xQuery.put("grade", productStudyInstruction.getProductStudy().getGrade());
+        List<ProductStudyInstruction> productStudyInstructionList = baseManager.listObject(xQuery);
+        if (productStudyInstructionList != null) {
+            int size = productStudyInstructionList.size();
+            if (size > 1) {
+                productGradeConflictRatio = 80;
+            }
+        }
+        return productGradeConflictRatio;
+    }
+
+    public Integer getProductGradeChangeRatio(ProductStudyInstruction productStudyInstruction) {
+        Integer ratio = 100;
+        String currentGrade = productStudyInstruction.getProductStudy().getGrade();
+        String campaignDate = productStudyInstruction.getCampaignDate();
+        String preCampaignDate = CampaignUtil.getPreCampaignDate(campaignDate);
+        ProductStudyInstruction preProductStudyInstruction = getProductStudyInstruction(productStudyInstruction.getCompany(), preCampaignDate);
+        if (preProductStudyInstruction != null) {
+            String preGrade = preProductStudyInstruction.getProductStudy().getGrade();
+            if (!preGrade.equals(currentGrade)) {
+                ratio = 80;
+            }
+        }
+        return ratio;
     }
 }
