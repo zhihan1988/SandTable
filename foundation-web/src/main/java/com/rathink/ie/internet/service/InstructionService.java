@@ -118,20 +118,26 @@ public class InstructionService {
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         HrInstruction hrInstruction = (HrInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        if (hrInstruction == null) {
-            logger.info("save HrInstruction, choiceId:" + human.getId());
-            hrInstruction = new HrInstruction();
-            hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-            hrInstruction.setCampaign(campaign);
-            hrInstruction.setCompany(company);
-            hrInstruction.setDept(human.getDept());
-            hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
+        if ("-1".equals(map.get("fee"))) {
+            if (hrInstruction != null) {
+                baseManager.delete(HrInstruction.class.getName(), hrInstruction.getId());
+            }
         } else {
-            logger.info("update HrInstruction, choiceId:" + human.getId());
+            if (hrInstruction == null) {
+                logger.info("save HrInstruction, choiceId:" + human.getId());
+                hrInstruction = new HrInstruction();
+                hrInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+                hrInstruction.setCampaign(campaign);
+                hrInstruction.setCompany(company);
+                hrInstruction.setDept(human.getDept());
+                hrInstruction.setStatus(HrInstruction.Status.DQD.getValue());
+            } else {
+                logger.info("update HrInstruction, choiceId:" + human.getId());
+            }
+            hrInstruction.setHuman(human);
+            hrInstruction.setFee(map.get("fee"));
+            baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
         }
-        hrInstruction.setHuman(human);
-        hrInstruction.setFee(map.get("fee"));
-        baseManager.saveOrUpdate(HrInstruction.class.getName(), hrInstruction);
     }
 
     public void saveOrUpdateMarketInstruction(Company company, MarketActivityChoice marketActivityChoice, Map<String, String> map) {
@@ -143,19 +149,25 @@ public class InstructionService {
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         MarketInstruction marketInstruction = (MarketInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        if (marketInstruction == null) {
-            logger.info("save MarketInstruction, choiceId:" + marketActivityChoice.getId());
-            marketInstruction = new MarketInstruction();
-            marketInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-            marketInstruction.setCampaign(campaign);
-            marketInstruction.setCompany(company);
-            marketInstruction.setDept(marketActivityChoice.getDept());
+        if ("-1".equals(map.get("fee"))) {
+            if (marketInstruction != null) {
+                baseManager.delete(MarketInstruction.class.getName(), marketInstruction.getId());
+            }
         } else {
-            logger.info("update MarketInstruction, choiceId:" + marketActivityChoice.getId());
+            if (marketInstruction == null) {
+                logger.info("save MarketInstruction, choiceId:" + marketActivityChoice.getId());
+                marketInstruction = new MarketInstruction();
+                marketInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+                marketInstruction.setCampaign(campaign);
+                marketInstruction.setCompany(company);
+                marketInstruction.setDept(marketActivityChoice.getDept());
+            } else {
+                logger.info("update MarketInstruction, choiceId:" + marketActivityChoice.getId());
+            }
+            marketInstruction.setMarketActivityChoice(marketActivityChoice);
+            marketInstruction.setFee(map.get("fee"));
+            baseManager.saveOrUpdate(MarketInstruction.class.getName(), marketInstruction);
         }
-        marketInstruction.setMarketActivityChoice(marketActivityChoice);
-        marketInstruction.setFee(map.get("fee"));
-        baseManager.saveOrUpdate(MarketInstruction.class.getName(), marketInstruction);
     }
 
     public void saveOrUpdateProductStudyInstruction(Company company, ProductStudy productStudy, Map<String, String> map) {
@@ -167,19 +179,25 @@ public class InstructionService {
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         ProductStudyInstruction productStudyInstruction = (ProductStudyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        if (productStudyInstruction == null) {
-            logger.info("save ProductStudyInstruction, choiceId:" + productStudy.getId());
-            productStudyInstruction = new ProductStudyInstruction();
-            productStudyInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-            productStudyInstruction.setCampaign(campaign);
-            productStudyInstruction.setCompany(company);
-            productStudyInstruction.setDept(productStudy.getDept());
+        if ("-1".equals(map.get("fee"))) {
+            if (productStudyInstruction != null) {
+                baseManager.delete(ProductStudyInstruction.class.getName(), productStudyInstruction.getId());
+            }
         } else {
-            logger.info("update ProductStudyInstruction, choiceId:" + productStudy.getId());
+            if (productStudyInstruction == null) {
+                logger.info("save ProductStudyInstruction, choiceId:" + productStudy.getId());
+                productStudyInstruction = new ProductStudyInstruction();
+                productStudyInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+                productStudyInstruction.setCampaign(campaign);
+                productStudyInstruction.setCompany(company);
+                productStudyInstruction.setDept(productStudy.getDept());
+            } else {
+                logger.info("update ProductStudyInstruction, choiceId:" + productStudy.getId());
+            }
+            productStudyInstruction.setProductStudy(productStudy);
+            productStudyInstruction.setFee(map.get("fee"));
+            baseManager.saveOrUpdate(ProductStudyInstruction.class.getName(), productStudyInstruction);
         }
-        productStudyInstruction.setProductStudy(productStudy);
-        productStudyInstruction.setFee(map.get("fee"));
-        baseManager.saveOrUpdate(ProductStudyInstruction.class.getName(), productStudyInstruction);
 
     }
 
@@ -192,18 +210,24 @@ public class InstructionService {
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         OperationInstruction operationInstruction = (OperationInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        if (operationInstruction == null) {
-            logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
-            operationInstruction = new OperationInstruction();
-            operationInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-            operationInstruction.setCampaign(campaign);
-            operationInstruction.setCompany(company);
-            operationInstruction.setDept(operationChoice.getDept());
-        } else{
-            logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
+        if ("-1".equals(map.get("fee"))) {
+            if (operationInstruction != null) {
+                baseManager.delete(OperationInstruction.class.getName(), operationInstruction.getId());
+            }
+        } else {
+            if (operationInstruction == null) {
+                logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
+                operationInstruction = new OperationInstruction();
+                operationInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
+                operationInstruction.setCampaign(campaign);
+                operationInstruction.setCompany(company);
+                operationInstruction.setDept(operationChoice.getDept());
+            } else{
+                logger.info("save OperationInstruction, choiceId:" + operationChoice.getId());
+            }
+            operationInstruction.setOperationChoice(operationChoice);
+            operationInstruction.setFee(map.get("fee"));
+            baseManager.saveOrUpdate(OperationInstruction.class.getName(), operationInstruction);
         }
-        operationInstruction.setOperationChoice(operationChoice);
-        operationInstruction.setFee(map.get("fee"));
-        baseManager.saveOrUpdate(OperationInstruction.class.getName(), operationInstruction);
     }
 }

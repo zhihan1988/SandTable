@@ -29,6 +29,69 @@
 <div class="am-panel-group" id="accordion">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
+                人才
+            </h4>
+        </div>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
+            <table class="am-table">
+                <thead>
+                <tr>
+                    <th>名字(部门)</th>
+                    <th>能力</th>
+                    <th>薪资</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${hrInstructionList}" var="hrInstruction">
+                    <tr>
+                        <td>
+                                ${hrInstruction.human.name}（${hrInstruction.human.typeLabel}）
+                        </td>
+                        <td>${hrInstruction.human.ability}</td>
+                        <td>
+                                ${hrInstruction.fee}
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
+        <div id="do-not-say-0" class="am-panel-collapse am-collapse">
+            <div class="am-panel-bd">
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>名字(部门)</th>
+                        <th>能力</th>
+                        <th>薪资</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${humanList}" var="human">
+                        <tr>
+                            <td>
+                                <input type="hidden" name="humanId" value="${human.id}"/>
+                                    ${human.name}（${human.typeLabel}）
+                            </td>
+                            <td>${human.ability}</td>
+                            <td>
+                                <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
+                                        <option value="${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
                 市场营销
             </h4>
@@ -161,69 +224,6 @@
                                 <select id="operationInstruction_fee_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
                                     <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="am-panel am-panel-default">
-        <div class="am-panel-hd">
-            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
-                人才
-            </h4>
-        </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
-            <table class="am-table">
-                <thead>
-                <tr>
-                    <th>名字(部门)</th>
-                    <th>能力</th>
-                    <th>薪资</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${hrInstructionList}" var="hrInstruction">
-                    <tr>
-                        <td>
-                                ${hrInstruction.human.name}（${hrInstruction.human.typeLabel}）
-                        </td>
-                        <td>${hrInstruction.human.ability}</td>
-                        <td>
-                                ${hrInstruction.fee}
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
-        <div id="do-not-say-4" class="am-panel-collapse am-collapse">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>名字(部门)</th>
-                        <th>能力</th>
-                        <th>薪资</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${humanList}" var="human">
-                        <tr>
-                            <td>
-                                <input type="hidden" name="humanId" value="${human.id}"/>
-                                ${human.name}（${human.typeLabel}）
-                            </td>
-                            <td>${human.ability}</td>
-                            <td>
-                                <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
