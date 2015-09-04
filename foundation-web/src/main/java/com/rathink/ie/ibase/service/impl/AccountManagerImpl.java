@@ -1,4 +1,4 @@
-package com.rathink.ie.ibase.service;
+package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
@@ -6,6 +6,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
+import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.Edept;
@@ -22,10 +23,11 @@ import java.util.List;
  * Created by Hean on 2015/8/29.
  */
 @Service
-public class AccountService {
+public class AccountManagerImpl implements AccountManager {
     @Autowired
     private BaseManager baseManager;
 
+    @Override
     public void initCompanyAccount(Company company) {
         Account account = new Account();
         account.setCampaign(company.getCampaign());
@@ -48,6 +50,7 @@ public class AccountService {
         baseManager.saveOrUpdate(Account.class.getName(), account);
     }
 
+    @Override
     public List<AccountEntry> prepareAccountEntity(List<? extends CompanyInstruction> companyInstructionList, String inType, String outType, Account account) {
         Integer fee = 0;
         if (companyInstructionList != null) {
@@ -73,6 +76,7 @@ public class AccountService {
         return accountEntryList;
     }
 
+    @Override
     public List<AccountEntry> prepareAccountEntity(String fee, String inType, String outType, Account account) {
         List<AccountEntry> accountEntryList = new ArrayList<>();
         AccountEntry inAccountEntry = new AccountEntry();
@@ -90,6 +94,7 @@ public class AccountService {
         return accountEntryList;
     }
 
+    @Override
     public Integer getCompanyCash(Company company) {
         Integer companyCash = 0;
         XQuery xQuery = new XQuery();
@@ -109,6 +114,7 @@ public class AccountService {
         return companyCash;
     }
 
+    @Override
     public Integer countAccountEntryFee(Company company, String campaignDate, String type, String direction) {
         Integer companyCash = 0;
         XQuery xQuery = new XQuery();

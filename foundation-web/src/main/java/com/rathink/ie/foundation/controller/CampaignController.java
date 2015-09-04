@@ -4,7 +4,7 @@ package com.rathink.ie.foundation.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignService;
+import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.user.util.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ public class CampaignController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private CampaignService campaignService;
+    private CampaignManager campaignManager;
 
     @RequestMapping("/listCampaign")
     public String listCampaign(HttpServletRequest request, Model model) throws Exception {
@@ -41,7 +41,7 @@ public class CampaignController {
     public String getCampaign(HttpServletRequest request, @PathVariable String campaignId,Model model) throws Exception {
         Campaign campaign = (Campaign)baseManager.getObject(Campaign.class.getName(), campaignId);
         model.addAttribute("campaign", campaign);
-        List companyList = campaignService.listCompany(campaign);
+        List companyList = campaignManager.listCompany(campaign);
         model.addAttribute("companyList", companyList);
         model.addAttribute("myUser", AuthorizationUtil.getMyUser());
         return "/foundation/campaign/campaignView";

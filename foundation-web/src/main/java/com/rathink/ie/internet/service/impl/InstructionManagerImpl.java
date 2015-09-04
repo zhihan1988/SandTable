@@ -1,17 +1,15 @@
-package com.rathink.ie.internet.service;
+package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.property.model.CompanyStatus;
-import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
-import com.rathink.ie.ibase.service.CompanyStatusService;
-import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.Edept;
+import com.rathink.ie.ibase.service.CompanyStatusManager;
 import com.rathink.ie.internet.choice.model.*;
 import com.rathink.ie.internet.instruction.model.*;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.internet.service.ChoiceManager;
+import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,23 +22,24 @@ import java.util.Map;
  * Created by Hean on 2015/8/26.
  */
 @Service
-public class InstructionService {
-    private static Logger logger = Logger.getLogger(InstructionService.class.getName());
+public class InstructionManagerImpl implements InstructionManager {
+    private static Logger logger = Logger.getLogger(InstructionManagerImpl.class.getName());
 
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private ChoiceService choiceService;
+    private ChoiceManager choiceManager;
     @Autowired
-    private CompanyStatusService companyStatusService;
+    private CompanyStatusManager companyStatusManager;
     /**
      * 产生人才竞标结果
      * 出价最高的一家中标
      * 如果多家出价一样  最先出最高价的中标
      * @param campaign
      */
+    @Override
     public void produceHumanDiddingResult(Campaign campaign) {
-        List<Human> humanList = choiceService.listHuman(campaign);
+        List<Human> humanList = choiceManager.listHuman(campaign);
         if (humanList != null) {
             for (Human human : humanList) {
                 XQuery xQuery = new XQuery();
@@ -60,6 +59,7 @@ public class InstructionService {
         }
     }
 
+    @Override
     public List<OfficeInstruction> listOfficeInstruction(Company company) {
         String hql = "from OfficeInstruction where company.id = :companyId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
@@ -71,6 +71,7 @@ public class InstructionService {
         return officeInstructionList;
     }
 
+    @Override
     public List<HrInstruction> listHrInstruction(Company company) {
         String hql = "from HrInstruction where status=:status and company.id = :companyId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
@@ -83,6 +84,7 @@ public class InstructionService {
         return hrInstructionList;
     }
 
+    @Override
     public List<MarketInstruction> listMarketInstruction(Company company, String campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from MarketInstruction where company.id = :companyId and campaignDate = :campaignDate");
@@ -92,6 +94,7 @@ public class InstructionService {
         return marketInstructionList;
     }
 
+    @Override
     public List<OperationInstruction> listOperationInstruction(Company company, String campaignDate){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from OperationInstruction where company.id = :companyId and campaignDate = :campaignDate");
@@ -101,6 +104,7 @@ public class InstructionService {
         return operationInstructionList;
     }
 
+    @Override
     public ProductStudyInstruction getProductStudyInstruction(Company company, String campaignDate) {
         String hql = "from ProductStudyInstruction where company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
@@ -110,6 +114,7 @@ public class InstructionService {
         return productStudyInstruction;
     }
 
+    @Override
     public void saveOrUpdateOfficeInstruction(Company company, OfficeChoice officeChoice, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from OfficeInstruction where officeChoice.id = :officeChoiceId" +
@@ -143,6 +148,7 @@ public class InstructionService {
      * @param human
      * @param map
      */
+    @Override
     public void saveOrUpdateHrInstruction(Company company, Human human, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from HrInstruction where human.id = :humanId" +
@@ -174,6 +180,7 @@ public class InstructionService {
         }
     }
 
+    @Override
     public void saveOrUpdateMarketInstruction(Company company, MarketActivityChoice marketActivityChoice, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from MarketInstruction where marketActivityChoice.id = :marketActivityChoiceId" +
@@ -204,6 +211,7 @@ public class InstructionService {
         }
     }
 
+    @Override
     public void saveOrUpdateProductStudyInstruction(Company company, ProductStudy productStudy, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from ProductStudyInstruction where productStudy.id = :productStudyId " +
@@ -235,6 +243,7 @@ public class InstructionService {
 
     }
 
+    @Override
     public void saveOrUpdateOperationInstruction(Company company, OperationChoice operationChoice, Map<String, String> map) {
         Campaign campaign =  company.getCampaign();
         String hql = "from OperationInstruction where operationChoice.id = :operationChoiceId " +
@@ -265,6 +274,7 @@ public class InstructionService {
         }
     }
 
+    @Override
     public Integer productGradeConflict(ProductStudyInstruction productStudyInstruction) {
         Integer productGradeConflictRatio = 100;
         if (productStudyInstruction == null) return productGradeConflictRatio;
@@ -284,6 +294,7 @@ public class InstructionService {
         return productGradeConflictRatio;
     }
 
+    @Override
     public Integer getProductGradeChangeRatio(ProductStudyInstruction productStudyInstruction) {
         Integer ratio = 100;
         if(productStudyInstruction==null) return ratio;

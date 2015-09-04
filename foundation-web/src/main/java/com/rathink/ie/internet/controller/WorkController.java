@@ -2,15 +2,14 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.ibase.service.AccountService;
+import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.choice.model.*;
 import com.rathink.ie.internet.instruction.model.OfficeInstruction;
-import com.rathink.ie.internet.instruction.model.OperationInstruction;
-import com.rathink.ie.internet.service.ChoiceService;
-import com.rathink.ie.ibase.service.CompanyStatusService;
-import com.rathink.ie.internet.service.InstructionService;
-import com.rathink.ie.internet.service.WorkService;
+import com.rathink.ie.internet.service.ChoiceManager;
+import com.rathink.ie.ibase.service.CompanyStatusManager;
+import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.internet.service.WorkManager;
 import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.internet.instruction.model.HrInstruction;
@@ -37,35 +36,35 @@ public class WorkController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private WorkService workService;
+    private WorkManager workManager;
     @Autowired
-    private CompanyStatusService companyStatusService;
+    private CompanyStatusManager companyStatusManager;
     @Autowired
-    private ChoiceService choiceService;
+    private ChoiceManager choiceManager;
     @Autowired
-    private InstructionService instructionService;
+    private InstructionManager instructionManager;
     @Autowired
-    private AccountService accountService;
+    private AccountManager accountManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, campaign.getCurrentCampaignDate());
-        Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workService.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
-        List<OfficeChoice> officeChoiceList = choiceService.listOfficeChoice(campaign);
-        List<Human> humanList = choiceService.listHuman(campaign);
-        List<MarketActivityChoice> marketActivityChoiceList = choiceService.listMarketActivityChoice(campaign);
-        List<ProductStudy> productStudyList = choiceService.listProductStudy(campaign);
-        List<OperationChoice> operationChoiceList = choiceService.listOperationChoice(campaign);
-        Integer companyCash = accountService.getCompanyCash(company);
-        Integer campaignDateInCash = accountService.countAccountEntryFee(
+        CompanyStatus companyStatus = companyStatusManager.getCompanyStatus(company, campaign.getCurrentCampaignDate());
+        Map<String, List<CompanyStatusPropertyValue>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyStatus.getCompanyStatusPropertyValueList());
+        List<OfficeChoice> officeChoiceList = choiceManager.listOfficeChoice(campaign);
+        List<Human> humanList = choiceManager.listHuman(campaign);
+        List<MarketActivityChoice> marketActivityChoiceList = choiceManager.listMarketActivityChoice(campaign);
+        List<ProductStudy> productStudyList = choiceManager.listProductStudy(campaign);
+        List<OperationChoice> operationChoiceList = choiceManager.listOperationChoice(campaign);
+        Integer companyCash = accountManager.getCompanyCash(company);
+        Integer campaignDateInCash = accountManager.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
-        Integer campaignDateOutCash = accountService.countAccountEntryFee(
+        Integer campaignDateOutCash = accountManager.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
-        List<HrInstruction> hrInstructionList = instructionService.listHrInstruction(company);
-        List<OfficeInstruction> officeInstructionList = instructionService.listOfficeInstruction(company);
+        List<HrInstruction> hrInstructionList = instructionManager.listHrInstruction(company);
+        List<OfficeInstruction> officeInstructionList = instructionManager.listOfficeInstruction(company);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -98,23 +97,23 @@ public class WorkController {
         switch (entity) {
             case "officeInstruction":
                 OfficeChoice officeChoice = (OfficeChoice) baseManager.getObject(OfficeChoice.class.getName(), choiceId);
-                instructionService.saveOrUpdateOfficeInstruction(company, officeChoice, fieldMap);
+                instructionManager.saveOrUpdateOfficeInstruction(company, officeChoice, fieldMap);
                 break;
             case "hrInstruction":
                 Human human = (Human) baseManager.getObject(Human.class.getName(), choiceId);
-                instructionService.saveOrUpdateHrInstruction(company, human, fieldMap);
+                instructionManager.saveOrUpdateHrInstruction(company, human, fieldMap);
                 break;
             case "marketInstruction":
                 MarketActivityChoice marketActivityChoice = (MarketActivityChoice) baseManager.getObject(MarketActivityChoice.class.getName(), choiceId);
-                instructionService.saveOrUpdateMarketInstruction(company, marketActivityChoice, fieldMap);
+                instructionManager.saveOrUpdateMarketInstruction(company, marketActivityChoice, fieldMap);
                 break;
             case "productStudyInstruction":
                 ProductStudy productStudy = (ProductStudy) baseManager.getObject(ProductStudy.class.getName(), choiceId);
-                instructionService.saveOrUpdateProductStudyInstruction(company, productStudy, fieldMap);
+                instructionManager.saveOrUpdateProductStudyInstruction(company, productStudy, fieldMap);
                 break;
             case "operationInstruction":
                 OperationChoice operationChoice = (OperationChoice) baseManager.getObject(OperationChoice.class.getName(), choiceId);
-                instructionService.saveOrUpdateOperationInstruction(company, operationChoice, fieldMap);
+                instructionManager.saveOrUpdateOperationInstruction(company, operationChoice, fieldMap);
                 break;
         }
 

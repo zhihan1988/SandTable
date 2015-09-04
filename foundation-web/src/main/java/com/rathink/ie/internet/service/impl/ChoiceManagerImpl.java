@@ -1,12 +1,12 @@
-package com.rathink.ie.internet.service;
+package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignService;
-import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.*;
+import com.rathink.ie.internet.service.ChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +17,13 @@ import java.util.List;
  * Created by Hean on 2015/8/25.
  */
 @Service
-public class ChoiceService {
+public class ChoiceManagerImpl implements ChoiceManager {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private CampaignService campaignService;
+    private CampaignManager campaignManager;
 
+    @Override
     public List<OfficeChoice> listOfficeChoice(Campaign campaign){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from OfficeChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -34,6 +35,7 @@ public class ChoiceService {
         return officeChoiceList;
     }
 
+    @Override
     public List<Human> listHuman(Campaign campaign){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from Human where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -45,6 +47,7 @@ public class ChoiceService {
         return humanList;
     }
 
+    @Override
     public List<MarketActivityChoice> listMarketActivityChoice(Campaign campaign){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from MarketActivityChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -54,6 +57,7 @@ public class ChoiceService {
         return marketActivityChoiceList;
     }
 
+    @Override
     public List<ProductStudy> listProductStudy(Campaign campaign){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from ProductStudy where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -63,6 +67,7 @@ public class ChoiceService {
         return productStudyList;
     }
 
+    @Override
     public List<OperationChoice> listOperationChoice(Campaign campaign) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from OperationChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -72,6 +77,7 @@ public class ChoiceService {
         return operationChoiceList;
     }
 
+    @Override
     public void produceChoice(Campaign campaign) {
         productOfficeChoice(campaign);
         produceHumanChoice(campaign);

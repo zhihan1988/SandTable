@@ -2,13 +2,10 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignService;
+import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.property.model.CompanyStatus;
-import com.rathink.ie.ibase.service.CompanyStatusService;
-import com.rathink.ie.internet.service.ChoiceService;
-import com.rathink.ie.internet.service.WorkService;
+import com.rathink.ie.internet.service.WorkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,15 +25,15 @@ public class FlowController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private WorkService workService;
+    private WorkManager workManager;
     @Autowired
-    private CampaignService campaignService;
+    private CampaignManager campaignManager;
 
     @RequestMapping("/begin")
     @ResponseBody
     public String begin(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.initCampaign(campaign);
+        workManager.initCampaign(campaign);
         return "success";
     }
 
@@ -44,7 +41,7 @@ public class FlowController {
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.nextCampaign(campaign);
+        workManager.nextCampaign(campaign);
         return "success";
     }
 
@@ -52,7 +49,7 @@ public class FlowController {
     @ResponseBody
     public String pre(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workService.preCampaign(campaign);
+        workManager.preCampaign(campaign);
         return "success";
     }
 
@@ -67,7 +64,7 @@ public class FlowController {
         baseManager.saveOrUpdate(Company.class.getName(), company);
 
         boolean isAllNext = true;
-        List<Company> companyList = campaignService.listCompany(campaign);
+        List<Company> companyList = campaignManager.listCompany(campaign);
         if (companyList != null) {
             for (Company c : companyList) {
                 if (!nextCampaignDate.equals(c.getCurrentCampaignDate())) {
@@ -76,7 +73,7 @@ public class FlowController {
             }
         }
         if (isAllNext) {
-            workService.nextCampaign(campaign);
+            workManager.nextCampaign(campaign);
         }
         return "success";
     }
