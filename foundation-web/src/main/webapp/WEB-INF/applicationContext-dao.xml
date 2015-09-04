@@ -38,7 +38,7 @@
     <bean id="userDao" class="com.rathink.ie.user.dao.hibernate.UserDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
-    <bean id="userManager" class="com.rathink.ie.user.service.UserManager">
+    <bean id="userManager" class="com.rathink.ie.user.service.impl.UserManagerImpl">
         <property name="userDao" ref="userDao"/>
     </bean>
 </beans>
