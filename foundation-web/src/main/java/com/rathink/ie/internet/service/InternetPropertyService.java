@@ -113,13 +113,13 @@ public class InternetPropertyService {
         Integer productRadio = 10;
         String fee = productStudyInstruction == null ? "0" : productStudyInstruction.getFee();
         //资金投入系数
-        Integer feeRatio = Integer.valueOf(fee) / 1000 + 100;
+        Integer feeRatio = Integer.valueOf(fee) / 1000 + 50;
         //上一期的产品系数
         CompanyStatus companyStatus = companyStatusService.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
         CompanyStatusPropertyValue preProductRatio = companyStatusService
                 .getCompanyStatusProperty(EPropertyName.PRODUCT_RATIO.name(), companyStatus);
 
-        productRadio = (productAbility * feeRatio) / 300 + Integer.valueOf(preProductRatio.getValue());
+        productRadio = (productAbility * feeRatio) / 500 + Integer.valueOf(preProductRatio.getValue());
         System.out.println("上一期产品系数：" + preProductRatio + ";产品能力：" + productAbility + ";资金投入系数：" + feeRatio+"本轮产品系数："+productRadio);
         return productRadio;
     }
