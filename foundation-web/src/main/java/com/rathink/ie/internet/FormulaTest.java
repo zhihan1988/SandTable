@@ -130,7 +130,33 @@ public class FormulaTest {
         return returnValue;
     }
 
+    public void process(Map<String, Integer> map) {
+        System.out.printf("##########第" + map.get("i") + "轮开始\n\r");
+        FormulaTest formulaTest = new FormulaTest();
+        Integer newUserAmount = formulaTest.getNewUserAmount(map.get("marketFee"), map.get("marketCost"));
+        Integer satisfaction = formulaTest.getSatisfaction(map.get("operationFee"), map.get("operationAbility"));
+        Integer oldUserAmount = formulaTest.getOldUserAmount(map.get("userAmount"), satisfaction);
+        Integer productRatio = formulaTest.getProductRadio(map.get("productFee"), map.get("productAbility"), map.get("productRatio"));
+        Integer perOrderCost = formulaTest.getPerOrderCost(2);
+        Integer userAmount = oldUserAmount + newUserAmount;
+        System.out.println("----------------总用户数：" + userAmount);
+        Integer currentPeriodIncome = formulaTest.getCurrentPeriodIncome(userAmount, perOrderCost);
+        Integer currentPeriodOut = formulaTest.getOut(map.get("marketFee"), map.get("productFee"), map.get("operationFee"), map.get("humanFee"), map.get("humanCount"));
+        Integer totalCash = getTotalCash(currentPeriodIncome, currentPeriodOut, map.get("totalCash"));
 
+        map.put("newUserAmount", newUserAmount);
+        map.put("satisfaction", satisfaction);
+        map.put("oldUserAmount", oldUserAmount);
+        map.put("userAmount", userAmount);
+        map.put("productRatio", productRatio);
+        map.put("perOrderCost", perOrderCost);
+        map.put("currentPeriodIncome", currentPeriodIncome);
+        map.put("totalCash", totalCash);
+        map.put("marketAbility", map.get("marketAbility") + 8);
+        map.put("productAbility", map.get("productAbility") + 8);
+        map.put("operationAbility", map.get("operationAbility") + 8);
+        System.out.printf("##########第" + map.get("i") + "轮结束\n\r\n\r");
+    }
 
     public static void main(String[] args) {
         //每轮的部门能力固定增长8
@@ -160,34 +186,5 @@ public class FormulaTest {
         }
 
     }
-
-    public void process(Map<String, Integer> map) {
-        System.out.printf("##########第" + map.get("i") + "轮开始\n\r");
-        FormulaTest formulaTest = new FormulaTest();
-        Integer newUserAmount = formulaTest.getNewUserAmount(map.get("marketFee"), map.get("marketCost"));
-        Integer satisfaction = formulaTest.getSatisfaction(map.get("operationFee"), map.get("operationAbility"));
-        Integer oldUserAmount = formulaTest.getOldUserAmount(map.get("userAmount"), satisfaction);
-        Integer productRatio = formulaTest.getProductRadio(map.get("productFee"), map.get("productAbility"), map.get("productRatio"));
-        Integer perOrderCost = formulaTest.getPerOrderCost(2);
-        Integer userAmount = oldUserAmount + newUserAmount;
-        System.out.println("----------------总用户数：" + userAmount);
-        Integer currentPeriodIncome = formulaTest.getCurrentPeriodIncome(userAmount, perOrderCost);
-        Integer currentPeriodOut = formulaTest.getOut(map.get("marketFee"), map.get("productFee"), map.get("operationFee"), map.get("humanFee"), map.get("humanCount"));
-        Integer totalCash = getTotalCash(currentPeriodIncome, currentPeriodOut, map.get("totalCash"));
-
-        map.put("newUserAmount", newUserAmount);
-        map.put("satisfaction", satisfaction);
-        map.put("oldUserAmount", oldUserAmount);
-        map.put("userAmount", userAmount);
-        map.put("productRatio", productRatio);
-        map.put("perOrderCost", perOrderCost);
-        map.put("currentPeriodIncome", currentPeriodIncome);
-        map.put("totalCash", totalCash);
-        map.put("marketAbility", map.get("marketAbility") + 8);
-        map.put("productAbility", map.get("productAbility") + 8);
-        map.put("operationAbility", map.get("operationAbility") + 8);
-        System.out.printf("##########第" + map.get("i") + "轮结束\n\r\n\r");
-    }
-
 
 }
