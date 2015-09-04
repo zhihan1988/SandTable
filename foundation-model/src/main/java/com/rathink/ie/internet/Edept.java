@@ -4,7 +4,7 @@ package com.rathink.ie.internet;
  * Created by Hean on 2015/8/24.
  */
 public enum Edept {
-    PRODUCT("产品研发"), OPERATION("运营"), MARKET("市场营销"), HR("人力资源");
+    PRODUCT("产品研发"), OPERATION("运营"), MARKET("市场营销"), HR("人力资源"), AD("行政");
     private Edept(String label){
         this.label = label;
     }

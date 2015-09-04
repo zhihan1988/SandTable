@@ -15,7 +15,8 @@ public enum EPropertyName {
 
     PRODUCT_ABILITY("产品研发能力", Edept.PRODUCT.name(), "PERCENT"),
     PRODUCT_RATIO("产品系数", Edept.PRODUCT.name(), "PERCENT"),
-    PER_ORDER_COST("客单价", Edept.PRODUCT.name(), "");
+    PER_ORDER_COST("客单价", Edept.PRODUCT.name(), ""),
+    OFFICE_RATIO("办公室系数", Edept.AD.name(), "PERCENT"),;
 
     private String label;
     private String dept;
