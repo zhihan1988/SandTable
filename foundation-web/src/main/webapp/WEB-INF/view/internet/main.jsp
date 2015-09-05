@@ -115,6 +115,20 @@
                 </c:forEach>
                 </tbody>
             </table>
+            <ul class="am-avg-sm-2 am-thumbnails">
+                <li>
+                    <div>
+                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-1.jpg" /></div>
+                        <div>内容</div>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-2.jpg" /></div>
+                        <div>内容</div>
+                    </div>
+                </li>
+            </ul>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
@@ -321,13 +335,25 @@
                 .change(function(){
                     var $fee = $(this);
                     var idArray = $fee.attr("id").split("_");
-                    $.post("<c:url value="/work/makeInstruction"/>",
-                            {
-                                companyId: companyId,
-                                choiceId: idArray[2],
-                                entity: idArray[0],
-                                fields: idArray[1]+"="+$fee.val(),
-                            });
+                    var value = $fee.val();
+                    if(value!=-1) {
+                        $.post("<c:url value="/work/makeInstruction"/>",
+                                {
+                                    companyId: companyId,
+                                    choiceId: idArray[2],
+                                    entity: idArray[0],
+                                    value: value
+                                });
+                    } else {
+                        $.post("<c:url value="/work/cancelInstruction"/>",
+                                {
+                                    companyId: companyId,
+                                    choiceId: idArray[2],
+                                    entity: idArray[0],
+                                    value: value
+                                });
+                    }
+
                 });
     })
 </script>

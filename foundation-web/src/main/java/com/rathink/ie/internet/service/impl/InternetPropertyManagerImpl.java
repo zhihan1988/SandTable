@@ -1,22 +1,10 @@
 package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
-import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.property.model.CompanyStatus;
-import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.ibase.service.CompanyStatusManager;
-import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.choice.model.MarketActivityChoice;
-import com.rathink.ie.internet.instruction.model.HrInstruction;
-import com.rathink.ie.internet.instruction.model.MarketInstruction;
-import com.rathink.ie.internet.instruction.model.OperationInstruction;
-import com.rathink.ie.internet.instruction.model.ProductStudyInstruction;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created by Hean on 2015/8/30.
@@ -28,12 +16,29 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     @Autowired
     private CompanyStatusManager companyStatusManager;
 
-    /**
+ /*   public Integer getOfficeRatio(List<OfficeInstruction> officeInstructionList) {
+
+        Integer officeFee = 10000;
+        if (officeInstructionList != null) {
+            officeFee = 0;
+            for (OfficeInstruction officeInstruction : officeInstructionList) {
+                officeFee += Integer.valueOf(officeInstruction.getFee());
+            }
+        }
+
+        DecimalFormat df=new DecimalFormat(".##");
+        Double officeRatio = Double.valueOf(df.format(Math.sqrt(officeFee))) / 10 + 60;
+        return officeRatio.intValue();
+    }
+
+
+
+    *//**
      * 计算部门能力
      * @param hrInstructionList hr部门的人才决策
      * @param dept 人才的部门类型
      * @return
-     */
+     *//*
     @Override
     public Integer getAbilityValue(List<HrInstruction> hrInstructionList, String dept) {
         Integer deptAbility = 60;
@@ -48,34 +53,38 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         return deptAbility;
     }
 
-    /**
+    *//**
      * 新用户数
-     * @param marketInstructionList
+     * @param marketAbility
+     * @param marketFee
+     * @param marketCost
+     * @param productCompetitionRatio
      * @return
-     */
+     *//*
     @Override
-    public Integer getNewUserAmount(List<MarketInstruction> marketInstructionList) {
+    public Integer getNewUserAmount(List<MarketInstruction> marketInstructionList, Integer marketAbility, Integer productCompetitionRatio) {
         Integer newUserAmount = 0;
         if(marketInstructionList == null) return 0;
         for (MarketInstruction marketInstruction : marketInstructionList) {
-            MarketActivityChoice marketActivityChoice = marketInstruction.getMarketActivityChoice();
-            Integer fee = Integer.valueOf(marketInstruction.getFee());
-            Integer cost = Integer.valueOf(marketInstruction.getMarketActivityChoice().getCost());
-            int randomRatio = RandomUtil.random(Integer.valueOf(marketActivityChoice.getRandomLow()), Integer.valueOf(marketActivityChoice.getRandomHigh()));
-            newUserAmount += fee * randomRatio / cost / 100;
-            System.out.println(marketInstruction.getCompany().getName() + ";市场投入:" + fee + ";成本:" + cost + ";市场随机系数：" + randomRatio + "新用户数");
+            Integer marketFee = Integer.valueOf(marketInstruction.getFee());
+            Integer marketCost = Integer.valueOf(marketInstruction.getMarketActivityChoice().getCost());
+            newUserAmount += marketAbility * marketFee / marketCost / productCompetitionRatio;
         }
         return newUserAmount;
     }
 
-    /**
+    public Integer getMarketRatio(Integer humanGrade) {
+
+    }
+
+    *//**
      * 满意度
      * @param operationInstructionList
      * @param operationAbility
      * @return
-     */
+     *//*
     @Override
-    public Integer getSatisfaction(List<OperationInstruction> operationInstructionList, Integer operationAbility){
+    public Integer getSatisfaction(List<OperationInstruction> operationInstructionList, Integer operationAbility, Integer){
         Integer satisfaction = 50;
         Integer operationFee = 0;
         if (operationInstructionList != null) {
@@ -89,70 +98,75 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         return satisfaction;
     }
 
-    /**
+    *//**
      * 老用户数
      * @param company
      * @param satisfaction
      * @return
-     */
+     *//*
     @Override
     public Integer getOldUserAmount(Company company, Integer satisfaction){
         Integer oldUserAmount = 0;
-        CompanyStatus companyStatus = companyStatusManager.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
+        CompanyTerm companyTerm = companyStatusManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
         //上一期用户数
         CompanyStatusPropertyValue preUserAmount = companyStatusManager
-                .getCompanyStatusProperty(EPropertyName.USER_AMOUNT.name(), companyStatus);
+                .getCompanyStatusProperty(EPropertyName.USER_AMOUNT.name(), companyTerm);
         oldUserAmount = Integer.valueOf(preUserAmount.getValue()) * satisfaction / 100;
         System.out.println("上一期老用户数：" + preUserAmount.getValue() + ";满意度：" + satisfaction + ";本轮老用户数：" + oldUserAmount);
         return oldUserAmount;
     }
 
-    /**
-     * 产品系数
-     * @param company
-     * @param productAbility
-     * @param productStudyInstruction
+    *//**
+     * 产品资金投入系数
+     * @param productFee
      * @return
-     */
-    @Override
-    public Integer getProductRadio(Company company, Integer productAbility, ProductStudyInstruction productStudyInstruction) {
-        Integer productRadio = 10;
-        String fee = productStudyInstruction == null ? "0" : productStudyInstruction.getFee();
-        //资金投入系数
-        Integer feeRatio = Integer.valueOf(fee) / 1000 + 50;
-        //上一期的产品系数
-        CompanyStatus companyStatus = companyStatusManager.getCompanyStatus(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyStatusPropertyValue preProductRatio = companyStatusManager
-                .getCompanyStatusProperty(EPropertyName.PRODUCT_RATIO.name(), companyStatus);
-
-        productRadio = (productAbility * feeRatio) / 500 + Integer.valueOf(preProductRatio.getValue());
-        System.out.println("上一期产品系数：" + preProductRatio + ";产品能力：" + productAbility + ";资金投入系数：" + feeRatio+"本轮产品系数："+productRadio);
-        return productRadio;
+     *//*
+    public Integer getProductFeeRatio(Integer productFee) {
+        Integer productFeeRatio = productFee / 1000 + 100;
+        return productFeeRatio;
     }
 
-    /**
-     * 客单价
-     * @param company
-     * @param productStudyInstruction
+    *//**
+     * 产品系数
+     * @param productAbility
+     * @param productFeeRatio
+     * @param preProductFeeRatio
      * @return
-     */
+     *//*
     @Override
-    public Integer getPerOrderCost(Company company, ProductStudyInstruction productStudyInstruction) {
-        final String DEFAULT_GRADE = "3";
-        Integer perOrderCost = 0;
-        String grade = productStudyInstruction == null ? DEFAULT_GRADE : productStudyInstruction.getProductStudy().getGrade();
-        perOrderCost = Integer.valueOf(grade) * 10 + 150;
+    public Integer getProductRatio(Integer productAbility, Integer productFeeRatio, Integer preProductFeeRatio) {
+        Double productRatio  = Math.sqrt(productAbility*productFeeRatio+10)+preProductFeeRatio;
+        return productRatio.intValue();
+    }
+
+    *//**
+     * 客单价
+     * @param productGrade
+     * @return
+     *//*
+    @Override
+    public Integer getPerOrderCost(Integer productGrade) {
+        Integer perOrderCost = 60 + productGrade * 10;
         return perOrderCost;
     }
 
-    /**
+    *//**
+     * 产品竞争系数
+     * @return
+     *//*
+    public Integer getProductCompetitionRatio(Integer companyNum) {
+        Double productCompetitionRatio = 30 + 20 * Math.sqrt(companyNum);
+        return productCompetitionRatio.intValue();
+    }
+
+    *//**
      * 本轮收入
      * @param userAmount
      * @param perOrdreCost
      * @return
-     */
+     *//*
     @Override
     public Integer getCurrentPeriodIncome(Integer userAmount, Integer perOrdreCost) {
         return userAmount * perOrdreCost / 10;
-    }
+    }*/
 }

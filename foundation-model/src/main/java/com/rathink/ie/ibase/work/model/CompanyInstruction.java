@@ -2,6 +2,8 @@ package com.rathink.ie.ibase.work.model;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
+import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.user.model.User;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -12,15 +14,16 @@ import javax.persistence.*;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class CompanyInstruction {
     private String id;
+    private String status;
     private String type;
     private String campaignDate;
     private Campaign campaign;
     private Company company;
     private String dept;
     private CompanyChoice companyChoice;
-    private String content;
+    private String value;
     private User creator;
-    private String fee;
+    private CompanyTerm companyTerm;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -31,6 +34,15 @@ public class CompanyInstruction {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Column(name = "status")
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Column(name = "type")
@@ -90,13 +102,14 @@ public class CompanyInstruction {
         this.companyChoice = companyChoice;
     }
 
-    @Column(name = "content")
-    public String getContent() {
-        return content;
+
+    @Column(name = "value")
+    public String getValue() {
+        return value;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -109,12 +122,24 @@ public class CompanyInstruction {
         this.creator = creator;
     }
 
-    @Column(name = "fee")
-    public String getFee() {
-        return fee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_term_id")
+    public CompanyTerm getCompanyTerm() {
+        return companyTerm;
     }
 
-    public void setFee(String fee) {
-        this.fee = fee;
+    public void setCompanyTerm(CompanyTerm companyTerm) {
+        this.companyTerm = companyTerm;
+    }
+
+    @Transient
+    public String getStatusLabel() {
+        String label = "";
+        for (EInstructionStatus status: EInstructionStatus.values()) {
+            if (status.getValue().equals(getStatus())) {
+                label = status.getLabel();
+            }
+        }
+        return label;
     }
 }

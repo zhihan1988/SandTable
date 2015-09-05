@@ -1,7 +1,7 @@
 package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
-import com.rathink.ie.ibase.property.model.CompanyStatus;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.service.CompanyStatusManager;
@@ -19,21 +19,21 @@ public class CompanyStatusManagerImpl implements CompanyStatusManager {
     private BaseManager baseManager;
 
     @Override
-    public CompanyStatus getCompanyStatus(Company company, String campaignDate) {
-        String hql = "from CompanyStatus where company.id = :companyId and campaignDate = :campaignDate";
+    public CompanyTerm getCompanyTerm(Company company, String campaignDate) {
+        String hql = "from CompanyTerm where company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaignDate);
-        CompanyStatus companyStatus = (CompanyStatus) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        return companyStatus;
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyTerm;
     }
 
     @Override
-    public CompanyStatusPropertyValue getCompanyStatusProperty(String propertyName, CompanyStatus companyStatus){
-        String hql = "from CompanyStatusPropertyValue where name = :name and companyStatus.id = :companyStatusId";
+    public CompanyStatusPropertyValue getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm){
+        String hql = "from CompanyStatusPropertyValue where name = :name and companyTerm.id = :companyStatusId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("name", propertyName);
-        queryParamMap.put("companyStatusId", companyStatus.getId());
+        queryParamMap.put("companyStatusId", companyTerm.getId());
         CompanyStatusPropertyValue companyStatusPropertyValue = (CompanyStatusPropertyValue) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         return companyStatusPropertyValue;
     }

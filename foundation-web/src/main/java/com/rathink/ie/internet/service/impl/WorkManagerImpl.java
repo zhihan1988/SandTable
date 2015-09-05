@@ -2,24 +2,19 @@ package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.account.model.AccountEntry;
-import com.rathink.ie.ibase.property.model.CompanyStatus;
 import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyStatusManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.Edept;
-import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.internet.instruction.model.*;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
@@ -28,7 +23,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/24.
@@ -80,30 +79,30 @@ public class WorkManagerImpl implements WorkManager {
     }
 
     @Override
-    public CompanyStatus initCompanyStatus(Company company) {
-        CompanyStatus companyStatus = new CompanyStatus();
-        companyStatus.setCampaign(company.getCampaign());
-        companyStatus.setCompany(company);
-        companyStatus.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
-        List<CompanyStatusPropertyValue> companyStatusPropertyValueList = prepareCompanyStatusProperty(companyStatus);
-        companyStatus.setCompanyStatusPropertyValueList(companyStatusPropertyValueList);
-        baseManager.saveOrUpdate(CompanyStatus.class.getName(), companyStatus);
-        return companyStatus;
+    public CompanyTerm initCompanyStatus(Company company) {
+        CompanyTerm companyTerm = new CompanyTerm();
+        companyTerm.setCampaign(company.getCampaign());
+        companyTerm.setCompany(company);
+        companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
+        List<CompanyStatusPropertyValue> companyStatusPropertyValueList = prepareCompanyStatusProperty(companyTerm);
+        companyTerm.setCompanyStatusPropertyValueList(companyStatusPropertyValueList);
+        baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
+        return companyTerm;
     }
 
     @Override
-    public List<CompanyStatusPropertyValue> prepareCompanyStatusProperty(CompanyStatus companyStatus) {
+    public List<CompanyStatusPropertyValue> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
         List<CompanyStatusPropertyValue> companyStatusPropertyValueList = new ArrayList<CompanyStatusPropertyValue>();
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, "60", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, "2000", companyStatus));
-//        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, "0", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, "2000", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, "60", companyStatus));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, "60", companyStatus));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, "60", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, "2000", companyTerm));
+//        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
+        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, "60", companyTerm));
         return companyStatusPropertyValueList;
     }
 
@@ -136,7 +135,7 @@ public class WorkManagerImpl implements WorkManager {
      */
     @Override
     public void nextCampaign(Campaign campaign) {
-        //产生人才竞标结果
+      /*  //产生人才竞标结果
         instructionManager.produceHumanDiddingResult(campaign);
 
 
@@ -148,11 +147,11 @@ public class WorkManagerImpl implements WorkManager {
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
 
-            CompanyStatus nextCompanyStatus = new CompanyStatus();
-            nextCompanyStatus.setCampaign(company.getCampaign());
-            nextCompanyStatus.setCompany(company);
-            nextCompanyStatus.setCampaignDate(nextCampaignDate);
-            baseManager.saveOrUpdate(CompanyStatus.class.getName(), nextCompanyStatus);
+            CompanyTerm nextCompanyTerm = new CompanyTerm();
+            nextCompanyTerm.setCampaign(company.getCampaign());
+            nextCompanyTerm.setCompany(company);
+            nextCompanyTerm.setCampaignDate(nextCampaignDate);
+            baseManager.saveOrUpdate(CompanyTerm.class.getName(), nextCompanyTerm);
 
             Account nextAccount = new Account();
             nextAccount.setCampaign(campaign);
@@ -172,47 +171,47 @@ public class WorkManagerImpl implements WorkManager {
             //部门能力
             List<CompanyStatusPropertyValue> cspList = new ArrayList<>();
             Integer marketAbility = internetPropertyManager.getAbilityValue(hrInstructionList, Edept.MARKET.name());
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, String.valueOf(marketAbility), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, String.valueOf(marketAbility), nextCompanyTerm));
             Integer operationAbility = internetPropertyManager.getAbilityValue(hrInstructionList, Edept.OPERATION.name());
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, String.valueOf(operationAbility), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, String.valueOf(operationAbility), nextCompanyTerm));
             Integer productAbility = internetPropertyManager.getAbilityValue(hrInstructionList, Edept.PRODUCT.name());
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, String.valueOf(productAbility), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, String.valueOf(productAbility), nextCompanyTerm));
 
             //新用户数
             Integer newUserAmount = internetPropertyManager.getNewUserAmount(marketInstructionList);
             //定位冲突导致的市场活动效果下降 降低市场营销系数
             Integer productGradeConflictRatio = instructionManager.productGradeConflict(productStudyInstruction);
             newUserAmount = newUserAmount * productGradeConflictRatio / 100;
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, String.valueOf(newUserAmount), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, String.valueOf(newUserAmount), nextCompanyTerm));
 
             //满意度
             Integer satisfaction = internetPropertyManager.getSatisfaction(operationInstructionList, operationAbility);
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, String.valueOf(satisfaction), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, String.valueOf(satisfaction), nextCompanyTerm));
 
             //老用户数
             Integer oldUserAmount = internetPropertyManager.getOldUserAmount(company, satisfaction);
             //定位变动导致老用户流失
             Integer productGradeChangeRatio = instructionManager.getProductGradeChangeRatio(productStudyInstruction);
             oldUserAmount = oldUserAmount * productGradeChangeRatio / 100;
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, String.valueOf(oldUserAmount), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, String.valueOf(oldUserAmount), nextCompanyTerm));
 
             //总用户数
             Integer userAmount = oldUserAmount + newUserAmount;
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, String.valueOf(userAmount), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, String.valueOf(userAmount), nextCompanyTerm));
 
             //产品系数
             Integer productRadio = internetPropertyManager.getProductRadio(company, productAbility, productStudyInstruction);
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, String.valueOf(productRadio), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, String.valueOf(productRadio), nextCompanyTerm));
 
             //客单价
             Integer perOrderCost = internetPropertyManager.getPerOrderCost(company, productStudyInstruction);
-            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, String.valueOf(perOrderCost), nextCompanyStatus));
+            cspList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, String.valueOf(perOrderCost), nextCompanyTerm));
 
 //            Integer currentPeriodIncome = internetPropertyService.getCurrentPeriodIncome(userAmount, perOrderCost);
 //            cspList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, String.valueOf(currentPeriodIncome), nextCompanyStatus));
 
-            nextCompanyStatus.setCompanyStatusPropertyValueList(cspList);
-            baseManager.saveOrUpdate(CompanyStatus.class.getName(), nextCompanyStatus);
+            nextCompanyTerm.setCompanyStatusPropertyValueList(cspList);
+            baseManager.saveOrUpdate(CompanyTerm.class.getName(), nextCompanyTerm);
 
             //2.部门资金使用情况
             List<AccountEntry> accountEntryList = new ArrayList<>();
@@ -257,7 +256,7 @@ public class WorkManagerImpl implements WorkManager {
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
 
         //准备供用户决策用的随机数据
-        choiceManager.produceChoice(campaign);
+        choiceManager.produceChoice(campaign);*/
     }
 
     /**
@@ -276,8 +275,8 @@ public class WorkManagerImpl implements WorkManager {
         //删除本轮属性信息
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
-            CompanyStatus companyStatus = companyStatusManager.getCompanyStatus(company, currentCampaignDate);
-            session.delete(companyStatus);
+            CompanyTerm companyTerm = companyStatusManager.getCompanyTerm(company, currentCampaignDate);
+            session.delete(companyTerm);
         }
 
         //删除本轮以及上一轮的决策信息

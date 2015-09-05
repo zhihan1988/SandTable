@@ -2,19 +2,14 @@ package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.instruction.model.HrInstruction;
-import com.rathink.ie.internet.instruction.model.MarketInstruction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.security.krb5.internal.crypto.EType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +50,8 @@ public class AccountManagerImpl implements AccountManager {
         Integer fee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
-                if (!companyInstruction.getFee() .equals("-1")) {
-                    fee += Integer.parseInt(companyInstruction.getFee());
+                if (companyInstruction.getValue() != null) {
+                    fee += Integer.parseInt(companyInstruction.getValue());
                 }
             }
         }

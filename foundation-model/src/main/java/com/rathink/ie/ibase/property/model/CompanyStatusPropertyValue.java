@@ -4,7 +4,6 @@ import com.rathink.ie.internet.EPropertyName;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "company_status_property_value")
@@ -13,15 +12,15 @@ public class CompanyStatusPropertyValue {
     private String name;
     private String value;
     private String dept;
-    private CompanyStatus companyStatus;
+    private CompanyTerm companyTerm;
 
     public CompanyStatusPropertyValue(){}
 
-    public CompanyStatusPropertyValue(EPropertyName ePropertyName, String value, CompanyStatus companyStatus) {
+    public CompanyStatusPropertyValue(EPropertyName ePropertyName, String value, CompanyTerm companyTerm) {
         this.name = ePropertyName.name();
         this.value = value;
         this.dept = ePropertyName.getDept();
-        this.companyStatus = companyStatus;
+        this.companyTerm = companyTerm;
     }
 
     @Id
@@ -64,12 +63,12 @@ public class CompanyStatusPropertyValue {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_status_id")
-    public CompanyStatus getCompanyStatus() {
-        return companyStatus;
+    public CompanyTerm getCompanyTerm() {
+        return companyTerm;
     }
 
-    public void setCompanyStatus(CompanyStatus companyStatus) {
-        this.companyStatus = companyStatus;
+    public void setCompanyTerm(CompanyTerm companyTerm) {
+        this.companyTerm = companyTerm;
     }
 
     @Transient
