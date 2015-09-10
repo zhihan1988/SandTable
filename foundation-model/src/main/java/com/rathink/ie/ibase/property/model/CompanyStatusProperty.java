@@ -7,16 +7,16 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "company_status_property_value")
-public class CompanyStatusPropertyValue {
+public class CompanyStatusProperty {
     private String id;
     private String name;
     private String value;
     private String dept;
     private CompanyTerm companyTerm;
 
-    public CompanyStatusPropertyValue(){}
+    public CompanyStatusProperty(){}
 
-    public CompanyStatusPropertyValue(EPropertyName ePropertyName, String value, CompanyTerm companyTerm) {
+    public CompanyStatusProperty(EPropertyName ePropertyName, String value, CompanyTerm companyTerm) {
         this.name = ePropertyName.name();
         this.value = value;
         this.dept = ePropertyName.getDept();

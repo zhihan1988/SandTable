@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class CompanyChoice {
     private String id;
-    private String type;
+    private String baseType;//表示是一个什么类型的选择 例如HumanChoice or OfficeChoice
+    private String type;//提供给子类使用的类型字段 每个子类有不同的定义
     private CampaignChance campaignChance;
     private String campaignDate;
     private Campaign campaign;
@@ -28,6 +29,15 @@ public class CompanyChoice {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Column(name = "base_type")
+    public String getBaseType() {
+        return baseType;
+    }
+
+    public void setBaseType(String baseType) {
+        this.baseType = baseType;
     }
 
     @Column(name = "type")

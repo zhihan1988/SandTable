@@ -8,7 +8,7 @@ import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyStatusManager;
@@ -84,45 +84,45 @@ public class WorkManagerImpl implements WorkManager {
         companyTerm.setCampaign(company.getCampaign());
         companyTerm.setCompany(company);
         companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
-        List<CompanyStatusPropertyValue> companyStatusPropertyValueList = prepareCompanyStatusProperty(companyTerm);
-        companyTerm.setCompanyStatusPropertyValueList(companyStatusPropertyValueList);
+        List<CompanyStatusProperty> companyStatusPropertyList = prepareCompanyStatusProperty(companyTerm);
+        companyTerm.setCompanyStatusPropertyList(companyStatusPropertyList);
         baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
         return companyTerm;
     }
 
     @Override
-    public List<CompanyStatusPropertyValue> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
-        List<CompanyStatusPropertyValue> companyStatusPropertyValueList = new ArrayList<CompanyStatusPropertyValue>();
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.SATISFACTION, "60", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.USER_AMOUNT, "2000", companyTerm));
+    public List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
+        List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.SATISFACTION, "60", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.USER_AMOUNT, "2000", companyTerm));
 //        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
-        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.PER_ORDER_COST, "60", companyTerm));
-        return companyStatusPropertyValueList;
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PER_ORDER_COST, "60", companyTerm));
+        return companyStatusPropertyList;
     }
 
     /**
      * 按部门分离公司属性
-     * @param companyStatusPropertyValueList
+     * @param companyStatusPropertyList
      * @return
      */
     @Override
-    public Map<String, List<CompanyStatusPropertyValue>> partCompanyStatusPropertyByDept(List<CompanyStatusPropertyValue> companyStatusPropertyValueList) {
-        Map<String, List<CompanyStatusPropertyValue>> map = new LinkedHashMap<>();
-        if (companyStatusPropertyValueList != null && !companyStatusPropertyValueList.isEmpty()) {
-            for (CompanyStatusPropertyValue companyStatusPropertyValue : companyStatusPropertyValueList) {
-                String dept = companyStatusPropertyValue.getDept();
+    public Map<String, List<CompanyStatusProperty>> partCompanyStatusPropertyByDept(List<CompanyStatusProperty> companyStatusPropertyList) {
+        Map<String, List<CompanyStatusProperty>> map = new LinkedHashMap<>();
+        if (companyStatusPropertyList != null && !companyStatusPropertyList.isEmpty()) {
+            for (CompanyStatusProperty companyStatusProperty : companyStatusPropertyList) {
+                String dept = companyStatusProperty.getDept();
                 if (map.containsKey(dept)) {
-                    map.get(dept).add(companyStatusPropertyValue);
+                    map.get(dept).add(companyStatusProperty);
                 } else {
-                    List<CompanyStatusPropertyValue> deptCompanyStatusPropertyValueList = new ArrayList<CompanyStatusPropertyValue>();
-                    deptCompanyStatusPropertyValueList.add(companyStatusPropertyValue);
-                    map.put(dept, deptCompanyStatusPropertyValueList);
+                    List<CompanyStatusProperty> deptCompanyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
+                    deptCompanyStatusPropertyList.add(companyStatusProperty);
+                    map.put(dept, deptCompanyStatusPropertyList);
                 }
             }
         }

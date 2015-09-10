@@ -2,7 +2,7 @@ package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.property.model.CompanyStatusPropertyValue;
+import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.service.CompanyStatusManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +29,13 @@ public class CompanyStatusManagerImpl implements CompanyStatusManager {
     }
 
     @Override
-    public CompanyStatusPropertyValue getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm){
+    public CompanyStatusProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm){
         String hql = "from CompanyStatusPropertyValue where name = :name and companyTerm.id = :companyStatusId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("name", propertyName);
         queryParamMap.put("companyStatusId", companyTerm.getId());
-        CompanyStatusPropertyValue companyStatusPropertyValue = (CompanyStatusPropertyValue) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        return companyStatusPropertyValue;
+        CompanyStatusProperty companyStatusProperty = (CompanyStatusProperty) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyStatusProperty;
     }
 
 }
