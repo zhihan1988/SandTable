@@ -5,7 +5,9 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +47,7 @@ public class AccountManagerImpl implements AccountManager {
         baseManager.saveOrUpdate(Account.class.getName(), account);
     }
 
-    @Override
-    public List<AccountEntry> prepareAccountEntity(List<? extends CompanyInstruction> companyInstructionList, String inType, String outType, Account account) {
+    public Account saveAccount(List<CompanyInstruction> companyInstructionList,String inType, String outType, CompanyTermHandler companyTermHandler) {
         Integer fee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -55,24 +56,18 @@ public class AccountManagerImpl implements AccountManager {
                 }
             }
         }
-        List<AccountEntry> accountEntryList = new ArrayList<>();
-        AccountEntry inAccountEntry = new AccountEntry();
-        inAccountEntry.setType(inType);
-        inAccountEntry.setDirection("1");
-        inAccountEntry.setValue(String.valueOf(fee));
-        inAccountEntry.setAccount(account);
-        accountEntryList.add(inAccountEntry);
-        AccountEntry outAccountEntity = new AccountEntry();
-        outAccountEntity.setType(outType);
-        outAccountEntity.setDirection("-1");
-        outAccountEntity.setValue(String.valueOf(fee));
-        outAccountEntity.setAccount(account);
-        accountEntryList.add(outAccountEntity);
-        return accountEntryList;
+        return this.saveAccount(String.valueOf(fee), inType, outType, companyTermHandler);
     }
 
+
     @Override
-    public List<AccountEntry> prepareAccountEntity(String fee, String inType, String outType, Account account) {
+    public Account saveAccount(String fee, String inType, String outType, CompanyTermHandler companyTermHandler) {
+        CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
+        Account account = new Account();
+        account.setCampaign(companyTerm.getCampaign());
+        account.setCampaignDate(companyTerm.getCampaignDate());
+        account.setCompany(companyTerm.getCompany());
+
         List<AccountEntry> accountEntryList = new ArrayList<>();
         AccountEntry inAccountEntry = new AccountEntry();
         inAccountEntry.setType(inType);
@@ -86,7 +81,11 @@ public class AccountManagerImpl implements AccountManager {
         outAccountEntity.setValue(String.valueOf(fee));
         outAccountEntity.setAccount(account);
         accountEntryList.add(outAccountEntity);
-        return accountEntryList;
+        
+        account.setAccountEntryList(accountEntryList);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        return account;
     }
 
     @Override

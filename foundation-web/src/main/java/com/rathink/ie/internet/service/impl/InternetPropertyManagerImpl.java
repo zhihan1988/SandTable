@@ -1,7 +1,7 @@
 package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
-import com.rathink.ie.ibase.service.CompanyStatusManager;
+import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private CompanyStatusManager companyStatusManager;
+    private CompanyTermManager companyTermManager;
 
  /*   public Integer getOfficeRatio(List<OfficeInstruction> officeInstructionList) {
 

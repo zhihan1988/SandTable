@@ -41,7 +41,7 @@ public class FlowController {
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workManager.nextCampaign(campaign);
+        workManager.next(campaign);
         return "success";
     }
 
@@ -49,7 +49,7 @@ public class FlowController {
     @ResponseBody
     public String pre(HttpServletRequest request, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workManager.preCampaign(campaign);
+        workManager.pre(campaign);
         return "success";
     }
 
@@ -73,7 +73,7 @@ public class FlowController {
             }
         }
         if (isAllNext) {
-            workManager.nextCampaign(campaign);
+            workManager.next(campaign);
         }
         return "success";
     }

@@ -20,7 +20,7 @@ public interface WorkManager {
 
     Map<String, List<CompanyStatusProperty>> partCompanyStatusPropertyByDept(List<CompanyStatusProperty> companyStatusPropertyList);
 
-    void nextCampaign(Campaign campaign);
+    void next(Campaign campaign);
 
-    void preCampaign(Campaign campaign);
+    void pre(Campaign campaign);
 }

@@ -1,12 +1,10 @@
 package com.rathink.ie.ibase.service;
 
-import com.rathink.ie.foundation.service.CampaignManager;
+import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import org.aspectj.apache.bcel.generic.Instruction;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,28 +15,22 @@ import java.util.Map;
  * Created by Hean on 2015/9/4.
  */
 public abstract class CompanyTermHandler {
+    protected CampaignHandler campaignHandler;
     protected CompanyTerm companyTerm;
     protected Map<String, String> propertyValueMap = new HashMap<>();
-    protected Map<String, String> prePropertyValueMap = new HashMap<>();
     protected List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<>();
-    protected List<CompanyInstruction> companyInstructionList = new ArrayList<>();
-
-    @Autowired
-    protected CampaignManager campaignManager;
+    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
+    protected List<Account> accountList = new ArrayList<>();
+    protected Map<String, String> prePropertyValueMap = new HashMap<>();
 
     public String get(String key) {
-        String value = null;
-        if (propertyValueMap.containsKey(key)) {
-            return propertyValueMap.get(key);
-        } else {
-            CompanyStatusProperty companyStatusProperty = produceProperty(key);
-            put(key, companyStatusProperty.getValue());
-            companyStatusPropertyList.add(companyStatusProperty);
-            return value;
+        if (!propertyValueMap.containsKey(key)) {
+            put(key, calculate(key));
         }
+        return propertyValueMap.get(key);
     }
 
-    abstract protected CompanyStatusProperty produceProperty(String key);
+    abstract public String calculate(String key);
 
     public void put(String key, String value) {
         propertyValueMap.put(key, value);
@@ -48,11 +40,11 @@ public abstract class CompanyTermHandler {
         return prePropertyValueMap.get(key);
     }
 
-    public void putInstruction(CompanyInstruction companyInstruction) {
-        companyInstructionList.add(companyInstruction);
-    }
 
-    public List<CompanyInstruction> listInstruction(String type) {
+    public List<CompanyInstruction> getCompanyInstructionListByType(String choiceType) {
+        return typeCompanyInstructionMap.get(choiceType);
+    }
+  /*  public List<CompanyInstruction> listInstruction(String type) {
         List<CompanyInstruction> typeCompanyInstructionList = new ArrayList<>();
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -63,15 +55,60 @@ public abstract class CompanyTermHandler {
             }
         }
         return typeCompanyInstructionList;
-    }
+    }*/
 
-    public CompanyTermHandler() {
+   /* public CompanyTermHandler() {
         this.competitiveBidding();
         this.calculateAll();
     }
 
-    public abstract void competitiveBidding();
+    public abstract void competitiveBidding();*/
 
+/*
     public abstract void calculateAll();
+*/
 
+    public CampaignHandler getCampaignHandler() {
+        return campaignHandler;
+    }
+
+    public void setCampaignHandler(CampaignHandler campaignHandler) {
+        this.campaignHandler = campaignHandler;
+    }
+
+    public CompanyTerm getCompanyTerm() {
+        return companyTerm;
+    }
+
+    public void setCompanyTerm(CompanyTerm companyTerm) {
+        this.companyTerm = companyTerm;
+    }
+
+    public Map<String, String> getPrePropertyValueMap() {
+        return prePropertyValueMap;
+    }
+
+    public void setPrePropertyValueMap(Map<String, String> prePropertyValueMap) {
+        this.prePropertyValueMap = prePropertyValueMap;
+    }
+
+    public List<CompanyStatusProperty> getCompanyStatusPropertyList() {
+        return companyStatusPropertyList;
+    }
+
+    public void setCompanyStatusPropertyList(List<CompanyStatusProperty> companyStatusPropertyList) {
+        this.companyStatusPropertyList = companyStatusPropertyList;
+    }
+
+    public void setTypeCompanyInstructionMap(Map<String, List<CompanyInstruction>> typeCompanyInstructionMap) {
+        this.typeCompanyInstructionMap = typeCompanyInstructionMap;
+    }
+
+    public List<Account> getAccountList() {
+        return accountList;
+    }
+
+    public void setAccountList(List<Account> accountList) {
+        this.accountList = accountList;
+    }
 }

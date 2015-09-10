@@ -14,5 +14,7 @@ public interface InstructionManager {
 
     void deleteInstruction(Company company, String companyChoiceId);
 
-    public List<CompanyInstruction> listCompanyInstruction(Company company, String type);
+    List<CompanyInstruction> listCompanyInstruction(Company company, String type);
+
+    List<CompanyInstruction> listCompanyInstructionByCampaignDate(String companyId, String campaignDate);
 }

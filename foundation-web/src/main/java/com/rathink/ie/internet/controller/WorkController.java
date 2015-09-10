@@ -6,9 +6,7 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
-import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CompanyStatusManager;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
+import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.Edept;
@@ -39,7 +37,7 @@ public class WorkController {
     @Autowired
     private WorkManager workManager;
     @Autowired
-    private CompanyStatusManager companyStatusManager;
+    private CompanyTermManager companyTermManager;
     @Autowired
     private ChoiceManager choiceManager;
     @Autowired
@@ -52,7 +50,7 @@ public class WorkController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        CompanyTerm companyTerm = companyStatusManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
         Map<String, List<CompanyStatusProperty>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyTerm.getCompanyStatusPropertyList());
         List<OfficeChoice> officeChoiceList = choiceManager.listOfficeChoice(campaign);
         List<Human> humanList = choiceManager.listHuman(campaign);
@@ -89,9 +87,7 @@ public class WorkController {
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        CompanyInstruction companyInstruction = instructionManager.saveOrUpdateInstruction(company, choiceId, value);
-        CompanyTermHandler companyTermHandler = CampaignCenter.getMyCompanyTermHandler(companyId);
-        companyTermHandler.putInstruction(companyInstruction);
+        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
         return "success";
     }
 

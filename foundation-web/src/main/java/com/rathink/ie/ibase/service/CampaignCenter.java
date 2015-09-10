@@ -7,13 +7,13 @@ import java.util.Map;
  * Created by Hean on 2015/9/4.
  */
 public class CampaignCenter {
-    private static Map<String, CompanyTermHandler> companyTermHandlerMap = new HashMap<>();
-
-    public static CompanyTermHandler getMyCompanyTermHandler(String companyId) {
-        return companyTermHandlerMap.get(companyId);
+    private static Map<String, CampaignHandler> campaignHandlerMap = new HashMap<>();
+    private CampaignCenter (){}
+    public static CampaignHandler getCampaignHandler(String campaignId) {
+        return campaignHandlerMap.get(campaignId);
     }
 
-    public static void putCompanyTermHandler(String companyId, CompanyTermHandler companyTermHandler) {
-        companyTermHandlerMap.put(companyId, companyTermHandler);
+    public static void putCompanyTermHandler(String campaignId, CampaignHandler campaignHandler) {
+        campaignHandlerMap.put(campaignId, campaignHandler);
     }
 }

@@ -13,9 +13,9 @@ import java.util.List;
 public interface AccountManager {
     void initCompanyAccount(Company company);
 
-    List<AccountEntry> prepareAccountEntity(List<? extends CompanyInstruction> companyInstructionList, String inType, String outType, Account account);
+    Account saveAccount(List<CompanyInstruction> companyInstructionList, String inType, String outType, CompanyTermHandler companyTermHandler);
 
-    List<AccountEntry> prepareAccountEntity(String fee, String inType, String outType, Account account);
+    Account saveAccount(String fee, String inType, String outType, CompanyTermHandler companyTermHandler);
 
     Integer getCompanyCash(Company company);
 

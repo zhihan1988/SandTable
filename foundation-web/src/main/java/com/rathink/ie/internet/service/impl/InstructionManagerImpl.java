@@ -4,16 +4,19 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.util.RandomUtil;
+import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Hean on 2015/8/26.
@@ -74,6 +77,15 @@ public class InstructionManagerImpl implements InstructionManager {
         XQuery xQuery = new XQuery();
         xQuery.setHql(hql);
         xQuery.setQueryParamMap(queryParamMap);
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
+        return companyInstructionList;
+    }
+
+    public List<CompanyInstruction> listCompanyInstructionByCampaignDate(String companyId, String campaignDate){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyInstruction where company.id = :companyId and campaignDate = :campaignDate");
+        xQuery.put("companyId", companyId);
+        xQuery.put("campaignDate", campaignDate);
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
     }

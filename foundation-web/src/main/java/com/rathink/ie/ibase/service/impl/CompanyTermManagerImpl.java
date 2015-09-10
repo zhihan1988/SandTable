@@ -4,7 +4,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.ibase.service.CompanyStatusManager;
+import com.rathink.ie.ibase.service.CompanyTermManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
  * Created by Hean on 2015/8/25.
  */
 @Service
-public class CompanyStatusManagerImpl implements CompanyStatusManager {
+public class CompanyTermManagerImpl implements CompanyTermManager {
     @Autowired
     private BaseManager baseManager;
 

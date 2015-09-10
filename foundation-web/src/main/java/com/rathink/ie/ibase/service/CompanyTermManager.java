@@ -7,7 +7,7 @@ import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 /**
  * Created by Hean on 2015/9/4.
  */
-public interface CompanyStatusManager {
+public interface CompanyTermManager {
     CompanyTerm getCompanyTerm(Company company, String campaignDate);
 
     CompanyStatusProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm);
