@@ -21,7 +21,7 @@ public enum EPropertyName{
     SATISFACTION("满意度", Edept.OPERATION.name(), "PERCENT"),
     OLD_USER_AMOUNT("老用户数量", Edept.OPERATION.name(), ""),
     USER_AMOUNT("用户数量", Edept.OPERATION.name(),""),
-    OPERATION_FEE_RATION("运营资金投入系数",Edept.OPERATION.name(),"HIDDEN");
+    OPERATION_FEE_RATIO("运营资金投入系数",Edept.OPERATION.name(),"HIDDEN");
 //    CURRENT_PERIOD_INCOME("本期收入", Edept.OPERATION.name()),
 
     private String label;

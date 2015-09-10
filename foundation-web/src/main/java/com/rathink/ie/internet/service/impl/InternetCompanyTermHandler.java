@@ -11,6 +11,7 @@ import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.choice.model.Human;
 import com.rathink.ie.internet.choice.model.MarketActivityChoice;
 import com.rathink.ie.internet.choice.model.ProductStudy;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,19 +30,44 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
             case OFFICE_RATIO:
                 value = calculateOfficeRatio();
                 break;
-            case NEW_USER_AMOUNT:
-                System.out.println(123);
+            case PRODUCT_ABILITY:
+                value = calculateDeptAbility(Edept.PRODUCT.name());
+                break;
+            case PRODUCT_FEE_RATIO:
+                value = calculateProductFeeRatio();
+                break;
+            case PRODUCT_RATIO:
+                value = calculateProductRatio();
+                break;
+            case PER_ORDER_COST:
+                value = calculatePerOrderCost();
+                break;
+            case PRODUCT_COMPETITION_RATIO:
+                value = calculateProductCompetitionRatio();
                 break;
             case MARKET_ABILITY:
                 value = calculateDeptAbility(Edept.MARKET.name());
                 break;
-            case PRODUCT_ABILITY:
-                value = calculateDeptAbility(Edept.PRODUCT.name());
+            case NEW_USER_AMOUNT:
+                value = calculateNewUserAmount();
                 break;
             case OPERATION_ABILITY:
                 value = calculateDeptAbility(Edept.OPERATION.name());
                 break;
+            case SATISFACTION:
+                value = calculateSatisfaction();
+                break;
+            case OLD_USER_AMOUNT:
+                value = calculateOldUserAmount();
+                break;
+            case USER_AMOUNT:
+                value = calculateUserAmount();
+                break;
+            case OPERATION_FEE_RATIO:
+                value = calculateOperationFeeRatio();
+                break;
             default:
+                throw new NotImplementedException();
         }
         return new CompanyStatusProperty(ePropertyName, value, companyTerm);
     }
@@ -186,7 +212,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private String calculateSatisfaction() {
         Integer operationAbility = Integer.valueOf(get(EPropertyName.OPERATION_ABILITY.name()));
-        Integer operationFeeRatio = Integer.valueOf(get(EPropertyName.OPERATION_FEE_RATION.name()));
+        Integer operationFeeRatio = Integer.valueOf(get(EPropertyName.OPERATION_FEE_RATIO.name()));
         Integer productRatio = Integer.valueOf(get(EPropertyName.PRODUCT_RATIO.name()));
         return String.valueOf(operationAbility * operationFeeRatio * productRatio);
     }
