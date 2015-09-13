@@ -86,9 +86,9 @@ public class WorkController {
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         String choiceId = request.getParameter("choiceId");
-        String value = request.getParameter("value");
+        String fee = request.getParameter("fee");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
+        instructionManager.saveOrUpdateInstruction(company, choiceId, fee);
         return "success";
     }
 

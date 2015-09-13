@@ -336,22 +336,20 @@
                 .change(function(){
                     var $fee = $(this);
                     var idArray = $fee.attr("id").split("_");
-                    var value = $fee.val();
-                    if(value!=-1) {
+                    var fee = $fee.val();
+                    if(fee!=-1) {
                         $.post("<c:url value="/work/makeInstruction"/>",
                                 {
                                     companyId: companyId,
                                     choiceId: idArray[2],
-                                    entity: idArray[0],
-                                    value: value
+                                    fee: fee
                                 });
                     } else {
                         $.post("<c:url value="/work/cancelInstruction"/>",
                                 {
                                     companyId: companyId,
                                     choiceId: idArray[2],
-                                    entity: idArray[0],
-                                    value: value
+                                    fee: fee
                                 });
                     }
 

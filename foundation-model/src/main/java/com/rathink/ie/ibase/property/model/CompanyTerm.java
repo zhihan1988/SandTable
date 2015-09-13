@@ -10,12 +10,12 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "company_status")
+@Table(name = "company_term")
 public class CompanyTerm {
     private String id;
     private Campaign campaign;
     private Company company;
-    private CompanyTerm preCompanyTerm;
+//    private CompanyTerm preCompanyTerm;
     private String campaignDate;//哪一季度展示（不是指在哪一季度产生的数据）
     private List<CompanyInstruction> companyInstructionList;
     private List<CompanyStatusProperty> companyStatusPropertyList;
@@ -52,7 +52,7 @@ public class CompanyTerm {
         this.company = company;
     }
 
-    @ManyToOne
+  /*  @ManyToOne
     @JoinColumn(name = "pre_company_term_id")
     public CompanyTerm getPreCompanyTerm() {
         return preCompanyTerm;
@@ -61,7 +61,7 @@ public class CompanyTerm {
     public void setPreCompanyTerm(CompanyTerm preCompanyTerm) {
         this.preCompanyTerm = preCompanyTerm;
     }
-
+*/
     @Column(name = "campaign_date")
     public String getCampaignDate() {
         return campaignDate;

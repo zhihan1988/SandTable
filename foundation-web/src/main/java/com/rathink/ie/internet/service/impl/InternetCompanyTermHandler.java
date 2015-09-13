@@ -80,18 +80,26 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
     public String calculateDeptAbility(String type) {
         List<CompanyInstruction> companyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
         Integer ability = 60;
-        for (CompanyInstruction companyInstruction : companyInstructionList) {
-            CompanyChoice human = companyInstruction.getCompanyChoice();
-            if (human.getType().equals(type)) {
-                ability += Integer.valueOf(human.getValue());
+        if (companyInstructionList != null) {
+            for (CompanyInstruction companyInstruction : companyInstructionList) {
+                CompanyChoice human = companyInstruction.getCompanyChoice();
+                if (human.getType().equals(type)) {
+                    ability += Integer.valueOf(human.getValue());
+                }
             }
         }
         return String.valueOf(ability);
     }
 
-    private String calculateOfficeRatio(){
-        String officeFee = get("officeFee");
-        Double officeRatio = Math.sqrt(Integer.valueOf(officeFee))+60;
+    private String calculateOfficeRatio() {
+        List<CompanyInstruction> companyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        Integer officeFee = 0;
+        if (companyInstructionList != null) {
+            for (CompanyInstruction companyInstruction : companyInstructionList) {
+                officeFee += Integer.valueOf(companyInstruction.getValue());
+            }
+        }
+        Double officeRatio = Math.sqrt(Integer.valueOf(officeFee)) + 60;
         return String.valueOf(officeRatio.intValue());
     }
 
@@ -121,7 +129,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private String calculateProductRatio() {
         Double productAbility = Double.valueOf(get(EPropertyName.PRODUCT_ABILITY.name()));
-        Double productFeeRatio = Double.valueOf(get("productFeeRatio"));
+        Double productFeeRatio = Double.valueOf(get("PRODUCT_FEE_RATIO"));
         Double preProductRatio = Double.valueOf(getPrePropertyValue(EPropertyName.PRODUCT_RATIO.name()));
         Double productRatio = Math.sqrt(productAbility * productFeeRatio + 10) + preProductRatio;
         return String.valueOf(productRatio.intValue());
@@ -132,7 +140,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return  客单价
      */
     private String calculatePerOrderCost() {
-        String grade = null;
+        String grade = "1";
         List<CompanyInstruction> productStudyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         if (productStudyInstructionList != null) {
             for (CompanyInstruction companyInstruction : productStudyInstructionList) {

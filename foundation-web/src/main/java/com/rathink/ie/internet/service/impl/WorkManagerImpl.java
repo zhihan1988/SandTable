@@ -85,6 +85,7 @@ public class WorkManagerImpl implements WorkManager {
         for (CompanyTerm companyTerm : companyTermList) {
             CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
             companyTermHandler.setCompanyTerm(companyTerm);
+            companyTermHandler.setCampaignHandler(campaignHandler);
             companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermHandler);
         }
         campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
@@ -180,7 +181,7 @@ public class WorkManagerImpl implements WorkManager {
             CompanyTerm companyTerm = new CompanyTerm();
             companyTerm.setCampaign(campaign);
             companyTerm.setCompany(ct.getCompany());
-            companyTerm.setPreCompanyTerm(ct);
+//            companyTerm.setPreCompanyTerm(ct);
             companyTerm.setCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
         }
@@ -188,9 +189,7 @@ public class WorkManagerImpl implements WorkManager {
 
     private void collectPreProperty(CompanyTermHandler companyTermHandler) {
         //上一轮的属性数据
-        CompanyTerm companyTerm = companyTermHandler.getPreCompanyTerm();
-        CompanyTerm preCompanyTerm = companyTermManager
-                .getCompanyTerm(companyTerm.getCompany(), CampaignUtil.getPreCampaignDate(companyTerm.getCampaignDate()));
+        CompanyTerm preCompanyTerm = companyTermHandler.getPreCompanyTerm();
         List<CompanyStatusProperty> preCompanyStatusPropertyList = preCompanyTerm.getCompanyStatusPropertyList();
         Map<String, String> prePropertyValueMap = new HashMap<>();
         if (preCompanyStatusPropertyList != null) {
@@ -263,11 +262,11 @@ public class WorkManagerImpl implements WorkManager {
             }
         }
         //统一更新未选中的
-        for (CompanyInstruction companyInstruction : companyInstructionList) {
-            if (EInstructionStatus.DQD.name().equals(companyInstruction.getStatus())) {
+        if (companyInstructionList != null) {
+            companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.name().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
                 companyInstruction.setStatus(EInstructionStatus.WXZ.name());
                 baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
-            }
+            });
         }
 
     }
