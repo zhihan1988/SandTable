@@ -81,7 +81,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 部门能力
      */
     public String calculateDeptAbility(String type) {
-        List<CompanyInstruction> companyInstructionList = getCompanyInstructionListByType(EChoiceBaseType.HUMAN.name());
+        List<CompanyInstruction> companyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
         Integer ability = 60;
         for (CompanyInstruction companyInstruction : companyInstructionList) {
             Human human = ((Human)companyInstruction.getCompanyChoice());
@@ -108,7 +108,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private String calculateProductFeeRatio() {
         Double fee = new Double(0);
-        List<CompanyInstruction> typeCompanyInstructionList = getCompanyInstructionListByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyInstruction> typeCompanyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
                 fee += Double.valueOf(companyInstruction.getValue());
@@ -136,7 +136,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private String calculatePerOrderCost() {
         String grade = null;
-        List<CompanyInstruction> productStudyInstructionList = getCompanyInstructionListByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyInstruction> productStudyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         if (productStudyInstructionList != null) {
             for (CompanyInstruction companyInstruction : productStudyInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
@@ -144,8 +144,8 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 break;
             }
         }
-        Integer perOrdreCost = Integer.valueOf(grade) * 10 + 60;
-        return String.valueOf(perOrdreCost);
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 60;
+        return String.valueOf(perOrderCost);
     }
 
     /**
@@ -176,7 +176,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Integer newUserAmount = 0;
         Integer marketAbility = Integer.valueOf(get(EPropertyName.MARKET_ABILITY.name()));
         Integer productCompetitionRatio = Integer.valueOf(get(EPropertyName.PRODUCT_COMPETITION_RATIO.name()));
-        List<CompanyInstruction> marketInstructionList = getCompanyInstructionListByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyInstruction> marketInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
         if (marketInstructionList != null) {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
@@ -194,7 +194,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private String calculateOperationFeeRatio() {
         Integer operationFee = 0;
-        List<CompanyInstruction> typeCompanyInstructionList = getCompanyInstructionListByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyInstruction> typeCompanyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
                 operationFee += Integer.valueOf(companyInstruction.getValue());

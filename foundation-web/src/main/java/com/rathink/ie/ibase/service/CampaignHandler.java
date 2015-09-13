@@ -1,6 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.util.CampaignUtil;
 
 import java.util.Map;
 

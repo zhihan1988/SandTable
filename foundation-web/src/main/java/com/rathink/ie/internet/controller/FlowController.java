@@ -5,6 +5,8 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.internet.service.WorkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,8 +42,8 @@ public class FlowController {
     @RequestMapping("/next")
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workManager.next(campaign);
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        workManager.next(campaignHandler);
         return "success";
     }
 
@@ -73,7 +75,8 @@ public class FlowController {
             }
         }
         if (isAllNext) {
-            workManager.next(campaign);
+            CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaign.getId());
+            workManager.next(campaignHandler);
         }
         return "success";
     }

@@ -47,7 +47,7 @@ public class AccountManagerImpl implements AccountManager {
         baseManager.saveOrUpdate(Account.class.getName(), account);
     }
 
-    public Account saveAccount(List<CompanyInstruction> companyInstructionList,String inType, String outType, CompanyTermHandler companyTermHandler) {
+    public Account saveAccount(List<CompanyInstruction> companyInstructionList,String inType, String outType, CompanyTerm companyTerm) {
         Integer fee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -56,13 +56,12 @@ public class AccountManagerImpl implements AccountManager {
                 }
             }
         }
-        return this.saveAccount(String.valueOf(fee), inType, outType, companyTermHandler);
+        return this.saveAccount(String.valueOf(fee), inType, outType, companyTerm);
     }
 
 
     @Override
-    public Account saveAccount(String fee, String inType, String outType, CompanyTermHandler companyTermHandler) {
-        CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
+    public Account saveAccount(String fee, String inType, String outType, CompanyTerm companyTerm) {
         Account account = new Account();
         account.setCampaign(companyTerm.getCampaign());
         account.setCampaignDate(companyTerm.getCampaignDate());

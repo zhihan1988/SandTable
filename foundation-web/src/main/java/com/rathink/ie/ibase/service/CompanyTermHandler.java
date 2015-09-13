@@ -1,9 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
 import java.util.ArrayList;
@@ -16,12 +14,12 @@ import java.util.Map;
  */
 public abstract class CompanyTermHandler {
     protected CampaignHandler campaignHandler;
+    protected CompanyTerm preCompanyTerm;
+    protected Map<String,List<CompanyInstruction>> preTypeCompanyInstructionMap = new HashMap<>();
+    protected Map<String, String> prePropertyValueMap = new HashMap<>();
     protected CompanyTerm companyTerm;
     protected Map<String, String> propertyValueMap = new HashMap<>();
-    protected List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<>();
-    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
     protected List<Account> accountList = new ArrayList<>();
-    protected Map<String, String> prePropertyValueMap = new HashMap<>();
 
     public String get(String key) {
         if (!propertyValueMap.containsKey(key)) {
@@ -41,32 +39,9 @@ public abstract class CompanyTermHandler {
     }
 
 
-    public List<CompanyInstruction> getCompanyInstructionListByType(String choiceType) {
-        return typeCompanyInstructionMap.get(choiceType);
+    public List<CompanyInstruction> listPreCompanyInstructionByType(String choiceType) {
+        return preTypeCompanyInstructionMap.get(choiceType);
     }
-  /*  public List<CompanyInstruction> listInstruction(String type) {
-        List<CompanyInstruction> typeCompanyInstructionList = new ArrayList<>();
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                if (type.equals(companyChoice.getType())) {
-                    typeCompanyInstructionList.add(companyInstruction);
-                }
-            }
-        }
-        return typeCompanyInstructionList;
-    }*/
-
-   /* public CompanyTermHandler() {
-        this.competitiveBidding();
-        this.calculateAll();
-    }
-
-    public abstract void competitiveBidding();*/
-
-/*
-    public abstract void calculateAll();
-*/
 
     public CampaignHandler getCampaignHandler() {
         return campaignHandler;
@@ -76,12 +51,12 @@ public abstract class CompanyTermHandler {
         this.campaignHandler = campaignHandler;
     }
 
-    public CompanyTerm getCompanyTerm() {
-        return companyTerm;
+    public CompanyTerm getPreCompanyTerm() {
+        return preCompanyTerm;
     }
 
-    public void setCompanyTerm(CompanyTerm companyTerm) {
-        this.companyTerm = companyTerm;
+    public void setPreCompanyTerm(CompanyTerm preCompanyTerm) {
+        this.preCompanyTerm = preCompanyTerm;
     }
 
     public Map<String, String> getPrePropertyValueMap() {
@@ -92,16 +67,8 @@ public abstract class CompanyTermHandler {
         this.prePropertyValueMap = prePropertyValueMap;
     }
 
-    public List<CompanyStatusProperty> getCompanyStatusPropertyList() {
-        return companyStatusPropertyList;
-    }
-
-    public void setCompanyStatusPropertyList(List<CompanyStatusProperty> companyStatusPropertyList) {
-        this.companyStatusPropertyList = companyStatusPropertyList;
-    }
-
-    public void setTypeCompanyInstructionMap(Map<String, List<CompanyInstruction>> typeCompanyInstructionMap) {
-        this.typeCompanyInstructionMap = typeCompanyInstructionMap;
+    public void setPreTypeCompanyInstructionMap(Map<String, List<CompanyInstruction>> preTypeCompanyInstructionMap) {
+        this.preTypeCompanyInstructionMap = preTypeCompanyInstructionMap;
     }
 
     public List<Account> getAccountList() {
@@ -111,4 +78,13 @@ public abstract class CompanyTermHandler {
     public void setAccountList(List<Account> accountList) {
         this.accountList = accountList;
     }
+
+    public CompanyTerm getCompanyTerm() {
+        return companyTerm;
+    }
+
+    public void setCompanyTerm(CompanyTerm companyTerm) {
+        this.companyTerm = companyTerm;
+    }
+
 }

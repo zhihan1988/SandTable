@@ -2,7 +2,7 @@ package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.account.model.AccountEntry;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.List;
 public interface AccountManager {
     void initCompanyAccount(Company company);
 
-    Account saveAccount(List<CompanyInstruction> companyInstructionList, String inType, String outType, CompanyTermHandler companyTermHandler);
+    Account saveAccount(List<CompanyInstruction> companyInstructionList, String inType, String outType, CompanyTerm companyTerm);
 
-    Account saveAccount(String fee, String inType, String outType, CompanyTermHandler companyTermHandler);
+    Account saveAccount(String fee, String inType, String outType, CompanyTerm companyTerm);
 
     Integer getCompanyCash(Company company);
 
