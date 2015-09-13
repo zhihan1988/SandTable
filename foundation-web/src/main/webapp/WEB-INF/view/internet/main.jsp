@@ -42,13 +42,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${officeInstructionList}" var="officeInstruction">
+                <c:forEach items="${officeInstructionList}" var="instruction">
                     <tr>
                         <td>
-                            ${officeInstruction.officeChoice.description}
+                            ${instruction.companyChoice.description}
                         </td>
                         <td>
-                            ${officeInstruction.fee}
+                            ${instruction.fee}
                         </td>
                     </tr>
                 </c:forEach>
@@ -105,9 +105,9 @@
                 <c:forEach items="${hrInstructionList}" var="hrInstruction">
                     <tr>
                         <td>
-                                ${hrInstruction.human.name}（${hrInstruction.human.typeLabel}）
+                                ${hrInstruction.companyChoice.name}（${hrInstruction.companyChoice.typeLabel}）
                         </td>
-                        <td>${hrInstruction.human.ability}</td>
+                        <td>${hrInstruction.companyChoice.ability}</td>
                         <td>
                                 ${hrInstruction.fee}
                         </td>
@@ -145,13 +145,14 @@
                         <tr>
                             <td>
                                 <input type="hidden" name="humanId" value="${human.id}"/>
-                                    ${human.name}（${human.typeLabel}）
+                                    ${human.name}
+                                <%--（${human.typeLabel}）--%>
                             </td>
-                            <td>${human.ability}</td>
+                            <td>${human.value}</td>
                             <td>
                                 <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(human. fees, ',')}" var="fee">
+                                    <c:forEach items="${fn:split(human.fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
@@ -195,7 +196,7 @@
                     <tbody>
                     <c:forEach items="${productStudyList}" var="productStudy">
                         <tr>
-                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.gradeLabel}</td>
+                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.value}</td>
                             <td>
                                 <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee"
                                         data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
@@ -293,7 +294,7 @@
                     <c:forEach items="${marketActivityChoiceList}" var="marketActivityChoice">
                         <tr>
                             <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
-                            <td>${marketActivityChoice.cost}</td>
+                            <td>${marketActivityChoice.value}</td>
                             <td>
                                 <select id="marketInstruction_fee_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>

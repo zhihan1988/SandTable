@@ -3,8 +3,8 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
+import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,6 @@ import java.util.List;
 public class ChoiceManagerImpl implements ChoiceManager {
     @Autowired
     private BaseManager baseManager;
-    @Autowired
-    private CampaignManager campaignManager;
 
     @Override
     public List<CompanyChoice> listCompanyChoice(Campaign campaign,String choiceType){
@@ -47,26 +45,37 @@ public class ChoiceManagerImpl implements ChoiceManager {
 
     private void produceProductStudyChoice(Campaign campaign) {
         CompanyChoice productStudy = new CompanyChoice();
+        productStudy.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
         productStudy.setName("低端定位");
         productStudy.setValue("1");
-        productStudy.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy);
         CompanyChoice productStudy2 = new CompanyChoice();
+        productStudy2.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy2.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy2.setCampaign(campaign);
         productStudy2.setDept(Edept.PRODUCT.name());
         productStudy2.setName("中端定位");
         productStudy2.setValue("2");
-        productStudy2.setFees("10000,20000,50000");
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy2);
+    }
 
+    private void produceProductStudyFeeChoice(Campaign campaign) {
+        CompanyChoice productStudyFee = new CompanyChoice();
+        productStudyFee.setBaseType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        productStudyFee.setCampaignDate(campaign.getCurrentCampaignDate());
+        productStudyFee.setCampaign(campaign);
+        productStudyFee.setDept(Edept.PRODUCT.name());
+        productStudyFee.setName("产品研发投入");
+        productStudyFee.setFees("10000,20000,30000");
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudyFee);
     }
 
     private void produceOperationChoice(Campaign campaign) {
         CompanyChoice operationChoice = new CompanyChoice();
+        operationChoice.setBaseType(EChoiceBaseType.OPERATION.name());
         operationChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         operationChoice.setCampaign(campaign);
         operationChoice.setDept(Edept.OPERATION.name());
@@ -76,6 +85,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
 
     private void produceMarketActivityChoice(Campaign campaign) {
         CompanyChoice marketActivityChoice = new CompanyChoice();
+        marketActivityChoice.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
@@ -87,6 +97,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice);
 
         CompanyChoice marketActivityChoice2 = new CompanyChoice();
+        marketActivityChoice2.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
@@ -100,21 +111,26 @@ public class ChoiceManagerImpl implements ChoiceManager {
 
     private void productOfficeChoice(Campaign campaign) {
         CompanyChoice officeChoice = new CompanyChoice();
+        officeChoice.setBaseType(EChoiceBaseType.OFFICE.name());
         officeChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice.setCampaign(campaign);
         officeChoice.setFees("30000");
         officeChoice.setDescription("近地铁");
+        officeChoice.setDept(Edept.AD.name());
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice);
         CompanyChoice officeChoice2 = new CompanyChoice();
+        officeChoice2.setBaseType(EChoiceBaseType.OFFICE.name());
         officeChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice2.setCampaign(campaign);
         officeChoice2.setFees("20000");
         officeChoice2.setDescription("安静");
+        officeChoice.setDept(Edept.AD.name());
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice2);
     }
 
     private void produceHumanChoice(Campaign campaign) {
         CompanyChoice human = new CompanyChoice();
+        human.setBaseType(EChoiceBaseType.HUMAN.name());
         human.setCampaignDate(campaign.getCurrentCampaignDate());
         human.setCampaign(campaign);
         human.setDept(Edept.HR.name());
@@ -124,6 +140,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human.setValue("10");
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), human);
         CompanyChoice human3 = new CompanyChoice();
+        human3.setBaseType(EChoiceBaseType.HUMAN.name());
         human3.setCampaignDate(campaign.getCurrentCampaignDate());
         human3.setCampaign(campaign);
         human3.setDept(Edept.HR.name());
@@ -133,6 +150,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human3.setValue("8");
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), human3);
         CompanyChoice human4 = new CompanyChoice();
+        human4.setBaseType(EChoiceBaseType.HUMAN.name());
         human4.setCampaignDate(campaign.getCurrentCampaignDate());
         human4.setCampaign(campaign);
         human4.setDept(Edept.HR.name());
