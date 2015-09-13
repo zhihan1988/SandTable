@@ -4,8 +4,8 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
+import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.choice.model.*;
 import com.rathink.ie.internet.service.ChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,57 +24,16 @@ public class ChoiceManagerImpl implements ChoiceManager {
     private CampaignManager campaignManager;
 
     @Override
-    public List<OfficeChoice> listOfficeChoice(Campaign campaign){
+    public List<CompanyChoice> listCompanyChoice(Campaign campaign,String choiceType){
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from OfficeChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.setHql("from CompanyChoice where campaign.id = :campaignId and campaignDate = :campaignDate and baseType = :choiceType");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
         queryParamMap.put("campaignId", campaign.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
-        xQuery.setQueryParamMap(queryParamMap);
-        List officeChoiceList = baseManager.listObject(xQuery);
-        return officeChoiceList;
-    }
-
-    @Override
-    public List<Human> listHuman(Campaign campaign){
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from Human where campaign.id = :campaignId and campaignDate = :campaignDate");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaign.getId());
-        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        queryParamMap.put("choiceType", choiceType);
         xQuery.setQueryParamMap(queryParamMap);
         List humanList = baseManager.listObject(xQuery);
         return humanList;
-    }
-
-    @Override
-    public List<MarketActivityChoice> listMarketActivityChoice(Campaign campaign){
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from MarketActivityChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
-        xQuery.put("campaignId", campaign.getId());
-        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
-        List marketActivityChoiceList = baseManager.listObject(xQuery);
-        return marketActivityChoiceList;
-    }
-
-    @Override
-    public List<ProductStudy> listProductStudy(Campaign campaign){
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from ProductStudy where campaign.id = :campaignId and campaignDate = :campaignDate");
-        xQuery.put("campaignId", campaign.getId());
-        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
-        List productStudyList = baseManager.listObject(xQuery);
-        return productStudyList;
-    }
-
-    @Override
-    public List<OperationChoice> listOperationChoice(Campaign campaign) {
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from OperationChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
-        xQuery.put("campaignId", campaign.getId());
-        xQuery.put("campaignDate", campaign.getCurrentCampaignDate());
-        List operationChoiceList = baseManager.listObject(xQuery);
-        return operationChoiceList;
     }
 
     @Override
@@ -87,99 +46,101 @@ public class ChoiceManagerImpl implements ChoiceManager {
     }
 
     private void produceProductStudyChoice(Campaign campaign) {
-        ProductStudy productStudy = new ProductStudy();
+        CompanyChoice productStudy = new CompanyChoice();
         productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
-        productStudy.setGrade("1");
+        productStudy.setName("低端定位");
+        productStudy.setValue("1");
         productStudy.setFees("10000,20000,50000");
-        baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy);
-        ProductStudy productStudy2 = new ProductStudy();
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy);
+        CompanyChoice productStudy2 = new CompanyChoice();
         productStudy2.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy2.setCampaign(campaign);
         productStudy2.setDept(Edept.PRODUCT.name());
-        productStudy2.setGrade("2");
+        productStudy2.setName("中端定位");
+        productStudy2.setValue("2");
         productStudy2.setFees("10000,20000,50000");
-        baseManager.saveOrUpdate(ProductStudy.class.getName(), productStudy2);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy2);
 
     }
 
     private void produceOperationChoice(Campaign campaign) {
-        OperationChoice operationChoice = new OperationChoice();
+        CompanyChoice operationChoice = new CompanyChoice();
         operationChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         operationChoice.setCampaign(campaign);
         operationChoice.setDept(Edept.OPERATION.name());
         operationChoice.setFees("10000,20000,50000");
-        baseManager.saveOrUpdate(OperationChoice.class.getName(), operationChoice);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), operationChoice);
     }
 
     private void produceMarketActivityChoice(Campaign campaign) {
-        MarketActivityChoice marketActivityChoice = new MarketActivityChoice();
+        CompanyChoice marketActivityChoice = new CompanyChoice();
         marketActivityChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
         marketActivityChoice.setName("网络推广");
-        marketActivityChoice.setCost("20");
+        marketActivityChoice.setValue("20");//成本
         marketActivityChoice.setFees("10000,20000,50000");
         marketActivityChoice.setRandomHigh("100");
         marketActivityChoice.setRandomLow("20");
-        baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice);
 
-        MarketActivityChoice marketActivityChoice2 = new MarketActivityChoice();
+        CompanyChoice marketActivityChoice2 = new CompanyChoice();
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
         marketActivityChoice2.setName("地面推广");
-        marketActivityChoice2.setCost("30");
+        marketActivityChoice2.setValue("30");//成本
         marketActivityChoice2.setFees("20000,50000,100000");
         marketActivityChoice2.setRandomHigh("60");
         marketActivityChoice2.setRandomLow("40");
-        baseManager.saveOrUpdate(MarketActivityChoice.class.getName(), marketActivityChoice2);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice2);
     }
 
     private void productOfficeChoice(Campaign campaign) {
-        OfficeChoice officeChoice = new OfficeChoice();
+        CompanyChoice officeChoice = new CompanyChoice();
         officeChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice.setCampaign(campaign);
         officeChoice.setFees("30000");
         officeChoice.setDescription("近地铁");
-        baseManager.saveOrUpdate(OfficeChoice.class.getName(), officeChoice);
-        OfficeChoice officeChoice2 = new OfficeChoice();
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice);
+        CompanyChoice officeChoice2 = new CompanyChoice();
         officeChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice2.setCampaign(campaign);
         officeChoice2.setFees("20000");
         officeChoice2.setDescription("安静");
-        baseManager.saveOrUpdate(OfficeChoice.class.getName(), officeChoice2);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice2);
     }
 
     private void produceHumanChoice(Campaign campaign) {
-        Human human = new Human();
+        CompanyChoice human = new CompanyChoice();
         human.setCampaignDate(campaign.getCurrentCampaignDate());
         human.setCampaign(campaign);
         human.setDept(Edept.HR.name());
         human.setName("小张");
         human.setType(Edept.PRODUCT.name());
         human.setFees("20000,25000,30000");
-        human.setAbility("10");
-        baseManager.saveOrUpdate(Human.class.getName(), human);
-        Human human3 = new Human();
+        human.setValue("10");
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human);
+        CompanyChoice human3 = new CompanyChoice();
         human3.setCampaignDate(campaign.getCurrentCampaignDate());
         human3.setCampaign(campaign);
         human3.setDept(Edept.HR.name());
         human3.setName("小王");
         human3.setType(Edept.OPERATION.name());
         human3.setFees("15000,20000,25000");
-        human3.setAbility("8");
-        baseManager.saveOrUpdate(Human.class.getName(), human3);
-        Human human4 = new Human();
+        human3.setValue("8");
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human3);
+        CompanyChoice human4 = new CompanyChoice();
         human4.setCampaignDate(campaign.getCurrentCampaignDate());
         human4.setCampaign(campaign);
         human4.setDept(Edept.HR.name());
         human4.setName("小明");
         human4.setType(Edept.MARKET.name());
         human4.setFees("10000,15000,20000");
-        human4.setAbility("6");
-        baseManager.saveOrUpdate(Human.class.getName(), human4);
+        human4.setValue("6");
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human4);
     }
 
 

@@ -7,9 +7,6 @@ import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.choice.model.Human;
-import com.rathink.ie.internet.choice.model.MarketActivityChoice;
-import com.rathink.ie.internet.choice.model.ProductStudy;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Component;
 
@@ -84,9 +81,9 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         List<CompanyInstruction> companyInstructionList = listPreCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
         Integer ability = 60;
         for (CompanyInstruction companyInstruction : companyInstructionList) {
-            Human human = ((Human)companyInstruction.getCompanyChoice());
+            CompanyChoice human = companyInstruction.getCompanyChoice();
             if (human.getType().equals(type)) {
-                ability += Integer.valueOf(human.getAbility());
+                ability += Integer.valueOf(human.getValue());
             }
         }
         return String.valueOf(ability);
@@ -140,7 +137,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         if (productStudyInstructionList != null) {
             for (CompanyInstruction companyInstruction : productStudyInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                grade = ((ProductStudy) companyChoice).getGrade();
+                grade = companyChoice.getValue();
                 break;
             }
         }
@@ -180,7 +177,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         if (marketInstructionList != null) {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                String marketCost = ((MarketActivityChoice)companyChoice).getCost();
+                String marketCost = companyChoice.getValue();
                 String marketFee = companyInstruction.getValue();
                 newUserAmount += marketAbility * Integer.valueOf(marketCost) / Integer.valueOf(marketFee) / productCompetitionRatio;
             }
