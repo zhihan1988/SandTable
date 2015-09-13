@@ -25,6 +25,7 @@ import com.rathink.ie.internet.service.WorkManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -62,46 +63,24 @@ public class WorkManagerImpl implements WorkManager {
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
 
         //2.初始化各公司
-        List<CompanyTerm> companyTermList = new ArrayList<>();
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(Company.class.getName(), company);
-            CompanyTerm companyTerm = initCompanyTerm(company);
-            companyTermList.add(companyTerm);
+            CompanyTerm companyTerm = new CompanyTerm();
+            companyTerm.setCampaign(company.getCampaign());
+            companyTerm.setCompany(company);
+            companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
+            List<CompanyStatusProperty> companyStatusPropertyList = prepareCompanyStatusProperty(companyTerm);
+            companyTerm.setCompanyStatusPropertyList(companyStatusPropertyList);
+            baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
         }
+
         //3.准备供用户决策用的随机数据
         choiceManager.produceChoice(campaign);
 
-        initCampaignHandler(campaign, companyTermList);
+        CampaignCenter.init(campaign.getId());
 
-    }
-
-    private void initCampaignHandler(Campaign campaign, List<CompanyTerm> companyTermList) {
-        CampaignHandler campaignHandler = new CampaignHandler();
-        campaignHandler.setCampaign(campaign);
-
-        Map<String, CompanyTermHandler> companyTermHandlerMap = new HashMap<>();
-        for (CompanyTerm companyTerm : companyTermList) {
-            CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
-            companyTermHandler.setCompanyTerm(companyTerm);
-            companyTermHandler.setCampaignHandler(campaignHandler);
-            companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermHandler);
-        }
-        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
-
-        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignHandler);
-    }
-
-    private CompanyTerm initCompanyTerm(Company company) {
-        CompanyTerm companyTerm = new CompanyTerm();
-        companyTerm.setCampaign(company.getCampaign());
-        companyTerm.setCompany(company);
-        companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
-        List<CompanyStatusProperty> companyStatusPropertyList = prepareCompanyStatusProperty(companyTerm);
-        companyTerm.setCompanyStatusPropertyList(companyStatusPropertyList);
-        baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
-        return companyTerm;
     }
 
     private List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
@@ -143,8 +122,8 @@ public class WorkManagerImpl implements WorkManager {
     }
 
     public void next(String campaignId) {
+        processNext(campaignId);
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
-        processNext(campaignHandler);
 
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -167,9 +146,10 @@ public class WorkManagerImpl implements WorkManager {
 
     /**
      * 开始新的回合
-     * @param campaignHandler
+     * @param campaignId
      */
-    private void processNext(CampaignHandler campaignHandler) {
+    private void processNext(String campaignId) {
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
         Campaign campaign = campaignHandler.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);

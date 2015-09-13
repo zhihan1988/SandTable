@@ -5,6 +5,8 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.RandomUtil;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -30,6 +32,8 @@ public class InstructionManagerImpl implements InstructionManager {
 
     @Override
     public CompanyInstruction saveOrUpdateInstruction(Company company, String companyChoiceId, String value) {
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(company.getCampaign().getId());
+        CompanyTermHandler companyTermHandler = campaignHandler.getCompanyTermHandlerMap().get(company.getId());
         CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), companyChoiceId);
         Campaign campaign = company.getCampaign();
         String hql = "from CompanyInstruction where companyChoice.id = :companyChoiceId" +
@@ -46,8 +50,12 @@ public class InstructionManagerImpl implements InstructionManager {
             companyInstruction.setCampaign(campaign);
             companyInstruction.setCompany(company);
         }
+        companyInstruction.setCompanyTerm(companyTermHandler.getCompanyTerm());
         companyInstruction.setCompanyChoice(companyChoice);
+        companyInstruction.setBaseType(companyChoice.getBaseType());
+        companyInstruction.setStatus(EInstructionStatus.DQD.getValue());
         companyInstruction.setValue(value);
+        companyInstruction.setDept(companyChoice.getDept());
         baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
 
         return companyInstruction;
@@ -68,15 +76,22 @@ public class InstructionManagerImpl implements InstructionManager {
         }
     }
 
-    public List<CompanyInstruction> listCompanyInstruction(Company company, String type) {
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        String hql = "from CompanyInstruction where type = :type and  status=:status and company.id = :companyId";
-        queryParamMap.put("type", type);
-        queryParamMap.put("status", EInstructionStatus.YXZ.getValue());
-        queryParamMap.put("companyId", company.getId());
+    public List<CompanyInstruction> listCompanyInstructionByType(Company company, String baseType) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql(hql);
-        xQuery.setQueryParamMap(queryParamMap);
+        xQuery.setHql("from CompanyInstruction where baseType = :baseType and  status=:status and company.id = :companyId");
+        xQuery.put("baseType", baseType);
+        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("companyId", company.getId());
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
+        return companyInstructionList;
+    }
+
+    public List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyInstruction where dept = :dept and  status=:status and company.id = :companyId");
+        xQuery.put("dept", dept);
+        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("companyId", company.getId());
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
     }

@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class CompanyInstruction {
     private String id;
     private String status;
-    private String type;
+    private String baseType;
     private String campaignDate;
     private Campaign campaign;
     private Company company;
@@ -45,13 +45,13 @@ public class CompanyInstruction {
         this.status = status;
     }
 
-    @Column(name = "type")
-    public String getType() {
-        return type;
+    @Column(name = "base_type")
+    public String getBaseType() {
+        return baseType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setBaseType(String baseType) {
+        this.baseType = baseType;
     }
 
     @Column(name = "campaign_date")

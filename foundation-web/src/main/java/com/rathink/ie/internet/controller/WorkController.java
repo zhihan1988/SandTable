@@ -1,6 +1,7 @@
 package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
@@ -17,6 +18,7 @@ import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.WorkManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,8 +65,8 @@ public class WorkController {
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
         Integer campaignDateOutCash = accountManager.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
-        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstruction(company, Edept.HR.name());
-        List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstruction(company, Edept.AD.name());
+        List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
+        List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.AD.name());
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
