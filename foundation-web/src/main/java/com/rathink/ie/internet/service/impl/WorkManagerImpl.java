@@ -47,49 +47,52 @@ public class WorkManagerImpl implements WorkManager {
     private CampaignManager campaignManager;
     @Autowired
     private AccountManager accountManager;
-    @Autowired
-    private InternetPropertyManager internetPropertyManager;
+
     /**
      * 开始游戏 定时任务执行
-     * @param campaign
+     * @param campaignId
      */
     @Override
-    public void initCampaign(Campaign campaign) {
-        final String INIT_CAMPAIGNDATE = "010101";
+    public void begin(String campaignId) {
+        final String INIT_CAMPAIGN_DATE = "010101";
         //1.比赛开始
-        campaign.setCurrentCampaignDate(INIT_CAMPAIGNDATE);
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
         campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
 
-        //2.初始化各公司基本属性
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from Company where campaign.id = :campaignId");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaign.getId());
-        xQuery.setQueryParamMap(queryParamMap);
-        List<Company> companyList = baseManager.listObject(xQuery);
-        Map<String, CompanyTermHandler> companyTermHandlerMap = new HashMap<>();
+        //2.初始化各公司
+        List<CompanyTerm> companyTermList = new ArrayList<>();
+        List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(Company.class.getName(), company);
             CompanyTerm companyTerm = initCompanyTerm(company);
-
-            CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
-            companyTermHandler.setPreCompanyTerm(companyTerm);
-            companyTermHandlerMap.put(company.getId(), companyTermHandler);
+            companyTermList.add(companyTerm);
         }
         //3.准备供用户决策用的随机数据
         choiceManager.produceChoice(campaign);
 
-        CampaignHandler campaignHandler = new CampaignHandler();
-        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
-        campaignHandler.setCampaign(campaign);
-        CampaignCenter.putCompanyTermHandler(campaign.getId(), campaignHandler);
+        initCampaignHandler(campaign, companyTermList);
 
     }
 
+    private void initCampaignHandler(Campaign campaign, List<CompanyTerm> companyTermList) {
+        CampaignHandler campaignHandler = new CampaignHandler();
+        campaignHandler.setCampaign(campaign);
 
-    public CompanyTerm initCompanyTerm(Company company) {
+        Map<String, CompanyTermHandler> companyTermHandlerMap = new HashMap<>();
+        for (CompanyTerm companyTerm : companyTermList) {
+            CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
+            companyTermHandler.setCompanyTerm(companyTerm);
+            companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermHandler);
+        }
+        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
+
+        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignHandler);
+    }
+
+    private CompanyTerm initCompanyTerm(Company company) {
         CompanyTerm companyTerm = new CompanyTerm();
         companyTerm.setCampaign(company.getCampaign());
         companyTerm.setCompany(company);
@@ -100,8 +103,7 @@ public class WorkManagerImpl implements WorkManager {
         return companyTerm;
     }
 
-    @Override
-    public List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
+    private List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
         List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.SATISFACTION, "60", companyTerm));
@@ -139,6 +141,29 @@ public class WorkManagerImpl implements WorkManager {
         return map;
     }
 
+    public void next(String campaignId) {
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+        processNext(campaignHandler);
+
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+            //0.收集上一轮的属性数据
+            collectPreProperty(companyTermHandler);
+            //1.收集上一轮的决策数据
+            collectInstruction(companyTermHandler);
+            //2.人才招聘等竞标结果
+            competitiveBidding(companyTermHandler);
+            //3.计算保存本轮属性数据
+            calculateProperty(companyTermHandler);
+            //4.计算本轮财务数据
+            calculateAccount(companyTermHandler);
+        }
+
+        //准备供用户决策用的随机数据
+        choiceManager.produceChoice(campaignHandler.getCampaign());
+    }
+
     /**
      * 开始新的回合
      * @param campaignHandler
@@ -159,29 +184,6 @@ public class WorkManagerImpl implements WorkManager {
             companyTerm.setCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
         }
-    }
-
-
-    public void next(CampaignHandler campaignHandler) {
-        processNext(campaignHandler);
-
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-            //0.收集上一轮的属性数据
-            collectPreProperty(companyTermHandler);
-            //1.收集上一轮的决策数据
-            collectInstruction(companyTermHandler);
-            //2.人才招聘等竞标结果
-            competitiveBidding(companyTermHandler);
-            //3.计算保存本轮属性数据
-            calculateProperty(companyTermHandler);
-            //4.计算本轮财务数据
-            calculateAccount(companyTermHandler);
-        }
-
-        //准备供用户决策用的随机数据
-        choiceManager.produceChoice(campaignHandler.getCampaign());
     }
 
     private void collectPreProperty(CompanyTermHandler companyTermHandler) {
@@ -317,10 +319,12 @@ public class WorkManagerImpl implements WorkManager {
     /**
      * 测试方法
      * 回到上一轮
-     * @param campaign
+     * @param campaignId
      */
     @Override
-    public void pre(Campaign campaign) {
+    public void pre(String campaignId) {
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+        Campaign campaign = campaignHandler.getCampaign();
         SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
         Session session = sessionFactory.getCurrentSession();
 

@@ -13,7 +13,7 @@ public class CampaignCenter {
         return campaignHandlerMap.get(campaignId);
     }
 
-    public static void putCompanyTermHandler(String campaignId, CampaignHandler campaignHandler) {
+    public static void putCampaignTermHandler(String campaignId, CampaignHandler campaignHandler) {
         campaignHandlerMap.put(campaignId, campaignHandler);
     }
 }

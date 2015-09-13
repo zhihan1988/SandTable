@@ -7,7 +7,9 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignHandler;
+import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.internet.service.WorkManager;
+import com.rathink.ie.internet.service.impl.InternetCompanyTermHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/28.
@@ -34,24 +38,24 @@ public class FlowController {
     @RequestMapping("/begin")
     @ResponseBody
     public String begin(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workManager.initCampaign(campaign);
+        String campaignId = request.getParameter("campaignId");
+        workManager.begin(campaignId);
         return "success";
     }
 
     @RequestMapping("/next")
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        workManager.next(campaignHandler);
+        String campaignId = request.getParameter("campaignId");
+        workManager.next(campaignId);
         return "success";
     }
 
     @RequestMapping("/pre")
     @ResponseBody
     public String pre(HttpServletRequest request, Model model) throws Exception {
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), request.getParameter("campaignId"));
-        workManager.pre(campaign);
+        String campaignId = request.getParameter("campaignId");
+        workManager.pre(campaignId);
         return "success";
     }
 
@@ -75,8 +79,7 @@ public class FlowController {
             }
         }
         if (isAllNext) {
-            CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaign.getId());
-            workManager.next(campaignHandler);
+            workManager.next(campaign.getId());
         }
         return "success";
     }

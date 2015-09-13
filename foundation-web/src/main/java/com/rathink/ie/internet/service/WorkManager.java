@@ -13,13 +13,11 @@ import java.util.Map;
  * Created by Hean on 2015/9/4.
  */
 public interface WorkManager {
-    void initCampaign(Campaign campaign);
-
-    List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm);
+    void begin(String campaignId);
 
     Map<String, List<CompanyStatusProperty>> partCompanyStatusPropertyByDept(List<CompanyStatusProperty> companyStatusPropertyList);
 
-    void next(CampaignHandler campaignHandler);
+    void next(String campaignId);
 
-    void pre(Campaign campaign);
+    void pre(String campaignId);
 }
