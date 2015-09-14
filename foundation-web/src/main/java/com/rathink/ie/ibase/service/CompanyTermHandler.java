@@ -66,7 +66,7 @@ public abstract class CompanyTermHandler {
         typeCompanyInstructionMap = new HashMap<>();
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
-                String choiceType = companyInstruction.getCompanyChoice().getType();
+                String choiceType = companyInstruction.getCompanyChoice().getBaseType();
                 if (typeCompanyInstructionMap.containsKey(choiceType)) {
                     typeCompanyInstructionMap.get(choiceType).add(companyInstruction);
                 } else {

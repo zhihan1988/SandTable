@@ -22,12 +22,12 @@ public class ChoiceManagerImpl implements ChoiceManager {
     private BaseManager baseManager;
 
     @Override
-    public List<CompanyChoice> listCompanyChoice(Campaign campaign,String choiceType){
+    public List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyChoice where campaign.id = :campaignId and campaignDate = :campaignDate and baseType = :choiceType");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
-        queryParamMap.put("campaignId", campaign.getId());
-        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        queryParamMap.put("campaignId", campaignId);
+        queryParamMap.put("campaignDate", campaignDate);
         queryParamMap.put("choiceType", choiceType);
         xQuery.setQueryParamMap(queryParamMap);
         List humanList = baseManager.listObject(xQuery);
@@ -124,7 +124,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice2.setCampaign(campaign);
         officeChoice2.setFees("20000");
         officeChoice2.setDescription("安静");
-        officeChoice.setDept(Edept.AD.name());
+        officeChoice2.setDept(Edept.AD.name());
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice2);
     }
 

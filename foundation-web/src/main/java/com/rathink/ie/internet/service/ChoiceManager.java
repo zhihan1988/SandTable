@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Hean on 2015/9/4.
  */
 public interface ChoiceManager {
-    List<CompanyChoice> listCompanyChoice(Campaign campaign, String choiceType);
+    List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType);
 
     void produceChoice(Campaign campaign);
 }

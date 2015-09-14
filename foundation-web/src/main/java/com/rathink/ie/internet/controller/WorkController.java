@@ -18,7 +18,6 @@ import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.WorkManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,11 +54,11 @@ public class WorkController {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
         Map<String, List<CompanyStatusProperty>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyTerm.getCompanyStatusPropertyList());
-        List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign, EChoiceBaseType.OFFICE.name());
-        List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign, EChoiceBaseType.HUMAN.name());
-        List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign, EChoiceBaseType.MARKET_ACTIVITY.name());
-        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign, EChoiceBaseType.PRODUCT_STUDY.name());
-        List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign, EChoiceBaseType.OPERATION.name());
+        List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
+        List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
+        List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OPERATION.name());
         Integer companyCash = accountManager.getCompanyCash(company);
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");

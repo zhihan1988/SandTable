@@ -60,14 +60,12 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     public void deleteInstruction(Company company, String companyChoiceId) {
-        CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), companyChoiceId);
-        Campaign campaign = company.getCampaign();
         String hql = "from CompanyInstruction where companyChoice.id = :companyChoiceId" +
                 " and company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("companyChoiceId", companyChoiceId);
         queryParamMap.put("companyId", company.getId());
-        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        queryParamMap.put("campaignDate", company.getCurrentCampaignDate());
         CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         if (companyInstruction != null) {
             baseManager.delete(CompanyInstruction.class.getName(), companyInstruction.getId());
@@ -98,6 +96,23 @@ public class InstructionManagerImpl implements InstructionManager {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where companyTerm.id = :companyTermId");
         xQuery.put("companyTermId", companyTerm.getId());
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
+        return companyInstructionList;
+    }
+
+    public List<CompanyInstruction> listCompanyInstruction(CompanyChoice companyChoice) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyInstruction where companyChoice.id = :companyChoiceId");
+        xQuery.put("companyChoiceId", companyChoice.getId());
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
+        return companyInstructionList;
+    }
+
+    public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyInstruction where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.put("campaignId", campaignId);
+        xQuery.put("campaignDate", campaignDate);
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
     }

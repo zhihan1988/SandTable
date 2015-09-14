@@ -3,6 +3,7 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
+import com.ming800.core.util.DateUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
@@ -40,6 +41,8 @@ public class WorkManagerImpl implements WorkManager {
     private BaseManager baseManager;
     @Autowired
     private ChoiceManager choiceManager;
+    @Autowired
+    private InstructionManager instructionManager;
     @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
@@ -82,16 +85,23 @@ public class WorkManagerImpl implements WorkManager {
 
     private List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
         List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OFFICE_RATIO, "50", companyTerm));
+
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_FEE_RATIO, "50", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PER_ORDER_COST, "60", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_COMPETITION_RATIO, "10", companyTerm));
+
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
+
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.SATISFACTION, "60", companyTerm));
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
         companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.USER_AMOUNT, "2000", companyTerm));
-//        companyStatusPropertyValueList.add(new CompanyStatusPropertyValue(EPropertyName.CURRENT_PERIOD_INCOME, "2000", preCompanyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PER_ORDER_COST, "60", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_FEE_RATIO, "5-", companyTerm));
+        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyTerm));
         return companyStatusPropertyList;
     }
 
@@ -121,19 +131,15 @@ public class WorkManagerImpl implements WorkManager {
     public void next(String campaignId) {
         processNext(campaignId);
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
-
+        //竞标决策
+        competitiveBidding(campaignHandler);
+        competitiveUnBidding(campaignHandler);
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-         /*   //0.收集上一轮的属性数据
-            collectPreProperty(companyTermHandler);
-            //1.收集上一轮的决策数据
-            collectInstruction(companyTermHandler);*/
-            //2.人才招聘等竞标结果
-            competitiveBidding(companyTermHandler);
-            //3.计算保存本轮属性数据
+            //计算保存本轮属性数据
             calculateProperty(companyTermHandler);
-            //4.计算本轮财务数据
+            //4计算本轮财务数据
             calculateAccount(companyTermHandler);
         }
 
@@ -163,59 +169,31 @@ public class WorkManagerImpl implements WorkManager {
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
 
             CompanyTermHandler companyTermHandler = campaignCenterManager.initCompanyTermHandler(companyTerm, campaignHandler);
-            CompanyTermHandler cth = campaignHandler.getCompanyTermHandlerMap().get(company.getId());
-            companyTermHandler.setPreCompanyTermHandler(cth);
+            CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
+            CompanyTermHandler preCompanyTermHandler = campaignCenterManager.initCompanyTermHandler(preCompanyTerm, campaignHandler);
 
+            companyTermHandler.setPreCompanyTermHandler(preCompanyTermHandler);
             companyTermHandlerMap.put(company.getId(), companyTermHandler);
         }
+        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
     }
 
-/*    private void collectPreProperty(CompanyTermHandler companyTermHandler) {
-        //上一轮的属性数据
-        CompanyTerm preCompanyTerm = companyTermHandler.getPreCompanyTerm();
-        List<CompanyStatusProperty> preCompanyStatusPropertyList = internetPropertyManager.listCompanyStatusProperty(preCompanyTerm);
-        Map<String, String> prePropertyValueMap = new HashMap<>();
-        if (preCompanyStatusPropertyList != null) {
-            for (CompanyStatusProperty preCompanyStatusProperty : preCompanyStatusPropertyList) {
-                prePropertyValueMap.put(preCompanyStatusProperty.getName(), preCompanyStatusProperty.getValue());
-            }
-        }
-        companyTermHandler.setPrePropertyValueMap(prePropertyValueMap);
-    }
+    public void competitiveBidding(CampaignHandler campaignHandler) {
 
-    public void collectInstruction(CompanyTermHandler companyTermHandler) {
-        //本轮决策
-        CompanyTerm companyTerm = companyTermHandler.getPreCompanyTerm();
-        List<CompanyInstruction> preCompanyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-        companyTermHandler.putCompanyInstructionList(preCompanyInstructionList);
-    }*/
+        Campaign campaign = campaignHandler.getCampaign();
+        String preCampaignDate = CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate());
+        List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.HUMAN.name());
 
-    public void competitiveBidding(CompanyTermHandler companyTermHandler) {
-        //将决策按人才分类
-        Map<String, List<CompanyInstruction>> humanInstructionMap = new HashMap<>();
-        List<CompanyInstruction> companyInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                String humanId = companyInstruction.getCompanyChoice().getId();
-                if (humanInstructionMap.containsKey(humanId)) {
-                    humanInstructionMap.get(humanId).add(companyInstruction);
-                } else {
-                    List<CompanyInstruction> cil = new ArrayList<>();
-                    cil.add(companyInstruction);
-                    humanInstructionMap.put(humanId, cil);
-                }
-            }
-        }
         //竞标
-        Map<String, CompanyTermHandler> companyTermHandlerMap = companyTermHandler.getCampaignHandler().getCompanyTermHandlerMap();
-        for (String choiceId : humanInstructionMap.keySet()) {
-            List<CompanyInstruction> cil = humanInstructionMap.get(choiceId);
-            if (cil != null && cil.size() > 0) {
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        for (CompanyChoice companyChoice : companyChoiceList) {
+            List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyChoice);
+            if (companyInstructionList != null && companyInstructionList.size() > 0) {
                 int maxRecruitmentRatio = 0;
                 CompanyInstruction successCompanyInstruction = null;
-                for (CompanyInstruction companyInstruction : cil) {
-                    CompanyTermHandler ctHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
-                    Integer officeRatio = Integer.valueOf(ctHandler.get(EPropertyName.OFFICE_RATIO.name()));
+                for (CompanyInstruction companyInstruction : companyInstructionList) {
+                    CompanyTermHandler preCompanyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId()).getPreCompanyTermHandler();
+                    Integer officeRatio = Integer.valueOf(preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name()));
                     Integer fee = Integer.valueOf(companyInstruction.getValue());
                     Integer feeRatio = fee / 200;
                     Integer randomRatio = RandomUtil.random(0, 20);
@@ -228,18 +206,25 @@ public class WorkManagerImpl implements WorkManager {
                 successCompanyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
                 //保存选中的
                 baseManager.saveOrUpdate(CompanyInstruction.class.getName(), successCompanyInstruction);
+                //保存未选中的
+                companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+                    companyInstruction.setStatus(EInstructionStatus.WXZ.getValue());
+                    baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
+                });
             }
-        }
-        //统一更新未选中的
-        if (companyInstructionList != null) {
-            companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.name().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
-                companyInstruction.setStatus(EInstructionStatus.WXZ.name());
-                baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
-            });
         }
 
     }
 
+    public void competitiveUnBidding(CampaignHandler campaignHandler) {
+        Campaign campaign = campaignHandler.getCampaign();
+        String preCampaignDate = CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate());
+        List<CompanyInstruction> companyInstructionList = instructionManager.listCampaignCompanyInstructionByDate(campaign.getId(), preCampaignDate);
+        companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+            companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
+        });
+    }
 
     public void calculateProperty(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
