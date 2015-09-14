@@ -3,6 +3,7 @@ package com.rathink.ie.foundation.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -25,7 +26,7 @@ import java.util.Map;
  * Created by Hean on 2015/9/14.
  */
 @Service
-public class CampaignCenterManagerImpl implements com.rathink.ie.foundation.service.CampaignCenterManager {
+public class CampaignCenterManagerImpl implements CampaignCenterManager {
     @Autowired
     private BaseManager baseManager;
     @Autowired
