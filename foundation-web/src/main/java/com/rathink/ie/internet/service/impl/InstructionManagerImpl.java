@@ -4,21 +4,18 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
+import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created by Hean on 2015/8/26.
@@ -29,11 +26,12 @@ public class InstructionManagerImpl implements InstructionManager {
 
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private CompanyTermManager companyTermManager;
 
     @Override
     public CompanyInstruction saveOrUpdateInstruction(Company company, String companyChoiceId, String value) {
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(company.getCampaign().getId());
-        CompanyTermHandler companyTermHandler = campaignHandler.getCompanyTermHandlerMap().get(company.getId());
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
         CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), companyChoiceId);
         Campaign campaign = company.getCampaign();
         String hql = "from CompanyInstruction where companyChoice.id = :companyChoiceId" +
@@ -50,7 +48,7 @@ public class InstructionManagerImpl implements InstructionManager {
             companyInstruction.setCampaign(campaign);
             companyInstruction.setCompany(company);
         }
-        companyInstruction.setCompanyTerm(companyTermHandler.getCompanyTerm());
+        companyInstruction.setCompanyTerm(companyTerm);
         companyInstruction.setCompanyChoice(companyChoice);
         companyInstruction.setBaseType(companyChoice.getBaseType());
         companyInstruction.setStatus(EInstructionStatus.DQD.getValue());
@@ -96,11 +94,10 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
-    public List<CompanyInstruction> listCompanyInstructionByCampaignDate(String companyId, String campaignDate){
+    public List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm){
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyInstruction where company.id = :companyId and campaignDate = :campaignDate");
-        xQuery.put("companyId", companyId);
-        xQuery.put("campaignDate", campaignDate);
+        xQuery.setHql("from CompanyInstruction where companyTerm.id = :companyTermId");
+        xQuery.put("companyTermId", companyTerm.getId());
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
     }

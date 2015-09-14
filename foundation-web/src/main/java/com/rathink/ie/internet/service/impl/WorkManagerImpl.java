@@ -4,6 +4,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
@@ -25,7 +26,6 @@ import com.rathink.ie.internet.service.WorkManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,13 +41,13 @@ public class WorkManagerImpl implements WorkManager {
     @Autowired
     private ChoiceManager choiceManager;
     @Autowired
-    private InstructionManager instructionManager;
-    @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
     private CampaignManager campaignManager;
     @Autowired
     private AccountManager accountManager;
+    @Autowired
+    private CampaignCenterManager campaignCenterManager;
 
     /**
      * 开始游戏 定时任务执行
@@ -79,7 +79,7 @@ public class WorkManagerImpl implements WorkManager {
         //3.准备供用户决策用的随机数据
         choiceManager.produceChoice(campaign);
 
-        CampaignCenter.init(campaign.getId());
+        campaignCenterManager.initCampaignHandler(campaign);
 
     }
 
@@ -128,10 +128,10 @@ public class WorkManagerImpl implements WorkManager {
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-            //0.收集上一轮的属性数据
+         /*   //0.收集上一轮的属性数据
             collectPreProperty(companyTermHandler);
             //1.收集上一轮的决策数据
-            collectInstruction(companyTermHandler);
+            collectInstruction(companyTermHandler);*/
             //2.人才招聘等竞标结果
             competitiveBidding(companyTermHandler);
             //3.计算保存本轮属性数据
@@ -150,27 +150,33 @@ public class WorkManagerImpl implements WorkManager {
      */
     private void processNext(String campaignId) {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         Campaign campaign = campaignHandler.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-            CompanyTerm ct = companyTermHandler.getCompanyTerm();
-            companyTermHandler.setPreCompanyTerm(ct);
+        List<Company> companyList = campaignManager.listCompany(campaign);
+        for (Company company : companyList) {
+            company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
+            baseManager.saveOrUpdate(Company.class.getName(), company);
+
             CompanyTerm companyTerm = new CompanyTerm();
             companyTerm.setCampaign(campaign);
-            companyTerm.setCompany(ct.getCompany());
-//            companyTerm.setPreCompanyTerm(ct);
+            companyTerm.setCompany(company);
             companyTerm.setCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
+
+            CompanyTermHandler companyTermHandler = campaignCenterManager.initCompanyTermHandler(companyTerm, campaignHandler);
+            CompanyTermHandler cth = campaignHandler.getCompanyTermHandlerMap().get(company.getId());
+            companyTermHandler.setPreCompanyTermHandler(cth);
+
+            companyTermHandlerMap.put(company.getId(), companyTermHandler);
         }
     }
 
-    private void collectPreProperty(CompanyTermHandler companyTermHandler) {
+/*    private void collectPreProperty(CompanyTermHandler companyTermHandler) {
         //上一轮的属性数据
         CompanyTerm preCompanyTerm = companyTermHandler.getPreCompanyTerm();
-        List<CompanyStatusProperty> preCompanyStatusPropertyList = preCompanyTerm.getCompanyStatusPropertyList();
+        List<CompanyStatusProperty> preCompanyStatusPropertyList = internetPropertyManager.listCompanyStatusProperty(preCompanyTerm);
         Map<String, String> prePropertyValueMap = new HashMap<>();
         if (preCompanyStatusPropertyList != null) {
             for (CompanyStatusProperty preCompanyStatusProperty : preCompanyStatusPropertyList) {
@@ -183,28 +189,14 @@ public class WorkManagerImpl implements WorkManager {
     public void collectInstruction(CompanyTermHandler companyTermHandler) {
         //本轮决策
         CompanyTerm companyTerm = companyTermHandler.getPreCompanyTerm();
-        List<CompanyInstruction> companyInstructionList = instructionManager
-                .listCompanyInstructionByCampaignDate(companyTerm.getCompany().getId(), companyTerm.getCampaignDate());
-        Map<String, List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                String choiceType = companyInstruction.getCompanyChoice().getType();
-                if (typeCompanyInstructionMap.containsKey(choiceType)) {
-                    typeCompanyInstructionMap.get(choiceType).add(companyInstruction);
-                } else {
-                    List typeCompanyInstructionList = new ArrayList<>();
-                    typeCompanyInstructionList.add(companyInstruction);
-                    typeCompanyInstructionMap.put(choiceType, typeCompanyInstructionList);
-                }
-            }
-        }
-            companyTermHandler.setPreTypeCompanyInstructionMap(typeCompanyInstructionMap);
-    }
+        List<CompanyInstruction> preCompanyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+        companyTermHandler.putCompanyInstructionList(preCompanyInstructionList);
+    }*/
 
     public void competitiveBidding(CompanyTermHandler companyTermHandler) {
         //将决策按人才分类
         Map<String, List<CompanyInstruction>> humanInstructionMap = new HashMap<>();
-        List<CompanyInstruction> companyInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
+        List<CompanyInstruction> companyInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 String humanId = companyInstruction.getCompanyChoice().getId();
@@ -267,23 +259,23 @@ public class WorkManagerImpl implements WorkManager {
     private void calculateAccount(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<Account> accountList = new ArrayList<>();
-        List<CompanyInstruction> officeInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> officeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Account adAccount = accountManager
                 .saveAccount(officeInstructionList, EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);
-        List<CompanyInstruction> humanInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
+        List<CompanyInstruction> humanInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
         Account humanAccount = accountManager
                 .saveAccount(humanInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);
-        List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         Account productFeeAccount = accountManager
                 .saveAccount(productFeeInstructionList, EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(productFeeAccount);
-        List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
         Account marketFeeAccount = accountManager
                 .saveAccount(marketFeeInstructionList, EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(marketFeeAccount);
-        List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listPreCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         Account operationFeeAccount = accountManager
                 .saveAccount(operationFeeInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);

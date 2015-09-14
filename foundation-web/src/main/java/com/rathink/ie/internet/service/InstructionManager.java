@@ -1,6 +1,7 @@
 package com.rathink.ie.internet.service;
 
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
 import java.util.List;
@@ -18,5 +19,6 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCompanyInstructionByDept(Company company, String baseType);
 
-    List<CompanyInstruction> listCompanyInstructionByCampaignDate(String companyId, String campaignDate);
+    List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm);
+
 }

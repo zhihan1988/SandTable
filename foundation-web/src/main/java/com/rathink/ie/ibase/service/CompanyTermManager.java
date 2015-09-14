@@ -14,5 +14,5 @@ public interface CompanyTermManager {
 
     CompanyStatusProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm);
 
-    public List<CompanyTerm> listCompanyTerm(String campaignId);
+    List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate);
 }

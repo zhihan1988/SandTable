@@ -48,7 +48,7 @@
                             ${instruction.companyChoice.description}
                         </td>
                         <td>
-                            ${instruction.fee}
+                            ${instruction.value}
                         </td>
                     </tr>
                 </c:forEach>
@@ -105,11 +105,12 @@
                 <c:forEach items="${hrInstructionList}" var="hrInstruction">
                     <tr>
                         <td>
-                                ${hrInstruction.companyChoice.name}（${hrInstruction.companyChoice.typeLabel}）
+                                ${hrInstruction.companyChoice.name}
+                                    <%--（${hrInstruction.companyChoice.typeLabel}）--%>
                         </td>
-                        <td>${hrInstruction.companyChoice.ability}</td>
+                        <td>${hrInstruction.companyChoice.value}</td>
                         <td>
-                                ${hrInstruction.fee}
+                                ${hrInstruction.value}
                         </td>
                     </tr>
                 </c:forEach>

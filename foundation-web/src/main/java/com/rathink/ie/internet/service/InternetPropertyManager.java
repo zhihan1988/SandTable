@@ -1,20 +1,13 @@
 package com.rathink.ie.internet.service;
 
+import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
+
+import java.util.List;
+
 /**
  * Created by Hean on 2015/9/4.
  */
 public interface InternetPropertyManager {
-   /* Integer getAbilityValue(List<HrInstruction> hrInstructionList, String dept);
-
-    Integer getNewUserAmount(List<MarketInstruction> marketInstructionList);
-
-    Integer getSatisfaction(List<OperationInstruction> operationInstructionList, Integer operationAbility);
-
-    Integer getOldUserAmount(Company company, Integer satisfaction);
-
-    Integer getProductRatio(Company company, Integer productAbility, ProductStudyInstruction productStudyInstruction);
-
-    Integer getPerOrderCost(Company company, ProductStudyInstruction productStudyInstruction);
-
-    Integer getCurrentPeriodIncome(Integer userAmount, Integer perOrdreCost);*/
+    List<CompanyStatusProperty> listCompanyStatusProperty(CompanyTerm companyTerm);
 }

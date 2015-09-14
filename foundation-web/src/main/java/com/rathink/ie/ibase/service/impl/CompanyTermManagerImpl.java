@@ -40,12 +40,11 @@ public class CompanyTermManagerImpl implements CompanyTermManager {
         return companyStatusProperty;
     }
 
-    public List<CompanyTerm> listCompanyTerm(String campaignId) {
+    public List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyTerm where campaign.id = :campaignId");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("campaignId", campaignId);
-        xQuery.setQueryParamMap(queryParamMap);
+        xQuery.setHql("from CompanyTerm where campaign.id = :campaignId and campaignDate = :campaignDate");
+        xQuery.put("campaignId", campaignId);
+        xQuery.put("campaignDate", campaignDate);
         List companyTermList = baseManager.listObject(xQuery);
         return companyTermList;
     }

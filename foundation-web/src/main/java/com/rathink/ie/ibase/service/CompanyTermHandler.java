@@ -1,6 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.ibase.account.model.Account;
+import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
@@ -14,12 +15,11 @@ import java.util.Map;
  */
 public abstract class CompanyTermHandler {
     protected CampaignHandler campaignHandler;
-    protected CompanyTerm preCompanyTerm;
-    protected Map<String,List<CompanyInstruction>> preTypeCompanyInstructionMap = new HashMap<>();
-    protected Map<String, String> prePropertyValueMap = new HashMap<>();
     protected CompanyTerm companyTerm;
     protected Map<String, String> propertyValueMap = new HashMap<>();
+    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
     protected List<Account> accountList = new ArrayList<>();
+    protected CompanyTermHandler preCompanyTermHandler;
 
     public String get(String key) {
         if (!propertyValueMap.containsKey(key)) {
@@ -34,41 +34,12 @@ public abstract class CompanyTermHandler {
         propertyValueMap.put(key, value);
     }
 
-    public String getPrePropertyValue(String key) {
-        return prePropertyValueMap.get(key);
-    }
-
-
-    public List<CompanyInstruction> listPreCompanyInstructionByType(String choiceType) {
-        return preTypeCompanyInstructionMap.get(choiceType);
-    }
-
     public CampaignHandler getCampaignHandler() {
         return campaignHandler;
     }
 
     public void setCampaignHandler(CampaignHandler campaignHandler) {
         this.campaignHandler = campaignHandler;
-    }
-
-    public CompanyTerm getPreCompanyTerm() {
-        return preCompanyTerm;
-    }
-
-    public void setPreCompanyTerm(CompanyTerm preCompanyTerm) {
-        this.preCompanyTerm = preCompanyTerm;
-    }
-
-    public Map<String, String> getPrePropertyValueMap() {
-        return prePropertyValueMap;
-    }
-
-    public void setPrePropertyValueMap(Map<String, String> prePropertyValueMap) {
-        this.prePropertyValueMap = prePropertyValueMap;
-    }
-
-    public void setPreTypeCompanyInstructionMap(Map<String, List<CompanyInstruction>> preTypeCompanyInstructionMap) {
-        this.preTypeCompanyInstructionMap = preTypeCompanyInstructionMap;
     }
 
     public List<Account> getAccountList() {
@@ -87,4 +58,40 @@ public abstract class CompanyTermHandler {
         this.companyTerm = companyTerm;
     }
 
+    public List<CompanyInstruction> listCompanyInstructionByType(String choiceType) {
+        return typeCompanyInstructionMap.get(choiceType);
+    }
+
+    public void putCompanyInstructionList(List<CompanyInstruction> companyInstructionList) {
+        typeCompanyInstructionMap = new HashMap<>();
+        if (companyInstructionList != null) {
+            for (CompanyInstruction companyInstruction : companyInstructionList) {
+                String choiceType = companyInstruction.getCompanyChoice().getType();
+                if (typeCompanyInstructionMap.containsKey(choiceType)) {
+                    typeCompanyInstructionMap.get(choiceType).add(companyInstruction);
+                } else {
+                    List typeCompanyInstructionList = new ArrayList<>();
+                    typeCompanyInstructionList.add(companyInstruction);
+                    typeCompanyInstructionMap.put(choiceType, typeCompanyInstructionList);
+                }
+            }
+        }
+    }
+
+    public void putPropertyList(List<CompanyStatusProperty> companyStatusPropertyList) {
+        if (companyStatusPropertyList != null) {
+            for (CompanyStatusProperty preCompanyStatusProperty : companyStatusPropertyList) {
+                propertyValueMap.put(preCompanyStatusProperty.getName(), preCompanyStatusProperty.getValue());
+            }
+        }
+
+    }
+
+    public CompanyTermHandler getPreCompanyTermHandler() {
+        return preCompanyTermHandler;
+    }
+
+    public void setPreCompanyTermHandler(CompanyTermHandler preCompanyTermHandler) {
+        this.preCompanyTermHandler = preCompanyTermHandler;
+    }
 }

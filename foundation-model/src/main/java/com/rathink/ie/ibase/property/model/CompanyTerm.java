@@ -52,16 +52,6 @@ public class CompanyTerm {
         this.company = company;
     }
 
-  /*  @ManyToOne
-    @JoinColumn(name = "pre_company_term_id")
-    public CompanyTerm getPreCompanyTerm() {
-        return preCompanyTerm;
-    }
-
-    public void setPreCompanyTerm(CompanyTerm preCompanyTerm) {
-        this.preCompanyTerm = preCompanyTerm;
-    }
-*/
     @Column(name = "campaign_date")
     public String getCampaignDate() {
         return campaignDate;
