@@ -58,8 +58,10 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         for (CompanyTerm companyTerm : companyTermList) {
             CompanyTermHandler companyTermHandler = initCompanyTermHandler(companyTerm, campaignHandler);
             CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
-            CompanyTermHandler preCompanyTermHandler = initCompanyTermHandler(preCompanyTerm, campaignHandler);
-            companyTermHandler.setPreCompanyTermHandler(preCompanyTermHandler);
+            if (preCompanyTerm != null) {
+                CompanyTermHandler preCompanyTermHandler = initCompanyTermHandler(preCompanyTerm, campaignHandler);
+                companyTermHandler.setPreCompanyTermHandler(preCompanyTermHandler);
+            }
             companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermHandler);
         }
         campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);

@@ -51,13 +51,12 @@ public class WorkManagerImpl implements WorkManager {
 
     /**
      * 开始游戏 定时任务执行
-     * @param campaignId
+     * @param campaign
      */
     @Override
-    public void begin(String campaignId) {
+    public void begin(Campaign campaign) {
         final String INIT_CAMPAIGN_DATE = "010101";
         //1.比赛开始
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
         campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
@@ -78,8 +77,6 @@ public class WorkManagerImpl implements WorkManager {
 
         //3.准备供用户决策用的随机数据
         choiceManager.produceChoice(campaign);
-
-        campaignCenterManager.initCampaignHandler(campaign);
 
     }
 
