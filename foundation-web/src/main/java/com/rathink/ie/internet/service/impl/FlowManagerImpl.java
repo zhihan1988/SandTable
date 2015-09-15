@@ -66,6 +66,7 @@ public class FlowManagerImpl implements FlowManager {
         campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
         campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
+        campaignHandler.setCampaign(campaign);
 
         //2.初始化各公司
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
@@ -166,8 +167,7 @@ public class FlowManagerImpl implements FlowManager {
     public void competitiveBidding(CampaignHandler campaignHandler) {
 
         Campaign campaign = campaignHandler.getCampaign();
-        String preCampaignDate = CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate());
-        List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.HUMAN.name());
+        List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
 
         //竞标
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
@@ -178,7 +178,7 @@ public class FlowManagerImpl implements FlowManager {
                 CompanyInstruction successCompanyInstruction = null;
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
                     CompanyTermHandler preCompanyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId()).getPreCompanyTermHandler();
-                    Integer officeRatio = Integer.valueOf(preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name()));
+                    Integer officeRatio = preCompanyTermHandler == null ? 50 : Integer.valueOf(preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name()));
                     Integer fee = Integer.valueOf(companyInstruction.getValue());
                     Integer feeRatio = fee / 200;
                     Integer randomRatio = RandomUtil.random(0, 20);
@@ -203,8 +203,7 @@ public class FlowManagerImpl implements FlowManager {
 
     public void competitiveUnBidding(CampaignHandler campaignHandler) {
         Campaign campaign = campaignHandler.getCampaign();
-        String preCampaignDate = CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate());
-        List<CompanyInstruction> companyInstructionList = instructionManager.listCampaignCompanyInstructionByDate(campaign.getId(), preCampaignDate);
+        List<CompanyInstruction> companyInstructionList = instructionManager.listCampaignCompanyInstructionByDate(campaign.getId(), campaign.getCurrentCampaignDate());
         companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
             companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
             baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
