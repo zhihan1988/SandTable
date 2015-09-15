@@ -5,7 +5,7 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignHandler;
@@ -81,8 +81,8 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
         companyTermHandler.putCompanyInstructionList(companyInstructionList);
         //4
-        List<CompanyStatusProperty> companyStatusPropertyList = internetPropertyManager.listCompanyStatusProperty(companyTerm);
-        companyTermHandler.putPropertyList(companyStatusPropertyList);
+        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyStatusProperty(companyTerm);
+        companyTermHandler.putPropertyList(companyTermPropertyList);
 
         return companyTermHandler;
     }

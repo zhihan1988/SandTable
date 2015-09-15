@@ -1,10 +1,9 @@
 package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermManager;
@@ -53,7 +52,7 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
-        Map<String, List<CompanyStatusProperty>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyTerm.getCompanyStatusPropertyList());
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyTerm.getCompanyTermPropertyList());
         List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());

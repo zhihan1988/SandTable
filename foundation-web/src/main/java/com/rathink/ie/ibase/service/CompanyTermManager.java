@@ -1,7 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface CompanyTermManager {
     CompanyTerm getCompanyTerm(Company company, String campaignDate);
 
-    CompanyStatusProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm);
+    CompanyTermProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm);
 
     List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate);
 }

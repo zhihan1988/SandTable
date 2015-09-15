@@ -3,7 +3,6 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
-import com.ming800.core.util.DateUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
@@ -11,7 +10,7 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
@@ -22,7 +21,6 @@ import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.InternetPropertyManager;
 import com.rathink.ie.internet.service.WorkManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -73,8 +71,8 @@ public class WorkManagerImpl implements WorkManager {
             companyTerm.setCampaign(company.getCampaign());
             companyTerm.setCompany(company);
             companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
-            List<CompanyStatusProperty> companyStatusPropertyList = prepareCompanyStatusProperty(companyTerm);
-            companyTerm.setCompanyStatusPropertyList(companyStatusPropertyList);
+            List<CompanyTermProperty> companyTermPropertyList = prepareCompanyStatusProperty(companyTerm);
+            companyTerm.setCompanyTermPropertyList(companyTermPropertyList);
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
         }
 
@@ -83,45 +81,45 @@ public class WorkManagerImpl implements WorkManager {
 
     }
 
-    private List<CompanyStatusProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
-        List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OFFICE_RATIO, "50", companyTerm));
+    private List<CompanyTermProperty> prepareCompanyStatusProperty(CompanyTerm companyTerm) {
+        List<CompanyTermProperty> companyTermPropertyList = new ArrayList<CompanyTermProperty>();
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.OFFICE_RATIO, "50", companyTerm));
 
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_FEE_RATIO, "50", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PER_ORDER_COST, "60", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.PRODUCT_COMPETITION_RATIO, "10", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.PRODUCT_ABILITY, "2000", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.PRODUCT_FEE_RATIO, "50", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.PRODUCT_RATIO, "60", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.PER_ORDER_COST, "60", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.PRODUCT_COMPETITION_RATIO, "10", companyTerm));
 
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.MARKET_ABILITY, "2000", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.NEW_USER_AMOUNT, "0", companyTerm));
 
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.SATISFACTION, "60", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.USER_AMOUNT, "2000", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.OPERATION_FEE_RATIO, "5-", companyTerm));
-        companyStatusPropertyList.add(new CompanyStatusProperty(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyTerm));
-        return companyStatusPropertyList;
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.OPERATION_ABILITY, "2000", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.SATISFACTION, "60", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.OLD_USER_AMOUNT, "2000", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.USER_AMOUNT, "2000", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.OPERATION_FEE_RATIO, "5-", companyTerm));
+        companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, "2000", companyTerm));
+        return companyTermPropertyList;
     }
 
     /**
      * 按部门分离公司属性
-     * @param companyStatusPropertyList
+     * @param companyTermPropertyList
      * @return
      */
     @Override
-    public Map<String, List<CompanyStatusProperty>> partCompanyStatusPropertyByDept(List<CompanyStatusProperty> companyStatusPropertyList) {
-        Map<String, List<CompanyStatusProperty>> map = new LinkedHashMap<>();
-        if (companyStatusPropertyList != null && !companyStatusPropertyList.isEmpty()) {
-            for (CompanyStatusProperty companyStatusProperty : companyStatusPropertyList) {
-                String dept = companyStatusProperty.getDept();
+    public Map<String, List<CompanyTermProperty>> partCompanyStatusPropertyByDept(List<CompanyTermProperty> companyTermPropertyList) {
+        Map<String, List<CompanyTermProperty>> map = new LinkedHashMap<>();
+        if (companyTermPropertyList != null && !companyTermPropertyList.isEmpty()) {
+            for (CompanyTermProperty companyTermProperty : companyTermPropertyList) {
+                String dept = companyTermProperty.getDept();
                 if (map.containsKey(dept)) {
-                    map.get(dept).add(companyStatusProperty);
+                    map.get(dept).add(companyTermProperty);
                 } else {
-                    List<CompanyStatusProperty> deptCompanyStatusPropertyList = new ArrayList<CompanyStatusProperty>();
-                    deptCompanyStatusPropertyList.add(companyStatusProperty);
-                    map.put(dept, deptCompanyStatusPropertyList);
+                    List<CompanyTermProperty> deptCompanyTermPropertyList = new ArrayList<CompanyTermProperty>();
+                    deptCompanyTermPropertyList.add(companyTermProperty);
+                    map.put(dept, deptCompanyTermPropertyList);
                 }
             }
         }
@@ -228,12 +226,12 @@ public class WorkManagerImpl implements WorkManager {
 
     public void calculateProperty(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
-        List<CompanyStatusProperty> companyStatusPropertyList = new ArrayList<>();
+        List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
         for (EPropertyName ePropertyName : EPropertyName.values()) {
             String value = companyTermHandler.calculate(ePropertyName.name());
-            companyStatusPropertyList.add(new CompanyStatusProperty(ePropertyName, value, companyTerm));
+            companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
         }
-        companyTerm.setCompanyStatusPropertyList(companyStatusPropertyList);
+        companyTerm.setCompanyTermPropertyList(companyTermPropertyList);
         baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
 //        companyTermHandler.setCompanyStatusPropertyList(companyStatusPropertyList);
     }

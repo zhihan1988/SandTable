@@ -18,7 +18,7 @@ public class CompanyTerm {
 //    private CompanyTerm preCompanyTerm;
     private String campaignDate;//哪一季度展示（不是指在哪一季度产生的数据）
     private List<CompanyInstruction> companyInstructionList;
-    private List<CompanyStatusProperty> companyStatusPropertyList;
+    private List<CompanyTermProperty> companyTermPropertyList;
     private List<Account> accountList;
 
     @Id
@@ -73,12 +73,12 @@ public class CompanyTerm {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "companyTerm", cascade = CascadeType.ALL)
     @OrderBy("id asc")
-    public List<CompanyStatusProperty> getCompanyStatusPropertyList() {
-        return companyStatusPropertyList;
+    public List<CompanyTermProperty> getCompanyTermPropertyList() {
+        return companyTermPropertyList;
     }
 
-    public void setCompanyStatusPropertyList(List<CompanyStatusProperty> companyStatusPropertyList) {
-        this.companyStatusPropertyList = companyStatusPropertyList;
+    public void setCompanyTermPropertyList(List<CompanyTermProperty> companyTermPropertyList) {
+        this.companyTermPropertyList = companyTermPropertyList;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "companyTerm", cascade = CascadeType.ALL)

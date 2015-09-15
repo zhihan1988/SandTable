@@ -1,7 +1,7 @@
 package com.rathink.ie.internet.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
 public interface WorkManager {
     void begin(Campaign campaign);
 
-    Map<String, List<CompanyStatusProperty>> partCompanyStatusPropertyByDept(List<CompanyStatusProperty> companyStatusPropertyList);
+    Map<String, List<CompanyTermProperty>> partCompanyStatusPropertyByDept(List<CompanyTermProperty> companyTermPropertyList);
 
     void next(String campaignId);
 

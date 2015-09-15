@@ -1,7 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.ibase.account.model.Account;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
@@ -78,10 +78,10 @@ public abstract class CompanyTermHandler {
         }
     }
 
-    public void putPropertyList(List<CompanyStatusProperty> companyStatusPropertyList) {
-        if (companyStatusPropertyList != null) {
-            for (CompanyStatusProperty preCompanyStatusProperty : companyStatusPropertyList) {
-                propertyValueMap.put(preCompanyStatusProperty.getName(), preCompanyStatusProperty.getValue());
+    public void putPropertyList(List<CompanyTermProperty> companyTermPropertyList) {
+        if (companyTermPropertyList != null) {
+            for (CompanyTermProperty preCompanyTermProperty : companyTermPropertyList) {
+                propertyValueMap.put(preCompanyTermProperty.getName(), preCompanyTermProperty.getValue());
             }
         }
 

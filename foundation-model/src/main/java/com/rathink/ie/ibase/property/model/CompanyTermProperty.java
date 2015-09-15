@@ -6,17 +6,17 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "company_status_property_value")
-public class CompanyStatusProperty {
+@Table(name = "company_term_property")
+public class CompanyTermProperty {
     private String id;
     private String name;
     private String value;
     private String dept;
     private CompanyTerm companyTerm;
 
-    public CompanyStatusProperty(){}
+    public CompanyTermProperty(){}
 
-    public CompanyStatusProperty(EPropertyName ePropertyName, String value, CompanyTerm companyTerm) {
+    public CompanyTermProperty(EPropertyName ePropertyName, String value, CompanyTerm companyTerm) {
         this.name = ePropertyName.name();
         this.value = value;
         this.dept = ePropertyName.getDept();
@@ -62,7 +62,7 @@ public class CompanyStatusProperty {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_status_id")
+    @JoinColumn(name = "company_term_id")
     public CompanyTerm getCompanyTerm() {
         return companyTerm;
     }

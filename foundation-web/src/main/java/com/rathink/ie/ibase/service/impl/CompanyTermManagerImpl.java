@@ -3,7 +3,7 @@ package com.rathink.ie.ibase.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.ibase.property.model.CompanyStatusProperty;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +31,13 @@ public class CompanyTermManagerImpl implements CompanyTermManager {
     }
 
     @Override
-    public CompanyStatusProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm){
+    public CompanyTermProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm){
         String hql = "from CompanyStatusPropertyValue where name = :name and companyTerm.id = :companyStatusId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("name", propertyName);
         queryParamMap.put("companyStatusId", companyTerm.getId());
-        CompanyStatusProperty companyStatusProperty = (CompanyStatusProperty) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        return companyStatusProperty;
+        CompanyTermProperty companyTermProperty = (CompanyTermProperty) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyTermProperty;
     }
 
     public List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate) {
