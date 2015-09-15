@@ -66,6 +66,7 @@ public class AccountManagerImpl implements AccountManager {
         account.setCampaign(companyTerm.getCampaign());
         account.setCampaignDate(companyTerm.getCampaignDate());
         account.setCompany(companyTerm.getCompany());
+        account.setCompanyTerm(companyTerm);
 
         List<AccountEntry> accountEntryList = new ArrayList<>();
         AccountEntry inAccountEntry = new AccountEntry();

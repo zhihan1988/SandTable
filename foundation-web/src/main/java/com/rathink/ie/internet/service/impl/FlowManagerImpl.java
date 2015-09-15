@@ -4,7 +4,9 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
+import com.rathink.ie.foundation.service.impl.CampaignCenterManagerImpl;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
@@ -52,6 +54,8 @@ public class FlowManagerImpl implements FlowManager {
     private AccountManager accountManager;
     @Autowired
     private InternetPropertyManager internetPropertyManager;
+    @Autowired
+    private CampaignCenterManager campaignCenterManager;
 
     /**
      * 开始游戏 定时任务执行
@@ -84,11 +88,15 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
             companyTermHandler.setCampaignHandler(campaignHandler);
             companyTermHandler.setCompanyTerm(companyTerm);
+            //计算保存新回合的属性数据
+            calculateProperty(companyTermHandler);
+            //初始化财务数据
+            accountManager.initCompanyAccount(company);
             //更新campaignCenter
             companyTermHandlerMap.put(company.getId(), companyTermHandler);
         }
-
-        afterEndRound(campaignHandler);
+        //准备供用户决策用的随机数据
+        choiceManager.produceChoice(campaignHandler.getCampaign());
     }
 
     /**
@@ -98,15 +106,15 @@ public class FlowManagerImpl implements FlowManager {
     public void next(String campaignId) {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
         //回合结束前
-        beforeEndRound(campaignHandler);
+        before(campaignHandler);
         //回合结束
-        endRound(campaignHandler);
+        newRound(campaignHandler);
         //新回合开始
-        afterEndRound(campaignHandler);
+        after(campaignHandler);
     }
 
 
-    public void beforeEndRound(CampaignHandler campaignHandler) {
+    public void before(CampaignHandler campaignHandler) {
         //获取property Instruction 等
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -124,7 +132,7 @@ public class FlowManagerImpl implements FlowManager {
         competitiveUnBidding(campaignHandler);
     }
 
-    public void endRound(CampaignHandler campaignHandler) {
+    public void newRound(CampaignHandler campaignHandler) {
         Campaign campaign = campaignHandler.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
@@ -150,7 +158,7 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    public void afterEndRound(CampaignHandler campaignHandler) {
+    public void after(CampaignHandler campaignHandler) {
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
@@ -259,20 +267,12 @@ public class FlowManagerImpl implements FlowManager {
      */
     @Override
     public void pre(String campaignId) {
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
-        Campaign campaign = campaignHandler.getCampaign();
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
         Session session = sessionFactory.getCurrentSession();
 
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
-
-        //删除本轮属性信息
-        List<Company> companyList = campaignManager.listCompany(campaign);
-        for (Company company : companyList) {
-            CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, currentCampaignDate);
-            session.delete(companyTerm);
-        }
 
         //删除本轮以及上一轮的决策信息
         XQuery instructionQuery = new XQuery();
@@ -282,6 +282,13 @@ public class FlowManagerImpl implements FlowManager {
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(instructionQuery);
         if (companyInstructionList != null) {
             companyInstructionList.forEach(session::delete);
+        }
+
+        //删除本轮属性信息 及财务信息
+        List<Company> companyList = campaignManager.listCompany(campaign);
+        for (Company company : companyList) {
+            CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, currentCampaignDate);
+            session.delete(companyTerm);
         }
 
         //删除本轮的随机选项
@@ -294,20 +301,17 @@ public class FlowManagerImpl implements FlowManager {
             companyChoiceList.forEach(session::delete);
         }
 
-        //删除本轮财务数据
-        for (Company company : companyList) {
-            String hql = "from Account where company.id = :companyId and campaignDate = :campaignDate";
-            LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-            queryParamMap.put("companyId", company.getId());
-            queryParamMap.put("campaignDate", currentCampaignDate);
-            Account account = (Account) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-            session.delete(account);
-        }
-
-
         //比赛时间回到上一轮
         campaign.setCurrentCampaignDate(preCampaignDate);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
+        for (Company company : companyList) {
+            company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
+            baseManager.saveOrUpdate(Company.class.getName(), company);
+
+        }
+
+        //初始化handler
+        campaignCenterManager.initCampaignHandler(campaign);
     }
 
 }
