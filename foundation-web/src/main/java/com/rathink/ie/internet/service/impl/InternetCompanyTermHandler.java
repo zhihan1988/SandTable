@@ -92,6 +92,10 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         return String.valueOf(ability);
     }
 
+    /**
+     *
+     * @return 办公室系数
+     */
     private String calculateOfficeRatio() {
         List<CompanyInstruction> companyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
@@ -101,7 +105,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 officeFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        Double officeRatio = Math.sqrt(Integer.valueOf(officeFee)) + 60;
+        Double officeRatio = Math.sqrt(Math.sqrt(Integer.valueOf(officeFee)))*2 + 60;
         return String.valueOf(officeRatio.intValue());
     }
 
@@ -122,7 +126,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 fee += Double.valueOf(companyInstruction.getValue());
             }
         }
-        Double productFeeRatio = fee / 1000 + 100;
+        Double productFeeRatio = fee / 1000 + 50;
         return String.valueOf(productFeeRatio.intValue());
     }
 
@@ -134,7 +138,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Double productAbility = Double.valueOf(get(EPropertyName.PRODUCT_ABILITY.name()));
         Double productFeeRatio = Double.valueOf(get(EPropertyName.PRODUCT_FEE_RATIO.name()));
         Double preProductRatio = preCompanyTermHandler == null ? 0 : Double.valueOf(preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name()));
-        Double productRatio = Math.sqrt(productAbility * productFeeRatio + 10) + preProductRatio;
+        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio) + preProductRatio) + 50;
         return String.valueOf(productRatio.intValue());
     }
 
@@ -154,7 +158,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 break;
             }
         }
-        Integer perOrderCost = Integer.valueOf(grade) * 10 + 60;
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 40;
         return String.valueOf(perOrderCost);
     }
 
@@ -224,7 +228,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Integer operationAbility = Integer.valueOf(get(EPropertyName.OPERATION_ABILITY.name()));
         Integer operationFeeRatio = Integer.valueOf(get(EPropertyName.OPERATION_FEE_RATIO.name()));
         Integer productRatio = Integer.valueOf(get(EPropertyName.PRODUCT_RATIO.name()));
-        return String.valueOf(operationAbility * operationFeeRatio * productRatio);
+        return String.valueOf((operationAbility + operationFeeRatio + productRatio) / 3);
     }
 
     /**

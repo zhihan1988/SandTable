@@ -11,9 +11,13 @@ import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.internet.service.InternetPropertyManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +36,7 @@ import java.util.Map;
 @RequestMapping("/work")
 public class WorkController {
     private static Logger logger = Logger.getLogger(WorkController.class.getName());
+    private   static Log log  =  LogFactory.getLog(WorkController.class);
     @Autowired
     private BaseManager baseManager;
     @Autowired
@@ -42,6 +47,8 @@ public class WorkController {
     private InstructionManager instructionManager;
     @Autowired
     private AccountManager accountManager;
+    @Autowired
+    private InternetPropertyManager internetPropertyManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -77,6 +84,19 @@ public class WorkController {
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
         model.addAttribute("officeInstructionList", officeInstructionList);
         model.addAttribute("hrInstructionList", hrInstructionList);
+
+        //测试信息：
+        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
+        StringBuffer messageBuffer = new StringBuffer();
+        if (companyTermPropertyList != null) {
+            for (CompanyTermProperty companyTermProperty : companyTermPropertyList) {
+                messageBuffer.append(EPropertyName.valueOf(companyTermProperty.getName()).getLabel())
+                        .append(":").append(companyTermProperty.getValue()).append("</br>");
+            }
+        }
+        model.addAttribute("messageBuffer", messageBuffer.toString());
+        logger.info(messageBuffer.toString());
+        log.info(messageBuffer);
         return "/internet/main";
     }
 

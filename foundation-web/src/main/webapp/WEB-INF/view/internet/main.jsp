@@ -333,9 +333,9 @@
             </div>
         </div>
     </div>
-    <div style="margin: 200px;">
-
-    </div>
+</div>
+<div class="am-panel am-panel-default" style="margin-top: 200px;">
+    ${messageBuffer}
 </div>
 <script>
 
