@@ -25,11 +25,12 @@ public class AccountManagerImpl implements AccountManager {
     private BaseManager baseManager;
 
     @Override
-    public void initCompanyAccount(Company company) {
+    public void initCompanyAccount(CompanyTerm companyTerm) {
         Account account = new Account();
-        account.setCampaign(company.getCampaign());
-        account.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
-        account.setCompany(company);
+        account.setCampaign(companyTerm.getCampaign());
+        account.setCampaignDate(companyTerm.getCampaign().getCurrentCampaignDate());
+        account.setCompany(companyTerm.getCompany());
+        account.setCompanyTerm(companyTerm);
         List<AccountEntry> accountEntryList = new ArrayList<>();
         AccountEntry accountEntity = new AccountEntry();
         accountEntity.setAccount(account);

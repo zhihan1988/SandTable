@@ -194,7 +194,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
                 String marketCost = companyChoice.getValue();
                 String marketFee = companyInstruction.getValue();
-                newUserAmount += marketAbility * Integer.valueOf(marketCost) / Integer.valueOf(marketFee) / productCompetitionRatio;
+                newUserAmount += marketAbility * Integer.valueOf(marketFee) / Integer.valueOf(marketCost) / productCompetitionRatio;
             }
         }
         return String.valueOf(newUserAmount);

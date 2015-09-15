@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Hean on 2015/9/4.
  */
 public interface AccountManager {
-    void initCompanyAccount(Company company);
+    void initCompanyAccount(CompanyTerm companyTerm);
 
     Account saveAccount(List<CompanyInstruction> companyInstructionList, String inType, String outType, CompanyTerm companyTerm);
 
