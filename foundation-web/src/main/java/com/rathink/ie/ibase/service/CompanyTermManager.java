@@ -5,6 +5,7 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/4.
@@ -12,7 +13,7 @@ import java.util.List;
 public interface CompanyTermManager {
     CompanyTerm getCompanyTerm(Company company, String campaignDate);
 
-    CompanyTermProperty getCompanyStatusProperty(String propertyName, CompanyTerm companyTerm);
-
     List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate);
+
+    Map<String, List<CompanyTermProperty>> partCompanyTermPropertyByDept(List<CompanyTermProperty> companyTermPropertyList);
 }

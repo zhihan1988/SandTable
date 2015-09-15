@@ -14,7 +14,6 @@ import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.WorkManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,8 +35,6 @@ public class WorkController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private WorkManager workManager;
-    @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
     private ChoiceManager choiceManager;
@@ -52,7 +49,7 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
-        Map<String, List<CompanyTermProperty>> deptPropertyMap = workManager.partCompanyStatusPropertyByDept(companyTerm.getCompanyTermPropertyList());
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = companyTermManager.partCompanyTermPropertyByDept(companyTerm.getCompanyTermPropertyList());
         List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());

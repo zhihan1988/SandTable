@@ -9,5 +9,5 @@ import java.util.List;
  * Created by Hean on 2015/9/4.
  */
 public interface InternetPropertyManager {
-    List<CompanyTermProperty> listCompanyStatusProperty(CompanyTerm companyTerm);
+    List<CompanyTermProperty> listCompanyTermProperty(CompanyTerm companyTerm);
 }

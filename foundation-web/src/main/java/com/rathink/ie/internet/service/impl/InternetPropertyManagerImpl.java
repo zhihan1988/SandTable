@@ -18,9 +18,9 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     @Autowired
     private BaseManager baseManager;
 
-    public List<CompanyTermProperty> listCompanyStatusProperty(CompanyTerm companyTerm) {
+    public List<CompanyTermProperty> listCompanyTermProperty(CompanyTerm companyTerm) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyStatusProperty where companyTerm.id = :companyTermId");
+        xQuery.setHql("from CompanyTermProperty where companyTerm.id = :companyTermId");
         xQuery.put("companyTermId", companyTerm.getId());
         List<CompanyTermProperty> companyTermPropertyList = baseManager.listObject(xQuery);
         return companyTermPropertyList;

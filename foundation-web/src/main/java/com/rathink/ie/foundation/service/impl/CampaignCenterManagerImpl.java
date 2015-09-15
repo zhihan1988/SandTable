@@ -78,11 +78,11 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         //2
         companyTermHandler.setCompanyTerm(companyTerm);
         //3
-        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-        companyTermHandler.putCompanyInstructionList(companyInstructionList);
+     /*   List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+        companyTermHandler.putCompanyInstructionList(companyInstructionList);*/
         //4
-        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyStatusProperty(companyTerm);
-        companyTermHandler.putPropertyList(companyTermPropertyList);
+     /*   List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
+        companyTermHandler.putPropertyList(companyTermPropertyList);*/
 
         return companyTermHandler;
     }

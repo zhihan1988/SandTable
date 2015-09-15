@@ -6,11 +6,7 @@ import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
-import com.rathink.ie.internet.service.WorkManager;
-import com.rathink.ie.internet.service.impl.InternetCompanyTermHandler;
+import com.rathink.ie.internet.service.FlowManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/28.
@@ -32,7 +26,7 @@ public class FlowController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private WorkManager workManager;
+    private FlowManager flowManager;
     @Autowired
     private CampaignManager campaignManager;
     @Autowired
@@ -42,9 +36,8 @@ public class FlowController {
     @ResponseBody
     public String begin(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
-        workManager.begin(campaign);
-        campaignCenterManager.initCampaignHandler(campaign);
+        flowManager.begin(campaignId);
+//        campaignCenterManager.initCampaignHandler(campaign);
         return "success";
     }
 
@@ -52,7 +45,7 @@ public class FlowController {
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-        workManager.next(campaignId);
+        flowManager.next(campaignId);
         return "success";
     }
 
@@ -60,7 +53,7 @@ public class FlowController {
     @ResponseBody
     public String pre(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-        workManager.pre(campaignId);
+        flowManager.pre(campaignId);
         return "success";
     }
 
@@ -84,7 +77,7 @@ public class FlowController {
             }
         }
         if (isAllNext) {
-            workManager.next(campaign.getId());
+            flowManager.next(campaign.getId());
         }
         return "success";
     }
