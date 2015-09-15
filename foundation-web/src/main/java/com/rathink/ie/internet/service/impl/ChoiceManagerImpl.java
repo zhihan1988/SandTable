@@ -40,6 +40,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         produceHumanChoice(campaign);
         produceMarketActivityChoice(campaign);
         produceProductStudyChoice(campaign);
+        produceProductStudyFeeChoice(campaign);
         produceOperationChoice(campaign);
     }
 
@@ -50,16 +51,16 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
         productStudy.setName("低端定位");
-        productStudy.setValue("1");
+        productStudy.setValue("1,2,3");
         baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy);
-        CompanyChoice productStudy2 = new CompanyChoice();
+     /*   CompanyChoice productStudy2 = new CompanyChoice();
         productStudy2.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy2.setCampaignDate(campaign.getCurrentCampaignDate());
         productStudy2.setCampaign(campaign);
         productStudy2.setDept(Edept.PRODUCT.name());
         productStudy2.setName("中端定位");
         productStudy2.setValue("2");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy2);
+        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy2);*/
     }
 
     private void produceProductStudyFeeChoice(Campaign campaign) {

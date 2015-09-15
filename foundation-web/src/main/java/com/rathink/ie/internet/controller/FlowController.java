@@ -37,7 +37,6 @@ public class FlowController {
     public String begin(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         flowManager.begin(campaignId);
-//        campaignCenterManager.initCampaignHandler(campaign);
         return "success";
     }
 

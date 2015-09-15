@@ -149,8 +149,8 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         String grade = "1";
         if (productStudyInstructionList != null) {
             for (CompanyInstruction companyInstruction : productStudyInstructionList) {
-                CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                grade = companyChoice.getValue();
+//                CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
+                grade = companyInstruction.getValue();
                 break;
             }
         }

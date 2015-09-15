@@ -191,18 +191,40 @@
                     <thead>
                     <tr>
                         <th>定位</th>
-                        <th>投入</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${productStudyList}" var="productStudy">
                         <tr>
-                            <td><input type="hidden" name="productStudyId" value="${productStudy.id}"/>${productStudy.value}</td>
                             <td>
-                                <select id="productStudyInstruction_fee_${productStudy.id}" name="productStudyFee"
+                                <input type="hidden" name="productStudyId" value="${productStudy.id}"/>
+                                <select id="productStudyInstruction_value_${productStudy.id}" name="productStudy"
                                         data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(productStudy.fees, ',')}" var="fee">
+                                    <c:forEach items="${fn:split(productStudy.value, ',')}" var="value">
+                                        <option value="${value}">${value}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${productStudyFeeList}" var="productStudyFee">
+                        <tr>
+                            <td>
+                                <input type="hidden" name="productStudyFeeId" value="${productStudyFee.id}"/>
+                                <select id="productStudyFeeInstruction_fee_${productStudyFee.id}" name="productStudyFee"
+                                        data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="-1">不需要</option>
+                                    <c:forEach items="${fn:split(productStudyFee.fees, ',')}" var="fee">
                                         <option value="${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
@@ -333,7 +355,7 @@
                     }
             )});
 
-        $("select[id^='officeInstruction_fee'],select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_fee'],select[id^='operationInstruction_fee']")
+        $("select[id^='officeInstruction_fee'],select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_value'],select[id^='productStudyFeeInstruction_fee'],select[id^='operationInstruction_fee']")
                 .change(function(){
                     var $fee = $(this);
                     var idArray = $fee.attr("id").split("_");

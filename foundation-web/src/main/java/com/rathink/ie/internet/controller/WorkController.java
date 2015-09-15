@@ -54,6 +54,7 @@ public class WorkController {
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
         List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyChoice> productStudyFeeList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OPERATION.name());
         Integer companyCash = accountManager.getCompanyCash(company);
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
@@ -69,6 +70,7 @@ public class WorkController {
         model.addAttribute("humanList", humanList);
         model.addAttribute("marketActivityChoiceList", marketActivityChoiceList);
         model.addAttribute("productStudyList", productStudyList);
+        model.addAttribute("productStudyFeeList", productStudyFeeList);
         model.addAttribute("operationChoiceList", operationChoiceList);
         model.addAttribute("companyCash", companyCash);
         model.addAttribute("campaignDateInCash", campaignDateInCash);
