@@ -15,5 +15,6 @@
     <div><a href="<c:url value="/flow/begin?campaignId=1"/>">开始游戏</a></div>
     <div><a href="<c:url value="/flow/next?campaignId=1"/>">开始下一回合</a></div>
     <div><a href="<c:url value="/flow/pre?campaignId=1"/>">回到上一回合</a></div>
+    <div><a href="<c:url value="/flow/reset?campaignId=1"/>">重新开始</a></div>
 </body>
 </html>

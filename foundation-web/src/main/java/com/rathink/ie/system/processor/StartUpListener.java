@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * Created by Hean on 2015/9/14.
  */
 @Component
-public class AfterProcessor implements ApplicationListener<ContextRefreshedEvent> {
+public class StartUpListener implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private CampaignCenterManager campaignCenterManager;
     @Override

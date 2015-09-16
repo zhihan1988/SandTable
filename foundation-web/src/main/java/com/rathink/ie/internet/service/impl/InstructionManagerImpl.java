@@ -8,7 +8,10 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
+import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,6 @@ import java.util.List;
  */
 @Service
 public class InstructionManagerImpl implements InstructionManager {
-    private static Logger logger = Logger.getLogger(InstructionManagerImpl.class.getName());
 
     @Autowired
     private BaseManager baseManager;
@@ -59,6 +61,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstruction;
     }
 
+    @Override
     public void deleteInstruction(Company company, String companyChoiceId) {
         String hql = "from CompanyInstruction where companyChoice.id = :companyChoiceId" +
                 " and company.id = :companyId and campaignDate = :campaignDate";
@@ -72,6 +75,7 @@ public class InstructionManagerImpl implements InstructionManager {
         }
     }
 
+    @Override
     public List<CompanyInstruction> listCompanyInstructionByType(Company company, String baseType) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where baseType = :baseType and  status=:status and company.id = :companyId");
@@ -82,6 +86,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
+    @Override
     public List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where dept = :dept and  status=:status and company.id = :companyId");
@@ -100,6 +105,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
+    @Override
     public List<CompanyInstruction> listCompanyInstruction(CompanyChoice companyChoice) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where companyChoice.id = :companyChoiceId");
@@ -108,6 +114,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
+    @Override
     public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -116,4 +123,14 @@ public class InstructionManagerImpl implements InstructionManager {
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
     }
+
+    public CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm) {
+        String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyTermId", companyTerm.getId());
+        queryParamMap.put("baseType", EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyInstruction;
+    }
+
 }

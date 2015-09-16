@@ -315,4 +315,41 @@ public class FlowManagerImpl implements FlowManager {
         campaignCenterManager.initCampaignHandler(campaign);
     }
 
+    @Override
+    public void reset(String campaignId) {
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
+        Session session = sessionFactory.getCurrentSession();
+
+        //删除所有决策信息
+        XQuery instructionQuery = new XQuery();
+        instructionQuery.setHql("from CompanyInstruction where campaign.id = :campaignId");
+        instructionQuery.put("campaignId", campaign.getId());
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(instructionQuery);
+        if (companyInstructionList != null) {
+            companyInstructionList.forEach(session::delete);
+        }
+
+        //删除所有属性信息 及财务信息
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyTerm where campaign.id = :campaignId");
+        xQuery.put("campaignId", campaignId);
+        List<CompanyTerm> companyTermList = baseManager.listObject(xQuery);
+        if (companyTermList != null) {
+            companyTermList.forEach(session::delete);
+        }
+
+
+        //删除所有随机选项
+        XQuery choiceQuery = new XQuery();
+        choiceQuery.setHql("from CompanyChoice where campaign.id = :campaignId");
+        choiceQuery.put("campaignId", campaign.getId());
+        List<CompanyChoice> companyChoiceList = baseManager.listObject(choiceQuery);
+        if (companyChoiceList != null) {
+            companyChoiceList.forEach(session::delete);
+        }
+
+        begin(campaignId);
+    }
+
 }

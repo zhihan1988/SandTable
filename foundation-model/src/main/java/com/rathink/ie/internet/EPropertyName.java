@@ -1,7 +1,5 @@
 package com.rathink.ie.internet;
 
-import org.apache.commons.lang.NotImplementedException;
-
 /**
  * Created by Hean on 2015/8/26.
  */
@@ -27,7 +25,7 @@ public enum EPropertyName{
     private String label;
     private String dept;//所属部门
     private String display;//展现形式（例如以进度条形式展现）
-    private EPropertyName(String label,String dept, String display) {
+    EPropertyName(String label,String dept, String display) {
         this.label = label;
         this.dept = dept;
         this.display = display;
@@ -57,15 +55,5 @@ public enum EPropertyName{
         this.display = display;
     }
 
-   /* public String  getLabel(EPropertyName ePropertyName) {
-        switch (ePropertyName) {
-            case OFFICE_RATIO:
-                label = "办公室系数";
-                break;
-            default:
-                throw new NotImplementedException();
-        }
-        return label;
-    }*/
 }
 

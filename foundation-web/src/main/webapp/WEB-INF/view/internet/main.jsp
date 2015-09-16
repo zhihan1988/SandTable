@@ -71,10 +71,10 @@
                                 <input type="hidden" name="officeId" value="${officeChoice.id}"/>${officeChoice.description}
                             </td>
                             <td>
-                                <select id="officeInstruction_fee_${officeChoice.id}" name="officeInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
+                                <select id="instruction_${officeChoice.id}" name="officeInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${officeChoice.id}_-1">不需要</option>
                                     <c:forEach items="${fn:split(officeChoice.fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
+                                        <option value="${officeChoice.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -105,8 +105,18 @@
                 <c:forEach items="${hrInstructionList}" var="hrInstruction">
                     <tr>
                         <td>
-                                ${hrInstruction.companyChoice.name}
-                                    <%--（${hrInstruction.companyChoice.typeLabel}）--%>
+                            ${hrInstruction.companyChoice.name}
+                            <c:choose>
+                                <c:when test="${hrInstruction.companyChoice.type == 'PRODUCT'}">
+                                    (产品研发部)
+                                </c:when>
+                                <c:when test="${hrInstruction.companyChoice.type == 'MARKET'}">
+                                    (市场部)
+                                </c:when>
+                                <c:when test="${hrInstruction.companyChoice.type == 'OPERATION'}">
+                                    (运营部)
+                                </c:when>
+                            </c:choose>
                         </td>
                         <td>${hrInstruction.companyChoice.value}</td>
                         <td>
@@ -147,14 +157,24 @@
                             <td>
                                 <input type="hidden" name="humanId" value="${human.id}"/>
                                     ${human.name}
-                                <%--（${human.typeLabel}）--%>
+                                    <c:choose>
+                                        <c:when test="${human.type == 'PRODUCT'}">
+                                            (产品研发部)
+                                        </c:when>
+                                        <c:when test="${human.type == 'MARKET'}">
+                                            (市场部)
+                                        </c:when>
+                                        <c:when test="${human.type == 'OPERATION'}">
+                                            (运营部)
+                                        </c:when>
+                                    </c:choose>
                             </td>
                             <td>${human.value}</td>
                             <td>
-                                <select id="hrInstruction_fee_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
+                                <select id="instruction_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${human.id}_-1">不需要</option>
                                     <c:forEach items="${fn:split(human.fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
+                                        <option value="${human.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -194,22 +214,21 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${productStudyList}" var="productStudy">
                         <tr>
                             <td>
-                                <input type="hidden" name="productStudyId" value="${productStudy.id}"/>
-                                <select id="productStudyInstruction_value_${productStudy.id}" name="productStudy"
-                                        data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(productStudy.value, ',')}" var="value">
-                                        <option value="${value}">${value}</option>
+                                <select id="productStudy" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <c:forEach items="${productStudyList}" var="productStudy">
+                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.value==productStudy.value}">selected="selected"</c:if>>
+                                            ${productStudy.name}
+                                        </option>
                                     </c:forEach>
                                 </select>
                             </td>
                         </tr>
-                    </c:forEach>
                     </tbody>
                 </table>
+            </div>
+            <div class="am-panel-bd">
                 <table class="am-table">
                     <thead>
                     <tr>
@@ -221,58 +240,11 @@
                         <tr>
                             <td>
                                 <input type="hidden" name="productStudyFeeId" value="${productStudyFee.id}"/>
-                                <select id="productStudyFeeInstruction_fee_${productStudyFee.id}" name="productStudyFee"
+                                <select id="instruction_${productStudyFee.id}" name="productStudyFee"
                                         data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
+                                    <option value="${productStudyFee.id}_-1">不需要</option>
                                     <c:forEach items="${fn:split(productStudyFee.fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="am-panel am-panel-default">
-        <div class="am-panel-hd">
-            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
-                运营
-            </h4>
-        </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
-            <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
-                <c:choose>
-                    <c:when test="${property.display == 'PERCENT'}">
-                        <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <p>${property.label}:${property.value}</p>
-                    </c:otherwise>
-                </c:choose>
-            </c:forEach>
-        </div>
-        <div id="do-not-say-3" class="am-panel-collapse am-collapse">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>投入</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${operationChoiceList}" var="operationChoice">
-                        <tr>
-                            <td>
-                                <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
-                                <select id="operationInstruction_fee_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
+                                        <option value="${productStudyFee.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -319,10 +291,57 @@
                             <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
                             <td>${marketActivityChoice.value}</td>
                             <td>
-                                <select id="marketInstruction_fee_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="-1">不需要</option>
-                                    <c:forEach items="${fn:split(marketActivityChoice. fees, ',')}" var="fee">
-                                        <option value="${fee}">${fee}</option>
+                                <select id="instruction_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${marketActivityChoice.id}_-1">不需要</option>
+                                    <c:forEach items="${fn:split(marketActivityChoice.fees, ',')}" var="fee">
+                                        <option value="${marketActivityChoice.id}_${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
+                运营
+            </h4>
+        </div>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
+            <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
+                <c:choose>
+                    <c:when test="${property.display == 'PERCENT'}">
+                        <div class="am-progress">
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>${property.label}:${property.value}</p>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </div>
+        <div id="do-not-say-3" class="am-panel-collapse am-collapse">
+            <div class="am-panel-bd">
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${operationChoiceList}" var="operationChoice">
+                        <tr>
+                            <td>
+                                <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
+                                <select id="instruction_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${operationChoice.id}_-1">不需要</option>
+                                    <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
+                                        <option value="${operationChoice.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -355,27 +374,42 @@
                     }
             )});
 
-        $("select[id^='officeInstruction_fee'],select[id^='hrInstruction_fee'],select[id^='marketInstruction_fee'],select[id^='productStudyInstruction_value'],select[id^='productStudyFeeInstruction_fee'],select[id^='operationInstruction_fee']")
+        $("select[id^='instruction']")
                 .change(function(){
-                    var $fee = $(this);
-                    var idArray = $fee.attr("id").split("_");
-                    var fee = $fee.val();
-                    if(fee!=-1) {
+                    var $choice = $(this);
+                    var array = $choice.val().split("_");
+                    var choiceId = array[0];
+                    var value = array[1];
+                    if (value!=-1) {
                         $.post("<c:url value="/work/makeInstruction"/>",
                                 {
                                     companyId: companyId,
-                                    choiceId: idArray[2],
-                                    fee: fee
+                                    choiceId: choiceId,
+                                    value: value
                                 });
                     } else {
                         $.post("<c:url value="/work/cancelInstruction"/>",
                                 {
                                     companyId: companyId,
-                                    choiceId: idArray[2],
-                                    fee: fee
+                                    choiceId: choiceId
                                 });
                     }
 
+                });
+        $("select[id='productStudy']")
+                .change(function(){
+                    var $choice = $(this);
+                    var array = $choice.val().split("_");
+                    var choiceId = array[0];
+                    var value = array[1];
+                    if (value!=-1) {
+                        $.post("<c:url value="/work/makeProductStudyInstruction"/>",
+                                {
+                                    companyId: companyId,
+                                    choiceId: choiceId,
+                                    value: value
+                                });
+                    }
                 });
     })
 </script>

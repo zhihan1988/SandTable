@@ -3,6 +3,7 @@ package com.rathink.ie.internet.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
@@ -47,8 +48,6 @@ public class WorkController {
     private InstructionManager instructionManager;
     @Autowired
     private AccountManager accountManager;
-    @Autowired
-    private InternetPropertyManager internetPropertyManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -70,6 +69,9 @@ public class WorkController {
                 company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.AD.name());
+
+        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
+        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getProductStudyInstruction(preCompanyTerm);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -84,19 +86,20 @@ public class WorkController {
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
         model.addAttribute("officeInstructionList", officeInstructionList);
         model.addAttribute("hrInstructionList", hrInstructionList);
+        model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
 
         //测试信息：
-        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
         StringBuffer messageBuffer = new StringBuffer();
-        if (companyTermPropertyList != null) {
+        for (String dept : deptPropertyMap.keySet()) {
+            messageBuffer.append("</br>").append(dept).append(":</br>");
+            List<CompanyTermProperty> companyTermPropertyList = deptPropertyMap.get(dept);
             for (CompanyTermProperty companyTermProperty : companyTermPropertyList) {
                 messageBuffer.append(EPropertyName.valueOf(companyTermProperty.getName()).getLabel())
                         .append(":").append(companyTermProperty.getValue()).append("</br>");
             }
+
         }
         model.addAttribute("messageBuffer", messageBuffer.toString());
-        logger.info(messageBuffer.toString());
-        log.info(messageBuffer);
         return "/internet/main";
     }
 
@@ -105,9 +108,30 @@ public class WorkController {
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         String choiceId = request.getParameter("choiceId");
-        String fee = request.getParameter("fee");
+        String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        instructionManager.saveOrUpdateInstruction(company, choiceId, fee);
+        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
+        return "success";
+    }
+
+    @RequestMapping("/makeProductStudyInstruction")
+    @ResponseBody
+    public String makeProductStudyInstruction(HttpServletRequest request, Model model) throws Exception {
+        String companyId = request.getParameter("companyId");
+        String choiceId = request.getParameter("choiceId");
+        String value = request.getParameter("value");
+        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
+        CompanyInstruction productStudyInstruction = instructionManager.getProductStudyInstruction(companyTerm);
+        if (productStudyInstruction == null) {
+            instructionManager.saveOrUpdateInstruction(company, choiceId, value);
+        } else {
+            CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
+            productStudyInstruction.setCompanyChoice(companyChoice);
+            productStudyInstruction.setValue(companyChoice.getValue());
+            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), productStudyInstruction);
+        }
+        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
         return "success";
     }
 

@@ -29,8 +29,6 @@ public class FlowController {
     private FlowManager flowManager;
     @Autowired
     private CampaignManager campaignManager;
-    @Autowired
-    private CampaignCenterManager campaignCenterManager;
 
     @RequestMapping("/begin")
     @ResponseBody
@@ -53,6 +51,14 @@ public class FlowController {
     public String pre(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         flowManager.pre(campaignId);
+        return "success";
+    }
+
+    @RequestMapping("/reset")
+    @ResponseBody
+    public String reset(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        flowManager.reset(campaignId);
         return "success";
     }
 
