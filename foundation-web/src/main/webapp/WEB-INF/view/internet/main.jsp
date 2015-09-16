@@ -359,20 +359,22 @@
 <script>
 
     $(function(){
+        var campaignId = ${company.campaign.id}
         var companyId = ${company.id};
 
         $("#endCampaignDate").click(function(){
             $.post("<c:url value="/flow/companyNext.do"/>",
                     {
+                        campaignId: campaignId,
                         companyId: companyId
                     },
                     function (data) {
                         alert(data);
-                       /* if(data=='success'){
-                            alert("回合结束，等待其它企业完成操作");
-                        }*/
+                        /* if(data=='success'){
+                         alert("回合结束，等待其它企业完成操作");
+                         }*/
                     }
-            )});
+            );});
 
         $("select[id^='instruction']")
                 .change(function(){

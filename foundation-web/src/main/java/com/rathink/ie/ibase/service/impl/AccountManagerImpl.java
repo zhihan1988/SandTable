@@ -35,13 +35,13 @@ public class AccountManagerImpl implements AccountManager {
         AccountEntry accountEntity = new AccountEntry();
         accountEntity.setAccount(account);
         accountEntity.setDirection("1");
-        accountEntity.setValue("1000000");
+        accountEntity.setValue("500000");
         accountEntity.setType(EAccountEntityType.COMPANY_CASH.name());
         accountEntryList.add(accountEntity);
         AccountEntry accountEntity2 = new AccountEntry();
         accountEntity2.setAccount(account);
         accountEntity2.setDirection("-1");
-        accountEntity2.setValue("1000000");
+        accountEntity2.setValue("500000");
         accountEntity2.setType(EAccountEntityType.OTHER.name());
         accountEntryList.add(accountEntity2);
         account.setAccountEntryList(accountEntryList);

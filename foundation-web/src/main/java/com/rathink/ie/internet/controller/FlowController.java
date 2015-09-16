@@ -6,6 +6,9 @@ import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignHandler;
+import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.internet.service.FlowManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/28.
@@ -64,21 +68,22 @@ public class FlowController {
 
     @RequestMapping("/companyNext")
     @ResponseBody
-    public String companyNext(HttpServletRequest request, Model model) throws Exception {
-        Company company = (Company) baseManager.getObject(Company.class.getName(), request.getParameter("companyId"));
-        Campaign campaign = company.getCampaign();
+    public synchronized String companyNext(HttpServletRequest request, Model model) throws Exception {
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        Campaign campaign = campaignHandler.getCampaign();
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(request.getParameter("companyId"));
+        Company company = companyTermHandler.getCompanyTerm().getCompany();
+
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
         company.setCurrentCampaignDate(nextCampaignDate);
-        baseManager.saveOrUpdate(Company.class.getName(), company);
 
         boolean isAllNext = true;
-        List<Company> companyList = campaignManager.listCompany(campaign);
-        if (companyList != null) {
-            for (Company c : companyList) {
-                if (!nextCampaignDate.equals(c.getCurrentCampaignDate())) {
-                    isAllNext = false;
-                }
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermHandler ctHandler = companyTermHandlerMap.get(companyId);
+            if (!nextCampaignDate.equals(ctHandler.getCompanyTerm().getCompany().getCurrentCampaignDate())) {
+                isAllNext = false;
             }
         }
         if (isAllNext) {

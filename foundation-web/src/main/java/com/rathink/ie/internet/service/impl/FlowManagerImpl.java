@@ -233,11 +233,13 @@ public class FlowManagerImpl implements FlowManager {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         CompanyTermHandler preCompanyTermHandler = companyTermHandler.getPreCompanyTermHandler();
         List<Account> accountList = new ArrayList<>();
-        List<CompanyInstruction> officeInstructionList = preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+
+        List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.OFFICE.name());
         Account adAccount = accountManager
                 .saveAccount(officeInstructionList, EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);
-        List<CompanyInstruction> humanInstructionList = preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
+
+        List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
         Account humanAccount = accountManager
                 .saveAccount(humanInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);

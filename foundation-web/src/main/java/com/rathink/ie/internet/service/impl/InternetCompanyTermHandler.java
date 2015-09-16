@@ -1,5 +1,6 @@
 package com.rathink.ie.internet.service.impl;
 
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
@@ -7,10 +8,12 @@ import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
+import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/4.
@@ -78,8 +81,8 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 部门能力
      */
     public String calculateDeptAbility(String type) {
-        List<CompanyInstruction> companyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.HUMAN.name());
+        InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
+        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
         Integer ability = 60;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -149,16 +152,11 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
     private String calculatePerOrderCost() {
         List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-
         String grade = "1";
-        if (productStudyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : productStudyInstructionList) {
-//                CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                grade = companyInstruction.getValue();
-                break;
-            }
+        if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
+            grade = productStudyInstructionList.get(0).getValue();
         }
-        Integer perOrderCost = Integer.valueOf(grade) * 10 + 40;
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 30;
         return String.valueOf(perOrderCost);
     }
 
@@ -167,9 +165,30 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 产品竞争系数
      */
     private String calculateProductCompetitionRatio() {
+        //自己公司的定位
+        List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
+                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        String grade = "1";
+        if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
+            grade = productStudyInstructionList.get(0).getValue();
+        }
+        //跟自己公司定位相同的公司数量
+        int sameGradeCount = 1;
         CampaignHandler campaignHandler = getCampaignHandler();
-        Integer companySize = campaignHandler.getCompanyTermHandlerMap().size();
-        Double productCompetitionRatio = 30 + 20 * Math.sqrt(companySize);
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        for (String companyId : campaignHandler.getCompanyTermHandlerMap().keySet()) {
+            if (!companyId.equals(getCompanyTerm().getCompany().getId())) {
+                CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+                List<CompanyInstruction> companyInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+                String otherGrade = companyInstructionList == null ? "1" : companyInstructionList.get(0).getValue();
+                if (grade.equals(otherGrade)) {
+                    sameGradeCount++;
+                }
+            }
+
+        }
+        //产品竞争系数计算公式
+        Double productCompetitionRatio = 30 + 20 * Math.sqrt(sameGradeCount);
         return String.valueOf(productCompetitionRatio.intValue());
     }
 
