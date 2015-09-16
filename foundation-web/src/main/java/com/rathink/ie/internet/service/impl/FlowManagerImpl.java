@@ -182,15 +182,15 @@ public class FlowManagerImpl implements FlowManager {
         for (CompanyChoice companyChoice : companyChoiceList) {
             List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyChoice);
             if (companyInstructionList != null && companyInstructionList.size() > 0) {
-                int maxRecruitmentRatio = 0;
+                Double maxRecruitmentRatio = 0d;
                 CompanyInstruction successCompanyInstruction = null;
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
                     CompanyTermHandler preCompanyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId()).getPreCompanyTermHandler();
-                    Integer officeRatio = preCompanyTermHandler == null ? 50 : Integer.valueOf(preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name()));
-                    Integer fee = Integer.valueOf(companyInstruction.getValue());
-                    Integer feeRatio = fee / 200;
+                    Double officeRatio = preCompanyTermHandler == null ? 50d : preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name());
+                    Double fee = Double.valueOf(companyInstruction.getValue());
+                    Double feeRatio = fee / 200;
                     Integer randomRatio = RandomUtil.random(0, 20);
-                    Integer recruitmentRatio = officeRatio * 10 / 100 + feeRatio * 60 / 100 + randomRatio;
+                    Double recruitmentRatio = officeRatio * 10 / 100 + feeRatio * 60 / 100 + randomRatio;
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
                         successCompanyInstruction = companyInstruction;
@@ -222,7 +222,7 @@ public class FlowManagerImpl implements FlowManager {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
         for (EPropertyName ePropertyName : EPropertyName.values()) {
-            String value = companyTermHandler.calculate(ePropertyName.name());
+            Double value = companyTermHandler.calculate(ePropertyName.name());
             companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
         }
         companyTerm.setCompanyTermPropertyList(companyTermPropertyList);
@@ -255,9 +255,9 @@ public class FlowManagerImpl implements FlowManager {
         Account operationFeeAccount = accountManager
                 .saveAccount(operationFeeInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
-        String currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
+        Double currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
         Account incomeAccount = accountManager
-                .saveAccount(currentPeriodIncome, EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+                .saveAccount(currentPeriodIncome.toString(), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);
         companyTermHandler.setAccountList(accountList);
     }

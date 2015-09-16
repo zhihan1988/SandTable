@@ -68,7 +68,7 @@ public class FlowController {
 
     @RequestMapping("/companyNext")
     @ResponseBody
-    public synchronized String companyNext(HttpServletRequest request, Model model) throws Exception {
+    public synchronized Boolean companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         Campaign campaign = campaignHandler.getCampaign();
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
@@ -89,6 +89,6 @@ public class FlowController {
         if (isAllNext) {
             flowManager.next(campaign.getId());
         }
-        return "success";
+        return isAllNext;
     }
 }

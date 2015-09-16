@@ -16,21 +16,21 @@ import java.util.Map;
 public abstract class CompanyTermHandler {
     protected CampaignHandler campaignHandler;
     protected CompanyTerm companyTerm;
-    protected Map<String, String> propertyValueMap = new HashMap<>();
+    protected Map<String, Double> propertyValueMap = new HashMap<>();
     protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
     protected List<Account> accountList = new ArrayList<>();
     protected CompanyTermHandler preCompanyTermHandler;
 
-    public String get(String key) {
+    public Double get(String key) {
         if (!propertyValueMap.containsKey(key)) {
             put(key, calculate(key));
         }
         return propertyValueMap.get(key);
     }
 
-    abstract public String calculate(String key);
+    abstract public Double calculate(String key);
 
-    public void put(String key, String value) {
+    public void put(String key, Double value) {
         propertyValueMap.put(key, value);
     }
 

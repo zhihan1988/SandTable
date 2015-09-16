@@ -34,26 +34,19 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-            <table class="am-table">
-                <thead>
-                <tr>
-                    <th>办公室描述</th>
-                    <th>房租</th>
-                </tr>
-                </thead>
-                <tbody>
+            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                 <c:forEach items="${officeInstructionList}" var="instruction">
-                    <tr>
-                        <td>
-                            ${instruction.companyChoice.description}
-                        </td>
-                        <td>
-                            ${instruction.value}
-                        </td>
-                    </tr>
+                <li>
+                    <div>
+                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-1.jpg" /></div>
+                        <div>
+                            <p>价格:${instruction.value}</p>
+                            <p>简介：${instruction.companyChoice.description}<p>
+                        </div>
+                    </div>
+                </li>
                 </c:forEach>
-                </tbody>
-            </table>
+            </ul>
         </div>
         <div id="do-not-say-0" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
@@ -68,7 +61,7 @@
                     <c:forEach items="${officeChoiceList}" var="officeChoice">
                         <tr>
                             <td>
-                                <input type="hidden" name="officeId" value="${officeChoice.id}"/>${officeChoice.description}
+                                ${officeChoice.description}
                             </td>
                             <td>
                                 <select id="instruction_${officeChoice.id}" name="officeInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
@@ -93,52 +86,36 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
-            <table class="am-table">
-                <thead>
-                <tr>
-                    <th>名字(部门)</th>
-                    <th>能力</th>
-                    <th>薪资</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${hrInstructionList}" var="hrInstruction">
-                    <tr>
-                        <td>
-                            ${hrInstruction.companyChoice.name}
-                            <c:choose>
-                                <c:when test="${hrInstruction.companyChoice.type == 'PRODUCT'}">
-                                    (产品研发部)
-                                </c:when>
-                                <c:when test="${hrInstruction.companyChoice.type == 'MARKET'}">
-                                    (市场部)
-                                </c:when>
-                                <c:when test="${hrInstruction.companyChoice.type == 'OPERATION'}">
-                                    (运营部)
-                                </c:when>
-                            </c:choose>
-                        </td>
-                        <td>${hrInstruction.companyChoice.value}</td>
-                        <td>
-                                ${hrInstruction.value}
-                        </td>
-                    </tr>
+            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
+                <c:forEach items="${hrInstructionList}" var="hrInstruction" varStatus="status">
+                    <li>
+                        <div style="margin: 0;">
+                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
+                                <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
+                                <li>
+                                    <p style="margin: 0">${hrInstruction.companyChoice.name}</p>
+                                    <p style="margin: 0">
+                                        <c:choose>
+                                            <c:when test="${hrInstruction.companyChoice.type == 'PRODUCT'}">
+                                                产品研发
+                                            </c:when>
+                                            <c:when test="${hrInstruction.companyChoice.type == 'MARKET'}">
+                                                市场
+                                            </c:when>
+                                            <c:when test="${hrInstruction.companyChoice.type == 'OPERATION'}">
+                                                运营
+                                            </c:when>
+                                        </c:choose>
+                                    </p>
+                                </li>
+                            </ul>
+                           </div>
+                        <div style="margin: 0;">
+                            <p style="margin: 0">能力：${hrInstruction.companyChoice.value}</p>
+                            <p style="margin: 0">薪资：${hrInstruction.value}</p>
+                        </div>
+                    </li>
                 </c:forEach>
-                </tbody>
-            </table>
-            <ul class="am-avg-sm-2 am-thumbnails">
-                <li>
-                    <div>
-                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-1.jpg" /></div>
-                        <div>内容</div>
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-2.jpg" /></div>
-                        <div>内容</div>
-                    </div>
-                </li>
             </ul>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse">
@@ -369,10 +346,11 @@
                         companyId: companyId
                     },
                     function (data) {
-                        alert(data);
-                        /* if(data=='success'){
-                         alert("回合结束，等待其它企业完成操作");
-                         }*/
+                         if(data=='false'){
+                            alert("回合结束，等待其它企业完成操作");
+                         } else {
+                             alert("公司回合已全部结束，刷新进入下一回合");
+                         }
                     }
             );});
 
