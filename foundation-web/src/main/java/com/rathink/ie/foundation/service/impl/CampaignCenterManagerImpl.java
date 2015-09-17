@@ -32,8 +32,6 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
     @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
-    private InstructionManager instructionManager;
-    @Autowired
     InternetPropertyManager internetPropertyManager;
 
 

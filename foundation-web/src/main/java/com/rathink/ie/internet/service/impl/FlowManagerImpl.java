@@ -90,7 +90,17 @@ public class FlowManagerImpl implements FlowManager {
             companyTermHandler.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermHandler);
         }
-        next(campaignId);
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+            //计算保存新回合的属性数据
+            calculateProperty(companyTermHandler);
+            //4计算保存新回合的财务数据
+            accountManager.initCompanyAccount(companyTermHandler.getCompanyTerm());
+        }
+
+        newRound(campaignHandler);
+
+        after(campaignHandler);
     }
 
     /**
@@ -99,16 +109,16 @@ public class FlowManagerImpl implements FlowManager {
      */
     public void next(String campaignId) {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
-        //回合结束前
         before(campaignHandler);
-        //回合结束
         newRound(campaignHandler);
-        //新回合开始
         after(campaignHandler);
     }
 
-
-    public void before(CampaignHandler campaignHandler) {
+    /**
+     * 回合结束前
+     * @param campaignHandler
+     */
+    private void before(CampaignHandler campaignHandler) {
         //获取property Instruction 等
         Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -135,7 +145,11 @@ public class FlowManagerImpl implements FlowManager {
 
     }
 
-    public void newRound(CampaignHandler campaignHandler) {
+    /**
+     * 开始新的回合
+     * @param campaignHandler
+     */
+    private void newRound(CampaignHandler campaignHandler) {
         Campaign campaign = campaignHandler.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
@@ -161,12 +175,16 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    public void after(CampaignHandler campaignHandler) {
+    /**
+     * 新回合开始后
+     * @param campaignHandler
+     */
+    private void after(CampaignHandler campaignHandler) {
         //准备供用户决策用的随机数据
         choiceManager.produceChoice(campaignHandler.getCampaign());
     }
 
-    public void competitiveBidding(CampaignHandler campaignHandler) {
+    private void competitiveBidding(CampaignHandler campaignHandler) {
 
         Campaign campaign = campaignHandler.getCampaign();
         List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
@@ -203,7 +221,7 @@ public class FlowManagerImpl implements FlowManager {
 
     }
 
-    public void competitiveUnBidding(CampaignHandler campaignHandler) {
+    private void competitiveUnBidding(CampaignHandler campaignHandler) {
         Campaign campaign = campaignHandler.getCampaign();
         List<CompanyInstruction> companyInstructionList = instructionManager.listCampaignCompanyInstructionByDate(campaign.getId(), campaign.getCurrentCampaignDate());
         companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
@@ -212,7 +230,7 @@ public class FlowManagerImpl implements FlowManager {
         });
     }
 
-    public void calculateProperty(CompanyTermHandler companyTermHandler) {
+    private void calculateProperty(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
         for (EPropertyName ePropertyName : EPropertyName.values()) {
@@ -270,20 +288,20 @@ public class FlowManagerImpl implements FlowManager {
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
 
-        //删除本轮以及上一轮的决策信息
+        //删除本轮决策信息
         XQuery instructionQuery = new XQuery();
         instructionQuery.setHql("from CompanyInstruction where campaign.id = :campaignId and campaignDate in (:campaignDates)");
         instructionQuery.put("campaignId", campaign.getId());
-        instructionQuery.put("campaignDates", new String[]{currentCampaignDate, preCampaignDate});
+        instructionQuery.put("campaignDates", new String[]{currentCampaignDate});
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(instructionQuery);
         if (companyInstructionList != null) {
             companyInstructionList.forEach(session::delete);
         }
 
-        //删除本轮属性信息 及财务信息
+        //删除上一轮轮属性信息 及财务信息
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
-            CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, currentCampaignDate);
+            CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
             session.delete(companyTerm);
         }
 
@@ -303,7 +321,6 @@ public class FlowManagerImpl implements FlowManager {
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(Company.class.getName(), company);
-
         }
 
         //初始化handler
