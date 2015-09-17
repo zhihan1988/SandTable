@@ -5,10 +5,7 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Hean on 2015/9/4.
@@ -16,8 +13,8 @@ import java.util.Map;
 public abstract class CompanyTermHandler {
     protected CampaignHandler campaignHandler;
     protected CompanyTerm companyTerm;
-    protected Map<String, Double> propertyValueMap = new HashMap<>();
-    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new HashMap<>();
+    protected Map<String, Double> propertyValueMap = new LinkedHashMap<>();
+    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
     protected List<Account> accountList = new ArrayList<>();
     protected CompanyTermHandler preCompanyTermHandler;
 

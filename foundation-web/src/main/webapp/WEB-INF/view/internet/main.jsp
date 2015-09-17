@@ -330,8 +330,45 @@
         </div>
     </div>
 </div>
-<div class="am-panel am-panel-default" style="margin-top: 200px;">
-    ${messageBuffer}
+<div class="am-panel am-panel-default">
+    <table class="am-table am-table-bordered">
+        <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
+            <tr>
+                <td></td>
+                <c:forEach items="${r.value}" var="property">
+                    <td>${property.key}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        <c:forEach items="${propertyReport}" var="r">
+            <tr>
+                <td>${r.key}</td>
+                <c:forEach items="${r.value}" var="property">
+                    <td>${property.value}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+    </table>
+</div>
+<div class="am-panel am-panel-default">
+    <table class="am-table am-table-bordered">
+        <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
+            <tr>
+                <td></td>
+                <c:forEach items="${acountMap.value}" var="account">
+                    <td>${account.key}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        <c:forEach items="${accountReport}" var="acountMap">
+            <tr>
+                <td>${acountMap.key}</td>
+                <c:forEach items="${acountMap.value}" var="account">
+                    <td>${account.value}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+    </table>
 </div>
 <script>
 

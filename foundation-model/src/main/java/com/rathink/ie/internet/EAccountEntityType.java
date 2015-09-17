@@ -7,7 +7,7 @@ public enum EAccountEntityType {
     MARKET_FEE("市场费用"),PRODUCT_FEE("产品费用"),OPERATION_FEE("运营费用"),HR_FEE("员工工资"),AD_FEE("行政费用"),
     COMPANY_CASH("公司现金"),OTHER("其它");
 
-    private EAccountEntityType(String label) {
+    EAccountEntityType(String label) {
         this.label = label;
     }
     private String label;

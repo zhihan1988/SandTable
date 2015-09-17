@@ -10,11 +10,15 @@ import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
+import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.internet.EPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/29.
@@ -26,26 +30,24 @@ public class AccountManagerImpl implements AccountManager {
 
     @Override
     public void initCompanyAccount(CompanyTerm companyTerm) {
-        Account account = new Account();
-        account.setCampaign(companyTerm.getCampaign());
-        account.setCampaignDate(companyTerm.getCampaign().getCurrentCampaignDate());
-        account.setCompany(companyTerm.getCompany());
-        account.setCompanyTerm(companyTerm);
-        List<AccountEntry> accountEntryList = new ArrayList<>();
-        AccountEntry accountEntity = new AccountEntry();
-        accountEntity.setAccount(account);
-        accountEntity.setDirection("1");
-        accountEntity.setValue("500000");
-        accountEntity.setType(EAccountEntityType.COMPANY_CASH.name());
-        accountEntryList.add(accountEntity);
-        AccountEntry accountEntity2 = new AccountEntry();
-        accountEntity2.setAccount(account);
-        accountEntity2.setDirection("-1");
-        accountEntity2.setValue("500000");
-        accountEntity2.setType(EAccountEntityType.OTHER.name());
-        accountEntryList.add(accountEntity2);
-        account.setAccountEntryList(accountEntryList);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        List<Account> accountList = new ArrayList<>();
+
+        Account adAccount = saveAccount("0", EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        accountList.add(adAccount);
+        Account humanAccount = saveAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        accountList.add(humanAccount);
+        Account productFeeAccount = saveAccount("0", EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        accountList.add(productFeeAccount);
+        Account marketFeeAccount = saveAccount("0", EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        accountList.add(marketFeeAccount);
+        Account operationFeeAccount = saveAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        accountList.add(operationFeeAccount);
+        Account incomeAccount = saveAccount("500000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+        accountList.add(incomeAccount);
+
+        companyTerm.setAccountList(accountList);
+        baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
     }
 
     public Account saveAccount(List<CompanyInstruction> companyInstructionList,String inType, String outType, CompanyTerm companyTerm) {
@@ -73,13 +75,13 @@ public class AccountManagerImpl implements AccountManager {
         AccountEntry inAccountEntry = new AccountEntry();
         inAccountEntry.setType(inType);
         inAccountEntry.setDirection("1");
-        inAccountEntry.setValue(String.valueOf(fee));
+        inAccountEntry.setValue(fee);
         inAccountEntry.setAccount(account);
         accountEntryList.add(inAccountEntry);
         AccountEntry outAccountEntity = new AccountEntry();
         outAccountEntity.setType(outType);
         outAccountEntity.setDirection("-1");
-        outAccountEntity.setValue(String.valueOf(fee));
+        outAccountEntity.setValue(fee);
         outAccountEntity.setAccount(account);
         accountEntryList.add(outAccountEntity);
         
@@ -126,5 +128,27 @@ public class AccountManagerImpl implements AccountManager {
             }
         }
         return companyCash;
+    }
+
+    public Map<String, Map<String, String>> getAccountReport(Company company) {
+        Map<String, Map<String, String>> propertyReport = new LinkedHashMap<>();
+
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyTerm where company.id = :companyId order by campaignDate asc");
+        xQuery.put("companyId", company.getId());
+        List<CompanyTerm> companyTermList = baseManager.listObject(xQuery);
+        for (CompanyTerm companyTerm : companyTermList) {
+            Map<String, String> accountMap = new LinkedHashMap<>();
+            List<Account> accountList = companyTerm.getAccountList();
+            if (accountList != null && accountList.size() > 0) {
+                for (Account account : accountList) {
+                    account.getAccountEntryList().stream().filter(accountEntry -> accountEntry.getDirection().equals("1")).forEach(accountEntry -> {
+                        accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
+                    });
+                }
+            }
+            propertyReport.put(companyTerm.getCampaignDate(), accountMap);
+        }
+        return propertyReport;
     }
 }

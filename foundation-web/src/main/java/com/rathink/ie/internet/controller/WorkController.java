@@ -17,6 +17,7 @@ import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
+import com.sun.org.apache.xerces.internal.impl.PropertyManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -48,6 +49,8 @@ public class WorkController {
     private InstructionManager instructionManager;
     @Autowired
     private AccountManager accountManager;
+    @Autowired
+    private InternetPropertyManager internetPropertyManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -55,7 +58,7 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
-        Map<String, List<CompanyTermProperty>> deptPropertyMap = companyTermManager.partCompanyTermPropertyByDept(companyTerm.getCompanyTermPropertyList());
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(companyTerm.getCompanyTermPropertyList());
         List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
@@ -88,18 +91,10 @@ public class WorkController {
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
 
-        //测试信息：
-        StringBuffer messageBuffer = new StringBuffer();
-        for (String dept : deptPropertyMap.keySet()) {
-            messageBuffer.append("</br>").append(dept).append(":</br>");
-            List<CompanyTermProperty> companyTermPropertyList = deptPropertyMap.get(dept);
-            for (CompanyTermProperty companyTermProperty : companyTermPropertyList) {
-                messageBuffer.append(EPropertyName.valueOf(companyTermProperty.getName()).getLabel())
-                        .append(":").append(companyTermProperty.getValue()).append("</br>");
-            }
-
-        }
-        model.addAttribute("messageBuffer", messageBuffer.toString());
+        Map<String, Map<String, Double>> propertyReport = internetPropertyManager.getPropertyReport(company);
+        Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
+        model.addAttribute("propertyReport", propertyReport);
+        model.addAttribute("accountReport", accountReport);
         return "/internet/main";
     }
 

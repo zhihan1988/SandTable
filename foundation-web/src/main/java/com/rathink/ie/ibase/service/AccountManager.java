@@ -6,6 +6,7 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/4.
@@ -20,4 +21,6 @@ public interface AccountManager {
     Integer getCompanyCash(Company company);
 
     Integer countAccountEntryFee(Company company, String campaignDate, String type, String direction);
+
+    Map<String, Map<String, String>> getAccountReport(Company company);
 }
