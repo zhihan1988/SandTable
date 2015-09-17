@@ -7,14 +7,7 @@
 <html class="no-js">
 <head></head>
 <body>
-<%--<header class="am-topbar am-topbar-inverse am-topbar-fixed-top">
-    <div class="am-topbar-left">
-        <button id="submit" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">结束回合</button>
-    </div>
-</header>--%>
-<%--<div style="position:fixed;right: 0;bottom: 50px;">
-    <button class="am-btn am-btn-primary">结束回合</button>
-</div>--%>
+
 <h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
 <div>
     <button type="button" id="endCampaignDate" class="am-btn am-btn-primary">结束回合</button>
@@ -349,7 +342,7 @@
             </tr>
         </c:forEach>
     </table>
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
         <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
             <tr>
                 <td></td>
@@ -418,7 +411,7 @@
                     var choiceId = array[0];
                     var value = array[1];
                     if (value!=-1) {
-                        $.post("<c:url value="/work/makeProductStudyInstruction"/>",
+                        $.post("<c:url value="/work/makeUniqueInstruction"/>",
                                 {
                                     companyId: companyId,
                                     choiceId: choiceId,

@@ -1,6 +1,5 @@
 package com.rathink.ie.internet.service;
 
-import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
@@ -28,4 +27,6 @@ public interface InstructionManager {
     List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
     CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm);
+
+    CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
 }

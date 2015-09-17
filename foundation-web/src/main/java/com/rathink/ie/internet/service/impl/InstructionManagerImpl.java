@@ -133,4 +133,13 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstruction;
     }
 
+    public CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType) {
+        String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyTermId", companyTerm.getId());
+        queryParamMap.put("baseType", baseType);
+        CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyInstruction;
+    }
+
 }

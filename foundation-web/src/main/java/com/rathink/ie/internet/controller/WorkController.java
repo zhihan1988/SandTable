@@ -109,24 +109,23 @@ public class WorkController {
         return "success";
     }
 
-    @RequestMapping("/makeProductStudyInstruction")
+    @RequestMapping("/makeUniqueInstruction")
     @ResponseBody
-    public String makeProductStudyInstruction(HttpServletRequest request, Model model) throws Exception {
+    public String makeUniqueInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyId = request.getParameter("companyId");
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
+        CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyInstruction productStudyInstruction = instructionManager.getProductStudyInstruction(companyTerm);
-        if (productStudyInstruction == null) {
+        CompanyInstruction companyInstruction = instructionManager.getUniqueInstruction(companyTerm, companyChoice.getBaseType());
+        if (companyInstruction == null) {
             instructionManager.saveOrUpdateInstruction(company, choiceId, value);
         } else {
-            CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
-            productStudyInstruction.setCompanyChoice(companyChoice);
-            productStudyInstruction.setValue(companyChoice.getValue());
-            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), productStudyInstruction);
+            companyInstruction.setCompanyChoice(companyChoice);
+            companyInstruction.setValue(companyChoice.getValue());
+            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
         }
-        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
         return "success";
     }
 
