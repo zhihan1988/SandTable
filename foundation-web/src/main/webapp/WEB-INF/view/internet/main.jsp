@@ -330,8 +330,8 @@
         </div>
     </div>
 </div>
-<div class="am-panel am-panel-default">
-    <table class="am-table am-table-bordered">
+<div class="am-panel am-panel-default am-scrollable-horizontal">
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
         <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
             <tr>
                 <td></td>
@@ -349,9 +349,7 @@
             </tr>
         </c:forEach>
     </table>
-</div>
-<div class="am-panel am-panel-default">
-    <table class="am-table am-table-bordered">
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
         <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
             <tr>
                 <td></td>
