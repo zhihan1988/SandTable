@@ -54,15 +54,15 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         return map;
     }
     
-    public Map<String, Map<String, Double>> getPropertyReport(Company company) {
-        Map<String, Map<String, Double>> propertyReport = new LinkedHashMap<>();
+    public Map<String, Map<String, Integer>> getPropertyReport(Company company) {
+        Map<String, Map<String, Integer>> propertyReport = new LinkedHashMap<>();
 
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where company.id = :companyId order by campaignDate asc");
         xQuery.put("companyId", company.getId());
         List<CompanyTerm> companyTermList = baseManager.listObject(xQuery);
         for (CompanyTerm companyTerm : companyTermList) {
-            Map<String, Double> propertyMap = new LinkedHashMap<>();
+            Map<String, Integer> propertyMap = new LinkedHashMap<>();
             List<CompanyTermProperty> companyTermPropertyList = companyTerm.getCompanyTermPropertyList();
             if (companyTermPropertyList != null && companyTermPropertyList.size() > 0) {
                 companyTermPropertyList.sort(new CompanyTermPropertyComparator());

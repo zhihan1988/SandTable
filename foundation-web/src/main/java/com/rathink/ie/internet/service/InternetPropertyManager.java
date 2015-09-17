@@ -15,5 +15,5 @@ public interface InternetPropertyManager {
 
     Map<String, List<CompanyTermProperty>> partCompanyTermPropertyByDept(List<CompanyTermProperty> companyTermPropertyList);
 
-    Map<String, Map<String, Double>> getPropertyReport(Company company);
+    Map<String, Map<String, Integer>> getPropertyReport(Company company);
 }

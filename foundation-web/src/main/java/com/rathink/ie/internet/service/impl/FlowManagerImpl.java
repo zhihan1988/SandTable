@@ -222,7 +222,7 @@ public class FlowManagerImpl implements FlowManager {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
         for (EPropertyName ePropertyName : EPropertyName.values()) {
-            Double value = companyTermHandler.calculate(ePropertyName.name());
+            Integer value = companyTermHandler.calculate(ePropertyName.name());
             companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
         }
         companyTerm.setCompanyTermPropertyList(companyTermPropertyList);
@@ -255,7 +255,7 @@ public class FlowManagerImpl implements FlowManager {
         Account operationFeeAccount = accountManager
                 .saveAccount(operationFeeInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
-        Double currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
+        Integer currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
         Account incomeAccount = accountManager
                 .saveAccount(currentPeriodIncome.toString(), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);

@@ -5,6 +5,7 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -13,21 +14,21 @@ import java.util.*;
 public abstract class CompanyTermHandler {
     protected CampaignHandler campaignHandler;
     protected CompanyTerm companyTerm;
-    protected Map<String, Double> propertyValueMap = new LinkedHashMap<>();
+    protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
     protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
     protected List<Account> accountList = new ArrayList<>();
     protected CompanyTermHandler preCompanyTermHandler;
 
-    public Double get(String key) {
+    public Integer get(String key) {
         if (!propertyValueMap.containsKey(key)) {
             put(key, calculate(key));
         }
         return propertyValueMap.get(key);
     }
 
-    abstract public Double calculate(String key);
+    abstract public Integer calculate(String key);
 
-    public void put(String key, Double value) {
+    public void put(String key, Integer value) {
         propertyValueMap.put(key, value);
     }
 

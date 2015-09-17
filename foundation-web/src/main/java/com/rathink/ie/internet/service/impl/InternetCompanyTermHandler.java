@@ -22,9 +22,9 @@ import java.util.Map;
 public class InternetCompanyTermHandler extends CompanyTermHandler {
 
     @Override
-    public Double calculate(String key) {
+    public Integer calculate(String key) {
         EPropertyName ePropertyName = EPropertyName.valueOf(key);
-        Double value = 0d;
+        Integer value = 0;
         switch (ePropertyName) {
             case OFFICE_RATIO:
                 value = calculateOfficeRatio();
@@ -80,15 +80,15 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @param type 部门类型
      * @return 部门能力
      */
-    public Double calculateDeptAbility(String type) {
+    public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
         List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
-        Double ability = 60d;
+        Integer ability = 60;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
                 if (human.getType().equals(type)) {
-                    ability += Double.valueOf(human.getValue());
+                    ability += Integer.valueOf(human.getValue());
                 }
             }
         }
@@ -99,17 +99,17 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 办公室系数
      */
-    private Double calculateOfficeRatio() {
+    private Integer calculateOfficeRatio() {
         List<CompanyInstruction> companyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
-        Double officeFee = 0d;
+        Integer officeFee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
-                officeFee += Double.valueOf(companyInstruction.getValue());
+                officeFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
         Double officeRatio = Math.sqrt(Math.sqrt(officeFee)) * 2 + 60;
-        return officeRatio;
+        return officeRatio.intValue();
     }
 
     //    private String calculateRecruitmentRatio() {
@@ -120,16 +120,16 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 产品资金投入系数
      */
-    private Double calculateProductFeeRatio() {
+    private Integer calculateProductFeeRatio() {
         List<CompanyInstruction> typeCompanyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        Double fee = new Double(0);
+        Integer fee = 0;
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
-                fee += Double.valueOf(companyInstruction.getValue());
+                fee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        Double productFeeRatio = fee / 1000 + 50;
+        Integer productFeeRatio = fee / 1000 + 50;
         return productFeeRatio;
     }
 
@@ -137,26 +137,26 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 产品系数
      */
-    private Double calculateProductRatio() {
-        Double productAbility = Double.valueOf(get(EPropertyName.PRODUCT_ABILITY.name()));
-        Double productFeeRatio = Double.valueOf(get(EPropertyName.PRODUCT_FEE_RATIO.name()));
-        Double preProductRatio = preCompanyTermHandler == null ? 0 : Double.valueOf(preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name()));
+    private Integer calculateProductRatio() {
+        Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
+        Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
+        Integer preProductRatio = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name());
         Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio) + preProductRatio) * 1.5 + 50;
-        return productRatio;
+        return productRatio.intValue();
     }
 
     /**
      *
      * @return  客单价
      */
-    private Double calculatePerOrderCost() {
+    private Integer calculatePerOrderCost() {
         List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         String grade = "1";
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
         }
-        Double perOrderCost = Double.valueOf(grade) * 10 + 30;
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 30;
         return perOrderCost;
     }
 
@@ -164,7 +164,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 产品竞争系数
      */
-    private Double calculateProductCompetitionRatio() {
+    private Integer calculateProductCompetitionRatio() {
         //自己公司的定位
         List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
@@ -189,15 +189,15 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         }
         //产品竞争系数计算公式
         Double productCompetitionRatio = 30 + 20 * Math.sqrt(sameGradeCount);
-        return productCompetitionRatio;
+        return productCompetitionRatio.intValue();
     }
 
     /**
      * $营销能力系数=50+∑(  营销人才系数)  ???不就是营销能力吗
      * @return 营销能力系数
      */
-    private Double calculateOperationAbilityRatio() {
-        Double operationHumanRatio = 50d;
+    private Integer calculateOperationAbilityRatio() {
+        Integer operationHumanRatio = 50;
         return operationHumanRatio;
     }
 
@@ -205,18 +205,18 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 新用户数
      */
-    private Double calculateNewUserAmount() {
+    private Integer calculateNewUserAmount() {
         List<CompanyInstruction> marketInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
-        Double newUserAmount = 0d;
-        Double marketAbility = get(EPropertyName.MARKET_ABILITY.name());
-        Double productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
+        Integer newUserAmount = 0;
+        Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
+        Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
         if (marketInstructionList != null) {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                Double marketCost = Double.valueOf(companyChoice.getValue());
-                Double marketFee = Double.valueOf(companyInstruction.getValue());
+                Integer marketCost = Integer.valueOf(companyChoice.getValue());
+                Integer marketFee = Integer.valueOf(companyInstruction.getValue());
                 newUserAmount += marketAbility * marketFee / marketCost / productCompetitionRatio;
             }
         }
@@ -227,13 +227,13 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 运营资金投入系数
      */
-    private Double calculateOperationFeeRatio() {
+    private Integer calculateOperationFeeRatio() {
         List<CompanyInstruction> typeCompanyInstructionList = preCompanyTermHandler == null ? null
                 : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
-        Double operationFee = 0d;
+        Integer operationFee = 0;
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
-                operationFee += Double.valueOf(companyInstruction.getValue());
+                operationFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
         return operationFee / 10000 + 50;
@@ -243,11 +243,11 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * 满意度系数
      * @return
      */
-    private Double calculateSatisfaction() {
-        Double operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
-        Double operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
-        Double productRatio = get(EPropertyName.PRODUCT_RATIO.name());
-        Double satisfaction = (operationAbility + operationFeeRatio + productRatio) / 3;
+    private Integer calculateSatisfaction() {
+        Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
+        Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
+        Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
+        Integer satisfaction = (operationAbility + operationFeeRatio + productRatio) / 3;
         return satisfaction;
     }
 
@@ -255,9 +255,9 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 老用户数
      */
-    private Double calculateOldUserAmount() {
-        Double preUserAmount = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
-        Double satisfaction = get(EPropertyName.SATISFACTION.name());
+    private Integer calculateOldUserAmount() {
+        Integer preUserAmount = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
+        Integer satisfaction = get(EPropertyName.SATISFACTION.name());
         return preUserAmount * satisfaction / 100;
     }
 
@@ -265,9 +265,9 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      *
      * @return 总用户数
      */
-    private Double calculateUserAmount() {
-        Double oldUserAmount = get(EPropertyName.OLD_USER_AMOUNT.name());
-        Double newUserAmount = get(EPropertyName.NEW_USER_AMOUNT.name());
+    private Integer calculateUserAmount() {
+        Integer oldUserAmount = get(EPropertyName.OLD_USER_AMOUNT.name());
+        Integer newUserAmount = get(EPropertyName.NEW_USER_AMOUNT.name());
         return oldUserAmount + newUserAmount;
     }
 
@@ -275,9 +275,9 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * 本期收入
      * @return
      */
-    private Double currentIncome() {
-        Double userAmount = get(EPropertyName.USER_AMOUNT.name());
-        Double perOrderCost = get(EPropertyName.PER_ORDER_COST.name());
+    private Integer currentIncome() {
+        Integer userAmount = get(EPropertyName.USER_AMOUNT.name());
+        Integer perOrderCost = get(EPropertyName.PER_ORDER_COST.name());
         return userAmount * perOrderCost * 50 / 100;
     }
 

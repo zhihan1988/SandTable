@@ -10,13 +10,13 @@ import javax.persistence.*;
 public class CompanyTermProperty {
     private String id;
     private String name;
-    private Double value;
+    private Integer value;
     private String dept;
     private CompanyTerm companyTerm;
 
     public CompanyTermProperty(){}
 
-    public CompanyTermProperty(EPropertyName ePropertyName, Double value, CompanyTerm companyTerm) {
+    public CompanyTermProperty(EPropertyName ePropertyName, Integer value, CompanyTerm companyTerm) {
         this.name = ePropertyName.name();
         this.value = value;
         this.dept = ePropertyName.getDept();
@@ -53,11 +53,11 @@ public class CompanyTermProperty {
     }
 
     @Column(name = "value")
-    public Double getValue() {
+    public Integer getValue() {
         return value;
     }
 
-    public void setValue(Double value) {
+    public void setValue(Integer value) {
         this.value = value;
     }
 

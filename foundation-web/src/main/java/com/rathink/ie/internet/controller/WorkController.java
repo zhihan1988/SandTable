@@ -91,7 +91,7 @@ public class WorkController {
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
 
-        Map<String, Map<String, Double>> propertyReport = internetPropertyManager.getPropertyReport(company);
+        Map<String, Map<String, Integer>> propertyReport = internetPropertyManager.getPropertyReport(company);
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);
         model.addAttribute("accountReport", accountReport);
