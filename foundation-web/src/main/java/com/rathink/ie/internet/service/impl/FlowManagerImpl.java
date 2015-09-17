@@ -67,7 +67,7 @@ public class FlowManagerImpl implements FlowManager {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
         //1.比赛开始
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
-        campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
+        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(INIT_CAMPAIGN_DATE));
         campaign.setStatus(Campaign.Status.RUN.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         campaignHandler.setCampaign(campaign);
@@ -88,15 +88,9 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
             companyTermHandler.setCampaignHandler(campaignHandler);
             companyTermHandler.setCompanyTerm(companyTerm);
-            //计算保存新回合的属性数据
-            calculateProperty(companyTermHandler);
-            //初始化财务数据
-            accountManager.initCompanyAccount(companyTerm);
-            //更新campaignCenter
             companyTermHandlerMap.put(company.getId(), companyTermHandler);
         }
-        //准备供用户决策用的随机数据
-        choiceManager.produceChoice(campaignHandler.getCampaign());
+        next(campaignId);
     }
 
     /**
@@ -130,6 +124,15 @@ public class FlowManagerImpl implements FlowManager {
         competitiveBidding(campaignHandler);
         //非竞标决策
         competitiveUnBidding(campaignHandler);
+
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+            //计算保存新回合的属性数据
+            calculateProperty(companyTermHandler);
+            //4计算保存新回合的财务数据
+            calculateAccount(companyTermHandler);
+        }
+
     }
 
     public void newRound(CampaignHandler campaignHandler) {
@@ -159,15 +162,6 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     public void after(CampaignHandler campaignHandler) {
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-            //计算保存新回合的属性数据
-            calculateProperty(companyTermHandler);
-            //4计算保存新回合的财务数据
-            calculateAccount(companyTermHandler);
-        }
-
         //准备供用户决策用的随机数据
         choiceManager.produceChoice(campaignHandler.getCampaign());
     }
@@ -231,7 +225,6 @@ public class FlowManagerImpl implements FlowManager {
 
     private void calculateAccount(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
-        CompanyTermHandler preCompanyTermHandler = companyTermHandler.getPreCompanyTermHandler();
         List<Account> accountList = new ArrayList<>();
 
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.OFFICE.name());
@@ -243,15 +236,15 @@ public class FlowManagerImpl implements FlowManager {
         Account humanAccount = accountManager
                 .saveAccount(humanInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);
-        List<CompanyInstruction> productFeeInstructionList = preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         Account productFeeAccount = accountManager
                 .saveAccount(productFeeInstructionList, EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(productFeeAccount);
-        List<CompanyInstruction> marketFeeInstructionList = preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
         Account marketFeeAccount = accountManager
                 .saveAccount(marketFeeInstructionList, EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(marketFeeAccount);
-        List<CompanyInstruction> operationFeeInstructionList = preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         Account operationFeeAccount = accountManager
                 .saveAccount(operationFeeInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);

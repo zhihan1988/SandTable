@@ -169,8 +169,10 @@
                             <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
                         </div>
                     </c:when>
-                    <c:otherwise>
+                    <c:when test="${property.display == 'TEXT'}">
                         <p>${property.label}:${property.value}</p>
+                    </c:when>
+                    <c:otherwise>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
@@ -239,8 +241,10 @@
                             <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
                         </div>
                     </c:when>
-                    <c:otherwise>
+                    <c:when test="${property.display == 'TEXT'}">
                         <p>${property.label}:${property.value}</p>
+                    </c:when>
+                    <c:otherwise>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
@@ -289,8 +293,10 @@
                             <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
                         </div>
                     </c:when>
-                    <c:otherwise>
+                    <c:when test="${property.display == 'TEXT'}">
                         <p>${property.label}:${property.value}</p>
+                    </c:when>
+                    <c:otherwise>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>

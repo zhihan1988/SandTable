@@ -57,8 +57,8 @@ public class WorkController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaign.getCurrentCampaignDate());
-        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(companyTerm.getCompanyTermPropertyList());
+        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTerm.getCompanyTermPropertyList());
         List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
@@ -67,13 +67,12 @@ public class WorkController {
         List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OPERATION.name());
         Integer companyCash = accountManager.getCompanyCash(company);
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
-                company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
+                company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
         Integer campaignDateOutCash = accountManager.countAccountEntryFee(
-                company, campaign.getCurrentCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
+                company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.AD.name());
 
-        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
         CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getProductStudyInstruction(preCompanyTerm);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);

@@ -3,6 +3,7 @@ package com.rathink.ie.ibase.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -15,10 +16,7 @@ import com.rathink.ie.internet.EPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Hean on 2015/8/29.
@@ -137,18 +135,30 @@ public class AccountManagerImpl implements AccountManager {
         xQuery.setHql("from CompanyTerm where company.id = :companyId order by campaignDate asc");
         xQuery.put("companyId", company.getId());
         List<CompanyTerm> companyTermList = baseManager.listObject(xQuery);
-        for (CompanyTerm companyTerm : companyTermList) {
+        for (int i = 0; i < companyTermList.size() - 1; i++) {
+            CompanyTerm companyTerm = companyTermList.get(i);
             Map<String, String> accountMap = new LinkedHashMap<>();
-            List<Account> accountList = companyTerm.getAccountList();
-            if (accountList != null && accountList.size() > 0) {
-                for (Account account : accountList) {
-                    account.getAccountEntryList().stream().filter(accountEntry -> accountEntry.getDirection().equals("1")).forEach(accountEntry -> {
-                        accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
-                    });
-                }
+            XQuery accountEntityQuery = new XQuery();
+            accountEntityQuery.setHql("from AccountEntry where account.companyTerm.id = :companyTermId and direction = 1");
+            accountEntityQuery.put("companyTermId", companyTerm.getId());
+            List<AccountEntry>  accountEntryList = baseManager.listObject(accountEntityQuery);
+            if (accountEntryList != null && accountEntryList.size() > 0) {
+                accountEntryList.sort(new AccountEntryComparator());
+                accountEntryList.forEach(accountEntry -> {
+                    accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
+                });
             }
-            propertyReport.put(companyTerm.getCampaignDate(), accountMap);
+            propertyReport.put(CampaignUtil.getNextCampaignDate(companyTerm.getCampaignDate()), accountMap);
         }
         return propertyReport;
+    }
+
+    class AccountEntryComparator implements Comparator<AccountEntry> {
+        @Override
+        public int compare(AccountEntry o1, AccountEntry o2) {
+            Integer order1 = EAccountEntityType.valueOf(o1.getType()).ordinal();
+            Integer order2 = EAccountEntityType.valueOf(o2.getType()).ordinal();
+            return order1 - order2;
+        }
     }
 }
