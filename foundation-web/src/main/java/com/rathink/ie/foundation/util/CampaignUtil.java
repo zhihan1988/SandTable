@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
  */
 public class CampaignUtil {
 
+    public static Integer TIME_UNIT = 3;//时间单位为三个月 也就是一个季度
     /**
      * 获取当前赛季
      * @return
@@ -26,7 +27,7 @@ public class CampaignUtil {
      * @return
      */
     public static String getPreCampaignDate(String campaignDate) {
-        return getPreCampaignDate(campaignDate, -1);
+        return getCampaignDate(campaignDate, TIME_UNIT * -1);
     }
 
     /**
@@ -35,7 +36,7 @@ public class CampaignUtil {
      * @return
      */
     public static String getNextCampaignDate(String campaignDate) {
-        return getPreCampaignDate(campaignDate, 1);
+        return getCampaignDate(campaignDate, TIME_UNIT);
     }
 
     private static String removeSeason(String campaignDate) {
@@ -77,7 +78,7 @@ public class CampaignUtil {
         return campaignDate;
     }
 
-    private static String getPreCampaignDate(String campaignDate, Integer num) {
+    private static String getCampaignDate(String campaignDate, Integer num) {
         String noSeasonCampaignDate = removeSeason(campaignDate);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
         YearMonth date = YearMonth.parse(noSeasonCampaignDate, formatter);

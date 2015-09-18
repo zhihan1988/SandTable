@@ -81,8 +81,8 @@
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                 <c:forEach items="${hrInstructionList}" var="hrInstruction" varStatus="status">
-                    <li>
-                        <div style="margin: 0;">
+                    <li style="border: 1px solid #DDD;padding: 5px;">
+                        <div>
                             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                                 <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
                                 <li>
@@ -101,9 +101,10 @@
                                         </c:choose>
                                     </p>
                                 </li>
+
                             </ul>
                            </div>
-                        <div style="margin: 0;">
+                        <div>
                             <p style="margin: 0">能力：${hrInstruction.companyChoice.value}</p>
                             <p style="margin: 0">薪资：${hrInstruction.value}</p>
                         </div>

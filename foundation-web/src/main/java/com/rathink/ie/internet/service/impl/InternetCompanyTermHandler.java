@@ -156,7 +156,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
         }
-        Integer perOrderCost = Integer.valueOf(grade) * 10 + 30;
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 40;
         return perOrderCost;
     }
 

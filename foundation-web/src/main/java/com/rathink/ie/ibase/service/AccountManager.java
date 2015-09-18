@@ -14,8 +14,6 @@ import java.util.Map;
 public interface AccountManager {
     void initCompanyAccount(CompanyTerm companyTerm);
 
-    Account saveAccount(List<CompanyInstruction> companyInstructionList, String inType, String outType, CompanyTerm companyTerm);
-
     Account saveAccount(String fee, String inType, String outType, CompanyTerm companyTerm);
 
     Integer getCompanyCash(Company company);

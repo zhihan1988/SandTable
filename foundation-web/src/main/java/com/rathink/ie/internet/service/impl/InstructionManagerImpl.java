@@ -142,4 +142,16 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstruction;
     }
 
+    public Integer countFee(List<CompanyInstruction> companyInstructionList) {
+        Integer fee = 0;
+        if (companyInstructionList != null) {
+            for (CompanyInstruction companyInstruction : companyInstructionList) {
+                if (companyInstruction.getValue() != null) {
+                    fee += Integer.parseInt(companyInstruction.getValue());
+                }
+            }
+        }
+        return fee;
+    }
+
 }

@@ -29,4 +29,6 @@ public interface InstructionManager {
     CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm);
 
     CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
+
+    Integer countFee(List<CompanyInstruction> companyInstructionList);
 }

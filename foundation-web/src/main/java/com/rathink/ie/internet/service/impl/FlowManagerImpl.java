@@ -246,30 +246,34 @@ public class FlowManagerImpl implements FlowManager {
         List<Account> accountList = new ArrayList<>();
 
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.OFFICE.name());
-        Account adAccount = accountManager
-                .saveAccount(officeInstructionList, EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer officeFee = instructionManager.countFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
+        Account adAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);
 
         List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
-        Account humanAccount = accountManager
-                .saveAccount(humanInstructionList, EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer humanFee = instructionManager.countFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
+        Account humanAccount = accountManager.saveAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);
+
         List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        Account productFeeAccount = accountManager
-                .saveAccount(productFeeInstructionList, EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer productFee = instructionManager.countFee(productFeeInstructionList);
+        Account productFeeAccount = accountManager.saveAccount(String.valueOf(productFee), EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(productFeeAccount);
+
         List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        Account marketFeeAccount = accountManager
-                .saveAccount(marketFeeInstructionList, EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer marketFee = instructionManager.countFee(marketFeeInstructionList);
+        Account marketFeeAccount = accountManager.saveAccount(String.valueOf(marketFee), EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(marketFeeAccount);
+
         List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
-        Account operationFeeAccount = accountManager
-                .saveAccount(operationFeeInstructionList, EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer operationFee = instructionManager.countFee(officeInstructionList);
+        Account operationFeeAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
+
         Integer currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
-        Account incomeAccount = accountManager
-                .saveAccount(currentPeriodIncome.toString(), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+        Account incomeAccount = accountManager.saveAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);
+
         companyTermHandler.setAccountList(accountList);
     }
 
