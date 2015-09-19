@@ -7,6 +7,8 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -28,8 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2015/8/24.
@@ -57,14 +60,16 @@ public class WorkController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
+        String currentCampaignDate = campaign.getCurrentCampaignDate();
+        String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
+        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTerm.getCompanyTermPropertyList());
-        List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OFFICE.name());
-        List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
-        List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
-        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY.name());
-        List<CompanyChoice> productStudyFeeList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.OPERATION.name());
+        List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OFFICE.name());
+        List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.HUMAN.name());
+        List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyChoice> productStudyFeeList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OPERATION.name());
         Integer companyCash = accountManager.getCompanyCash(company);
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
@@ -90,6 +95,19 @@ public class WorkController {
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
 
+        Map<String, Integer> globalReport = new LinkedHashMap();
+        List<CompanyChoice> preCompanyChoiceList = new ArrayList<>();
+        //产品定位
+        List<CompanyChoice> preProductStudyList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
+        if(preProductStudyList!=null) preCompanyChoiceList.addAll(preProductStudyList);
+        //市场活动
+        List<CompanyChoice> preMarketActivityList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
+        if(preMarketActivityList!=null) preCompanyChoiceList.addAll(preMarketActivityList);
+        for (CompanyChoice companyChoice : preCompanyChoiceList) {
+            Integer count = instructionManager.countCompanyInstruction(companyChoice);
+            globalReport.put(companyChoice.getName(), count);
+        }
+        model.addAttribute("globalReport", globalReport);
         Map<String, Map<String, Integer>> propertyReport = internetPropertyManager.getPropertyReport(company);
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);

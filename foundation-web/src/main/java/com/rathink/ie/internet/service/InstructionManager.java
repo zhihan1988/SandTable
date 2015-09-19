@@ -24,11 +24,13 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCompanyInstruction(CompanyChoice companyChoice);
 
+    Integer countCompanyInstruction(CompanyChoice companyChoice);
+
     List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
     CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm);
 
     CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
 
-    Integer countFee(List<CompanyInstruction> companyInstructionList);
+    Integer sumFee(List<CompanyInstruction> companyInstructionList);
 }

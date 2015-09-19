@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -114,6 +115,14 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
+    public Integer countCompanyInstruction(CompanyChoice companyChoice) {
+        String sql = "select count(id) from company_instruction where company_choice_id = :companyChoiceId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyChoiceId", companyChoice.getId());
+        List<BigInteger> list = (List) baseManager.executeSql("list", sql, queryParamMap);
+        return list.get(0).intValue();
+    }
+
     @Override
     public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate) {
         XQuery xQuery = new XQuery();
@@ -142,7 +151,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstruction;
     }
 
-    public Integer countFee(List<CompanyInstruction> companyInstructionList) {
+    public Integer sumFee(List<CompanyInstruction> companyInstructionList) {
         Integer fee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {

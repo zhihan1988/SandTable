@@ -331,7 +331,15 @@
     </div>
 </div>
 <div class="am-panel am-panel-default am-scrollable-horizontal">
+
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+        <c:forEach items="${globalReport}" var="g">
+            <tr>
+                <td>${g.key}:${g.value}</td>
+            </tr>
+        </c:forEach>
+    </table>
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
         <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
             <tr>
                 <td></td>

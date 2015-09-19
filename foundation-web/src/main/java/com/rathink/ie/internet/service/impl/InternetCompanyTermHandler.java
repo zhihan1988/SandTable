@@ -100,8 +100,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 办公室系数
      */
     private Integer calculateOfficeRatio() {
-        List<CompanyInstruction> companyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Integer officeFee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -121,8 +120,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 产品资金投入系数
      */
     private Integer calculateProductFeeRatio() {
-        List<CompanyInstruction> typeCompanyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyInstruction> typeCompanyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         Integer fee = 0;
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
@@ -150,8 +148,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return  客单价
      */
     private Integer calculatePerOrderCost() {
-        List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         String grade = "1";
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
@@ -166,8 +163,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private Integer calculateProductCompetitionRatio() {
         //自己公司的定位
-        List<CompanyInstruction> productStudyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         String grade = "1";
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
@@ -206,8 +202,9 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 新用户数
      */
     private Integer calculateNewUserAmount() {
-        List<CompanyInstruction> marketInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+
+        Map<String, Integer> competitionMap = getCampaignHandler().getCompetitionMap();
+        List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
         Integer newUserAmount = 0;
         Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
@@ -215,9 +212,11 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         if (marketInstructionList != null) {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
-                Integer marketCost = Integer.valueOf(companyChoice.getValue());
+                Integer count = competitionMap.get(companyInstruction.getCompanyChoice().getId());
+                Integer marketCompetitiveRatio = 100 / count;
+                Double marketCost = Double.valueOf(companyChoice.getValue()) * Math.sqrt(marketCompetitiveRatio);
                 Integer marketFee = Integer.valueOf(companyInstruction.getValue());
-                newUserAmount += marketAbility * marketFee / marketCost / productCompetitionRatio;
+                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio;
             }
         }
         return newUserAmount;
@@ -228,8 +227,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 运营资金投入系数
      */
     private Integer calculateOperationFeeRatio() {
-        List<CompanyInstruction> typeCompanyInstructionList = preCompanyTermHandler == null ? null
-                : preCompanyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyInstruction> typeCompanyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         Integer operationFee = 0;
         if (typeCompanyInstructionList != null) {
             for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {

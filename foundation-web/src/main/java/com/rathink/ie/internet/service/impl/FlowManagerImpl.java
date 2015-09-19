@@ -6,7 +6,6 @@ import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
-import com.rathink.ie.foundation.service.impl.CampaignCenterManagerImpl;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
@@ -30,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,6 +134,8 @@ public class FlowManagerImpl implements FlowManager {
         //非竞标决策
         competitiveUnBidding(campaignHandler);
 
+        initCompetitionMap(campaignHandler);
+
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
             //计算保存新回合的属性数据
@@ -230,6 +231,25 @@ public class FlowManagerImpl implements FlowManager {
         });
     }
 
+
+    private void initCompetitionMap(CampaignHandler campaignHandler) {
+        Map<String, Integer> competitionMap = new HashMap<>();
+        Campaign campaign = campaignHandler.getCampaign();
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
+        //产品定位
+        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.PRODUCT_STUDY.name());
+        if(productStudyList!=null) companyChoiceList.addAll(productStudyList);
+        //市场活动
+        List<CompanyChoice> marketActivityList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.MARKET_ACTIVITY.name());
+        if(marketActivityList!=null) companyChoiceList.addAll(marketActivityList);
+        for (CompanyChoice companyChoice : companyChoiceList) {
+            Integer count = instructionManager.countCompanyInstruction(companyChoice);
+            competitionMap.put(companyChoice.getId(), count);
+        }
+        campaignHandler.setCompetitionMap(competitionMap);
+
+    }
+
     private void calculateProperty(CompanyTermHandler companyTermHandler) {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
@@ -246,27 +266,27 @@ public class FlowManagerImpl implements FlowManager {
         List<Account> accountList = new ArrayList<>();
 
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.OFFICE.name());
-        Integer officeFee = instructionManager.countFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
+        Integer officeFee = instructionManager.sumFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
         Account adAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);
 
         List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
-        Integer humanFee = instructionManager.countFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
+        Integer humanFee = instructionManager.sumFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
         Account humanAccount = accountManager.saveAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);
 
         List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        Integer productFee = instructionManager.countFee(productFeeInstructionList);
+        Integer productFee = instructionManager.sumFee(productFeeInstructionList);
         Account productFeeAccount = accountManager.saveAccount(String.valueOf(productFee), EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(productFeeAccount);
 
         List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        Integer marketFee = instructionManager.countFee(marketFeeInstructionList);
+        Integer marketFee = instructionManager.sumFee(marketFeeInstructionList);
         Account marketFeeAccount = accountManager.saveAccount(String.valueOf(marketFee), EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(marketFeeAccount);
 
         List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
-        Integer operationFee = instructionManager.countFee(officeInstructionList);
+        Integer operationFee = instructionManager.sumFee(officeInstructionList);
         Account operationFeeAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
 
