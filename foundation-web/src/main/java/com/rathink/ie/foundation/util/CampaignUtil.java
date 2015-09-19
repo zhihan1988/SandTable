@@ -86,6 +86,15 @@ public class CampaignUtil {
         return joinSeason(date.format(formatter));
     }
 
+    public static String formatCampaignDate(String campaignDate) {
+        Integer year = Integer.parseInt(campaignDate.substring(0, 2));
+        Integer season = Integer.parseInt(campaignDate.substring(2, 4));
+        StringBuffer formatCampaignDateBuffer = new StringBuffer(100);
+        formatCampaignDateBuffer.append("第").append(year).append("年")
+                .append("第").append(season).append("季度");
+        return formatCampaignDateBuffer.toString();
+    }
+
     public static void main(String[] args) {
        /* String date = "150308";
         for (int i = 0; i < 20; i++) {

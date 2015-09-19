@@ -1,6 +1,7 @@
 package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
@@ -83,7 +84,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
     public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
         List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
-        Integer ability = 60;
+        Integer ability = 30;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
@@ -139,7 +140,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name());
-        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio) + preProductRatio) * 1.5 + 50;
+        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio) + preProductRatio) * 1.5 + 20 + RandomUtil.random(0, 10);
         return productRatio.intValue();
     }
 
@@ -216,7 +217,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
                 Integer marketCompetitiveRatio = 100 / count;
                 Double marketCost = Double.valueOf(companyChoice.getValue()) * Math.sqrt(marketCompetitiveRatio);
                 Integer marketFee = Integer.valueOf(companyInstruction.getValue());
-                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio;
+                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio * RandomUtil.random(80, 120) / 100;
             }
         }
         return newUserAmount;
@@ -245,7 +246,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
-        Integer satisfaction = (operationAbility + operationFeeRatio + productRatio) / 3;
+        Integer satisfaction = (operationAbility + operationFeeRatio + productRatio) / 3 + RandomUtil.random(0, 10);
         return satisfaction;
     }
 
@@ -256,7 +257,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
     private Integer calculateOldUserAmount() {
         Integer preUserAmount = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
         Integer satisfaction = get(EPropertyName.SATISFACTION.name());
-        return preUserAmount * satisfaction / 100;
+        return preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;
     }
 
     /**

@@ -198,8 +198,8 @@ public class FlowManagerImpl implements FlowManager {
                 Double maxRecruitmentRatio = 0d;
                 CompanyInstruction successCompanyInstruction = null;
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
-                    CompanyTermHandler preCompanyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId()).getPreCompanyTermHandler();
-                    Double officeRatio = preCompanyTermHandler == null ? 50d : preCompanyTermHandler.get(EPropertyName.OFFICE_RATIO.name());
+                    CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
+                    Integer officeRatio = companyTermHandler.get(EPropertyName.OFFICE_RATIO.name());
                     Double fee = Double.valueOf(companyInstruction.getValue());
                     Double feeRatio = fee / 200;
                     Integer randomRatio = RandomUtil.random(0, 20);
@@ -286,8 +286,8 @@ public class FlowManagerImpl implements FlowManager {
         accountList.add(marketFeeAccount);
 
         List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
-        Integer operationFee = instructionManager.sumFee(officeInstructionList);
-        Account operationFeeAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Integer operationFee = instructionManager.sumFee(operationFeeInstructionList);
+        Account operationFeeAccount = accountManager.saveAccount(String.valueOf(operationFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
 
         Integer currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());

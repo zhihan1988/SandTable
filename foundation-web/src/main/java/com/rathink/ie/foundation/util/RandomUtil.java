@@ -9,7 +9,7 @@ public class RandomUtil {
     /**
      * 百分制
      * @param low
-     * @param hign
+     * @param high
      * @return
      */
     public static int random(int low, int high){

@@ -41,7 +41,7 @@ public class AccountManagerImpl implements AccountManager {
         accountList.add(marketFeeAccount);
         Account operationFeeAccount = saveAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
-        Account incomeAccount = saveAccount("500000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+        Account incomeAccount = saveAccount("1000000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);
 
         companyTerm.setAccountList(accountList);
@@ -135,7 +135,8 @@ public class AccountManagerImpl implements AccountManager {
                     accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
                 });
             }
-            propertyReport.put(CampaignUtil.getNextCampaignDate(companyTerm.getCampaignDate()), accountMap);
+            String campaignDate = CampaignUtil.getNextCampaignDate(companyTerm.getCampaignDate());
+            propertyReport.put(CampaignUtil.formatCampaignDate(campaignDate), accountMap);
         }
         return propertyReport;
     }
