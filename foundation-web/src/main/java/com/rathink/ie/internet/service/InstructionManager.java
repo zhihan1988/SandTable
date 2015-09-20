@@ -28,8 +28,6 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
-    CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm);
-
     CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
 
     Integer sumFee(List<CompanyInstruction> companyInstructionList);

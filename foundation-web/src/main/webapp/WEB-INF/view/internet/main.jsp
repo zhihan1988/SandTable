@@ -28,17 +28,21 @@
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                <c:forEach items="${officeInstructionList}" var="instruction">
-                <li>
-                    <div>
-                        <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-1.jpg" /></div>
+                <c:forEach items="${officeInstructionList}" var="instruction" varStatus="status">
+                    <li style="border: 1px solid #DDD;padding: 5px;">
                         <div>
-                            <p>${instruction.companyChoice.name}</p>
-                            <p>价格:${instruction.value}</p>
-                            <p>简介：${instruction.companyChoice.description}<p>
+                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
+                                <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
+                                <li>
+                                    <p style="margin: 0">${instruction.companyChoice.name}</p>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
-                </li>
+                        <div>
+                            <p style="margin: 0">价格:${instruction.value}</p>
+                            <p style="margin: 0">简介：${instruction.companyChoice.description}<p>
+                        </div>
+                    </li>
                 </c:forEach>
             </ul>
         </div>
@@ -50,6 +54,7 @@
                         <th>地点</th>
                         <th>描述</th>
                         <th>房租</th>
+                        <th>选择</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -62,12 +67,11 @@
                                 ${officeChoice.description}
                             </td>
                             <td>
-                                <select id="instruction_${officeChoice.id}" name="officeInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="${officeChoice.id}_-1">不需要</option>
-                                    <c:forEach items="${fn:split(officeChoice.fees, ',')}" var="fee">
-                                        <option value="${officeChoice.id}_${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
+                                ${officeChoice.fees}
+                            </td>
+                            <td>
+                                <input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.fees}"
+                                    <c:if test="${preOfficeInstruction.value == officeChoice.value}">checked="checked"</c:if>>
                             </td>
                         </tr>
                     </c:forEach>
@@ -383,32 +387,45 @@
 </div>
 <script>
 
-    $(function(){
+    $(function () {
         var campaignId = ${company.campaign.id}
         var companyId = ${company.id};
 
-        $("#endCampaignDate").click(function(){
+        //办公室初始值
+        var isOfficeCheck = $('input:radio[name="officeInstructionFee"]').is(":checked");
+        if (!isOfficeCheck) {
+            $("input:radio[name=officeInstructionFee]:eq(0)").attr("checked", 'checked');
+        }
+        var $choice = $("input:radio[name=officeInstructionFee]:checked");
+        var array = $choice.val().split("_");
+        var choiceId = array[0];
+        var value = array[1];
+        makeUniqueInstruction(companyId, choiceId, value);
+
+
+        $("#endCampaignDate").click(function () {
             $.post("<c:url value="/flow/companyNext.do"/>",
                     {
                         campaignId: campaignId,
                         companyId: companyId
                     },
                     function (data) {
-                         if(data=='false'){
+                        if (data == 'false') {
                             alert("回合结束，等待其它企业完成操作");
-                         } else {
-                             alert("公司回合已全部结束，刷新进入下一回合");
-                         }
+                        } else {
+                            alert("公司回合已全部结束，刷新进入下一回合");
+                        }
                     }
-            );});
+            );
+        });
 
         $("select[id^='instruction']")
-                .change(function(){
+                .change(function () {
                     var $choice = $(this);
                     var array = $choice.val().split("_");
                     var choiceId = array[0];
                     var value = array[1];
-                    if (value!=-1) {
+                    if (value != -1) {
                         $.post("<c:url value="/work/makeInstruction"/>",
                                 {
                                     companyId: companyId,
@@ -424,22 +441,39 @@
                     }
 
                 });
+        //产品定位
         $("select[id='productStudy']")
-                .change(function(){
+                .change(function () {
                     var $choice = $(this);
                     var array = $choice.val().split("_");
                     var choiceId = array[0];
                     var value = array[1];
-                    if (value!=-1) {
-                        $.post("<c:url value="/work/makeUniqueInstruction"/>",
-                                {
-                                    companyId: companyId,
-                                    choiceId: choiceId,
-                                    value: value
-                                });
+                    if (value != -1) {
+                        makeUniqueInstruction(companyId, choiceId, value);
                     }
                 });
-    })
+        //办公室
+        $("input:radio[name='officeInstructionFee']").change(function () {
+            var $choice = $(this);
+            var array = $choice.val().split("_");
+            var choiceId = array[0];
+            var value = array[1];
+            if (value != -1) {
+                makeUniqueInstruction(companyId, choiceId, value);
+            }
+        })
+
+
+        function makeUniqueInstruction(companyId,choiceId,value) {
+            $.post("<c:url value="/work/makeUniqueInstruction"/>",
+                    {
+                        companyId: companyId,
+                        choiceId: choiceId,
+                        value: value
+                    });
+        }
+
+    });
 </script>
 </body>
 </html>

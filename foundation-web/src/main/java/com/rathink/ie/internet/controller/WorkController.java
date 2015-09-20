@@ -78,7 +78,8 @@ public class WorkController {
         List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
         List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.AD.name());
 
-        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getProductStudyInstruction(preCompanyTerm);
+        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.OFFICE.name());
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -94,6 +95,7 @@ public class WorkController {
         model.addAttribute("officeInstructionList", officeInstructionList);
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
+        model.addAttribute("preOfficeInstruction", preOfficeInstruction);
 
         Map<String, Integer> globalReport = new LinkedHashMap();
         List<CompanyChoice> preCompanyChoiceList = new ArrayList<>();
@@ -140,7 +142,7 @@ public class WorkController {
             instructionManager.saveOrUpdateInstruction(company, choiceId, value);
         } else {
             companyInstruction.setCompanyChoice(companyChoice);
-            companyInstruction.setValue(companyChoice.getValue());
+            companyInstruction.setValue(value);
             baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
         }
         return "success";

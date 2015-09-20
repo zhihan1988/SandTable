@@ -133,15 +133,6 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
-    public CompanyInstruction getProductStudyInstruction(CompanyTerm companyTerm) {
-        String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyTermId", companyTerm.getId());
-        queryParamMap.put("baseType", EChoiceBaseType.PRODUCT_STUDY.name());
-        CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        return companyInstruction;
-    }
-
     public CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType) {
         String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
