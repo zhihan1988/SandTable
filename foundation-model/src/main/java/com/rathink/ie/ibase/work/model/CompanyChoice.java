@@ -18,6 +18,7 @@ public class CompanyChoice {
     private String dept;//哪个部门的选项
     private String fees;
     private String randomHigh;
+    @Deprecated
     private String randomLow;
     private String name;
     private String value;

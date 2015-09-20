@@ -41,7 +41,7 @@ public class AccountManagerImpl implements AccountManager {
         accountList.add(marketFeeAccount);
         Account operationFeeAccount = saveAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
-        Account incomeAccount = saveAccount("1000000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+        Account incomeAccount = saveAccount("2000000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);
 
         companyTerm.setAccountList(accountList);

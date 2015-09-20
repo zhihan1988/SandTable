@@ -1,9 +1,6 @@
 package com.rathink.ie.internet.controller;
 
-import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignCenterManager;
-import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,11 +24,7 @@ import java.util.Map;
 public class FlowController {
 
     @Autowired
-    private BaseManager baseManager;
-    @Autowired
     private FlowManager flowManager;
-    @Autowired
-    private CampaignManager campaignManager;
 
     @RequestMapping("/begin")
     @ResponseBody

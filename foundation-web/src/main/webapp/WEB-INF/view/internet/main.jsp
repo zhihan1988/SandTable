@@ -33,6 +33,7 @@
                     <div>
                         <div><img class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-1.jpg" /></div>
                         <div>
+                            <p>${instruction.companyChoice.name}</p>
                             <p>价格:${instruction.value}</p>
                             <p>简介：${instruction.companyChoice.description}<p>
                         </div>
@@ -46,13 +47,17 @@
                 <table class="am-table">
                     <thead>
                     <tr>
-                        <th>办公室描述</th>
+                        <th>地点</th>
+                        <th>描述</th>
                         <th>房租</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${officeChoiceList}" var="officeChoice">
                         <tr>
+                            <td>
+                                ${officeChoice.name}
+                            </td>
                             <td>
                                 ${officeChoice.description}
                             </td>

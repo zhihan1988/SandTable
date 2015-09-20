@@ -101,7 +101,8 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 办公室系数
      */
     private Integer calculateOfficeRatio() {
-        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
+        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.OFFICE.name());
         Integer officeFee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -140,7 +141,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name());
-        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio) + preProductRatio) * 1.5 + 20 + RandomUtil.random(0, 10);
+        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio * 2) + preProductRatio) * 1.5 + 20 + RandomUtil.random(0, 10);
         return productRatio.intValue();
     }
 
@@ -214,10 +215,11 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
                 Integer count = competitionMap.get(companyInstruction.getCompanyChoice().getId());
-                Integer marketCompetitiveRatio = 100 / count;
-                Double marketCost = Double.valueOf(companyChoice.getValue()) * Math.sqrt(marketCompetitiveRatio);
+                Double marketCost = Double.valueOf(companyChoice.getValue());
                 Integer marketFee = Integer.valueOf(companyInstruction.getValue());
-                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio * RandomUtil.random(80, 120) / 100;
+                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio * 2 * RandomUtil.random(80, 120) / 100;
+                Double marketCompetitiveRatio = 100 / Math.sqrt(Math.sqrt(count));
+                newUserAmount = newUserAmount * marketCompetitiveRatio.intValue() / 100;
             }
         }
         return newUserAmount;
