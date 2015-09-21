@@ -18,7 +18,7 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCompanyInstructionByType(Company company, String baseType);
 
-    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String baseType);
+    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept);
 
     List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm);
 

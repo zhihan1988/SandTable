@@ -70,8 +70,8 @@
                                 ${officeChoice.fees}
                             </td>
                             <td>
-                                <input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.fees}"
-                                    <c:if test="${preOfficeInstruction.companyChoice.value == officeChoice.value}">checked="checked"</c:if>>
+                                <input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.value}"
+                                    <c:if test="${preOfficeInstruction.companyChoice.name == officeChoice.name}">checked="checked"</c:if>>
                             </td>
                         </tr>
                     </c:forEach>
@@ -201,7 +201,7 @@
                             <td>
                                 <select id="productStudy" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <c:forEach items="${productStudyList}" var="productStudy">
-                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.value==productStudy.value}">selected="selected"</c:if>>
+                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.companyChoice.name==productStudy.name}">selected="selected"</c:if>>
                                             ${productStudy.name}
                                         </option>
                                     </c:forEach>

@@ -260,13 +260,16 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      */
     private Integer calculateOldUserAmount() {
         List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        CompanyInstruction productStudy = companyInstructionList.get(0);
-        InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-        CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(getPreCompanyTermHandler().getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyInstruction productStudy = companyInstructionList == null ? null : companyInstructionList.get(0);
+        Integer preUserAmount = 0;
+        if (preCompanyTermHandler != null) {
+            InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
+            CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(preCompanyTermHandler.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+            preUserAmount = preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
 
-        Integer preUserAmount = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
-        if (!productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失
-            preUserAmount = preUserAmount * 80 / 100;
+            if (productStudy != null && preProductStudy != null && !productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失
+                preUserAmount = preUserAmount * 80 / 100;
+            }
         }
         Integer satisfaction = get(EPropertyName.SATISFACTION.name());
         return preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;

@@ -19,10 +19,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.service.ChoiceManager;
-import com.rathink.ie.internet.service.FlowManager;
-import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.InternetPropertyManager;
+import com.rathink.ie.internet.service.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +52,8 @@ public class FlowManagerImpl implements FlowManager {
     private InternetPropertyManager internetPropertyManager;
     @Autowired
     private CampaignCenterManager campaignCenterManager;
-
+    @Autowired
+    private RobotManager robotManager;
     /**
      * 开始游戏 定时任务执行
      * @param campaignId
@@ -108,9 +106,18 @@ public class FlowManagerImpl implements FlowManager {
      */
     public void next(String campaignId) {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+//        robotInstruction(campaignHandler);
         before(campaignHandler);
         newRound(campaignHandler);
         after(campaignHandler);
+    }
+
+    public void robotInstruction(CampaignHandler campaignHandler) {
+        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTerm companyTerm = companyTermHandlerMap.get(companyId).getCompanyTerm();
+            robotManager.randomInstruction(companyTerm);
+        }
     }
 
     /**

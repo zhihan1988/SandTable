@@ -138,7 +138,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice.setCampaign(campaign);
         officeChoice.setName("科实大厦");
-        officeChoice.setValue("KSDS");
+        officeChoice.setValue("20000");
         officeChoice.setFees("20000");
         officeChoice.setDescription("100P;15");
         officeChoice.setDept(Edept.AD.name());
@@ -148,7 +148,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         officeChoice2.setCampaign(campaign);
         officeChoice2.setName("建外SOHO");
-        officeChoice2.setValue("SOHO");
+        officeChoice2.setValue("30000");
         officeChoice2.setFees("30000");
         officeChoice2.setDescription("100P;15");
         officeChoice2.setDept(Edept.AD.name());
@@ -158,7 +158,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice3.setCampaignDate(campaign.getCurrentCampaignDate());
         companyChoice3.setCampaign(campaign);
         companyChoice3.setName("辉煌国际中心");
-        companyChoice3.setValue("HSGJ");
+        companyChoice3.setValue("15000");
         companyChoice3.setFees("15000");
         companyChoice3.setDescription("60P;8");
         companyChoice3.setDept(Edept.AD.name());
@@ -168,7 +168,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice4.setCampaignDate(campaign.getCurrentCampaignDate());
         companyChoice4.setCampaign(campaign);
         companyChoice4.setName("中关村大厦");
-        companyChoice4.setValue("ZGCDS");
+        companyChoice4.setValue("40000");
         companyChoice4.setFees("40000");
         companyChoice4.setDescription("150P;20");
         companyChoice4.setDept(Edept.AD.name());
@@ -178,7 +178,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice5.setCampaignDate(campaign.getCurrentCampaignDate());
         companyChoice5.setCampaign(campaign);
         companyChoice5.setName("望京科技园");
-        companyChoice5.setValue("WJKJY");
+        companyChoice5.setValue("30000");
         companyChoice5.setFees("30000");
         companyChoice5.setDescription("200P;25");
         companyChoice5.setDept(Edept.AD.name());
