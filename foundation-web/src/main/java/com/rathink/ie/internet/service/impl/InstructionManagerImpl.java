@@ -5,9 +5,11 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
+import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
@@ -31,6 +33,8 @@ public class InstructionManagerImpl implements InstructionManager {
     private BaseManager baseManager;
     @Autowired
     private CompanyTermManager companyTermManager;
+    @Autowired
+    private AccountManager accountManager;
 
     @Override
     public CompanyInstruction saveOrUpdateInstruction(Company company, String companyChoiceId, String value) {
@@ -154,4 +158,13 @@ public class InstructionManagerImpl implements InstructionManager {
         return fee;
     }
 
+    public void fireHuman(String companyInstructionId) {
+        CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getObject(CompanyInstruction.class.getName(), companyInstructionId);
+        Integer fee = Integer.valueOf(companyInstruction.getValue()) * 3;
+        Company company = companyInstruction.getCompany();
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
+        accountManager.saveAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        companyInstruction.setStatus(EInstructionStatus.YSC.getValue());
+        baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
+    }
 }

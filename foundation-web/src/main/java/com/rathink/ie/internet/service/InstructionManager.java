@@ -31,4 +31,6 @@ public interface InstructionManager {
     CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
 
     Integer sumFee(List<CompanyInstruction> companyInstructionList);
+
+    void fireHuman(String companyInstructionId);
 }

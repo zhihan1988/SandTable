@@ -265,7 +265,7 @@ public class FlowManagerImpl implements FlowManager {
         CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
         List<Account> accountList = new ArrayList<>();
 
-        List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> officeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Integer officeFee = instructionManager.sumFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
         Account adAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);

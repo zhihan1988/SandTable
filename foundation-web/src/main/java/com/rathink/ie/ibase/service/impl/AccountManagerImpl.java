@@ -125,6 +125,9 @@ public class AccountManagerImpl implements AccountManager {
         for (int i = 0; i < companyTermList.size() - 1; i++) {
             CompanyTerm companyTerm = companyTermList.get(i);
             Map<String, String> accountMap = new LinkedHashMap<>();
+            for (EAccountEntityType eAccountEntityType : EAccountEntityType.values()) {
+                accountMap.put(eAccountEntityType.getLabel(), "0");
+            }
             XQuery accountEntityQuery = new XQuery();
             accountEntityQuery.setHql("from AccountEntry where account.companyTerm.id = :companyTermId and direction = 1");
             accountEntityQuery.put("companyTermId", companyTerm.getId());

@@ -5,7 +5,7 @@ package com.rathink.ie.internet;
  */
 public enum EInstructionStatus {
 
-    DQD("1","待确定"),WXZ("2","未选中"),YXZ("3","已选中");
+    DQD("1","待确定"),WXZ("2","未选中"),YXZ("3","已选中"),YSC("0","已删除");
     private String value;
     private String label;
 

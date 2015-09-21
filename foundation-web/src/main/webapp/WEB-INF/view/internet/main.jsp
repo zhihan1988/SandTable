@@ -28,22 +28,22 @@
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                <c:forEach items="${officeInstructionList}" var="instruction" varStatus="status">
+                <c:if test="${preOfficeInstruction.id != null}">
                     <li style="border: 1px solid #DDD;padding: 5px;">
                         <div>
                             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                                 <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
                                 <li>
-                                    <p style="margin: 0">${instruction.companyChoice.name}</p>
+                                    <p style="margin: 0">${preOfficeInstruction.companyChoice.name}</p>
                                 </li>
                             </ul>
                         </div>
                         <div>
-                            <p style="margin: 0">价格:${instruction.value}</p>
-                            <p style="margin: 0">简介：${instruction.companyChoice.description}<p>
+                            <p style="margin: 0">价格:${preOfficeInstruction.value}</p>
+                            <p style="margin: 0">简介：${preOfficeInstruction.companyChoice.description}<p>
                         </div>
                     </li>
-                </c:forEach>
+                </c:if>
             </ul>
         </div>
         <div id="do-not-say-0" class="am-panel-collapse am-collapse">
@@ -71,7 +71,7 @@
                             </td>
                             <td>
                                 <input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.fees}"
-                                    <c:if test="${preOfficeInstruction.value == officeChoice.value}">checked="checked"</c:if>>
+                                    <c:if test="${preOfficeInstruction.companyChoice.value == officeChoice.value}">checked="checked"</c:if>>
                             </td>
                         </tr>
                     </c:forEach>
@@ -116,6 +116,7 @@
                         <div>
                             <p style="margin: 0">能力：${hrInstruction.companyChoice.value}</p>
                             <p style="margin: 0">薪资：${hrInstruction.value}</p>
+                            <a id="humanInstruction_${hrInstruction.id}" href="#">解雇</a>
                         </div>
                     </li>
                 </c:forEach>
@@ -461,6 +462,15 @@
             if (value != -1) {
                 makeUniqueInstruction(companyId, choiceId, value);
             }
+        });
+
+        $("a[id^='humanInstruction_']").click(function() {
+            var $humanInstruction = $(this);
+            var instructionId = $humanInstruction.attr("id").split("_")[1];
+            $.post("<c:url value="/work/fire"/>",
+                    {
+                        instructionId: instructionId
+                    });
         })
 
 

@@ -76,7 +76,6 @@ public class WorkController {
         Integer campaignDateOutCash = accountManager.countAccountEntryFee(
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
-        List<CompanyInstruction> officeInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.AD.name());
 
         CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
         CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.OFFICE.name());
@@ -92,7 +91,6 @@ public class WorkController {
         model.addAttribute("companyCash", companyCash);
         model.addAttribute("campaignDateInCash", campaignDateInCash);
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
-        model.addAttribute("officeInstructionList", officeInstructionList);
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
         model.addAttribute("preOfficeInstruction", preOfficeInstruction);
@@ -155,6 +153,14 @@ public class WorkController {
         String choiceId = request.getParameter("choiceId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         instructionManager.deleteInstruction(company, choiceId);
+        return "success";
+    }
+
+    @RequestMapping("/fire")
+    @ResponseBody
+    public String fire(HttpServletRequest request, Model model) throws Exception {
+        String instructionId = request.getParameter("instructionId");
+        instructionManager.fireHuman(instructionId);
         return "success";
     }
 }
