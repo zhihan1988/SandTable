@@ -465,12 +465,17 @@
         });
 
         $("a[id^='humanInstruction_']").click(function() {
-            var $humanInstruction = $(this);
-            var instructionId = $humanInstruction.attr("id").split("_")[1];
-            $.post("<c:url value="/work/fire"/>",
-                    {
-                        instructionId: instructionId
-                    });
+            if(confirm("解雇员工将扣除三个月薪水作为补贴，是否继续？")) {
+                var $humanInstruction = $(this);
+                var instructionId = $humanInstruction.attr("id").split("_")[1];
+                $.post("<c:url value="/work/fire"/>",
+                        {
+                            instructionId: instructionId
+                        },function(data) {
+                            $humanInstruction.after("<span>已解雇</span>");
+                            $humanInstruction.remove();
+                        });
+                }
         })
 
 
