@@ -1,6 +1,7 @@
 package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
@@ -11,6 +12,7 @@ import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
+import org.aspectj.apache.bcel.generic.Instruction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -257,7 +259,15 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
      * @return 老用户数
      */
     private Integer calculateOldUserAmount() {
+        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyInstruction productStudy = companyInstructionList.get(0);
+        InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
+        CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(getPreCompanyTermHandler().getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+
         Integer preUserAmount = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
+        if (!productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失
+            preUserAmount = preUserAmount * 80 / 100;
+        }
         Integer satisfaction = get(EPropertyName.SATISFACTION.name());
         return preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;
     }
