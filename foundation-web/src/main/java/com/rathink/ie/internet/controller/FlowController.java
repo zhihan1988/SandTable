@@ -7,6 +7,7 @@ import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignHandler;
 import com.rathink.ie.ibase.service.CompanyTermHandler;
 import com.rathink.ie.internet.service.FlowManager;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,5 +83,19 @@ public class FlowController {
             flowManager.next(campaign.getId());
         }
         return isAllNext;
+    }
+
+    @RequestMapping("/isNext")
+    @ResponseBody
+    public Boolean isNext(HttpServletRequest request, Model model) throws Exception {
+        String campaignDate = request.getParameter("campaignDate");
+        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        Campaign campaign = campaignHandler.getCampaign();
+        String currentCampaignDate = campaign.getCurrentCampaignDate();
+        if (!campaignDate.equals(currentCampaignDate)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

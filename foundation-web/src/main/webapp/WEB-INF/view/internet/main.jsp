@@ -389,8 +389,9 @@
 <script>
 
     $(function () {
-        var campaignId = ${company.campaign.id}
-        var companyId = ${company.id};
+        var campaignId = '${campaign.id}';
+        var campaignDate = '${campaign.currentCampaignDate}';
+        var companyId = '${company.id}';
 
         //办公室初始值
         var isOfficeCheck = $('input:radio[name="officeInstructionFee"]').is(":checked");
@@ -411,11 +412,12 @@
                         companyId: companyId
                     },
                     function (data) {
-                        if (data == 'false') {
+                        alert("回合结束，等待其它企业完成操作");
+                     /*   if (data == 'false') {
                             alert("回合结束，等待其它企业完成操作");
                         } else {
                             alert("公司回合已全部结束，刷新进入下一回合");
-                        }
+                        }*/
                     }
             );
         });
@@ -488,6 +490,20 @@
                     });
         }
 
+        setInterval(isNext, 10000);
+        function isNext() {
+            $.post("<c:url value="/flow/isNext"/>",
+                    {
+                        campaignId:campaignId,
+                        campaignDate: campaignDate
+                    },
+                    function (data) {
+                        if (data == 'true') {
+                            location.reload();
+                        }
+                    });
+
+        }
     });
 </script>
 </body>
