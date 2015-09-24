@@ -5,9 +5,8 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.internet.service.FlowManager;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,9 +63,9 @@ public class FlowController {
     public synchronized Boolean companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         Campaign campaign = campaignHandler.getCampaign();
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
-        CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(request.getParameter("companyId"));
-        Company company = companyTermHandler.getCompanyTerm().getCompany();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        CompanyTermContext companyTermContext = companyTermHandlerMap.get(request.getParameter("companyId"));
+        Company company = companyTermContext.getCompanyTerm().getCompany();
 
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
@@ -74,7 +73,7 @@ public class FlowController {
 
         boolean isAllNext = true;
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler ctHandler = companyTermHandlerMap.get(companyId);
+            CompanyTermContext ctHandler = companyTermHandlerMap.get(companyId);
             if (!nextCampaignDate.equals(ctHandler.getCompanyTerm().getCompany().getCurrentCampaignDate())) {
                 isAllNext = false;
             }

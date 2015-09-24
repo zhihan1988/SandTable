@@ -5,16 +5,13 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.service.CompanyTermManager;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
-import com.rathink.ie.internet.service.impl.InternetCompanyTermHandler;
+import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,16 +48,16 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         CampaignHandler campaignHandler = new CampaignHandler();
         campaignHandler.setCampaign(campaign);
 
-        Map<String, CompanyTermHandler> companyTermHandlerMap = new HashMap<>();
+        Map<String, CompanyTermContext> companyTermHandlerMap = new HashMap<>();
         List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
         for (CompanyTerm companyTerm : companyTermList) {
-            CompanyTermHandler companyTermHandler = initCompanyTermHandler(companyTerm, campaignHandler);
+            CompanyTermContext companyTermContext = initCompanyTermHandler(companyTerm, campaignHandler);
             CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
             if (preCompanyTerm != null) {
-                CompanyTermHandler preCompanyTermHandler = initCompanyTermHandler(preCompanyTerm, campaignHandler);
-                companyTermHandler.setPreCompanyTermHandler(preCompanyTermHandler);
+                CompanyTermContext preCompanyTermContext = initCompanyTermHandler(preCompanyTerm, campaignHandler);
+                companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             }
-            companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermHandler);
+            companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermContext);
         }
         campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
 
@@ -68,13 +65,13 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
     }
 
     @Override
-    public CompanyTermHandler initCompanyTermHandler(CompanyTerm companyTerm, CampaignHandler campaignHandler) {
+    public CompanyTermContext initCompanyTermHandler(CompanyTerm companyTerm, CampaignHandler campaignHandler) {
 
-        CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
+        CompanyTermContext companyTermContext = new InternetCompanyTermContext();
         //1
-        companyTermHandler.setCampaignHandler(campaignHandler);
+        companyTermContext.setCampaignHandler(campaignHandler);
         //2
-        companyTermHandler.setCompanyTerm(companyTerm);
+        companyTermContext.setCompanyTerm(companyTerm);
         //3
      /*   List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
         companyTermHandler.putCompanyInstructionList(companyInstructionList);*/
@@ -82,6 +79,6 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
      /*   List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
         companyTermHandler.putPropertyList(companyTermPropertyList);*/
 
-        return companyTermHandler;
+        return companyTermContext;
     }
 }

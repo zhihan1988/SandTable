@@ -1,10 +1,9 @@
 package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
@@ -12,7 +11,6 @@ import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
-import org.aspectj.apache.bcel.generic.Instruction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +20,7 @@ import java.util.Map;
  * Created by Hean on 2015/9/4.
  */
 @Component
-public class InternetCompanyTermHandler extends CompanyTermHandler {
+public class InternetCompanyTermContext extends CompanyTermContext {
 
     @Override
     public Integer calculate(String key) {
@@ -142,7 +140,7 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
     private Integer calculateProductRatio() {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
-        Integer preProductRatio = preCompanyTermHandler == null ? 0 : preCompanyTermHandler.get(EPropertyName.PRODUCT_RATIO.name());
+        Integer preProductRatio = preCompanyTermContext == null ? 0 : preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio * 2) + preProductRatio) * 1.5 + 20 + RandomUtil.random(0, 10);
         return productRatio.intValue();
     }
@@ -175,11 +173,11 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         //跟自己公司定位相同的公司数量
         int sameGradeCount = 1;
         CampaignHandler campaignHandler = getCampaignHandler();
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : campaignHandler.getCompanyTermHandlerMap().keySet()) {
             if (!companyId.equals(getCompanyTerm().getCompany().getId())) {
-                CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-                List<CompanyInstruction> companyInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+                CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+                List<CompanyInstruction> companyInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
                 String otherGrade = companyInstructionList == null ? "1" : companyInstructionList.get(0).getValue();
                 if (grade.equals(otherGrade)) {
                     sameGradeCount++;
@@ -262,10 +260,10 @@ public class InternetCompanyTermHandler extends CompanyTermHandler {
         List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         CompanyInstruction productStudy = companyInstructionList == null ? null : companyInstructionList.get(0);
         Integer preUserAmount = 0;
-        if (preCompanyTermHandler != null) {
+        if (preCompanyTermContext != null) {
             InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-            CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(preCompanyTermHandler.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
-            preUserAmount = preCompanyTermHandler.get(EPropertyName.USER_AMOUNT.name());
+            CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(preCompanyTermContext.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+            preUserAmount = preCompanyTermContext.get(EPropertyName.USER_AMOUNT.name());
 
             if (productStudy != null && preProductStudy != null && !productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失
                 preUserAmount = preUserAmount * 80 / 100;

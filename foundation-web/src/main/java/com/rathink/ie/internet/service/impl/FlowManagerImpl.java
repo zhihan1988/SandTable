@@ -70,7 +70,7 @@ public class FlowManagerImpl implements FlowManager {
         campaignHandler.setCampaign(campaign);
 
         //2.初始化各公司
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
@@ -82,17 +82,17 @@ public class FlowManagerImpl implements FlowManager {
             companyTerm.setCampaignDate(company.getCampaign().getCurrentCampaignDate());
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             //生成新回合的companyTermHandler
-            CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
-            companyTermHandler.setCampaignHandler(campaignHandler);
-            companyTermHandler.setCompanyTerm(companyTerm);
-            companyTermHandlerMap.put(company.getId(), companyTermHandler);
+            CompanyTermContext companyTermContext = new InternetCompanyTermContext();
+            companyTermContext.setCampaignHandler(campaignHandler);
+            companyTermContext.setCompanyTerm(companyTerm);
+            companyTermHandlerMap.put(company.getId(), companyTermContext);
         }
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             //计算保存新回合的属性数据
-            calculateProperty(companyTermHandler);
+            calculateProperty(companyTermContext);
             //4计算保存新回合的财务数据
-            accountManager.initCompanyAccount(companyTermHandler.getCompanyTerm());
+            accountManager.initCompanyAccount(companyTermContext.getCompanyTerm());
         }
 
         newRound(campaignHandler);
@@ -113,7 +113,7 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     public void robotInstruction(CampaignHandler campaignHandler) {
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTerm companyTerm = companyTermHandlerMap.get(companyId).getCompanyTerm();
             robotManager.randomInstruction(companyTerm);
@@ -126,14 +126,14 @@ public class FlowManagerImpl implements FlowManager {
      */
     private void before(CampaignHandler campaignHandler) {
         //获取property Instruction 等
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-            companyTermHandler.putCompanyInstructionList(companyInstructionList);
+            companyTermContext.putCompanyInstructionList(companyInstructionList);
             List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
-            companyTermHandler.putPropertyList(companyTermPropertyList);
+            companyTermContext.putPropertyList(companyTermPropertyList);
         }
 
         //竞标决策
@@ -144,11 +144,11 @@ public class FlowManagerImpl implements FlowManager {
         initCompetitionMap(campaignHandler);
 
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyId);
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             //计算保存新回合的属性数据
-            calculateProperty(companyTermHandler);
+            calculateProperty(companyTermContext);
             //4计算保存新回合的财务数据
-            calculateAccount(companyTermHandler);
+            calculateAccount(companyTermContext);
         }
 
     }
@@ -161,10 +161,10 @@ public class FlowManagerImpl implements FlowManager {
         Campaign campaign = campaignHandler.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermHandler preCompanyTermHandler = companyTermHandlerMap.get(companyId);
-            Company company = preCompanyTermHandler.getCompanyTerm().getCompany();
+            CompanyTermContext preCompanyTermContext = companyTermHandlerMap.get(companyId);
+            Company company = preCompanyTermContext.getCompanyTerm().getCompany();
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(Company.class.getName(), company);
             //生成新回合的companyTerm
@@ -174,12 +174,12 @@ public class FlowManagerImpl implements FlowManager {
             companyTerm.setCampaignDate(campaign.getCurrentCampaignDate());
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             //生成新回合的companyTermHandler
-            CompanyTermHandler companyTermHandler = new InternetCompanyTermHandler();
-            companyTermHandler.setCampaignHandler(campaignHandler);
-            companyTermHandler.setCompanyTerm(companyTerm);
-            companyTermHandler.setPreCompanyTermHandler(preCompanyTermHandler);
+            CompanyTermContext companyTermContext = new InternetCompanyTermContext();
+            companyTermContext.setCampaignHandler(campaignHandler);
+            companyTermContext.setCompanyTerm(companyTerm);
+            companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             //更新campaignCenter
-            companyTermHandlerMap.put(companyId, companyTermHandler);
+            companyTermHandlerMap.put(companyId, companyTermContext);
         }
     }
 
@@ -198,15 +198,15 @@ public class FlowManagerImpl implements FlowManager {
         List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate(), EChoiceBaseType.HUMAN.name());
 
         //竞标
-        Map<String, CompanyTermHandler> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
         for (CompanyChoice companyChoice : companyChoiceList) {
             List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyChoice);
             if (companyInstructionList != null && companyInstructionList.size() > 0) {
                 Double maxRecruitmentRatio = 0d;
                 CompanyInstruction successCompanyInstruction = null;
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
-                    CompanyTermHandler companyTermHandler = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
-                    Integer officeRatio = companyTermHandler.get(EPropertyName.OFFICE_RATIO.name());
+                    CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
+                    Integer officeRatio = companyTermContext.get(EPropertyName.OFFICE_RATIO.name());
                     Double fee = Double.valueOf(companyInstruction.getValue());
                     Double feeRatio = fee / 200;
                     Integer randomRatio = RandomUtil.random(0, 20);
@@ -257,22 +257,22 @@ public class FlowManagerImpl implements FlowManager {
 
     }
 
-    private void calculateProperty(CompanyTermHandler companyTermHandler) {
-        CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
+    private void calculateProperty(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
         for (EPropertyName ePropertyName : EPropertyName.values()) {
-            Integer value = companyTermHandler.calculate(ePropertyName.name());
+            Integer value = companyTermContext.calculate(ePropertyName.name());
             companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
         }
         companyTerm.setCompanyTermPropertyList(companyTermPropertyList);
         baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
     }
 
-    private void calculateAccount(CompanyTermHandler companyTermHandler) {
-        CompanyTerm companyTerm = companyTermHandler.getCompanyTerm();
+    private void calculateAccount(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         List<Account> accountList = new ArrayList<>();
 
-        List<CompanyInstruction> officeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> officeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Integer officeFee = instructionManager.sumFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
         Account adAccount = accountManager.saveAccount(String.valueOf(officeFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(adAccount);
@@ -282,26 +282,26 @@ public class FlowManagerImpl implements FlowManager {
         Account humanAccount = accountManager.saveAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(humanAccount);
 
-        List<CompanyInstruction> productFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyInstruction> productFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         Integer productFee = instructionManager.sumFee(productFeeInstructionList);
         Account productFeeAccount = accountManager.saveAccount(String.valueOf(productFee), EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(productFeeAccount);
 
-        List<CompanyInstruction> marketFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyInstruction> marketFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
         Integer marketFee = instructionManager.sumFee(marketFeeInstructionList);
         Account marketFeeAccount = accountManager.saveAccount(String.valueOf(marketFee), EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(marketFeeAccount);
 
-        List<CompanyInstruction> operationFeeInstructionList = companyTermHandler.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyInstruction> operationFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         Integer operationFee = instructionManager.sumFee(operationFeeInstructionList);
         Account operationFeeAccount = accountManager.saveAccount(String.valueOf(operationFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         accountList.add(operationFeeAccount);
 
-        Integer currentPeriodIncome = companyTermHandler.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
+        Integer currentPeriodIncome = companyTermContext.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
         Account incomeAccount = accountManager.saveAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
         accountList.add(incomeAccount);
 
-        companyTermHandler.setAccountList(accountList);
+        companyTermContext.setAccountList(accountList);
     }
 
 

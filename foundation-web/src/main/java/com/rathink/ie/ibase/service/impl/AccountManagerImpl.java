@@ -8,11 +8,7 @@ import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
-import com.rathink.ie.ibase.service.CompanyTermHandler;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.EPropertyName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

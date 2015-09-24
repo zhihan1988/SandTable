@@ -5,19 +5,18 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
  * Created by Hean on 2015/9/4.
  */
-public abstract class CompanyTermHandler {
+public abstract class CompanyTermContext {
     protected CampaignHandler campaignHandler;
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
     protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
     protected List<Account> accountList = new ArrayList<>();
-    protected CompanyTermHandler preCompanyTermHandler;
+    protected CompanyTermContext preCompanyTermContext;
 
     public Integer get(String key) {
         if (!propertyValueMap.containsKey(key)) {
@@ -85,11 +84,11 @@ public abstract class CompanyTermHandler {
 
     }
 
-    public CompanyTermHandler getPreCompanyTermHandler() {
-        return preCompanyTermHandler;
+    public CompanyTermContext getPreCompanyTermContext() {
+        return preCompanyTermContext;
     }
 
-    public void setPreCompanyTermHandler(CompanyTermHandler preCompanyTermHandler) {
-        this.preCompanyTermHandler = preCompanyTermHandler;
+    public void setPreCompanyTermContext(CompanyTermContext preCompanyTermContext) {
+        this.preCompanyTermContext = preCompanyTermContext;
     }
 }
