@@ -12,9 +12,8 @@ import java.util.Map;
  * Created by Hean on 2015/9/4.
  */
 public interface AccountManager {
-    void initCompanyAccount(CompanyTerm companyTerm);
 
-    Account saveAccount(String fee, String inType, String outType, CompanyTerm companyTerm);
+    Account packageAccount(String fee, String inType, String outType, CompanyTerm companyTerm);
 
     Integer getCompanyCash(Company company);
 

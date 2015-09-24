@@ -4,6 +4,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermManager;
@@ -163,7 +164,8 @@ public class InstructionManagerImpl implements InstructionManager {
         Integer fee = Integer.valueOf(companyInstruction.getValue()) * 3;
         Company company = companyInstruction.getCompany();
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
-        accountManager.saveAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Account account = accountManager.packageAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
         companyInstruction.setStatus(EInstructionStatus.YSC.getValue());
         baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
     }

@@ -22,30 +22,9 @@ public class AccountManagerImpl implements AccountManager {
     @Autowired
     private BaseManager baseManager;
 
-    @Override
-    public void initCompanyAccount(CompanyTerm companyTerm) {
-
-        List<Account> accountList = new ArrayList<>();
-
-        Account adAccount = saveAccount("0", EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        accountList.add(adAccount);
-        Account humanAccount = saveAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        accountList.add(humanAccount);
-        Account productFeeAccount = saveAccount("0", EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        accountList.add(productFeeAccount);
-        Account marketFeeAccount = saveAccount("0", EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        accountList.add(marketFeeAccount);
-        Account operationFeeAccount = saveAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        accountList.add(operationFeeAccount);
-        Account incomeAccount = saveAccount("2000000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
-        accountList.add(incomeAccount);
-
-        companyTerm.setAccountList(accountList);
-        baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
-    }
 
     @Override
-    public Account saveAccount(String fee, String inType, String outType, CompanyTerm companyTerm) {
+    public Account packageAccount(String fee, String inType, String outType, CompanyTerm companyTerm) {
         Account account = new Account();
         account.setCampaign(companyTerm.getCampaign());
         account.setCampaignDate(companyTerm.getCampaignDate());
@@ -67,7 +46,7 @@ public class AccountManagerImpl implements AccountManager {
         accountEntryList.add(outAccountEntity);
         
         account.setAccountEntryList(accountEntryList);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+//        baseManager.saveOrUpdate(Account.class.getName(), account);
 
         return account;
     }

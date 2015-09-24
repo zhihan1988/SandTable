@@ -194,9 +194,9 @@ public class BaseManagerImpl implements BaseManager {
 
 
     @Override
-    public void batchSaveOrUpdate(String type, String modelType, List<Object> objectList) {
+    public void batchSaveOrUpdate(String type, String modelType, Collection<? extends Object> collection) {
 
-        xdoDao.batchSaveOrUpdate(type, modelType, objectList);
+        xdoDao.batchSaveOrUpdate(type, modelType, collection);
 
         //To change body of implemented methods use File | Settings | File Templates.
     }

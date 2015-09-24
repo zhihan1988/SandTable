@@ -8,6 +8,7 @@ import com.ming800.core.taglib.PageEntity;
 import com.ming800.core.does.model.PageInfo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public interface BaseManager {
 
     int batchDelete(String model, String[] idArray);
 
-    void batchSaveOrUpdate(String type, String modelType, List<Object> objectList);
+    void batchSaveOrUpdate(String type, String modelType, Collection<? extends Object> collection);
 
     Object executeSql(String type, String queryStr, LinkedHashMap<String, Object> queryParamMap);
 

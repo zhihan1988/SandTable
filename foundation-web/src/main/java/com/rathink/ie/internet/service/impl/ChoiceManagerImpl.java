@@ -3,6 +3,7 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;
@@ -10,6 +11,7 @@ import com.rathink.ie.internet.service.ChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -21,30 +23,44 @@ public class ChoiceManagerImpl implements ChoiceManager {
     @Autowired
     private BaseManager baseManager;
 
+    public List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap();
+        queryParamMap.put("campaignId", campaignId);
+        queryParamMap.put("campaignDate", campaignDate);
+        xQuery.setQueryParamMap(queryParamMap);
+        List companyChoiceList = baseManager.listObject(xQuery);
+        return companyChoiceList;
+    }
+
     @Override
     public List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyChoice where campaign.id = :campaignId and campaignDate = :campaignDate and baseType = :choiceType");
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap();
         queryParamMap.put("campaignId", campaignId);
         queryParamMap.put("campaignDate", campaignDate);
         queryParamMap.put("choiceType", choiceType);
         xQuery.setQueryParamMap(queryParamMap);
-        List humanList = baseManager.listObject(xQuery);
-        return humanList;
+        List companyChoiceList = baseManager.listObject(xQuery);
+        return companyChoiceList;
     }
 
     @Override
-    public void produceChoice(Campaign campaign) {
-        productOfficeChoice(campaign);
-        produceHumanChoice(campaign);
-        produceMarketActivityChoice(campaign);
-        produceProductStudyChoice(campaign);
-        produceProductStudyFeeChoice(campaign);
-        produceOperationChoice(campaign);
+    public List<CompanyChoice> randomChoices(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
+        companyChoiceList.addAll(productOfficeChoice(campaign));
+        companyChoiceList.addAll(produceHumanChoice(campaign));
+        companyChoiceList.addAll(produceMarketActivityChoice(campaign));
+        companyChoiceList.addAll(produceProductStudyChoice(campaign));
+        companyChoiceList.addAll(produceProductStudyFeeChoice(campaign));
+        companyChoiceList.addAll(produceOperationChoice(campaign));
+        return companyChoiceList;
     }
 
-    private void produceProductStudyChoice(Campaign campaign) {
+    private List<CompanyChoice> produceProductStudyChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice productStudy = new CompanyChoice();
         productStudy.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -52,7 +68,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy.setDept(Edept.PRODUCT.name());
         productStudy.setName("高端");
         productStudy.setValue("1");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy);
+        companyChoiceList.add(productStudy);
         CompanyChoice productStudy2 = new CompanyChoice();
         productStudy2.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy2.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -60,7 +76,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy2.setDept(Edept.PRODUCT.name());
         productStudy2.setName("中端");
         productStudy2.setValue("2");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy2);
+        companyChoiceList.add(productStudy2);
         CompanyChoice productStudy3 = new CompanyChoice();
         productStudy3.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
         productStudy3.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -68,10 +84,12 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy3.setDept(Edept.PRODUCT.name());
         productStudy3.setName("低端");
         productStudy3.setValue("3");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudy3);
+        companyChoiceList.add(productStudy3);
+        return companyChoiceList;
     }
 
-    private void produceProductStudyFeeChoice(Campaign campaign) {
+    private List<CompanyChoice> produceProductStudyFeeChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice productStudyFee = new CompanyChoice();
         productStudyFee.setBaseType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         productStudyFee.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -79,20 +97,24 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudyFee.setDept(Edept.PRODUCT.name());
         productStudyFee.setName("产品研发投入");
         productStudyFee.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), productStudyFee);
+        companyChoiceList.add(productStudyFee);
+        return companyChoiceList;
     }
 
-    private void produceOperationChoice(Campaign campaign) {
+    private List<CompanyChoice> produceOperationChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice operationChoice = new CompanyChoice();
         operationChoice.setBaseType(EChoiceBaseType.OPERATION.name());
         operationChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         operationChoice.setCampaign(campaign);
         operationChoice.setDept(Edept.OPERATION.name());
         operationChoice.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), operationChoice);
+        companyChoiceList.add(operationChoice);
+        return companyChoiceList;
     }
 
-    private void produceMarketActivityChoice(Campaign campaign) {
+    private List<CompanyChoice> produceMarketActivityChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice marketActivityChoice = new CompanyChoice();
         marketActivityChoice.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -101,7 +123,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice.setName("微博/微信");
         marketActivityChoice.setValue("20");
         marketActivityChoice.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice);
+        companyChoiceList.add(marketActivityChoice);
         CompanyChoice marketActivityChoice2 = new CompanyChoice();
         marketActivityChoice2.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -110,7 +132,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice2.setName("百度");
         marketActivityChoice2.setValue("30");
         marketActivityChoice2.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice2);
+        companyChoiceList.add(marketActivityChoice2);
         CompanyChoice marketActivityChoice3 = new CompanyChoice();
         marketActivityChoice3.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice3.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -119,7 +141,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice3.setName("地推");
         marketActivityChoice3.setValue("50");
         marketActivityChoice3.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice3);
+        companyChoiceList.add(marketActivityChoice3);
         CompanyChoice marketActivityChoice4 = new CompanyChoice();
         marketActivityChoice4.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
         marketActivityChoice4.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -128,11 +150,12 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice4.setName("地面广告");
         marketActivityChoice4.setValue("40");
         marketActivityChoice4.setFees("10000,20000,40000,80000,160000");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), marketActivityChoice4);
-
+        companyChoiceList.add(marketActivityChoice4);
+        return companyChoiceList;
     }
 
-    private void productOfficeChoice(Campaign campaign) {
+    private List<CompanyChoice> productOfficeChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice officeChoice = new CompanyChoice();
         officeChoice.setBaseType(EChoiceBaseType.OFFICE.name());
         officeChoice.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -142,7 +165,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice.setFees("20000");
         officeChoice.setDescription("100P;15");
         officeChoice.setDept(Edept.AD.name());
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice);
+        companyChoiceList.add(officeChoice);
         CompanyChoice officeChoice2 = new CompanyChoice();
         officeChoice2.setBaseType(EChoiceBaseType.OFFICE.name());
         officeChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -152,7 +175,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice2.setFees("30000");
         officeChoice2.setDescription("100P;15");
         officeChoice2.setDept(Edept.AD.name());
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), officeChoice2);
+        companyChoiceList.add(officeChoice2);
         CompanyChoice companyChoice3 = new CompanyChoice();
         companyChoice3.setBaseType(EChoiceBaseType.OFFICE.name());
         companyChoice3.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -162,7 +185,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice3.setFees("15000");
         companyChoice3.setDescription("60P;8");
         companyChoice3.setDept(Edept.AD.name());
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), companyChoice3);
+        companyChoiceList.add(companyChoice3);
         CompanyChoice companyChoice4 = new CompanyChoice();
         companyChoice4.setBaseType(EChoiceBaseType.OFFICE.name());
         companyChoice4.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -172,7 +195,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice4.setFees("40000");
         companyChoice4.setDescription("150P;20");
         companyChoice4.setDept(Edept.AD.name());
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), companyChoice4);
+        companyChoiceList.add(companyChoice4);
         CompanyChoice companyChoice5 = new CompanyChoice();
         companyChoice5.setBaseType(EChoiceBaseType.OFFICE.name());
         companyChoice5.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -182,10 +205,12 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice5.setFees("30000");
         companyChoice5.setDescription("200P;25");
         companyChoice5.setDept(Edept.AD.name());
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), companyChoice5);
+        companyChoiceList.add(companyChoice5);
+        return companyChoiceList;
     }
 
-    private void produceHumanChoice(Campaign campaign) {
+    private List<CompanyChoice> produceHumanChoice(Campaign campaign) {
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
         CompanyChoice human = new CompanyChoice();
         human.setBaseType(EChoiceBaseType.HUMAN.name());
         human.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -195,7 +220,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human.setType(Edept.PRODUCT.name());
         human.setFees("10000,20000,30000,40000,50000");
         human.setValue("10");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human);
+        companyChoiceList.add(human);
         CompanyChoice human3 = new CompanyChoice();
         human3.setBaseType(EChoiceBaseType.HUMAN.name());
         human3.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -205,7 +230,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human3.setType(Edept.MARKET.name());
         human3.setFees("10000,20000,30000,40000,50000");
         human3.setValue("8");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human3);
+        companyChoiceList.add(human3);
         CompanyChoice human4 = new CompanyChoice();
         human4.setBaseType(EChoiceBaseType.HUMAN.name());
         human4.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -215,7 +240,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human4.setType(Edept.OPERATION.name());
         human4.setFees("10000,20000,30000,40000,50000");
         human4.setValue("6");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human4);
+        companyChoiceList.add(human4);
         CompanyChoice human5 = new CompanyChoice();
         human5.setBaseType(EChoiceBaseType.HUMAN.name());
         human5.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -225,7 +250,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human5.setType(Edept.PRODUCT.name());
         human5.setFees("10000,20000,30000,40000,50000");
         human5.setValue("5");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human5);
+        companyChoiceList.add(human5);
         CompanyChoice human6 = new CompanyChoice();
         human6.setBaseType(EChoiceBaseType.HUMAN.name());
         human6.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -235,7 +260,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human6.setType(Edept.MARKET.name());
         human6.setFees("10000,20000,30000,40000,50000");
         human6.setValue("7");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human6);
+        companyChoiceList.add(human6);
         CompanyChoice human7 = new CompanyChoice();
         human7.setBaseType(EChoiceBaseType.HUMAN.name());
         human7.setCampaignDate(campaign.getCurrentCampaignDate());
@@ -245,7 +270,8 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human7.setType(Edept.OPERATION.name());
         human7.setFees("10000,20000,30000,40000,50000");
         human7.setValue("9");
-        baseManager.saveOrUpdate(CompanyChoice.class.getName(), human7);
+        companyChoiceList.add(human7);
+        return companyChoiceList;
     }
 
 

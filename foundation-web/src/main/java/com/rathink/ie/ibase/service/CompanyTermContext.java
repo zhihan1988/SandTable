@@ -15,7 +15,9 @@ public abstract class CompanyTermContext {
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
     protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
+    protected List<CompanyInstruction> companyInstructionList = new ArrayList<>();
     protected List<Account> accountList = new ArrayList<>();
+    protected List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
     protected CompanyTermContext preCompanyTermContext;
 
     public Integer get(String key) {
@@ -75,13 +77,21 @@ public abstract class CompanyTermContext {
         }
     }
 
-    public void putPropertyList(List<CompanyTermProperty> companyTermPropertyList) {
+    public List<CompanyInstruction> getCompanyInstructionList() {
+        return companyInstructionList;
+    }
+
+    public List<CompanyTermProperty> getCompanyTermPropertyList() {
+        return companyTermPropertyList;
+    }
+
+    public void setCompanyTermPropertyList(List<CompanyTermProperty> companyTermPropertyList) {
+        this.companyTermPropertyList = companyTermPropertyList;
         if (companyTermPropertyList != null) {
             for (CompanyTermProperty preCompanyTermProperty : companyTermPropertyList) {
                 propertyValueMap.put(preCompanyTermProperty.getName(), preCompanyTermProperty.getValue());
             }
         }
-
     }
 
     public CompanyTermContext getPreCompanyTermContext() {

@@ -5,11 +5,14 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignHandler;
-import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.service.CompanyTermManager;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
+import com.rathink.ie.ibase.service.*;
+import com.rathink.ie.ibase.work.model.CompanyChoice;
+import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.service.ChoiceManager;
+import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +32,11 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
     @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
-    InternetPropertyManager internetPropertyManager;
-
+    private InternetPropertyManager internetPropertyManager;
+    @Autowired
+    private InstructionManager instructionManager;
+    @Autowired
+    private ChoiceManager choiceManager;
 
     @Override
     public void initCampaignCenter() {
@@ -60,7 +66,8 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
             companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermContext);
         }
         campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
-
+    /*    List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate());
+        campaignHandler.setCompanyChoiceList(companyChoiceList);*/
         CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignHandler);
     }
 
@@ -73,11 +80,11 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         //2
         companyTermContext.setCompanyTerm(companyTerm);
         //3
-     /*   List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-        companyTermHandler.putCompanyInstructionList(companyInstructionList);*/
+        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+        companyTermContext.putCompanyInstructionList(companyInstructionList);
         //4
-     /*   List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
-        companyTermHandler.putPropertyList(companyTermPropertyList);*/
+        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
+        companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
 
         return companyTermContext;
     }

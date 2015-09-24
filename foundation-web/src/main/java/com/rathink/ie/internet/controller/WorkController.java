@@ -63,7 +63,8 @@ public class WorkController {
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
         CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
-        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTerm.getCompanyTermPropertyList());
+        List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
         List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OFFICE.name());
         List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.HUMAN.name());
         List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());

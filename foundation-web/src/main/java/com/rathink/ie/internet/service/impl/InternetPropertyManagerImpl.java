@@ -2,13 +2,10 @@ package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +63,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         for (int i = 0; i < companyTermList.size() - 1; i++) {
             CompanyTerm companyTerm = companyTermList.get(i);
             Map<String, Integer> propertyMap = new LinkedHashMap<>();
-            List<CompanyTermProperty> companyTermPropertyList = companyTerm.getCompanyTermPropertyList();
+            List<CompanyTermProperty> companyTermPropertyList = listCompanyTermProperty(companyTerm);
             if (companyTermPropertyList != null && companyTermPropertyList.size() > 0) {
                 companyTermPropertyList.sort(new CompanyTermPropertyComparator());
                 for (CompanyTermProperty companyTermProperty : companyTermPropertyList) {

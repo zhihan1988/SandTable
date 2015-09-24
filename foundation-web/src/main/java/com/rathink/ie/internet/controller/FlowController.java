@@ -1,6 +1,8 @@
 package com.rathink.ie.internet.controller;
 
+import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
@@ -22,9 +24,12 @@ import java.util.Map;
 @Controller
 @RequestMapping("/flow")
 public class FlowController {
-
+    @Autowired
+    private BaseManager baseManager;
     @Autowired
     private FlowManager flowManager;
+    @Autowired
+    private CampaignCenterManager campaignCenterManager;
 
     @RequestMapping("/begin")
     @ResponseBody
@@ -55,6 +60,9 @@ public class FlowController {
     public String reset(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         flowManager.reset(campaignId);
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        campaignCenterManager.initCampaignHandler(campaign);
+        flowManager.begin(campaignId);
         return "success";
     }
 
