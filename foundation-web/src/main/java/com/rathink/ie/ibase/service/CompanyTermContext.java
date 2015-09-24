@@ -11,7 +11,7 @@ import java.util.*;
  * Created by Hean on 2015/9/4.
  */
 public abstract class CompanyTermContext {
-    protected CampaignHandler campaignHandler;
+    protected CampaignContext campaignContext;
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
     protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
@@ -33,12 +33,12 @@ public abstract class CompanyTermContext {
         propertyValueMap.put(key, value);
     }
 
-    public CampaignHandler getCampaignHandler() {
-        return campaignHandler;
+    public CampaignContext getCampaignContext() {
+        return campaignContext;
     }
 
-    public void setCampaignHandler(CampaignHandler campaignHandler) {
-        this.campaignHandler = campaignHandler;
+    public void setCampaignContext(CampaignContext campaignContext) {
+        this.campaignContext = campaignContext;
     }
 
     public List<Account> getAccountList() {

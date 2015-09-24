@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Created by Hean on 2015/9/10.
  */
-public class CampaignHandler {
+public class CampaignContext {
     private Campaign campaign;
     private Set<CompanyInstruction> currentCompanyInstructionSet = new HashSet<>();
     private Map<String, CompanyTermContext> companyTermHandlerMap;

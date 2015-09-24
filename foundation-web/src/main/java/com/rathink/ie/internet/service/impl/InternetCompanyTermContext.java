@@ -2,7 +2,7 @@ package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.service.CampaignHandler;
+import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -172,9 +172,9 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         }
         //跟自己公司定位相同的公司数量
         int sameGradeCount = 1;
-        CampaignHandler campaignHandler = getCampaignHandler();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
-        for (String companyId : campaignHandler.getCompanyTermHandlerMap().keySet()) {
+        CampaignContext campaignContext = getCampaignContext();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
+        for (String companyId : campaignContext.getCompanyTermHandlerMap().keySet()) {
             if (!companyId.equals(getCompanyTerm().getCompany().getId())) {
                 CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
                 List<CompanyInstruction> companyInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
@@ -205,7 +205,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     private Integer calculateNewUserAmount() {
 
-        Map<String, Integer> competitionMap = getCampaignHandler().getCompetitionMap();
+        Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
         Integer newUserAmount = 0;

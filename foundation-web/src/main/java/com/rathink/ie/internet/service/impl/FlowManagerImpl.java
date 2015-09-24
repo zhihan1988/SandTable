@@ -59,15 +59,15 @@ public class FlowManagerImpl implements FlowManager {
     @Override
     public void begin(String campaignId) {
         final String INIT_CAMPAIGN_DATE = "010101";
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
         //1.比赛开始
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(INIT_CAMPAIGN_DATE));
         campaign.setStatus(Campaign.Status.RUN.getValue());
-        campaignHandler.setCampaign(campaign);
+        campaignContext.setCampaign(campaign);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         //2.初始化各公司
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
@@ -80,14 +80,14 @@ public class FlowManagerImpl implements FlowManager {
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             //生成新回合的companyTermHandler
             CompanyTermContext companyTermContext = new InternetCompanyTermContext();
-            companyTermContext.setCampaignHandler(campaignHandler);
+            companyTermContext.setCampaignContext(campaignContext);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermContext);
         }
         //属性初始值
-        calculateProperty(campaignHandler);
+        calculateProperty(campaignContext);
         //财务数据初始值
-        initAccount(campaignHandler);
+        initAccount(campaignContext);
 
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             List<CompanyTermProperty> companyTermPropertyList = companyTermContext.getCompanyTermPropertyList();
@@ -95,7 +95,7 @@ public class FlowManagerImpl implements FlowManager {
             List<Account> accountList = companyTermContext.getAccountList();
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
-        after(campaignHandler);
+        after(campaignContext);
 
         next(campaignId);
     }
@@ -105,19 +105,19 @@ public class FlowManagerImpl implements FlowManager {
      * @param campaignId
      */
     public void next(String campaignId) {
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(campaignId);
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
 
-        before(campaignHandler);
+        before(campaignContext);
 
-        newRound(campaignHandler);
+        newRound(campaignContext);
 
-        after(campaignHandler);
+        after(campaignContext);
 
-        saveCampaignContext(campaignHandler);
+        saveCampaignContext(campaignContext);
     }
 
-    public void robotInstruction(CampaignHandler campaignHandler) {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+    public void robotInstruction(CampaignContext campaignContext) {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTerm companyTerm = companyTermHandlerMap.get(companyId).getCompanyTerm();
             robotManager.randomInstruction(companyTerm);
@@ -127,33 +127,33 @@ public class FlowManagerImpl implements FlowManager {
     /**
      * 回合结束前
      *
-     * @param campaignHandler
+     * @param campaignContext
      */
-    private void before(CampaignHandler campaignHandler) {
+    private void before(CampaignContext campaignContext) {
         //收集决策信息
-        collectCompanyInstruction(campaignHandler);
+        collectCompanyInstruction(campaignContext);
         //竞标决策
-        competitiveBidding(campaignHandler);
+        competitiveBidding(campaignContext);
         //非竞标决策
-        competitiveUnBidding(campaignHandler);
+        competitiveUnBidding(campaignContext);
 
-        initCompetitionMap(campaignHandler);
+        initCompetitionMap(campaignContext);
         //计算保存新回合的属性数据
-        calculateProperty(campaignHandler);
+        calculateProperty(campaignContext);
         //4计算保存新回合的财务数据
-        calculateAccount(campaignHandler);
+        calculateAccount(campaignContext);
 
 
     }
 
     /**
      * 开始新的回合
-     * @param campaignHandler
+     * @param campaignContext
      */
-    private void newRound(CampaignHandler campaignHandler) {
-        Campaign campaign = campaignHandler.getCampaign();
+    private void newRound(CampaignContext campaignContext) {
+        Campaign campaign = campaignContext.getCampaign();
         campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext preCompanyTermContext = companyTermHandlerMap.get(companyId);
             Company company = preCompanyTermContext.getCompanyTerm().getCompany();
@@ -165,7 +165,7 @@ public class FlowManagerImpl implements FlowManager {
             companyTerm.setCampaignDate(campaign.getCurrentCampaignDate());
             //生成新回合的companyTermHandler
             CompanyTermContext companyTermContext = new InternetCompanyTermContext();
-            companyTermContext.setCampaignHandler(campaignHandler);
+            companyTermContext.setCampaignContext(campaignContext);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             //更新campaignCenter
@@ -179,17 +179,17 @@ public class FlowManagerImpl implements FlowManager {
 
     /**
      * 新回合开始后
-     * @param campaignHandler
+     * @param campaignContext
      */
-    private void after(CampaignHandler campaignHandler) {
+    private void after(CampaignContext campaignContext) {
         //准备供用户决策用的随机数据
-        List<CompanyChoice> companyChoiceList = choiceManager.randomChoices(campaignHandler.getCampaign());
-        campaignHandler.setCompanyChoiceList(companyChoiceList);
+        List<CompanyChoice> companyChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
+        campaignContext.setCompanyChoiceList(companyChoiceList);
     }
 
-    private void collectCompanyInstruction(CampaignHandler campaignHandler) {
+    private void collectCompanyInstruction(CampaignContext campaignContext) {
         List<CompanyInstruction> allCompanyInstructionList = new ArrayList<>();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
@@ -197,17 +197,17 @@ public class FlowManagerImpl implements FlowManager {
             companyTermContext.putCompanyInstructionList(companyInstructionList);
             allCompanyInstructionList.addAll(companyInstructionList);
         }
-        campaignHandler.addAllCurrentInstruction(allCompanyInstructionList);
+        campaignContext.addAllCurrentInstruction(allCompanyInstructionList);
     }
 
-    private void competitiveBidding(CampaignHandler campaignHandler) {
+    private void competitiveBidding(CampaignContext campaignContext) {
 
-        List<CompanyChoice> companyChoiceList = campaignHandler.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
+        List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
 
         //竞标
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (CompanyChoice companyChoice : companyChoiceList) {
-            List<CompanyInstruction> companyInstructionList = campaignHandler.listCurrentCompanyInstructionByChoice(companyChoice.getId());
+            List<CompanyInstruction> companyInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(companyChoice.getId());
             if (companyInstructionList != null && companyInstructionList.size() > 0) {
                 Double maxRecruitmentRatio = 0d;
                 CompanyInstruction successCompanyInstruction = null;
@@ -236,8 +236,8 @@ public class FlowManagerImpl implements FlowManager {
 
     }
 
-    private void competitiveUnBidding(CampaignHandler campaignHandler) {
-        Set<CompanyInstruction> companyInstructionSet = campaignHandler.getCurrentCompanyInstructionSet();
+    private void competitiveUnBidding(CampaignContext campaignContext) {
+        Set<CompanyInstruction> companyInstructionSet = campaignContext.getCurrentCompanyInstructionSet();
         companyInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
             companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
 //            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
@@ -245,27 +245,27 @@ public class FlowManagerImpl implements FlowManager {
     }
 
 
-    private void initCompetitionMap(CampaignHandler campaignHandler) {
+    private void initCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
-        Campaign campaign = campaignHandler.getCampaign();
+        Campaign campaign = campaignContext.getCampaign();
         List<CompanyChoice> companyChoiceList = new ArrayList<>();
         //产品定位
-        List<CompanyChoice> productStudyList = campaignHandler.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyChoice> productStudyList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
         if(productStudyList!=null) companyChoiceList.addAll(productStudyList);
         //市场活动
-        List<CompanyChoice> marketActivityList = campaignHandler.listCurrentCompanyChoiceByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyChoice> marketActivityList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.MARKET_ACTIVITY.name());
         if(marketActivityList!=null) companyChoiceList.addAll(marketActivityList);
         for (CompanyChoice companyChoice : companyChoiceList) {
-            List<CompanyInstruction> companyInstructionList = campaignHandler.listCurrentCompanyInstructionByChoice(companyChoice.getId());
+            List<CompanyInstruction> companyInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(companyChoice.getId());
             Integer count = companyInstructionList == null ? 0 : companyInstructionList.size();
             competitionMap.put(companyChoice.getId(), count);
         }
-        campaignHandler.setCompetitionMap(competitionMap);
+        campaignContext.setCompetitionMap(competitionMap);
 
     }
 
-    private void calculateProperty(CampaignHandler campaignHandler) {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+    private void calculateProperty(CampaignContext campaignContext) {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
@@ -278,9 +278,9 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    private void initAccount(CampaignHandler campaignHandler) {
+    private void initAccount(CampaignContext campaignContext) {
         List<Account> accountList = new ArrayList<>();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
@@ -300,8 +300,8 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    private void calculateAccount(CampaignHandler campaignHandler) {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+    private void calculateAccount(CampaignContext campaignContext) {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
@@ -340,10 +340,10 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    private void saveCampaignContext (CampaignHandler campaignHandler) {
-        Campaign campaign = campaignHandler.getCampaign();
+    private void saveCampaignContext (CampaignContext campaignContext) {
+        Campaign campaign = campaignContext.getCampaign();
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTermContext preCompanyTermContext = companyTermContext.getPreCompanyTermContext();
@@ -361,7 +361,7 @@ public class FlowManagerImpl implements FlowManager {
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(),company);
         }
-        List<CompanyChoice> companyChoiceList = campaignHandler.getCompanyChoiceList();
+        List<CompanyChoice> companyChoiceList = campaignContext.getCompanyChoiceList();
         baseManager.batchSaveOrUpdate("save", CompanyChoice.class.getName(), companyChoiceList);
     }
 

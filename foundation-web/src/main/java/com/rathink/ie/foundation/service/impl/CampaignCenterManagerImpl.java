@@ -5,11 +5,9 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.util.CampaignUtil;
-import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
@@ -51,32 +49,32 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
 
     @Override
     public void initCampaignHandler(Campaign campaign) {
-        CampaignHandler campaignHandler = new CampaignHandler();
-        campaignHandler.setCampaign(campaign);
+        CampaignContext campaignContext = new CampaignContext();
+        campaignContext.setCampaign(campaign);
 
         Map<String, CompanyTermContext> companyTermHandlerMap = new HashMap<>();
         List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
         for (CompanyTerm companyTerm : companyTermList) {
-            CompanyTermContext companyTermContext = initCompanyTermHandler(companyTerm, campaignHandler);
+            CompanyTermContext companyTermContext = initCompanyTermHandler(companyTerm, campaignContext);
             CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
             if (preCompanyTerm != null) {
-                CompanyTermContext preCompanyTermContext = initCompanyTermHandler(preCompanyTerm, campaignHandler);
+                CompanyTermContext preCompanyTermContext = initCompanyTermHandler(preCompanyTerm, campaignContext);
                 companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             }
             companyTermHandlerMap.put(companyTerm.getCompany().getId(), companyTermContext);
         }
-        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
+        campaignContext.setCompanyTermHandlerMap(companyTermHandlerMap);
     /*    List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate());
         campaignHandler.setCompanyChoiceList(companyChoiceList);*/
-        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignHandler);
+        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
     }
 
     @Override
-    public CompanyTermContext initCompanyTermHandler(CompanyTerm companyTerm, CampaignHandler campaignHandler) {
+    public CompanyTermContext initCompanyTermHandler(CompanyTerm companyTerm, CampaignContext campaignContext) {
 
         CompanyTermContext companyTermContext = new InternetCompanyTermContext();
         //1
-        companyTermContext.setCampaignHandler(campaignHandler);
+        companyTermContext.setCampaignContext(campaignContext);
         //2
         companyTermContext.setCompanyTerm(companyTerm);
         //3

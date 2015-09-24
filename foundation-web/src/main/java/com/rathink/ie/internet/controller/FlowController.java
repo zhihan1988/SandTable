@@ -6,7 +6,7 @@ import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignHandler;
+import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.internet.service.FlowManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +69,9 @@ public class FlowController {
     @RequestMapping("/companyNext")
     @ResponseBody
     public synchronized Boolean companyNext(HttpServletRequest request, Model model) throws Exception {
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        Campaign campaign = campaignHandler.getCampaign();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignHandler.getCompanyTermHandlerMap();
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        Campaign campaign = campaignContext.getCampaign();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
         CompanyTermContext companyTermContext = companyTermHandlerMap.get(request.getParameter("companyId"));
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
@@ -96,8 +96,8 @@ public class FlowController {
     @ResponseBody
     public Boolean isNext(HttpServletRequest request, Model model) throws Exception {
         String campaignDate = request.getParameter("campaignDate");
-        CampaignHandler campaignHandler = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        Campaign campaign = campaignHandler.getCampaign();
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        Campaign campaign = campaignContext.getCampaign();
         String currentCampaignDate = campaign.getCurrentCampaignDate();
         if (!campaignDate.equals(currentCampaignDate)) {
             return true;
