@@ -161,7 +161,7 @@ public class InstructionManagerImpl implements InstructionManager {
 
     public void fireHuman(String companyInstructionId) {
         CompanyInstruction companyInstruction = (CompanyInstruction) baseManager.getObject(CompanyInstruction.class.getName(), companyInstructionId);
-        Integer fee = Integer.valueOf(companyInstruction.getValue()) * 3;
+        Integer fee = Integer.valueOf(companyInstruction.getValue()) * 2;
         Company company = companyInstruction.getCompany();
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
         Account account = accountManager.packageAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);

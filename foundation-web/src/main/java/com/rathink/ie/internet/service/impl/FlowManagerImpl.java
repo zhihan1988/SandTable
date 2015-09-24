@@ -111,6 +111,8 @@ public class FlowManagerImpl implements FlowManager {
 
         newRound(campaignContext);
 
+        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
         after(campaignContext);
 
         saveCampaignContext(campaignContext);
@@ -118,10 +120,7 @@ public class FlowManagerImpl implements FlowManager {
 
     public void robotInstruction(CampaignContext campaignContext) {
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTerm companyTerm = companyTermHandlerMap.get(companyId).getCompanyTerm();
-            robotManager.randomInstruction(companyTerm);
-        }
+        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);
     }
 
     /**
@@ -171,10 +170,13 @@ public class FlowManagerImpl implements FlowManager {
             //更新campaignCenter
             companyTermHandlerMap.put(companyId, companyTermContext);
         }
-       /* campaignHandler = new CampaignHandler();
-        campaignHandler.setCampaign(campaign);
-        campaignHandler.setCompanyTermHandlerMap(companyTermHandlerMap);
-        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignHandler);*/
+        campaignContext = new CampaignContext();
+        campaignContext.setCampaign(campaign);
+        campaignContext.setCompanyTermHandlerMap(companyTermHandlerMap);
+        for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
+            companyTermContext.setCampaignContext(campaignContext);
+        }
+        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
     }
 
     /**
@@ -247,7 +249,6 @@ public class FlowManagerImpl implements FlowManager {
 
     private void initCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
-        Campaign campaign = campaignContext.getCampaign();
         List<CompanyChoice> companyChoiceList = new ArrayList<>();
         //产品定位
         List<CompanyChoice> productStudyList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
@@ -257,8 +258,9 @@ public class FlowManagerImpl implements FlowManager {
         if(marketActivityList!=null) companyChoiceList.addAll(marketActivityList);
         for (CompanyChoice companyChoice : companyChoiceList) {
             List<CompanyInstruction> companyInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(companyChoice.getId());
-            Integer count = companyInstructionList == null ? 0 : companyInstructionList.size();
-            competitionMap.put(companyChoice.getId(), count);
+            if (companyInstructionList != null && companyInstructionList.size() > 0) {
+                competitionMap.put(companyChoice.getId(), companyInstructionList.size());
+            }
         }
         campaignContext.setCompetitionMap(competitionMap);
 

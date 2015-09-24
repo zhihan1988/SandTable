@@ -11,6 +11,7 @@ public class Company extends Team {
     private String currentCampaignDate;
     private String slogan;
     private String memo;
+    private Integer result;
 
     @Column(name = "current_campaign_date")
     public String getCurrentCampaignDate() {
@@ -39,4 +40,12 @@ public class Company extends Team {
         this.memo = memo;
     }
 
+    @Column(name = "result")
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
+    }
 }

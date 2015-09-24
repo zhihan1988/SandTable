@@ -27,6 +27,9 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
+            <p style="font-color: #999999;">
+                办公室办公室办公室办公室办公室办公室办公室办公室办公室
+            </p>
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                 <c:if test="${preOfficeInstruction.id != null}">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -467,7 +470,7 @@
         });
 
         $("a[id^='humanInstruction_']").click(function() {
-            if(confirm("解雇员工将扣除三个月薪水作为补贴，是否继续？")) {
+            if(confirm("解雇员工将扣除两个月薪水作为补贴，是否继续？")) {
                 var $humanInstruction = $(this);
                 var instructionId = $humanInstruction.attr("id").split("_")[1];
                 $.post("<c:url value="/work/fire"/>",
@@ -490,7 +493,7 @@
                     });
         }
 
-        setInterval(isNext, 10000);
+        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isNext"/>",
                     {

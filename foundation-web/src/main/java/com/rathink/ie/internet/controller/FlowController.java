@@ -9,6 +9,7 @@ import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.internet.service.FlowManager;
+import com.rathink.ie.internet.service.RobotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +31,8 @@ public class FlowController {
     private FlowManager flowManager;
     @Autowired
     private CampaignCenterManager campaignCenterManager;
+    @Autowired
+    private RobotManager robotManager;
 
     @RequestMapping("/begin")
     @ResponseBody
@@ -44,6 +47,9 @@ public class FlowController {
     public String next(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         flowManager.next(campaignId);
+       /* CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
+        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);*/
         return "success";
     }
 

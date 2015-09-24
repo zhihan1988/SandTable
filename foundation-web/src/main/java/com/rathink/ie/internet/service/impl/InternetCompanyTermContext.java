@@ -101,8 +101,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 办公室系数
      */
     private Integer calculateOfficeRatio() {
-        InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Integer officeFee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
@@ -141,7 +140,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext == null ? 0 : preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Double productRatio = Math.sqrt(Math.sqrt(productAbility * productFeeRatio * 2) + preProductRatio) * 1.5 + 20 + RandomUtil.random(0, 10);
+        Double productRatio = Math.sqrt(productAbility * 3 + productFeeRatio * 3) + preProductRatio * 0.8 + 10 + RandomUtil.random(0, 10);
         return productRatio.intValue();
     }
 
@@ -237,7 +236,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 operationFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        return operationFee / 10000 + 50;
+        return operationFee / 8000 + 50;
     }
 
     /**

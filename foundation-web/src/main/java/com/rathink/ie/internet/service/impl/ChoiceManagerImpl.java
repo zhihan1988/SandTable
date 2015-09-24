@@ -96,7 +96,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudyFee.setCampaign(campaign);
         productStudyFee.setDept(Edept.PRODUCT.name());
         productStudyFee.setName("产品研发投入");
-        productStudyFee.setFees("10000,20000,40000,80000,160000");
+        productStudyFee.setFees("20000,40000,80000,160000,320000");
         companyChoiceList.add(productStudyFee);
         return companyChoiceList;
     }
@@ -108,7 +108,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         operationChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         operationChoice.setCampaign(campaign);
         operationChoice.setDept(Edept.OPERATION.name());
-        operationChoice.setFees("10000,20000,40000,80000,160000");
+        operationChoice.setFees("40000,80000,160000,320000,640000");
         companyChoiceList.add(operationChoice);
         return companyChoiceList;
     }
@@ -271,6 +271,41 @@ public class ChoiceManagerImpl implements ChoiceManager {
         human7.setFees("10000,20000,30000,40000,50000");
         human7.setValue("9");
         companyChoiceList.add(human7);
+
+
+        CompanyChoice human8 = new CompanyChoice();
+        human8.setBaseType(EChoiceBaseType.HUMAN.name());
+        human8.setCampaignDate(campaign.getCurrentCampaignDate());
+        human8.setCampaign(campaign);
+        human8.setDept(Edept.HR.name());
+        human8.setName("Tom");
+        human8.setType(Edept.OPERATION.name());
+        human8.setFees("10000,20000,30000,40000,50000");
+        human8.setValue("4");
+        companyChoiceList.add(human8);
+
+        CompanyChoice human9 = new CompanyChoice();
+        human9.setBaseType(EChoiceBaseType.HUMAN.name());
+        human9.setCampaignDate(campaign.getCurrentCampaignDate());
+        human9.setCampaign(campaign);
+        human9.setDept(Edept.HR.name());
+        human9.setName("Nike");
+        human9.setType(Edept.MARKET.name());
+        human9.setFees("10000,20000,30000,40000,50000");
+        human9.setValue("5");
+        companyChoiceList.add(human9);
+
+        CompanyChoice human10 = new CompanyChoice();
+        human10.setBaseType(EChoiceBaseType.HUMAN.name());
+        human10.setCampaignDate(campaign.getCurrentCampaignDate());
+        human10.setCampaign(campaign);
+        human10.setDept(Edept.HR.name());
+        human10.setName("Sony");
+        human10.setType(Edept.PRODUCT.name());
+        human10.setFees("10000,20000,30000,40000,50000");
+        human10.setValue("7");
+        companyChoiceList.add(human10);
+
         return companyChoiceList;
     }
 
