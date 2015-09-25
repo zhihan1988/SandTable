@@ -407,24 +407,6 @@
         var value = array[1];
         makeUniqueInstruction(companyId, choiceId, value);
 
-
-        $("#endCampaignDate").click(function () {
-            $.post("<c:url value="/flow/companyNext.do"/>",
-                    {
-                        campaignId: campaignId,
-                        companyId: companyId
-                    },
-                    function (data) {
-                        alert("回合结束，等待其它企业完成操作");
-                     /*   if (data == 'false') {
-                            alert("回合结束，等待其它企业完成操作");
-                        } else {
-                            alert("公司回合已全部结束，刷新进入下一回合");
-                        }*/
-                    }
-            );
-        });
-
         $("select[id^='instruction']")
                 .change(function () {
                     var $choice = $(this);
@@ -493,7 +475,24 @@
                     });
         }
 
-        setInterval(isNext, 5000);
+        $("#endCampaignDate").click(function () {
+            if(confirm("是否结束当前回合的操作？")) {
+                var $endCampaignDate = $(this);
+                $.post("<c:url value="/flow/companyNext.do"/>",
+                        {
+                            campaignId: campaignId,
+                            companyId: companyId
+                        },
+                        function (data) {
+                            setInterval(isNext, 5000);
+                            $endCampaignDate.addClass("am-disabled");
+                            $endCampaignDate.attr("disabled", "disabled");
+                            $endCampaignDate.text("回合结束，等待其他公司完成操作");
+                        }
+                );
+            }
+        });
+
         function isNext() {
             $.post("<c:url value="/flow/isNext"/>",
                     {
@@ -501,8 +500,10 @@
                         campaignDate: campaignDate
                     },
                     function (data) {
-                        if (data == 'true') {
+                        if (data == 0) {
                             location.reload();
+                        } else {
+                            $("#endCampaignDate").text(data + '家公司没有完成操作');
                         }
                     });
 

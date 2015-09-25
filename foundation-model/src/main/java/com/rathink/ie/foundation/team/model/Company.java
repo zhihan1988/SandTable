@@ -7,7 +7,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "company")
 public class Company extends Team {
-
+    private String status;
     private String currentCampaignDate;
     private String slogan;
     private String memo;

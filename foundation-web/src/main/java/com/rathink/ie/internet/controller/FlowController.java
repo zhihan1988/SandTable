@@ -74,7 +74,7 @@ public class FlowController {
     public synchronized Boolean companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         Campaign campaign = campaignContext.getCampaign();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         CompanyTermContext companyTermContext = companyTermHandlerMap.get(request.getParameter("companyId"));
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
@@ -97,16 +97,17 @@ public class FlowController {
 
     @RequestMapping("/isNext")
     @ResponseBody
-    public Boolean isNext(HttpServletRequest request, Model model) throws Exception {
+    public Integer isNext(HttpServletRequest request, Model model) throws Exception {
+        int unFinishNum = 0;
         String campaignDate = request.getParameter("campaignDate");
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        Campaign campaign = campaignContext.getCampaign();
-        String currentCampaignDate = campaign.getCurrentCampaignDate();
-        if (!campaignDate.equals(currentCampaignDate)) {
-            return true;
-        } else {
-            return false;
+        for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+            Company company = companyTermContext.getCompanyTerm().getCompany();
+            if (campaignDate.equals(company.getCurrentCampaignDate())) {
+                unFinishNum++;
+            }
         }
+        return unFinishNum;
     }
 
     @RequestMapping("/random")
@@ -115,7 +116,7 @@ public class FlowController {
         String campaignId = request.getParameter("campaignId");
 
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         companyTermHandlerMap.values().forEach(robotManager::randomInstruction);
 
         return "success";

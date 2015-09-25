@@ -172,8 +172,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         //跟自己公司定位相同的公司数量
         int sameGradeCount = 1;
         CampaignContext campaignContext = getCampaignContext();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
-        for (String companyId : campaignContext.getCompanyTermHandlerMap().keySet()) {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : campaignContext.getCompanyTermContextMap().keySet()) {
             if (!companyId.equals(getCompanyTerm().getCompany().getId())) {
                 CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
                 List<CompanyInstruction> companyInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());

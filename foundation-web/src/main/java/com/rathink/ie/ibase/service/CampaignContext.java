@@ -12,7 +12,7 @@ import java.util.*;
 public class CampaignContext {
     private Campaign campaign;
     private Set<CompanyInstruction> currentCompanyInstructionSet = new HashSet<>();
-    private Map<String, CompanyTermContext> companyTermHandlerMap;
+    private Map<String, CompanyTermContext> companyTermContextMap;
     private Map<String, Integer> competitionMap;
     private Map<String, List<CompanyChoice>> typeCompanyChoiceMap = new HashMap<>();
     private Map<String, List<CompanyInstruction>> choiceInstructionMap = new HashMap<>();
@@ -25,12 +25,12 @@ public class CampaignContext {
         this.campaign = campaign;
     }
 
-    public Map<String, CompanyTermContext> getCompanyTermHandlerMap() {
-        return companyTermHandlerMap;
+    public Map<String, CompanyTermContext> getCompanyTermContextMap() {
+        return companyTermContextMap;
     }
 
-    public void setCompanyTermHandlerMap(Map<String, CompanyTermContext> companyTermHandlerMap) {
-        this.companyTermHandlerMap = companyTermHandlerMap;
+    public void setCompanyTermContextMap(Map<String, CompanyTermContext> companyTermContextMap) {
+        this.companyTermContextMap = companyTermContextMap;
     }
 
     public Map<String, Integer> getCompetitionMap() {
