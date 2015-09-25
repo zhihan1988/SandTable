@@ -36,9 +36,9 @@ public class RobotManagerImpl implements RobotManager {
     public void randomInstruction(CompanyTermContext companyTermContext) {
         keepPre(companyTermContext, EChoiceBaseType.OFFICE.name());
         keepPre(companyTermContext, EChoiceBaseType.PRODUCT_STUDY.name());
-//        randomFee(companyTermContext, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-//        randomFee(companyTermContext, EChoiceBaseType.MARKET_ACTIVITY.name());
-//        randomFee(companyTermContext, EChoiceBaseType.OPERATION.name());
+        randomFee(companyTermContext, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        randomFee(companyTermContext, EChoiceBaseType.MARKET_ACTIVITY.name());
+        randomFee(companyTermContext, EChoiceBaseType.OPERATION.name());
         randomHuman(companyTermContext);
     }
 
@@ -48,29 +48,27 @@ public class RobotManagerImpl implements RobotManager {
         CompanyChoice companyChoice = companyChoiceList.get(RandomUtil.random(0, companyChoiceList.size()));
         String[] feeArray = companyChoice.getFees().split(",");
         String fee = feeArray[RandomUtil.random(0, feeArray.length)];
-        instructionManager.saveOrUpdateInstruction(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), fee);
+        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), fee);
     }
 
     public void keepPre(CompanyTermContext companyTermContext, String baseType) {
-        CampaignContext campaignContext = companyTermContext.getCampaignContext();
-        List<CompanyInstruction> preCompanyInstructionList = companyTermContext.getPreCompanyTermContext().listCompanyInstructionByType(baseType);
-        CompanyInstruction preCompanyInstruction = null;
-        if (preCompanyInstructionList != null && preCompanyInstructionList.size() > 0) {
-            preCompanyInstruction = preCompanyInstructionList.get(0);
-        }
+        CompanyInstruction companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getCompanyTerm(), baseType);
+        if (companyInstruction != null) return;
 
+        CompanyInstruction preCompanyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getPreCompanyTermContext().getCompanyTerm(), baseType);
         CompanyChoice companyChoice = null;
-        List<CompanyChoice> officeList = campaignContext.listCurrentCompanyChoiceByType(baseType);
+        List<CompanyChoice> officeList = companyTermContext.getCampaignContext().listCurrentCompanyChoiceByType(baseType);
         if (preCompanyInstruction == null) {
             companyChoice = officeList.get(RandomUtil.random(0, officeList.size()));
         } else {
             for (CompanyChoice cc : officeList) {
                 if (cc.getName().equals(preCompanyInstruction.getCompanyChoice().getName())) {
                     companyChoice = cc;
+                    break;
                 }
             }
         }
-        instructionManager.saveOrUpdateInstruction(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), companyChoice.getValue());
+        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), companyChoice.getValue());
     }
 
 
@@ -83,7 +81,7 @@ public class RobotManagerImpl implements RobotManager {
         int productNum = 0, operationNum = 0, marketNum = 0;
         if (humanInstructionList != null) {
             for (CompanyInstruction companyInstruction : humanInstructionList) {
-                Edept dept = Edept.valueOf(companyInstruction.getDept());
+                Edept dept = Edept.valueOf(companyInstruction.getCompanyChoice().getType());
                 switch (dept) {
                     case PRODUCT:
                         productNum++;
@@ -101,13 +99,13 @@ public class RobotManagerImpl implements RobotManager {
         List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
         Map<String, List<CompanyChoice>> deptCompanyChoiceMap = new HashMap<>();
         for (CompanyChoice companyChoice : companyChoiceList) {
-            String dept = companyChoice.getDept();
-            if (deptCompanyChoiceMap.containsKey(dept)) {
-                deptCompanyChoiceMap.get(dept).add(companyChoice);
+            String humanDept = companyChoice.getType();
+            if (deptCompanyChoiceMap.containsKey(humanDept)) {
+                deptCompanyChoiceMap.get(humanDept).add(companyChoice);
             }else {
                 List<CompanyChoice> list = new ArrayList<>();
                 list.add(companyChoice);
-                deptCompanyChoiceMap.put(dept, list);
+                deptCompanyChoiceMap.put(humanDept, list);
             }
         }
         //招聘
@@ -125,11 +123,11 @@ public class RobotManagerImpl implements RobotManager {
                     case "MARKET":
                         num = marketNum;
                 }
-                if (num < 1) {
+                if (num < 2) {
                     CompanyChoice companyChoice = list.get(RandomUtil.random(0, list.size()));
                     String[] feeArray = companyChoice.getFees().split(",");
                     String fee = feeArray[RandomUtil.random(0, feeArray.length)];
-                    instructionManager.saveOrUpdateInstruction(company, companyChoice.getId(), fee);
+                    instructionManager.saveOrUpdateInstructionByChoice(company, companyChoice.getId(), fee);
                 }
             }
         }

@@ -38,7 +38,7 @@ public class InstructionManagerImpl implements InstructionManager {
     private AccountManager accountManager;
 
     @Override
-    public CompanyInstruction saveOrUpdateInstruction(Company company, String companyChoiceId, String value) {
+    public CompanyInstruction saveOrUpdateInstructionByChoice(Company company, String companyChoiceId, String value) {
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
         CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), companyChoiceId);
         Campaign campaign = company.getCampaign();
@@ -138,7 +138,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyInstructionList;
     }
 
-    public CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType) {
+    public CompanyInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType) {
         String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("companyTermId", companyTerm.getId());

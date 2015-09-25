@@ -261,7 +261,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer preUserAmount = 0;
         if (preCompanyTermContext != null) {
             InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-            CompanyInstruction preProductStudy = instructionManager.getUniqueInstruction(preCompanyTermContext.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+            CompanyInstruction preProductStudy = instructionManager.getUniqueInstructionByBaseType(preCompanyTermContext.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
             preUserAmount = preCompanyTermContext.get(EPropertyName.USER_AMOUNT.name());
 
             if (productStudy != null && preProductStudy != null && !productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失

@@ -73,8 +73,8 @@ public class WorkController {
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
         List<CompanyInstruction> hrInstructionList = instructionManager .listCompanyInstructionByDept(company, Edept.HR.name());
 
-        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
-        CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstruction(preCompanyTerm, EChoiceBaseType.OFFICE.name());
+        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.OFFICE.name());
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -118,7 +118,7 @@ public class WorkController {
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        instructionManager.saveOrUpdateInstruction(company, choiceId, value);
+        instructionManager.saveOrUpdateInstructionByChoice(company, choiceId, value);
         return "success";
     }
 
@@ -131,9 +131,9 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyInstruction companyInstruction = instructionManager.getUniqueInstruction(companyTerm, companyChoice.getBaseType());
+        CompanyInstruction companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
         if (companyInstruction == null) {
-            instructionManager.saveOrUpdateInstruction(company, choiceId, value);
+            instructionManager.saveOrUpdateInstructionByChoice(company, choiceId, value);
         } else {
             companyInstruction.setCompanyChoice(companyChoice);
             companyInstruction.setValue(value);

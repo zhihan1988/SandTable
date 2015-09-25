@@ -12,7 +12,14 @@ import java.util.List;
  */
 public interface InstructionManager {
 
-    CompanyInstruction saveOrUpdateInstruction(Company company, String choiceId, String fee);
+    /**
+     * 针对选项choice保存或修改instruction
+     * @param company
+     * @param choiceId
+     * @param fee
+     * @return
+     */
+    CompanyInstruction saveOrUpdateInstructionByChoice(Company company, String choiceId, String fee);
 
     void deleteInstruction(Company company, String companyChoiceId);
 
@@ -28,7 +35,7 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
-    CompanyInstruction getUniqueInstruction(CompanyTerm companyTerm, String baseType);
+    CompanyInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
 
     Integer sumFee(List<CompanyInstruction> companyInstructionList);
 

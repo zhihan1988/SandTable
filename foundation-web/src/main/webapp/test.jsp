@@ -16,5 +16,6 @@
     <div><a href="<c:url value="/flow/next?campaignId=1"/>">开始下一回合</a></div>
     <div><a href="<c:url value="/flow/pre?campaignId=1"/>">回到上一回合</a></div>
     <div><a href="<c:url value="/flow/reset?campaignId=1"/>">重新开始</a></div>
+    <div><a href="<c:url value="/flow/random?campaignId=1"/>">随机数据</a></div>
 </body>
 </html>

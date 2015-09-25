@@ -47,9 +47,6 @@ public class FlowController {
     public String next(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         flowManager.next(campaignId);
-       /* CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
-        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);*/
         return "success";
     }
 
@@ -110,5 +107,17 @@ public class FlowController {
         } else {
             return false;
         }
+    }
+
+    @RequestMapping("/random")
+    @ResponseBody
+    public String random(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermHandlerMap();
+        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);
+
+        return "success";
     }
 }
