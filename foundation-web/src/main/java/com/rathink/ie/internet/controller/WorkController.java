@@ -3,6 +3,7 @@ package com.rathink.ie.internet.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -108,6 +109,11 @@ public class WorkController {
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);
         model.addAttribute("accountReport", accountReport);
+
+        if (!company.getStatus().equals(ECompanyStatus.NORMAL.name())) {
+            model.addAttribute("result", ECompanyStatus.valueOf(company.getStatus()).getLabel());
+            return "/internet/result";
+        }
         return "/internet/main";
     }
 

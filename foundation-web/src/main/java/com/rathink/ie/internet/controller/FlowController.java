@@ -4,6 +4,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
@@ -50,14 +51,6 @@ public class FlowController {
         return "success";
     }
 
-    @RequestMapping("/pre")
-    @ResponseBody
-    public String pre(HttpServletRequest request, Model model) throws Exception {
-        String campaignId = request.getParameter("campaignId");
-        flowManager.pre(campaignId);
-        return "success";
-    }
-
     @RequestMapping("/reset")
     @ResponseBody
     public String reset(HttpServletRequest request, Model model) throws Exception {
@@ -84,8 +77,9 @@ public class FlowController {
 
         boolean isAllNext = true;
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext ctHandler = companyTermHandlerMap.get(companyId);
-            if (!nextCampaignDate.equals(ctHandler.getCompanyTerm().getCompany().getCurrentCampaignDate())) {
+            CompanyTermContext ctContext = companyTermHandlerMap.get(companyId);
+            Company c = ctContext.getCompanyTerm().getCompany();
+            if (c.getStatus().equals(ECompanyStatus.NORMAL.name()) && !nextCampaignDate.equals(c.getCurrentCampaignDate())) {
                 isAllNext = false;
             }
         }
@@ -103,7 +97,7 @@ public class FlowController {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             Company company = companyTermContext.getCompanyTerm().getCompany();
-            if (campaignDate.equals(company.getCurrentCampaignDate())) {
+            if (company.getStatus().equals(ECompanyStatus.NORMAL.name()) && campaignDate.equals(company.getCurrentCampaignDate())) {
                 unFinishNum++;
             }
         }

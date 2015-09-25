@@ -8,7 +8,5 @@ public interface FlowManager {
 
     void next(String campaignId);
 
-    void pre(String campaignId);
-
     void reset(String campaignId);
 }

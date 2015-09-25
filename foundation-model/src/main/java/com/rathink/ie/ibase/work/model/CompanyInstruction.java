@@ -11,7 +11,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "company_instruction")
-@Inheritance(strategy=InheritanceType.JOINED)
 public class CompanyInstruction {
     private String id;
     private String status;

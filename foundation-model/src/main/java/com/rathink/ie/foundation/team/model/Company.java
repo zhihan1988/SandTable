@@ -13,6 +13,15 @@ public class Company extends Team {
     private String memo;
     private Integer result;
 
+    @Column(name = "status")
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Column(name = "current_campaign_date")
     public String getCurrentCampaignDate() {
         return currentCampaignDate;
