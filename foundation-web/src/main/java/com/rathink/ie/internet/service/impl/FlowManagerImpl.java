@@ -120,11 +120,8 @@ public class FlowManagerImpl implements FlowManager {
         saveCampaignContext(campaignContext);
 
         dieOut(campaignContext);
-    }
 
-    public void robotInstruction(CampaignContext campaignContext) {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);
+        end(campaignContext);
     }
 
     /**
@@ -355,13 +352,10 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTermContext preCompanyTermContext = companyTermContext.getPreCompanyTermContext();
             List<CompanyInstruction> preCompanyInstructionList = preCompanyTermContext.getCompanyInstructionList();
             preCompanyInstructionList.forEach(companyInstruction -> baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction));
-//            baseManager.batchSaveOrUpdate("save", CompanyInstruction.class.getName(), preCompanyInstructionList);
             List<CompanyTermProperty> preCompanyTermPropertyList = preCompanyTermContext.getCompanyTermPropertyList();
             preCompanyTermPropertyList.forEach(companyTermProperty -> baseManager.saveOrUpdate(CompanyTermProperty.class.getName(), companyTermProperty));
-//            baseManager.batchSaveOrUpdate("save", CompanyTermProperty.class.getName(), preCompanyTermPropertyList);
             List<Account> preAccountList = preCompanyTermContext.getAccountList();
             preAccountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
-//            baseManager.batchSaveOrUpdate("save", Account.class.getName(), preAccountList);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             Company company = companyTerm.getCompany();
@@ -375,12 +369,32 @@ public class FlowManagerImpl implements FlowManager {
      * 按条件淘汰部分公司
      */
     public void dieOut(CampaignContext campaignContext) {
-        for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+        Iterator<CompanyTermContext> companyTermContextIterator = campaignContext.getCompanyTermContextMap().values().iterator();
+        while (companyTermContextIterator.hasNext()) {
+            CompanyTermContext companyTermContext = companyTermContextIterator.next();
             Company company = companyTermContext.getCompanyTerm().getCompany();
             Integer companyCash = accountManager.getCompanyCash(company);
             if (companyCash < 0) {
                 company.setStatus(ECompanyStatus.END.name());
                 baseManager.saveOrUpdate(Company.class.getName(), company);
+                companyTermContextIterator.remove();
+            }
+        }
+    }
+
+    public void end(CampaignContext campaignContext) {
+        final String END_DATE = "030101";
+        if (campaignContext.getCampaign().getCurrentCampaignDate().equals(END_DATE)) {
+            for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+                Company company = companyTermContext.getCompanyTerm().getCompany();
+                if (company.getCurrentCampaignDate().equals(END_DATE)) {
+                    company.setStatus(ECompanyStatus.FINISH.name());
+                    Integer campaignDateInCash = accountManager.countAccountEntryFee(
+                            company, companyTermContext.getPreCompanyTermContext().getCompanyTerm().getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
+                    Integer result = campaignDateInCash * 4 * 10;
+                    company.setResult(result);
+                    baseManager.saveOrUpdate(Company.class.getName(), company);
+                }
             }
         }
     }

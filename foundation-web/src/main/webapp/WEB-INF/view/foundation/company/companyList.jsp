@@ -25,6 +25,7 @@
             <th>名称</th>
             <th>口号</th>
             <th>开始时间</th>
+            <th>市值</th>
         </tr>
         </thead>
         <tbody>
@@ -38,6 +39,7 @@
                     ${company.slogan}
                 </td>
                 <td><fmt:formatDate value="${company.createDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                <td>${company.result}</td>
             </tr>
         </c:forEach>
         </tbody>
