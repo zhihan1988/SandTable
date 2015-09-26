@@ -141,20 +141,22 @@ public class FlowManagerImpl implements FlowManager {
     private void releaseHuman(CampaignContext campaignContext) {
         Set<Resource> humanResourceSet = new HashSet<>();
         Set<CompanyInstruction> companyInstructionSet = campaignContext.getCurrentCompanyInstructionSet();
-        Set<String> instructionChoiceIdSet = companyInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name())).map(companyInstruction -> companyInstruction.getCompanyChoice().getId()).collect(Collectors.toSet());
+        Set<String> instructionChoiceIdSet = companyInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
+                .map(companyInstruction -> companyInstruction.getCompanyChoice().getId()).collect(Collectors.toSet());
         List<CompanyChoice> companyChoiceList = campaignContext.getCurrentCompanyChoiceList();
-        for (CompanyChoice companyChoice : companyChoiceList) {
-            if (companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId())) {
-                Resource human = new Resource();
-                human.setBaseType(companyChoice.getBaseType());
-                human.setDept(companyChoice.getDept());
-                human.setName(companyChoice.getName());
-                human.setType(companyChoice.getType());
-                human.setFees(companyChoice.getFees());
-                human.setValue(companyChoice.getValue());
-                humanResourceSet.add(human);
-            }
-        }
+        companyChoiceList.stream().filter(companyChoice ->
+                companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId()))
+                .forEach(companyChoice -> {
+                    Resource human = new Resource();
+                    human.setBaseType(companyChoice.getBaseType());
+                    human.setDept(companyChoice.getDept());
+                    human.setName(companyChoice.getName());
+                    human.setType(companyChoice.getType());
+                    human.setFees(companyChoice.getFees());
+                    human.setValue(companyChoice.getValue());
+                    human.setImg(companyChoice.getImg());
+                    humanResourceSet.add(human);
+                });
         campaignContext.addHumanResource(humanResourceSet);
     }
 

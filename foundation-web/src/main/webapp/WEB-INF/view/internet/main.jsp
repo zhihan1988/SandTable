@@ -64,37 +64,28 @@
             </ul>
         </div>
         <div id="do-not-say-0" class="am-panel-collapse am-collapse">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>地点</th>
-                        <th>描述</th>
-                        <th>房租</th>
-                        <th>选择</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${officeChoiceList}" var="officeChoice">
-                        <tr>
-                            <td>
-                                ${officeChoice.name}
-                            </td>
-                            <td>
-                                ${officeChoice.description}
-                            </td>
-                            <td>
-                                ${officeChoice.fees}
-                            </td>
-                            <td>
-                                <input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.value}"
-                                    <c:if test="${preOfficeInstruction.companyChoice.name == officeChoice.name}">checked="checked"</c:if>>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
+            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
+                <c:forEach items="${officeChoiceList}" var="officeChoice">
+                    <li style="border: 1px solid #DDD;padding: 5px;">
+                        <div>
+                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
+                                <li>
+                                    <img style="width: 80px;margin: 0;" src="<c:url value="/img/${officeChoice.img}"/>"/>
+                                </li>
+                                <li>
+                                    <p style="margin: 0">${officeChoice.name}</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p style="margin: 0">能力：${officeChoice.value}</p>
+                            <p style="margin: 0">简介：${officeChoice.description}<p>
+                            <p style="margin: 0"><input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.value}"
+                                                        <c:if test="${preOfficeInstruction.companyChoice.name == officeChoice.name}">checked="checked"</c:if>><p>
+                        </div>
+                    </li>
+                </c:forEach>
+            </ul>
         </div>
     </div>
 
@@ -147,47 +138,48 @@
             </ul>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>名字(部门)</th>
-                        <th>能力</th>
-                        <th>薪资</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${humanList}" var="human">
-                        <tr>
-                            <td>
-                                <input type="hidden" name="humanId" value="${human.id}"/>
-                                    ${human.name}
-                                    <c:choose>
-                                        <c:when test="${human.type == 'PRODUCT'}">
-                                            (产品研发部)
-                                        </c:when>
-                                        <c:when test="${human.type == 'MARKET'}">
-                                            (市场部)
-                                        </c:when>
-                                        <c:when test="${human.type == 'OPERATION'}">
-                                            (运营部)
-                                        </c:when>
-                                    </c:choose>
-                            </td>
-                            <td>${human.value}</td>
-                            <td>
+            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
+                <c:forEach items="${humanList}" var="human">
+                    <li style="border: 1px solid #DDD;padding: 5px;">
+                        <div>
+                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
+                                <li>
+                                    <img style="width: 80px;margin: 0;" src="<c:url value="/img/${human.img}"/>"/>
+                                </li>
+                                <li>
+                                    <p style="margin: 0">${human.name}</p>
+                                    <p style="margin: 0">
+                                        <c:choose>
+                                            <c:when test="${human.type == 'PRODUCT'}">
+                                                产品研发
+                                            </c:when>
+                                            <c:when test="${human.type == 'MARKET'}">
+                                                市场
+                                            </c:when>
+                                            <c:when test="${human.type == 'OPERATION'}">
+                                                运营
+                                            </c:when>
+                                        </c:choose>
+                                    </p>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div>
+                            <p style="margin: 0">能力：${human.value}</p>
+                            <p style="margin: 0">
+                                薪资：
                                 <select id="instruction_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <option value="${human.id}_-1">不需要</option>
                                     <c:forEach items="${fn:split(human.fees, ',')}" var="fee">
                                         <option value="${human.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
+                            </p>
+                        </div>
+                    </li>
+                </c:forEach>
+            </ul>
         </div>
     </div>
     <div class="am-panel am-panel-default">
