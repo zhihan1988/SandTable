@@ -2,7 +2,6 @@ package com.rathink.ie.internet.service.impl;
 
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -21,7 +20,7 @@ import java.util.Map;
  */
 @Component
 public class InternetCompanyTermContext extends CompanyTermContext {
-
+    final Double PERCENT = 100d;
     @Override
     public Integer calculate(String key) {
         EPropertyName ePropertyName = EPropertyName.valueOf(key);
@@ -84,16 +83,16 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
         List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
-        Integer ability = 30;
+        Double ability = 20D;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
                 if (human.getType().equals(type)) {
-                    ability += Integer.valueOf(human.getValue());
+                    ability += Math.pow(Double.valueOf(human.getValue()),1.6);
                 }
             }
         }
-        return ability;
+        return ability.intValue();
     }
 
     /**
@@ -154,7 +153,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
         }
-        Integer perOrderCost = Integer.valueOf(grade) * 10 + 30;
+        Integer perOrderCost = Integer.valueOf(grade) * 5 + 50;
         return perOrderCost;
     }
 
@@ -193,7 +192,6 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
-
         Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
         Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
         Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
@@ -211,7 +209,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 marketX += marketFee * (marketCompetitionRatio + 100) / 100 / marketCost / productCompetitionRatio * 100;
             }
         }
-        Double newUserAmount = marketAbility * productRatio * 1.2 * marketX * RandomUtil.random(80, 120)/100;
+        Double newUserAmount = marketX * marketAbility/PERCENT * productRatio/PERCENT * 1.5 * RandomUtil.random(80, 120)/PERCENT;
         return newUserAmount.intValue();
     }
 

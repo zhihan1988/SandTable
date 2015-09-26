@@ -294,7 +294,7 @@ public class FlowManagerImpl implements FlowManager {
         }
     }
 
-    private void initAccount(CampaignContext campaignContext) {
+    /*private void initAccount(CampaignContext campaignContext) {
         List<Account> accountList = new ArrayList<>();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -314,7 +314,7 @@ public class FlowManagerImpl implements FlowManager {
             accountList.add(incomeAccount);
             companyTermContext.setAccountList(accountList);
         }
-    }
+    }*/
 
     private void calculateAccount(CampaignContext campaignContext) {
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();

@@ -16,6 +16,12 @@
             margin: 0;
             padding: 0;
         }
+        .main-panel .am-panel-group .am-panel{
+            margin-bottom: 20px;
+        }
+        .main-panel .am-panel-group .am-panel .am-panel-hd{
+            background: #EEE;
+        }
     </style>
 </head>
 <body>
@@ -35,6 +41,7 @@
         <li>上期支出：${campaignDateOutCash}</li>
     </ul>
 </div>
+<div class="main-panel">
 <div class="am-panel-group" id="accordion">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
@@ -68,6 +75,7 @@
             </ul>
         </div>
         <div id="do-not-say-0" class="am-panel-collapse am-collapse">
+            <%--<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />--%>
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
                 <c:forEach items="${officeChoiceList}" var="officeChoice">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -135,13 +143,14 @@
                         <div>
                             <p style="margin: 0">能力：${hrInstruction.companyChoice.value}</p>
                             <p style="margin: 0">薪资：${hrInstruction.value}</p>
-                            <a id="humanInstruction_${hrInstruction.id}" href="#">解雇</a>
+                            <a id="humanInstruction_${hrInstruction.id}" href="#">辞退</a>
                         </div>
                     </li>
                 </c:forEach>
             </ul>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse">
+            <%--<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />--%>
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
                 <c:forEach items="${humanList}" var="human">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -374,14 +383,36 @@
         </div>
     </div>
 </div>
+</div>
 <div class="am-panel am-panel-default am-scrollable-horizontal">
 
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
-        <c:forEach items="${globalReport}" var="g">
+        <thead>
+        <tr>
+            <th>产品定位竞争报告</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${productStudyCompetitionReport}" var="g">
             <tr>
                 <td>${g.key}:${g.value}</td>
             </tr>
         </c:forEach>
+        </tbody>
+    </table>
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+        <thead>
+        <tr>
+            <th>市场活动竞争报告</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${marketCompetitionReport}" var="g">
+            <tr>
+                <td>${g.key}:${g.value}</td>
+            </tr>
+        </c:forEach>
+        </tbody>
     </table>
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
         <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
@@ -420,6 +451,14 @@
         </c:forEach>
     </table>
 </div>
+
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+    <a href="#top" title="回到顶部">
+        <span class="am-gotop-title">回到顶部</span>
+        <i class="am-gotop-icon am-icon-chevron-up"></i>
+    </a>
+</div>
+
 <script>
 
     $(function () {

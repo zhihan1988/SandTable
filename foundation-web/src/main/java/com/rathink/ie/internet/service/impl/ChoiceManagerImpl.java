@@ -89,7 +89,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy.setCampaign(campaign);
         productStudy.setDept(Edept.PRODUCT.name());
         productStudy.setName("高端");
-        productStudy.setValue("1");
+        productStudy.setValue("3");
         companyChoiceList.add(productStudy);
         CompanyChoice productStudy2 = new CompanyChoice();
         productStudy2.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
@@ -105,7 +105,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         productStudy3.setCampaign(campaign);
         productStudy3.setDept(Edept.PRODUCT.name());
         productStudy3.setName("低端");
-        productStudy3.setValue("3");
+        productStudy3.setValue("1");
         companyChoiceList.add(productStudy3);
         return companyChoiceList;
     }
@@ -143,7 +143,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
         marketActivityChoice.setName("微博/微信");
-        marketActivityChoice.setValue("20");
+        marketActivityChoice.setValue("30");
         marketActivityChoice.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice);
         CompanyChoice marketActivityChoice2 = new CompanyChoice();
@@ -152,7 +152,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
         marketActivityChoice2.setName("百度");
-        marketActivityChoice2.setValue("30");
+        marketActivityChoice2.setValue("35");
         marketActivityChoice2.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice2);
         CompanyChoice marketActivityChoice3 = new CompanyChoice();
@@ -161,7 +161,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice3.setCampaign(campaign);
         marketActivityChoice3.setDept(Edept.MARKET.name());
         marketActivityChoice3.setName("地推");
-        marketActivityChoice3.setValue("50");
+        marketActivityChoice3.setValue("40");
         marketActivityChoice3.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice3);
         CompanyChoice marketActivityChoice4 = new CompanyChoice();
@@ -170,7 +170,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice4.setCampaign(campaign);
         marketActivityChoice4.setDept(Edept.MARKET.name());
         marketActivityChoice4.setName("地面广告");
-        marketActivityChoice4.setValue("40");
+        marketActivityChoice4.setValue("50");
         marketActivityChoice4.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice4);
         return companyChoiceList;
@@ -185,7 +185,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice.setName("科实大厦");
         officeChoice.setValue("20000");
         officeChoice.setFees("20000");
-        officeChoice.setDescription("100P;15");
+        officeChoice.setDescription("100平米;15人");
         officeChoice.setDept(Edept.AD.name());
         officeChoice.setImg("office-1.jpg");
         companyChoiceList.add(officeChoice);
@@ -196,7 +196,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice2.setName("建外SOHO");
         officeChoice2.setValue("30000");
         officeChoice2.setFees("30000");
-        officeChoice2.setDescription("100P;15");
+        officeChoice2.setDescription("100平米;15人");
         officeChoice2.setDept(Edept.AD.name());
         officeChoice2.setImg("office-2.jpg");
         companyChoiceList.add(officeChoice2);
@@ -207,7 +207,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice3.setName("辉煌国际中心");
         companyChoice3.setValue("15000");
         companyChoice3.setFees("15000");
-        companyChoice3.setDescription("60P;8");
+        companyChoice3.setDescription("60平米;8人");
         companyChoice3.setDept(Edept.AD.name());
         companyChoice3.setImg("office-3.jpg");
         companyChoiceList.add(companyChoice3);
@@ -218,7 +218,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice4.setName("中关村大厦");
         companyChoice4.setValue("40000");
         companyChoice4.setFees("40000");
-        companyChoice4.setDescription("150P;20");
+        companyChoice4.setDescription("150平米;20人");
         companyChoice4.setDept(Edept.AD.name());
         companyChoice4.setImg("office-4.jpg");
         companyChoiceList.add(companyChoice4);
@@ -229,7 +229,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice5.setName("望京科技园");
         companyChoice5.setValue("30000");
         companyChoice5.setFees("30000");
-        companyChoice5.setDescription("200P;25");
+        companyChoice5.setDescription("200平米;25人");
         companyChoice5.setDept(Edept.AD.name());
         companyChoice5.setImg("office-5.jpg");
         companyChoiceList.add(companyChoice5);

@@ -22,6 +22,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <link rel="icon" type="image/png" href="<c:url value='/resources/assets/i/favicon.png'/>"/>
     <link rel="apple-touch-icon-precomposed" href="<c:url value='/resources/assets/i/app-icon72x72@2x.png'/>"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
     <link rel="stylesheet" href="<c:url value='/resources/assets/css/amazeui.min.css'/>"/>
     <link rel="stylesheet" href="<c:url value='/resources/assets/css/admin.css'/>"/>

@@ -8,6 +8,8 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -92,19 +94,27 @@ public class WorkController {
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
         model.addAttribute("preOfficeInstruction", preOfficeInstruction);
 
-        Map<String, Integer> globalReport = new LinkedHashMap();
-        List<CompanyChoice> preCompanyChoiceList = new ArrayList<>();
-        //产品定位
+        //产品定位冲突报告
+        Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();
         List<CompanyChoice> preProductStudyList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
-        if(preProductStudyList!=null) preCompanyChoiceList.addAll(preProductStudyList);
-        //市场活动
-        List<CompanyChoice> preMarketActivityList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
-        if(preMarketActivityList!=null) preCompanyChoiceList.addAll(preMarketActivityList);
-        for (CompanyChoice companyChoice : preCompanyChoiceList) {
-            Integer count = instructionManager.countCompanyInstruction(companyChoice);
-            globalReport.put(companyChoice.getName(), count);
+        if (preProductStudyList != null) {
+            for (CompanyChoice productStudy : preProductStudyList) {
+                Integer count = instructionManager.countCompanyInstruction(productStudy);
+                productStudyCompetitionReport.put(productStudy.getName(), count);
+            }
         }
-        model.addAttribute("globalReport", globalReport);
+        model.addAttribute("productStudyCompetitionReport", productStudyCompetitionReport);
+        //市场活动冲突报告
+        Map<String, Integer> marketCompetitionReport = new LinkedHashMap();
+        List<CompanyChoice> preMarketActivityList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
+        if (preMarketActivityList != null) {
+            for (CompanyChoice marketChoice : preMarketActivityList) {
+                Integer count = instructionManager.countCompanyInstruction(marketChoice);
+                marketCompetitionReport.put(marketChoice.getName(), count);
+            }
+        }
+        model.addAttribute("marketCompetitionReport", marketCompetitionReport);
+
         Map<String, Map<String, Integer>> propertyReport = internetPropertyManager.getPropertyReport(company);
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);
