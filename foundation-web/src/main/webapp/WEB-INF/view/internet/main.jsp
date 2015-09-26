@@ -22,7 +22,11 @@
 
 <h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
 <div>
-    <button type="button" id="endCampaignDate" class="am-btn am-btn-primary">结束回合</button>
+    <button type="button" id="endCampaignDate" class="am-btn am-btn-primary am-btn-block">结束回合</button>
+    <div id="endCampaignDate-warning" class="am-alert am-alert-warning" data-am-alert style="display: none">
+        <i class="fa fa-circle-o-notch fa-spin" style="font-size: 20px;"></i>
+        <span id="warning-message">回合结束，等待其他公司完成操作</span>
+    </div>
 </div>
 <div>
     <ul>
@@ -35,7 +39,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-                办公室
+                办公室<i class="fa fa-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
@@ -92,7 +96,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
-                人才
+                人才<i class="fa fa-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
@@ -185,7 +189,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
-                产品研发
+                产品研发<i class="fa fa-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
@@ -262,7 +266,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
-                市场营销
+                市场营销<i class="fa fa-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
@@ -318,7 +322,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
-                运营
+                运营<i class="fa fa-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
@@ -512,10 +516,9 @@
                         },
                         function (data) {
                             setInterval(isNext, 5000);
-                            $endCampaignDate.addClass("am-disabled");
-                            $endCampaignDate.attr("disabled", "disabled");
-                            $endCampaignDate.text("回合结束，等待其他公司完成操作");
-                            $endCampaignDate.after("<img width='38px' src='<c:url value="/img/loading.gif"/>'/>");
+//                            $endCampaignDate.addClass("am-disabled");
+                            $endCampaignDate.hide();
+                            $("#endCampaignDate-warning").show();
                         }
                 );
             }
@@ -531,7 +534,7 @@
                         if (data == 0) {
                             location.reload();
                         } else {
-                            $("#endCampaignDate").text(data + '家公司没有完成操作');
+                            $("#warning-message").text(data + '家公司没有完成操作');
                         }
                     });
 
