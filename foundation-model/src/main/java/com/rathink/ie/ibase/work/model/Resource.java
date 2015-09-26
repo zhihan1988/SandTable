@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "repository")
+@Table(name = "resource")
 public class Resource {
     private String id;
     private String baseType;//表示是一个什么类型的选择 例如HumanChoice or OfficeChoice
@@ -16,6 +16,8 @@ public class Resource {
     private String value;
     private String value2;
     private String description;
+    private String img;
+
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
     @GeneratedValue(generator = "id")
@@ -99,5 +101,12 @@ public class Resource {
         this.description = description;
     }
 
+    @Column(name = "img")
+    public String getImg() {
+        return img;
+    }
 
+    public void setImg(String img) {
+        this.img = img;
+    }
 }

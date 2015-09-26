@@ -20,6 +20,7 @@ public class CompanyChoice {
     private String value;
     private String value2;
     private String description;
+    private String img;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -131,5 +132,14 @@ public class CompanyChoice {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Column(name = "img")
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }

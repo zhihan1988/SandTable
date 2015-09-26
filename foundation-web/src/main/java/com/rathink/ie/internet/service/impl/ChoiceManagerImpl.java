@@ -75,6 +75,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
             companyChoice.setType(resource.getType());
             companyChoice.setDescription(resource.getDescription());
             companyChoice.setFees(resource.getFees());
+            companyChoice.setImg(resource.getImg());
             companyChoiceList.add(companyChoice);
         }
         return companyChoiceList;

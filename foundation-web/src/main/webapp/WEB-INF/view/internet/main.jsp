@@ -5,7 +5,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!doctype html>
 <html class="no-js">
-<head></head>
+<head>
+    <style type="text/css">
+        .introduce {
+            color: #999999;
+            font-size:9px;
+            margin-bottom: 10px;
+        }
+        .introduce p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
 <body>
 
 <h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
@@ -27,9 +39,11 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-            <p style="font-color: #999999;">
-                办公室办公室办公室办公室办公室办公室办公室办公室办公室
-            </p>
+            <div class="introduce">
+                <p>
+                    选用较好的办公室有利于招聘人才，但这个因素是有限的。
+                </p>
+            </div>
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                 <c:if test="${preOfficeInstruction.id != null}">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -91,12 +105,19 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
+            <div class="introduce">
+                <p>人才包括岗位和级别，获取较高级别的某岗位的人才，有助于提升相应职能的能力。</p>
+                <p>每季度出现的各个人才。</p>
+                <p>各家公司会去竞争所需类别的较高级别的人才，影响因素包括薪酬、运气和办公室条件。</p>
+            </div>
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                 <c:forEach items="${hrInstructionList}" var="hrInstruction" varStatus="status">
                     <li style="border: 1px solid #DDD;padding: 5px;">
                         <div>
                             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                                <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
+                                <li>
+                                    <img style="width: 80px;margin: 0;" src="<c:url value="/img/${hrInstruction.companyChoice.img}"/>"/>
+                                </li>
                                 <li>
                                     <p style="margin: 0">${hrInstruction.companyChoice.name}</p>
                                     <p style="margin: 0">
@@ -176,6 +197,11 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
+            <div class="introduce">
+                <p>较好的产品有助于提升市场和运营效果。</p>
+                <p>较高的定位客单价较高，但如果多个公司采用相同的定位，那么会对客单价产生较多影响。</p>
+                <p>较好较多的产品设计技术人才有助于提高产品研发能力。</p>
+            </div>
             <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
@@ -248,6 +274,10 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
+            <div class="introduce">
+                <p>通过开展市场活动可以获得新用户，各类市场活动的获取成本不同，但如果有较多的公司采用相同的市场活动方式，那么获取成本会提高</p>
+                <p>较好较多的市场人才有助于提高市场能力。</p>
+            </div>
             <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
@@ -300,6 +330,11 @@
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
+            <div class="introduce">
+                <p>较好的运营水平有助于提高满意度，较高的满意度意味着较高的用户留存率。</p>
+                <p>较好的运营人才和较多的运营投入有助于提升运营能力。</p>
+                <p>本期总用户数和客单价决定了本期的收入。</p>
+            </div>
             <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
@@ -488,6 +523,7 @@
                             $endCampaignDate.addClass("am-disabled");
                             $endCampaignDate.attr("disabled", "disabled");
                             $endCampaignDate.text("回合结束，等待其他公司完成操作");
+                            $endCampaignDate.after("<img width='38px' src='<c:url value="/img/loading.gif"/>'/>");
                         }
                 );
             }
