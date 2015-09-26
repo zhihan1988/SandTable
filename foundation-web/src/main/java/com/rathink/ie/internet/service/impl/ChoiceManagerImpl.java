@@ -230,6 +230,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         return companyChoiceList;
     }
 
+    @Deprecated
     public Set<Resource> loadAllHumans(Campaign campaign) {
         Set<Resource> humanSet = new HashSet<>();
         Resource human = new Resource();

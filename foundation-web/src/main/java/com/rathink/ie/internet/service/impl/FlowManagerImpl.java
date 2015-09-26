@@ -22,6 +22,7 @@ import com.rathink.ie.internet.service.FlowManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.omg.CORBA.BAD_CONTEXT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,8 +89,11 @@ public class FlowManagerImpl implements FlowManager {
             List<Account> accountList = companyTermContext.getAccountList();
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
-        Set<Resource> allHumans = choiceManager.loadAllHumans(campaign);
-        campaignContext.addHumanResource(allHumans);
+
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from Resource where baseType = 'HUMAN'");
+        List<Resource> allHumanList = baseManager.listObject(xQuery);
+        campaignContext.addHumanResource(new HashSet<>(allHumanList));
         next(campaignId);
     }
 

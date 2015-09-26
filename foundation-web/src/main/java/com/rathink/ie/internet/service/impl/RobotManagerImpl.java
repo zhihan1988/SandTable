@@ -26,11 +26,7 @@ import java.util.Map;
 @Service
 public class RobotManagerImpl implements RobotManager {
     @Autowired
-    private ChoiceManager choiceManager;
-    @Autowired
     private InstructionManager instructionManager;
-    @Autowired
-    private CompanyTermManager companyTermManager;
 
     @Override
     public void randomInstruction(CompanyTermContext companyTermContext) {
@@ -47,7 +43,7 @@ public class RobotManagerImpl implements RobotManager {
         List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(baseType);
         CompanyChoice companyChoice = companyChoiceList.get(RandomUtil.random(0, companyChoiceList.size()));
         String[] feeArray = companyChoice.getFees().split(",");
-        String fee = feeArray[RandomUtil.random(0, feeArray.length)];
+        String fee = feeArray[RandomUtil.random(0, feeArray.length - 1)];
         instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), fee);
     }
 

@@ -19,5 +19,6 @@ public interface ChoiceManager {
 
     List<CompanyChoice> randomChoices(Campaign campaign);
 
+    @Deprecated
     Set<Resource> loadAllHumans(Campaign campaign);
 }

@@ -108,11 +108,20 @@ public class FlowController {
     @ResponseBody
     public String random(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        String currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        companyTermHandlerMap.values().forEach(robotManager::randomInstruction);
-
+        for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
+            Company company = companyTermContext.getCompanyTerm().getCompany();
+           /* if (!company.getId().matches("1|2")) {
+                robotManager.randomInstruction(companyTermContext);
+            }*/
+            if (company.getCurrentCampaignDate().equals(currentCampaignDate)) {
+                robotManager.randomInstruction(companyTermContext);
+//                company.setCurrentCampaignDate(nextCampaignDate);
+            }
+        }
         return "success";
     }
 }
