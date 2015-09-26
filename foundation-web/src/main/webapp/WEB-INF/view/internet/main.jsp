@@ -68,7 +68,7 @@
                         </div>
                         <div>
                             <p style="margin: 0">价格:${preOfficeInstruction.value}</p>
-                            <p style="margin: 0">简介：${preOfficeInstruction.companyChoice.description}<p>
+                            <p style="margin: 0">简介:${preOfficeInstruction.companyChoice.description}<p>
                         </div>
                     </li>
                 </c:if>

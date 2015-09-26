@@ -113,8 +113,7 @@ public class AccountManagerImpl implements AccountManager {
                     accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
                 });
             }
-            String campaignDate = CampaignUtil.getNextCampaignDate(companyTerm.getCampaignDate());
-            propertyReport.put(CampaignUtil.formatCampaignDate(campaignDate), accountMap);
+            propertyReport.put(CampaignUtil.formatCampaignDate(companyTerm.getCampaignDate()), accountMap);
         }
         return propertyReport;
     }

@@ -16,10 +16,10 @@ public enum EPropertyName{
     NEW_USER_AMOUNT("新用户数", Edept.MARKET.name(),"TEXT"),
 
     OPERATION_ABILITY("运营能力", Edept.OPERATION.name(), "PERCENT"),
+    OPERATION_FEE_RATIO("运营资金投入系数",Edept.OPERATION.name(),"HIDDEN"),
     SATISFACTION("满意度", Edept.OPERATION.name(), "PERCENT"),
     OLD_USER_AMOUNT("老用户数量", Edept.OPERATION.name(), "TEXT"),
     USER_AMOUNT("用户数量", Edept.OPERATION.name(),"TEXT"),
-    OPERATION_FEE_RATIO("运营资金投入系数",Edept.OPERATION.name(),"HIDDEN"),
     CURRENT_PERIOD_INCOME("本期收入", Edept.OPERATION.name(),"TEXT");
 
     private String label;

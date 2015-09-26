@@ -88,7 +88,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
                 if (human.getType().equals(type)) {
-                    ability += Math.pow(Double.valueOf(human.getValue()), 1.5);
+                    ability += Math.pow(Double.valueOf(human.getValue()), 1.4);
                 }
             }
         }
@@ -139,7 +139,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext == null ? 0 : preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + 10 + RandomUtil.random(0, 10);
+        Integer productRatio = productAbility * 25 / 100 + productFeeRatio * 40 / 100 + preProductRatio * 25 / 100 + RandomUtil.random(0, 15);
         return productRatio;
     }
 
@@ -237,7 +237,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
-        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + 5 + RandomUtil.random(0, 10);
+        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + RandomUtil.random(0, 15);
         return satisfaction;
     }
 
