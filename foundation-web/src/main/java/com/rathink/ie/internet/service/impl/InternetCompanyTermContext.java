@@ -108,7 +108,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 officeFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        Double officeRatio = Math.sqrt(Math.sqrt(officeFee)) * 2 + 60;
+        Double officeRatio = Math.pow(officeFee, 0.3) * 2 + 30;
         return officeRatio.intValue();
     }
 
@@ -128,8 +128,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 fee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        Integer productFeeRatio = fee / 1000 + 50;
-        return productFeeRatio;
+        Double productFeeRatio = Math.pow(fee,0.4) *0.8 + 10;
+        return productFeeRatio.intValue();
     }
 
     /**
@@ -140,8 +140,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext == null ? 0 : preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Double productRatio = Math.sqrt(productAbility * 3 + productFeeRatio * 3) + preProductRatio * 0.8 + 10 + RandomUtil.random(0, 10);
-        return productRatio.intValue();
+        Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + 10 + RandomUtil.random(0, 10);
+        return productRatio;
     }
 
     /**
@@ -154,7 +154,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
         }
-        Integer perOrderCost = Integer.valueOf(grade) * 10 + 40;
+        Integer perOrderCost = Integer.valueOf(grade) * 10 + 30;
         return perOrderCost;
     }
 
@@ -165,27 +165,13 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     private Integer calculateProductCompetitionRatio() {
         //自己公司的定位
         List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        String grade = "1";
+        Integer sameGradeCount = 1;
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
-            grade = productStudyInstructionList.get(0).getValue();
-        }
-        //跟自己公司定位相同的公司数量
-        int sameGradeCount = 1;
-        CampaignContext campaignContext = getCampaignContext();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : campaignContext.getCompanyTermContextMap().keySet()) {
-            if (!companyId.equals(getCompanyTerm().getCompany().getId())) {
-                CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-                List<CompanyInstruction> companyInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-                String otherGrade = companyInstructionList == null ? "1" : companyInstructionList.get(0).getValue();
-                if (grade.equals(otherGrade)) {
-                    sameGradeCount++;
-                }
-            }
-
+            CompanyInstruction productStudy = productStudyInstructionList.get(0);
+            sameGradeCount = getCampaignContext().getCompetitionMap().get(productStudy.getCompanyChoice().getId());
         }
         //产品竞争系数计算公式
-        Double productCompetitionRatio = 30 + 20 * Math.sqrt(sameGradeCount);
+        Double productCompetitionRatio = 30 + 20 * Math.pow(sameGradeCount, 0.5);
         return productCompetitionRatio.intValue();
     }
 
@@ -207,21 +193,26 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
-        Integer newUserAmount = 0;
+
         Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
+        Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
         Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
+        Double marketX = 0d;
         if (marketInstructionList != null) {
             for (CompanyInstruction companyInstruction : marketInstructionList) {
                 CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
+                //市场活动竞争人数
                 Integer count = competitionMap.get(companyInstruction.getCompanyChoice().getId());
+                //市场活动竞争系数
+                Double marketCompetitionRatio = Math.pow(count - 1, 0.7) * 20;
                 Double marketCost = Double.valueOf(companyChoice.getValue());
                 Integer marketFee = Integer.valueOf(companyInstruction.getValue());
-                newUserAmount += marketAbility * marketFee / marketCost.intValue() / productCompetitionRatio * 2 * RandomUtil.random(80, 120) / 100;
-                Double marketCompetitiveRatio = 100 / Math.sqrt(Math.sqrt(count));
-                newUserAmount = newUserAmount * marketCompetitiveRatio.intValue() / 100;
+
+                marketX += marketFee * (marketCompetitionRatio + 100) / 100 / marketCost / productCompetitionRatio * 100;
             }
         }
-        return newUserAmount;
+        Double newUserAmount = marketAbility * productRatio * 1.2 * marketX * RandomUtil.random(80, 120)/100;
+        return newUserAmount.intValue();
     }
 
     /**
@@ -236,7 +227,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 operationFee += Integer.valueOf(companyInstruction.getValue());
             }
         }
-        return operationFee / 8000 + 50;
+        Double operationFeeRatio = Math.pow(operationFee, 0.5) * 0.2;
+        return operationFeeRatio.intValue();
     }
 
     /**
@@ -247,7 +239,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
-        Integer satisfaction = (operationAbility + operationFeeRatio + productRatio) / 3 + RandomUtil.random(0, 10);
+        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + RandomUtil.random(0, 10);
         return satisfaction;
     }
 
@@ -289,7 +281,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     private Integer currentIncome() {
         Integer userAmount = get(EPropertyName.USER_AMOUNT.name());
         Integer perOrderCost = get(EPropertyName.PER_ORDER_COST.name());
-        return userAmount * perOrderCost * 50 / 100;
+        return userAmount * perOrderCost;
     }
 
 }

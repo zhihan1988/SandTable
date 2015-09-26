@@ -230,9 +230,9 @@ public class FlowManagerImpl implements FlowManager {
                     CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
                     Integer officeRatio = companyTermContext.get(EPropertyName.OFFICE_RATIO.name());
                     Double fee = Double.valueOf(companyInstruction.getValue());
-                    Double feeRatio = fee / 200;
-                    Integer randomRatio = RandomUtil.random(0, 20);
-                    Double recruitmentRatio = officeRatio * 10 / 100 + feeRatio * 60 / 100 + randomRatio;
+                    Double feeRatio = Math.pow(fee - 5000, 0.4) + 30;
+                    Integer randomRatio = RandomUtil.random(0, 25);
+                    Double recruitmentRatio = officeRatio * 15 / 100 + feeRatio * 60 / 100 + randomRatio;
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
                         successCompanyInstruction = companyInstruction;

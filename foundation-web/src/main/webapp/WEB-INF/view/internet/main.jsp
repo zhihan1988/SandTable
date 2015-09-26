@@ -289,7 +289,7 @@
                 </c:choose>
             </c:forEach>
         </div>
-        <div id="do-not-say-4" class="am-panel-collapse am-collapse am-in">
+        <div id="do-not-say-4" class="am-panel-collapse am-collapse">
             <div class="am-panel-bd">
                 <table class="am-table">
                     <thead>
