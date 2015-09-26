@@ -49,7 +49,7 @@
                     <li style="border: 1px solid #DDD;padding: 5px;">
                         <div>
                             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                                <li><img style="margin: 0" class="am-thumbnail" src="http://s.amazeui.org/media/i/demos/bing-${status.index+1}.jpg" /></li>
+                                <li><img style="margin: 0" class="am-thumbnail" src="<c:url value="/img/${preOfficeInstruction.companyChoice.img}"/>" /></li>
                                 <li>
                                     <p style="margin: 0">${preOfficeInstruction.companyChoice.name}</p>
                                 </li>

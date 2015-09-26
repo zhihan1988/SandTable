@@ -187,6 +187,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice.setFees("20000");
         officeChoice.setDescription("100P;15");
         officeChoice.setDept(Edept.AD.name());
+        officeChoice.setImg("office-1.jpg");
         companyChoiceList.add(officeChoice);
         CompanyChoice officeChoice2 = new CompanyChoice();
         officeChoice2.setBaseType(EChoiceBaseType.OFFICE.name());
@@ -197,6 +198,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         officeChoice2.setFees("30000");
         officeChoice2.setDescription("100P;15");
         officeChoice2.setDept(Edept.AD.name());
+        officeChoice2.setImg("office-2.jpg");
         companyChoiceList.add(officeChoice2);
         CompanyChoice companyChoice3 = new CompanyChoice();
         companyChoice3.setBaseType(EChoiceBaseType.OFFICE.name());
@@ -207,6 +209,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice3.setFees("15000");
         companyChoice3.setDescription("60P;8");
         companyChoice3.setDept(Edept.AD.name());
+        companyChoice3.setImg("office-3.jpg");
         companyChoiceList.add(companyChoice3);
         CompanyChoice companyChoice4 = new CompanyChoice();
         companyChoice4.setBaseType(EChoiceBaseType.OFFICE.name());
@@ -217,6 +220,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice4.setFees("40000");
         companyChoice4.setDescription("150P;20");
         companyChoice4.setDept(Edept.AD.name());
+        companyChoice4.setImg("office-4.jpg");
         companyChoiceList.add(companyChoice4);
         CompanyChoice companyChoice5 = new CompanyChoice();
         companyChoice5.setBaseType(EChoiceBaseType.OFFICE.name());
@@ -227,6 +231,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoice5.setFees("30000");
         companyChoice5.setDescription("200P;25");
         companyChoice5.setDept(Edept.AD.name());
+        companyChoice5.setImg("office-5.jpg");
         companyChoiceList.add(companyChoice5);
         return companyChoiceList;
     }
