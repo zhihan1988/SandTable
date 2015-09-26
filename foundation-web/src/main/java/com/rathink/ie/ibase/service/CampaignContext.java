@@ -1,8 +1,10 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.Resource;
 
 import java.util.*;
 
@@ -16,7 +18,17 @@ public class CampaignContext {
     private Map<String, Integer> competitionMap;
     private Map<String, List<CompanyChoice>> typeCompanyChoiceMap = new HashMap<>();
     private Map<String, List<CompanyInstruction>> choiceInstructionMap = new HashMap<>();
-    private List<CompanyChoice> companyChoiceList = new ArrayList<>();
+    private List<CompanyChoice> currentCompanyChoiceList = new ArrayList<>();
+    private Set<Resource> humanRepository = new HashSet<>();
+
+    public void next() {
+        currentCompanyInstructionSet.clear();
+        competitionMap.clear();
+        typeCompanyChoiceMap.clear();
+        choiceInstructionMap.clear();
+        currentCompanyChoiceList.clear();
+    }
+
     public Campaign getCampaign() {
         return campaign;
     }
@@ -43,11 +55,11 @@ public class CampaignContext {
 
     /**
      * 当前比赛进度的全部可供选择的决策项
-     * @param companyChoiceList
+     * @param currentCompanyChoiceList
      */
-    public void setCompanyChoiceList(List<CompanyChoice> companyChoiceList) {
-        this.companyChoiceList = companyChoiceList;
-        for (CompanyChoice companyChoice : companyChoiceList) {
+    public void setCurrentCompanyChoiceList(List<CompanyChoice> currentCompanyChoiceList) {
+        this.currentCompanyChoiceList = currentCompanyChoiceList;
+        for (CompanyChoice companyChoice : currentCompanyChoiceList) {
             String baseType = companyChoice.getBaseType();
             if (typeCompanyChoiceMap.containsKey(baseType)) {
                 typeCompanyChoiceMap.get(baseType).add(companyChoice);
@@ -59,8 +71,8 @@ public class CampaignContext {
         }
     }
 
-    public List<CompanyChoice> getCompanyChoiceList() {
-        return companyChoiceList;
+    public List<CompanyChoice> getCurrentCompanyChoiceList() {
+        return currentCompanyChoiceList;
     }
 
     public List<CompanyChoice> listCurrentCompanyChoiceByType(String baseType) {
@@ -92,6 +104,33 @@ public class CampaignContext {
 
     public Set<CompanyInstruction> getCurrentCompanyInstructionSet() {
         return currentCompanyInstructionSet;
+    }
+
+    public void addHumanResource(Set<Resource> humanSet) {
+        humanRepository.addAll(humanSet);
+    }
+
+    /**
+     * 产生这一轮的随机数据
+     */
+    public List<Resource> randomHumans() {
+        List<Resource> randomHumanList = new ArrayList<>();
+        Integer needNum = getCompanyTermContextMap().size() * 3;
+        for (int i = 0; i < needNum; i++) {
+             Iterator<Resource> humanIterator = humanRepository.iterator();
+            Integer choiceSize = humanRepository.size();
+            if(choiceSize==0) break;
+            int index = RandomUtil.random(0, choiceSize);
+            for (int m = 0; humanIterator.hasNext(); m++) {
+                Resource human = humanIterator.next();
+                if (m == index) {
+                    randomHumanList.add(human);
+                    humanIterator.remove();
+                    break;
+                }
+            }
+        }
+        return randomHumanList;
     }
 }
 

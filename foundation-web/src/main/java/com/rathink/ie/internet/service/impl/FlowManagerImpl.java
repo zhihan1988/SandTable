@@ -4,7 +4,6 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
@@ -16,20 +15,18 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.ibase.work.model.Resource;
+import com.rathink.ie.internet.*;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.FlowManager;
 import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.RobotManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Hean on 2015/8/24.
@@ -44,15 +41,9 @@ public class FlowManagerImpl implements FlowManager {
     @Autowired
     private InstructionManager instructionManager;
     @Autowired
-    private CompanyTermManager companyTermManager;
-    @Autowired
     private CampaignManager campaignManager;
     @Autowired
     private AccountManager accountManager;
-    @Autowired
-    private CampaignCenterManager campaignCenterManager;
-    @Autowired
-    private RobotManager robotManager;
     /**
      * 开始游戏 定时任务执行
      * @param campaignId
@@ -97,8 +88,8 @@ public class FlowManagerImpl implements FlowManager {
             List<Account> accountList = companyTermContext.getAccountList();
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
-        after(campaignContext);
-
+        Set<Resource> allHumans = choiceManager.loadAllHumans(campaign);
+        campaignContext.addHumanResource(allHumans);
         next(campaignId);
     }
 
@@ -119,9 +110,6 @@ public class FlowManagerImpl implements FlowManager {
 
         saveCampaignContext(campaignContext);
 
-        dieOut(campaignContext);
-
-        end(campaignContext);
     }
 
     /**
@@ -132,6 +120,8 @@ public class FlowManagerImpl implements FlowManager {
     private void before(CampaignContext campaignContext) {
         //收集决策信息
         collectCompanyInstruction(campaignContext);
+        //释放未被选择的人才
+        releaseHuman(campaignContext);
         //竞标决策
         competitiveBidding(campaignContext);
         //非竞标决策
@@ -144,6 +134,26 @@ public class FlowManagerImpl implements FlowManager {
         calculateAccount(campaignContext);
 
 
+    }
+
+    private void releaseHuman(CampaignContext campaignContext) {
+        Set<Resource> humanResourceSet = new HashSet<>();
+        Set<CompanyInstruction> companyInstructionSet = campaignContext.getCurrentCompanyInstructionSet();
+        Set<String> instructionChoiceIdSet = companyInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name())).map(companyInstruction -> companyInstruction.getCompanyChoice().getId()).collect(Collectors.toSet());
+        List<CompanyChoice> companyChoiceList = campaignContext.getCurrentCompanyChoiceList();
+        for (CompanyChoice companyChoice : companyChoiceList) {
+            if (companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId())) {
+                Resource human = new Resource();
+                human.setBaseType(companyChoice.getBaseType());
+                human.setDept(companyChoice.getDept());
+                human.setName(companyChoice.getName());
+                human.setType(companyChoice.getType());
+                human.setFees(companyChoice.getFees());
+                human.setValue(companyChoice.getValue());
+                humanResourceSet.add(human);
+            }
+        }
+        campaignContext.addHumanResource(humanResourceSet);
     }
 
     /**
@@ -171,13 +181,7 @@ public class FlowManagerImpl implements FlowManager {
             //更新campaignCenter
             companyTermHandlerMap.put(companyId, companyTermContext);
         }
-        campaignContext = new CampaignContext();
-        campaignContext.setCampaign(campaign);
-        campaignContext.setCompanyTermContextMap(companyTermHandlerMap);
-        for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
-            companyTermContext.setCampaignContext(campaignContext);
-        }
-        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
+        campaignContext.next();
     }
 
     /**
@@ -187,7 +191,11 @@ public class FlowManagerImpl implements FlowManager {
     private void after(CampaignContext campaignContext) {
         //准备供用户决策用的随机数据
         List<CompanyChoice> companyChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
-        campaignContext.setCompanyChoiceList(companyChoiceList);
+        campaignContext.setCurrentCompanyChoiceList(companyChoiceList);
+
+        dieOut(campaignContext);
+
+        end(campaignContext);
     }
 
     private void collectCompanyInstruction(CampaignContext campaignContext) {
@@ -206,7 +214,7 @@ public class FlowManagerImpl implements FlowManager {
     private void competitiveBidding(CampaignContext campaignContext) {
 
         List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
-
+        if (companyChoiceList == null || companyChoiceList.size() == 0) return;
         //竞标
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (CompanyChoice companyChoice : companyChoiceList) {
@@ -361,8 +369,8 @@ public class FlowManagerImpl implements FlowManager {
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(),company);
         }
-        List<CompanyChoice> companyChoiceList = campaignContext.getCompanyChoiceList();
-        baseManager.batchSaveOrUpdate("save", CompanyChoice.class.getName(), companyChoiceList);
+        List<CompanyChoice> companyChoiceList = campaignContext.getCurrentCompanyChoiceList();
+        companyChoiceList.forEach(companyChoice -> baseManager.saveOrUpdate(CompanyChoice.class.getName(), companyChoice));
     }
 
     /**
@@ -376,7 +384,6 @@ public class FlowManagerImpl implements FlowManager {
             Integer companyCash = accountManager.getCompanyCash(company);
             if (companyCash < 0) {
                 company.setStatus(ECompanyStatus.END.name());
-                baseManager.saveOrUpdate(Company.class.getName(), company);
                 companyTermContextIterator.remove();
             }
         }
@@ -393,7 +400,6 @@ public class FlowManagerImpl implements FlowManager {
                             company, companyTermContext.getPreCompanyTermContext().getCompanyTerm().getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
                     Integer result = campaignDateInCash * 4 * 10;
                     company.setResult(result);
-                    baseManager.saveOrUpdate(Company.class.getName(), company);
                 }
             }
         }

@@ -3,17 +3,17 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.ibase.property.model.CompanyTerm;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
+import com.rathink.ie.ibase.work.model.Resource;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Hean on 2015/8/25.
@@ -56,6 +56,27 @@ public class ChoiceManagerImpl implements ChoiceManager {
         companyChoiceList.addAll(produceProductStudyChoice(campaign));
         companyChoiceList.addAll(produceProductStudyFeeChoice(campaign));
         companyChoiceList.addAll(produceOperationChoice(campaign));
+        return companyChoiceList;
+    }
+
+    private List<CompanyChoice> produceHumanChoice(Campaign campaign) {
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaign.getId());
+        List<Resource> humanResourceList = campaignContext.randomHumans();
+        List<CompanyChoice> companyChoiceList = new ArrayList<>();
+        for (Resource resource : humanResourceList) {
+            CompanyChoice companyChoice = new CompanyChoice();
+            companyChoice.setCampaignDate(campaign.getCurrentCampaignDate());
+            companyChoice.setCampaign(campaign);
+            companyChoice.setBaseType(resource.getBaseType());
+            companyChoice.setDept(resource.getDept());
+            companyChoice.setName(resource.getName());
+            companyChoice.setValue(resource.getValue());
+            companyChoice.setValue2(resource.getValue2());
+            companyChoice.setType(resource.getType());
+            companyChoice.setDescription(resource.getDescription());
+            companyChoice.setFees(resource.getFees());
+            companyChoiceList.add(companyChoice);
+        }
         return companyChoiceList;
     }
 
@@ -209,104 +230,86 @@ public class ChoiceManagerImpl implements ChoiceManager {
         return companyChoiceList;
     }
 
-    private List<CompanyChoice> produceHumanChoice(Campaign campaign) {
-        List<CompanyChoice> companyChoiceList = new ArrayList<>();
-        CompanyChoice human = new CompanyChoice();
+    public Set<Resource> loadAllHumans(Campaign campaign) {
+        Set<Resource> humanSet = new HashSet<>();
+        Resource human = new Resource();
         human.setBaseType(EChoiceBaseType.HUMAN.name());
-        human.setCampaignDate(campaign.getCurrentCampaignDate());
-        human.setCampaign(campaign);
         human.setDept(Edept.HR.name());
         human.setName("小张");
         human.setType(Edept.PRODUCT.name());
         human.setFees("10000,20000,30000,40000,50000");
         human.setValue("10");
-        companyChoiceList.add(human);
-        CompanyChoice human3 = new CompanyChoice();
+        humanSet.add(human);
+        Resource human3 = new Resource();
         human3.setBaseType(EChoiceBaseType.HUMAN.name());
-        human3.setCampaignDate(campaign.getCurrentCampaignDate());
-        human3.setCampaign(campaign);
         human3.setDept(Edept.HR.name());
         human3.setName("小王");
         human3.setType(Edept.MARKET.name());
         human3.setFees("10000,20000,30000,40000,50000");
         human3.setValue("8");
-        companyChoiceList.add(human3);
-        CompanyChoice human4 = new CompanyChoice();
+        humanSet.add(human3);
+        Resource human4 = new Resource();
         human4.setBaseType(EChoiceBaseType.HUMAN.name());
-        human4.setCampaignDate(campaign.getCurrentCampaignDate());
-        human4.setCampaign(campaign);
         human4.setDept(Edept.HR.name());
         human4.setName("小明");
         human4.setType(Edept.OPERATION.name());
         human4.setFees("10000,20000,30000,40000,50000");
         human4.setValue("6");
-        companyChoiceList.add(human4);
-        CompanyChoice human5 = new CompanyChoice();
+        humanSet.add(human4);
+        Resource human5 = new Resource();
         human5.setBaseType(EChoiceBaseType.HUMAN.name());
-        human5.setCampaignDate(campaign.getCurrentCampaignDate());
-        human5.setCampaign(campaign);
         human5.setDept(Edept.HR.name());
         human5.setName("小李");
         human5.setType(Edept.PRODUCT.name());
         human5.setFees("10000,20000,30000,40000,50000");
         human5.setValue("5");
-        companyChoiceList.add(human5);
-        CompanyChoice human6 = new CompanyChoice();
+        humanSet.add(human5);
+        Resource human6 = new Resource();
         human6.setBaseType(EChoiceBaseType.HUMAN.name());
-        human6.setCampaignDate(campaign.getCurrentCampaignDate());
-        human6.setCampaign(campaign);
         human6.setDept(Edept.HR.name());
         human6.setName("小孙");
         human6.setType(Edept.MARKET.name());
         human6.setFees("10000,20000,30000,40000,50000");
         human6.setValue("7");
-        companyChoiceList.add(human6);
-        CompanyChoice human7 = new CompanyChoice();
+        humanSet.add(human6);
+        Resource human7 = new Resource();
         human7.setBaseType(EChoiceBaseType.HUMAN.name());
-        human7.setCampaignDate(campaign.getCurrentCampaignDate());
-        human7.setCampaign(campaign);
         human7.setDept(Edept.HR.name());
         human7.setName("小黄");
         human7.setType(Edept.OPERATION.name());
         human7.setFees("10000,20000,30000,40000,50000");
         human7.setValue("9");
-        companyChoiceList.add(human7);
+        humanSet.add(human7);
 
 
-        CompanyChoice human8 = new CompanyChoice();
+        Resource human8 = new Resource();
         human8.setBaseType(EChoiceBaseType.HUMAN.name());
-        human8.setCampaignDate(campaign.getCurrentCampaignDate());
-        human8.setCampaign(campaign);
         human8.setDept(Edept.HR.name());
         human8.setName("Tom");
         human8.setType(Edept.OPERATION.name());
         human8.setFees("10000,20000,30000,40000,50000");
         human8.setValue("4");
-        companyChoiceList.add(human8);
+        humanSet.add(human8);
 
-        CompanyChoice human9 = new CompanyChoice();
+        Resource human9 = new Resource();
         human9.setBaseType(EChoiceBaseType.HUMAN.name());
-        human9.setCampaignDate(campaign.getCurrentCampaignDate());
-        human9.setCampaign(campaign);
         human9.setDept(Edept.HR.name());
         human9.setName("Nike");
         human9.setType(Edept.MARKET.name());
         human9.setFees("10000,20000,30000,40000,50000");
         human9.setValue("5");
-        companyChoiceList.add(human9);
+        humanSet.add(human9);
 
-        CompanyChoice human10 = new CompanyChoice();
+        Resource human10 = new Resource();
         human10.setBaseType(EChoiceBaseType.HUMAN.name());
-        human10.setCampaignDate(campaign.getCurrentCampaignDate());
-        human10.setCampaign(campaign);
         human10.setDept(Edept.HR.name());
         human10.setName("Sony");
         human10.setType(Edept.PRODUCT.name());
         human10.setFees("10000,20000,30000,40000,50000");
         human10.setValue("7");
-        companyChoiceList.add(human10);
+        humanSet.add(human10);
 
-        return companyChoiceList;
+        return humanSet;
     }
 
 

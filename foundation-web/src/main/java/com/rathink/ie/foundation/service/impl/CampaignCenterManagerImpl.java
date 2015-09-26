@@ -65,7 +65,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         }
         campaignContext.setCompanyTermContextMap(companyTermHandlerMap);
     /*    List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate());
-        campaignHandler.setCompanyChoiceList(companyChoiceList);*/
+        campaignHandler.setCurrentCompanyChoiceList(companyChoiceList);*/
         CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
     }
 
