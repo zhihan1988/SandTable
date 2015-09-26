@@ -77,11 +77,9 @@ public class FlowManagerImpl implements FlowManager {
             companyTermContext.setCampaignContext(campaignContext);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermContext);
+
+            companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2000000);
         }
-        //属性初始值
-        calculateProperty(campaignContext);
-        //财务数据初始值
-        initAccount(campaignContext);
 
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             List<CompanyTermProperty> companyTermPropertyList = companyTermContext.getCompanyTermPropertyList();
@@ -286,7 +284,8 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
             for (EPropertyName ePropertyName : EPropertyName.values()) {
-                Integer value = companyTermContext.calculate(ePropertyName.name());
+                String key = ePropertyName.name();
+                Integer value = companyTermContext.contains(key) ? companyTermContext.get(key) : companyTermContext.calculate(key);
                 companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);

@@ -20,6 +20,10 @@ public abstract class CompanyTermContext {
     protected List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
     protected CompanyTermContext preCompanyTermContext;
 
+    public Boolean contains(String key) {
+        return propertyValueMap.containsKey(key);
+    }
+
     public Integer get(String key) {
         if (!propertyValueMap.containsKey(key)) {
             put(key, calculate(key));
