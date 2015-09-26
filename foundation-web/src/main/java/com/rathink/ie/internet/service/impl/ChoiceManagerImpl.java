@@ -142,7 +142,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice.setCampaign(campaign);
         marketActivityChoice.setDept(Edept.MARKET.name());
-        marketActivityChoice.setName("微博/微信");
+        marketActivityChoice.setName("社交网络");
         marketActivityChoice.setValue("30");
         marketActivityChoice.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice);
@@ -151,7 +151,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice2.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice2.setCampaign(campaign);
         marketActivityChoice2.setDept(Edept.MARKET.name());
-        marketActivityChoice2.setName("百度");
+        marketActivityChoice2.setName("搜索引擎");
         marketActivityChoice2.setValue("35");
         marketActivityChoice2.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice2);
@@ -160,7 +160,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice3.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice3.setCampaign(campaign);
         marketActivityChoice3.setDept(Edept.MARKET.name());
-        marketActivityChoice3.setName("地推");
+        marketActivityChoice3.setName("地面推广");
         marketActivityChoice3.setValue("40");
         marketActivityChoice3.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice3);
@@ -169,7 +169,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice4.setCampaignDate(campaign.getCurrentCampaignDate());
         marketActivityChoice4.setCampaign(campaign);
         marketActivityChoice4.setDept(Edept.MARKET.name());
-        marketActivityChoice4.setName("地面广告");
+        marketActivityChoice4.setName("户外广告");
         marketActivityChoice4.setValue("50");
         marketActivityChoice4.setFees("10000,20000,40000,80000,160000");
         companyChoiceList.add(marketActivityChoice4);

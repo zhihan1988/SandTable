@@ -88,7 +88,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
                 if (human.getType().equals(type)) {
-                    ability += Math.pow(Double.valueOf(human.getValue()),1.6);
+                    ability += Math.pow(Double.valueOf(human.getValue()), 1.5);
                 }
             }
         }
@@ -237,7 +237,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer productRatio = get(EPropertyName.PRODUCT_RATIO.name());
-        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + RandomUtil.random(0, 10);
+        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + 5 + RandomUtil.random(0, 10);
         return satisfaction;
     }
 
