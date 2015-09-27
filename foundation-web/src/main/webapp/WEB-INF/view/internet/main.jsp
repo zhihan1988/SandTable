@@ -423,7 +423,7 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-        <c:forEach items="${propertyReport}" var="r">
+        <c:forEach items="${propertyReport}" var="r" begin="1">
             <tr>
                 <td>${r.key}</td>
                 <c:forEach items="${r.value}" var="property">
@@ -441,7 +441,7 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-        <c:forEach items="${accountReport}" var="acountMap">
+        <c:forEach items="${accountReport}" var="acountMap" begin="1">
             <tr>
                 <td>${acountMap.key}</td>
                 <c:forEach items="${acountMap.value}" var="account">

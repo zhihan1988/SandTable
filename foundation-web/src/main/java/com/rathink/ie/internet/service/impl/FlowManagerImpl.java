@@ -78,8 +78,19 @@ public class FlowManagerImpl implements FlowManager {
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermContext);
 
+
+            List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
+            for (EPropertyName ePropertyName : EPropertyName.values()) {
+                if (!ePropertyName.equals(EPropertyName.CURRENT_PERIOD_INCOME)) {
+                    companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, 0, companyTerm));
+                } else {
+                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2000000, companyTerm));
+                }
+            }
+            companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
             companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2000000);
         }
+        calculateAccount(campaignContext);
 
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             List<CompanyTermProperty> companyTermPropertyList = companyTermContext.getCompanyTermPropertyList();

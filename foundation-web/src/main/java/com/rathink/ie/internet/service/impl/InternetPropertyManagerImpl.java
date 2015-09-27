@@ -70,8 +70,8 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
                     propertyMap.put(EPropertyName.valueOf(companyTermProperty.getName()).getLabel(), companyTermProperty.getValue());
                 }
             }
-            String campaignDate = CampaignUtil.getNextCampaignDate(companyTerm.getCampaignDate());
-            propertyReport.put(CampaignUtil.formatCampaignDate(campaignDate), propertyMap);
+            String formatCampaignDate = CampaignUtil.formatCampaignDate(companyTerm.getCampaignDate());
+            propertyReport.put(formatCampaignDate, propertyMap);
         }
         return propertyReport;
     }
