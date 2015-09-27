@@ -30,7 +30,7 @@
 <div>
     <button type="button" id="endCampaignDate" class="am-btn am-btn-primary am-btn-block">结束回合</button>
     <div id="endCampaignDate-warning" class="am-alert am-alert-warning" data-am-alert style="display: none">
-        <i class="fa fa-circle-o-notch fa-spin" style="font-size: 20px;"></i>
+        <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
         <span id="warning-message">回合结束，等待其他公司完成操作</span>
     </div>
 </div>
@@ -46,7 +46,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-                办公室<i class="fa fa-arrow-down am-fr"></i>
+                办公室<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
@@ -75,7 +75,7 @@
             </ul>
         </div>
         <div id="do-not-say-0" class="am-panel-collapse am-collapse">
-            <%--<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />--%>
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
                 <c:forEach items="${officeChoiceList}" var="officeChoice">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -104,7 +104,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
-                人才<i class="fa fa-arrow-down am-fr"></i>
+                人才<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
@@ -150,7 +150,7 @@
             </ul>
         </div>
         <div id="do-not-say-1" class="am-panel-collapse am-collapse">
-            <%--<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />--%>
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
             <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
                 <c:forEach items="${humanList}" var="human">
                     <li style="border: 1px solid #DDD;padding: 5px;">
@@ -198,7 +198,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
-                产品研发<i class="fa fa-arrow-down am-fr"></i>
+                产品研发<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
@@ -275,7 +275,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
-                市场营销<i class="fa fa-arrow-down am-fr"></i>
+                市场营销<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
@@ -331,7 +331,7 @@
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
-                运营<i class="fa fa-arrow-down am-fr"></i>
+                运营<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
         <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
@@ -452,7 +452,7 @@
     </table>
 </div>
 
-<div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+<div data-am-widget="gotop" class="am-gotop am-gotop-default" >
     <a href="#top" title="回到顶部">
         <span class="am-gotop-title">回到顶部</span>
         <i class="am-gotop-icon am-icon-chevron-up"></i>
