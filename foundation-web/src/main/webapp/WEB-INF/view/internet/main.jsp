@@ -67,7 +67,7 @@
                             </ul>
                         </div>
                         <div>
-                            <p style="margin: 0">价格:${preOfficeInstruction.value}</p>
+                            <p style="margin: 0">月租:${preOfficeInstruction.value}</p>
                             <p style="margin: 0">简介:${preOfficeInstruction.companyChoice.description}<p>
                         </div>
                     </li>
@@ -90,7 +90,7 @@
                             </ul>
                         </div>
                         <div>
-                            <p style="margin: 0">能力：${officeChoice.value}</p>
+                            <p style="margin: 0">月租：${officeChoice.value}</p>
                             <p style="margin: 0">简介：${officeChoice.description}<p>
                             <p style="margin: 0"><input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.value}"
                                                         <c:if test="${preOfficeInstruction.companyChoice.name == officeChoice.name}">checked="checked"</c:if>><p>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div class="am-panel am-panel-default">
+    <div class="am-panel am-panel-default" id="human">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-1'}">
                 人才<i class="am-icon-arrow-down am-fr"></i>
@@ -522,14 +522,14 @@
         });
 
         $("a[id^='humanInstruction_']").click(function() {
-            if(confirm("解雇员工将扣除两个月薪水作为补贴，是否继续？")) {
+            if(confirm("辞退员工将扣除两个月薪水作为补贴，是否继续？")) {
                 var $humanInstruction = $(this);
                 var instructionId = $humanInstruction.attr("id").split("_")[1];
                 $.post("<c:url value="/work/fire"/>",
                         {
                             instructionId: instructionId
                         },function(data) {
-                            $humanInstruction.after("<span>已解雇</span>");
+                            $humanInstruction.after("<span>已辞退</span>");
                             $humanInstruction.remove();
                         });
                 }

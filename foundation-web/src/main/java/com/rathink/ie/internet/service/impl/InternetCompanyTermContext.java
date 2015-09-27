@@ -83,17 +83,18 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
         List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
-        Double ability = 20d;
+        Double humanAbility = 0d;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
                 if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当前的人才能力（延迟一期生效）
                     if (human.getType().equals(type)) {
-                        ability += Math.pow(Double.valueOf(human.getValue()), 1.4);
+                        humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.4);
                     }
                 }
             }
         }
+        Double ability = humanAbility * 1.2 + 20;
         return ability.intValue();
     }
 
@@ -141,7 +142,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productAbility = preCompanyTermContext.get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Integer productRatio = productAbility * 25 / 100 + productFeeRatio * 40 / 100 + preProductRatio * 25 / 100 + RandomUtil.random(0, 15);
+        Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + RandomUtil.random(0, 20);
         return productRatio;
     }
 
@@ -211,7 +212,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 marketX += marketFee * (marketCompetitionRatio + 100) / 100 / marketCost / productCompetitionRatio * 100;
             }
         }
-        Double newUserAmount = marketX * marketAbility/PERCENT * productRatio/PERCENT * 1.5 * RandomUtil.random(80, 120)/PERCENT;
+        Double newUserAmount = marketX * marketAbility/PERCENT * productRatio/PERCENT * 1.6 * RandomUtil.random(80, 120)/PERCENT;
         return newUserAmount.intValue();
     }
 
@@ -236,11 +237,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return
      */
     private Integer calculateSatisfaction() {
-        Integer operationAbility = preCompanyTermContext.get(EPropertyName.OPERATION_ABILITY.name());
+        Integer preOperationAbility = preCompanyTermContext.get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
-        Integer productRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Integer satisfaction = operationAbility * 30 / 100 + operationFeeRatio * 30 / 100 + productRatio * 30 / 100 + RandomUtil.random(0, 15);
-        return satisfaction;
+        Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
+        Double satisfaction = preOperationAbility/PERCENT * operationFeeRatio/PERCENT * preProductRatio/PERCENT * 1.5 + 10 + RandomUtil.random(0, 20);
+        return satisfaction.intValue();
     }
 
     /**
@@ -260,7 +261,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 preUserAmount = preUserAmount * 80 / 100;
             }
         }
-        Integer satisfaction = get(EPropertyName.SATISFACTION.name());
+        Integer satisfaction = preCompanyTermContext.get(EPropertyName.SATISFACTION.name());
         return preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;
     }
 
@@ -279,7 +280,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return
      */
     private Integer currentIncome() {
-        Integer userAmount = get(EPropertyName.USER_AMOUNT.name());
+        Integer userAmount = preCompanyTermContext.get(EPropertyName.USER_AMOUNT.name());
         Integer perOrderCost = get(EPropertyName.PER_ORDER_COST.name());
         return userAmount * perOrderCost;
     }

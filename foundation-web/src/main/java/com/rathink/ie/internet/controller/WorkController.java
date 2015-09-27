@@ -93,6 +93,7 @@ public class WorkController {
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
         model.addAttribute("preOfficeInstruction", preOfficeInstruction);
+        model.addAttribute("preCampaignDate", preCampaignDate);
 
         //产品定位冲突报告
         Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();

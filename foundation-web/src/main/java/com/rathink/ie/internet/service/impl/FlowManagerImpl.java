@@ -103,7 +103,15 @@ public class FlowManagerImpl implements FlowManager {
         xQuery.setHql("from Resource where baseType = 'HUMAN'");
         List<Resource> allHumanList = baseManager.listObject(xQuery);
         campaignContext.addHumanResource(new HashSet<>(allHumanList));
-        next(campaignId);
+
+
+        newRound(campaignContext);
+
+        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        after(campaignContext);
+
+        saveCampaignContext(campaignContext);
     }
 
     /**
@@ -241,9 +249,9 @@ public class FlowManagerImpl implements FlowManager {
                     CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
                     Integer officeRatio = companyTermContext.get(EPropertyName.OFFICE_RATIO.name());
                     Double fee = Double.valueOf(companyInstruction.getValue());
-                    Double feeRatio = Math.pow(fee - 5000, 0.4) + 30;
-                    Integer randomRatio = RandomUtil.random(0, 30);
-                    Double recruitmentRatio = officeRatio * 15 / 100 + feeRatio * 55 / 100 + randomRatio;
+                    Double feeRatio = Math.pow(fee, 0.5) * 0.35;//薪酬系数
+                    Integer randomRatio = RandomUtil.random(0, 40);
+                    Double recruitmentRatio = officeRatio * 10 / 100 + feeRatio * 50 / 100 + randomRatio;
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
                         successCompanyInstruction = companyInstruction;
@@ -328,6 +336,7 @@ public class FlowManagerImpl implements FlowManager {
     }*/
 
     private void calculateAccount(CampaignContext campaignContext) {
+        String currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
@@ -340,6 +349,13 @@ public class FlowManagerImpl implements FlowManager {
             accountList.add(adAccount);
 
             List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
+            Iterator<CompanyInstruction> companyInstructionIterator = humanInstructionList.iterator();
+            while (companyInstructionIterator.hasNext()) {
+                CompanyInstruction companyInstruction = companyInstructionIterator.next();
+                if (companyInstruction.getCampaignDate().equals(currentCampaignDate)) {
+                    companyInstructionIterator.remove();
+                }
+            }
             Integer humanFee = instructionManager.sumFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
             Account humanAccount = accountManager.packageAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(humanAccount);

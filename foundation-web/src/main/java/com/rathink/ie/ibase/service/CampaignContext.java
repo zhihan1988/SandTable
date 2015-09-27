@@ -15,7 +15,7 @@ public class CampaignContext {
     private Campaign campaign;
     private Set<CompanyInstruction> currentCompanyInstructionSet = new HashSet<>();
     private Map<String, CompanyTermContext> companyTermContextMap;
-    private Map<String, Integer> competitionMap;
+    private Map<String, Integer> competitionMap = new HashMap<>();
     private Map<String, List<CompanyChoice>> typeCompanyChoiceMap = new HashMap<>();
     private Map<String, List<CompanyInstruction>> choiceInstructionMap = new HashMap<>();
     private List<CompanyChoice> currentCompanyChoiceList = new ArrayList<>();
