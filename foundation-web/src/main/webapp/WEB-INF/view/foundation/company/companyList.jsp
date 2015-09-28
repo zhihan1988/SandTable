@@ -4,6 +4,7 @@
 <%@ taglib prefix="ming800" uri="http://java.ming800.com/taglib" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="f" %>
 <!doctype html>
 <html class="no-js">
 <head></head>
@@ -39,7 +40,9 @@
                     ${company.slogan}
                 </td>
                 <td><fmt:formatDate value="${company.createDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                <td>${company.result}</td>
+                <td>
+                    <f:formatNumber value="${company.result}" pattern="#,#00.#"/>
+                </td>
             </tr>
         </c:forEach>
         </tbody>

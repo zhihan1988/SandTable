@@ -3,6 +3,7 @@
 <%@ taglib prefix="ming800" uri="http://java.ming800.com/taglib" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="f" %>
 <!doctype html>
 <html class="no-js">
 <head>
@@ -36,9 +37,9 @@
 </div>
 <div>
     <ul>
-        <li>公司现金：${companyCash}</li>
-        <li>上期收入：${campaignDateInCash}</li>
-        <li>上期支出：${campaignDateOutCash}</li>
+        <li>公司现金：<f:formatNumber value="${companyCash}" pattern="#,#00.#"/></li>
+        <li>上期收入：<f:formatNumber value="${campaignDateInCash}" pattern="#,#00.#"/></li>
+        <li>上期支出：<f:formatNumber value="${campaignDateOutCash}" pattern="#,#00.#"/></li>
     </ul>
 </div>
 <div class="main-panel">
