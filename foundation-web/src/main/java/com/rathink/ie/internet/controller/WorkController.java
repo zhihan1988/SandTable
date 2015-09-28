@@ -146,7 +146,7 @@ public class WorkController {
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
         CompanyInstruction companyInstruction = null;
         try {
-            instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
+            companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
