@@ -12,17 +12,24 @@ import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
-import com.rathink.ie.ibase.service.*;
+import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignContext;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.ibase.work.model.Resource;
-import com.rathink.ie.internet.*;
+import com.rathink.ie.internet.EAccountEntityType;
+import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.internet.EInstructionStatus;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.FlowManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.omg.CORBA.BAD_CONTEXT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +41,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class FlowManagerImpl implements FlowManager {
+    private static Logger logger = LoggerFactory.getLogger(FlowManagerImpl.class);
 
     @Autowired
     private BaseManager baseManager;
@@ -51,10 +59,64 @@ public class FlowManagerImpl implements FlowManager {
      */
     @Override
     public void begin(String campaignId) {
-        final String INIT_CAMPAIGN_DATE = "010101";
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        initCampaignContext(campaignContext);
+
+        newRound(campaignContext);
+
+        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        randomChoice(campaignContext);
+
+        saveCampaignContext(campaignContext);
+    }
+
+    /**
+     * 开始新的回合
+     * @param campaignId
+     */
+    public void next(String campaignId) {
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        //回合结束前
+        //收集决策信息
+        collectCompanyInstruction(campaignContext);
+        //释放未被选择的人才
+        releaseHuman(campaignContext);
+        //竞标决策
+        competitiveBidding(campaignContext);
+        //非竞标决策
+        competitiveUnBidding(campaignContext);
+
+        calculateCompetitionMap(campaignContext);
+        //计算保存新回合的属性数据
+        calculateProperty(campaignContext);
+        //4计算保存新回合的财务数据
+        calculateAccount(campaignContext);
+
+
+        //回合结束进入新的回合
+        newRound(campaignContext);
+
+
+        //新回合开始后
+        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        randomChoice(campaignContext);
+
+        saveCampaignContext(campaignContext);
+
+        dieOut(campaignContext);
+
+        end(campaignContext);
+    }
+
+    public void initCampaignContext(CampaignContext campaignContext){
+        final String INIT_CAMPAIGN_DATE = "010101";
+
         //1.比赛开始
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignContext.getCampaign().getId());
         campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(INIT_CAMPAIGN_DATE));
         campaign.setStatus(Campaign.Status.RUN.getValue());
         campaignContext.setCampaign(campaign);
@@ -77,19 +139,25 @@ public class FlowManagerImpl implements FlowManager {
             companyTermContext.setCampaignContext(campaignContext);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermContext);
+        }
 
+        collectCompanyInstruction(campaignContext);
 
+        for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
+            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
             for (EPropertyName ePropertyName : EPropertyName.values()) {
                 if (!ePropertyName.equals(EPropertyName.CURRENT_PERIOD_INCOME)) {
+                    companyTermContext.put(ePropertyName.name(), 0);
                     companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, 0, companyTerm));
                 } else {
+                    companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2000000);
                     companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2000000, companyTerm));
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
-            companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2000000);
         }
+
         calculateAccount(campaignContext);
 
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
@@ -103,58 +171,6 @@ public class FlowManagerImpl implements FlowManager {
         xQuery.setHql("from Resource where baseType = 'HUMAN'");
         List<Resource> allHumanList = baseManager.listObject(xQuery);
         campaignContext.addHumanResource(new HashSet<>(allHumanList));
-
-
-        newRound(campaignContext);
-
-        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-
-        after(campaignContext);
-
-        saveCampaignContext(campaignContext);
-    }
-
-    /**
-     * 开始新的回合
-     * @param campaignId
-     */
-    public void next(String campaignId) {
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-
-        before(campaignContext);
-
-        newRound(campaignContext);
-
-        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-
-        after(campaignContext);
-
-        saveCampaignContext(campaignContext);
-
-    }
-
-    /**
-     * 回合结束前
-     *
-     * @param campaignContext
-     */
-    private void before(CampaignContext campaignContext) {
-        //收集决策信息
-        collectCompanyInstruction(campaignContext);
-        //释放未被选择的人才
-        releaseHuman(campaignContext);
-        //竞标决策
-        competitiveBidding(campaignContext);
-        //非竞标决策
-        competitiveUnBidding(campaignContext);
-
-        initCompetitionMap(campaignContext);
-        //计算保存新回合的属性数据
-        calculateProperty(campaignContext);
-        //4计算保存新回合的财务数据
-        calculateAccount(campaignContext);
-
-
     }
 
     private void releaseHuman(CampaignContext campaignContext) {
@@ -211,14 +227,10 @@ public class FlowManagerImpl implements FlowManager {
      * 新回合开始后
      * @param campaignContext
      */
-    private void after(CampaignContext campaignContext) {
+    private void randomChoice(CampaignContext campaignContext) {
         //准备供用户决策用的随机数据
         List<CompanyChoice> companyChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
         campaignContext.setCurrentCompanyChoiceList(companyChoiceList);
-
-        dieOut(campaignContext);
-
-        end(campaignContext);
     }
 
     private void collectCompanyInstruction(CampaignContext campaignContext) {
@@ -279,7 +291,7 @@ public class FlowManagerImpl implements FlowManager {
     }
 
 
-    private void initCompetitionMap(CampaignContext campaignContext) {
+    private void calculateCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
         List<CompanyChoice> companyChoiceList = new ArrayList<>();
         //产品定位
@@ -312,28 +324,6 @@ public class FlowManagerImpl implements FlowManager {
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
         }
     }
-
-    /*private void initAccount(CampaignContext campaignContext) {
-        List<Account> accountList = new ArrayList<>();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            Account adAccount = accountManager.packageAccount("0", EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(adAccount);
-            Account humanAccount = accountManager.packageAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(humanAccount);
-            Account productFeeAccount = accountManager.packageAccount("0", EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(productFeeAccount);
-            Account marketFeeAccount = accountManager.packageAccount("0", EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(marketFeeAccount);
-            Account operationFeeAccount = accountManager.packageAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(operationFeeAccount);
-            Account incomeAccount = accountManager.packageAccount("2000000", EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
-            accountList.add(incomeAccount);
-            companyTermContext.setAccountList(accountList);
-        }
-    }*/
 
     private void calculateAccount(CampaignContext campaignContext) {
         String currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();

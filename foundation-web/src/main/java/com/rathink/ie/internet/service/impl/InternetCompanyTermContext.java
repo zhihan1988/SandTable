@@ -10,6 +10,8 @@ import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 @Component
 public class InternetCompanyTermContext extends CompanyTermContext {
+    private static Logger logger = LoggerFactory.getLogger(FlowManagerImpl.class);
+
     final Double PERCENT = 100d;
     @Override
     public Integer calculate(String key) {
@@ -87,14 +91,12 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
-                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当前的人才能力（延迟一期生效）
-                    if (human.getType().equals(type)) {
-                        humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.4);
-                    }
+                if (human.getType().equals(type)) {
+                    humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
                 }
             }
         }
-        Double ability = humanAbility * 1.2 + 20;
+        Double ability = humanAbility * 1.2 + 30;
         return ability.intValue();
     }
 
@@ -173,7 +175,13 @@ public class InternetCompanyTermContext extends CompanyTermContext {
             sameGradeCount = getCampaignContext().getCompetitionMap().get(productStudy.getCompanyChoice().getId());
         }
         //产品竞争系数计算公式
-        Double productCompetitionRatio = 30 + 20 * Math.pow(sameGradeCount, 0.5);
+        Double productCompetitionRatio = 0d;
+        try {
+            productCompetitionRatio = 30 + 20 * Math.pow(sameGradeCount, 0.5);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
         return productCompetitionRatio.intValue();
     }
 
@@ -205,7 +213,12 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 //市场活动竞争人数
                 Integer count = competitionMap.get(companyInstruction.getCompanyChoice().getId());
                 //市场活动竞争系数
-                Double marketCompetitionRatio = Math.pow(count - 1, 0.7) * 20;
+                Double marketCompetitionRatio = 0d;
+                try {
+                    marketCompetitionRatio = Math.pow(count - 1, 0.7) * 20;
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
                 Double marketCost = Double.valueOf(companyChoice.getValue());
                 Integer marketFee = Integer.valueOf(companyInstruction.getValue());
 
@@ -240,7 +253,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer preOperationAbility = preCompanyTermContext.get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Double satisfaction = preOperationAbility/PERCENT * operationFeeRatio/PERCENT * preProductRatio/PERCENT * 1.5 + 10 + RandomUtil.random(0, 20);
+        Double satisfaction = (1 + preOperationAbility / PERCENT) * (1 + operationFeeRatio / PERCENT) * 14 + preProductRatio * 0.4 + 10 + RandomUtil.random(0, 20);
         return satisfaction.intValue();
     }
 

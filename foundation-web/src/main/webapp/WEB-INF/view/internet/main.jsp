@@ -195,6 +195,8 @@
             </ul>
         </div>
     </div>
+
+    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')}">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
@@ -210,8 +212,9 @@
             <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
+                        ${property.label}:
                         <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.value}%</div>
                         </div>
                     </c:when>
                     <c:when test="${property.display == 'TEXT'}">
@@ -272,6 +275,8 @@
             </div>
         </div>
     </div>
+    </c:if>
+    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')&&!fn:startsWith(campaign.currentCampaignDate, '0102')}">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
@@ -286,8 +291,9 @@
             <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
+                        ${property.label}:
                         <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.value}%</div>
                         </div>
                     </c:when>
                     <c:when test="${property.display == 'TEXT'}">
@@ -328,6 +334,8 @@
             </div>
         </div>
     </div>
+    </c:if>
+    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')&&!fn:startsWith(campaign.currentCampaignDate, '0102')}">
     <div class="am-panel am-panel-default">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
@@ -343,8 +351,9 @@
             <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
                 <c:choose>
                     <c:when test="${property.display == 'PERCENT'}">
+                        ${property.label}:
                         <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.label}:${property.value}%</div>
+                            <div class="am-progress-bar" style="width: ${property.value}%">${property.value}%</div>
                         </div>
                     </c:when>
                     <c:when test="${property.display == 'TEXT'}">
@@ -382,6 +391,7 @@
             </div>
         </div>
     </div>
+    </c:if>
 </div>
 </div>
 <div class="am-panel am-panel-default am-scrollable-horizontal">
@@ -472,10 +482,14 @@
             $("input:radio[name=officeInstructionFee]:eq(0)").attr("checked", 'checked');
         }
         var $choice = $("input:radio[name=officeInstructionFee]:checked");
-        var array = $choice.val().split("_");
-        var choiceId = array[0];
-        var value = array[1];
-        makeUniqueInstruction(companyId, choiceId, value);
+        var choiceArray = $choice.val().split("_");
+        makeUniqueInstruction(companyId, choiceArray[0], choiceArray[1]);
+        //产品定位初始值
+        var productStudy = $("select[id='productStudy']").val();
+        if(productStudy){
+            var productStudyArray = productStudy.split("_");
+            makeUniqueInstruction(companyId, productStudyArray[0], productStudyArray[1]);
+        }
 
         $("select[id^='instruction']")
                 .change(function () {

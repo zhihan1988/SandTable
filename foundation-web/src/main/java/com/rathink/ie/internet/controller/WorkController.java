@@ -144,7 +144,12 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyInstruction companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
+        CompanyInstruction companyInstruction = null;
+        try {
+            instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
         if (companyInstruction == null) {
             instructionManager.saveOrUpdateInstructionByChoice(company, choiceId, value);
         } else {
