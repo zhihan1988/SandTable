@@ -10,10 +10,53 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        .multi-select {
+            position: relative;
+            /*width: 100px;*/
+            /*height: 80px;*/
+            /*border: 1px solid #E3E3E3;*/
+        }
+        .multi-select-selected {
+           /*border-color: red;*/
+        }
+        .multi-select-icon {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            font-size: 20px;
+            color: #FFFFFF;
+        }
+        .multi-select-icon-selected {
+            color: #f37b1d;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function(){
+            $(".multi-select").click(function(){
+                var $multiSelect = $(this);
+                $multiSelect.toggleClass("multi-select-selected");
+                $multiSelect.children(".multi-select-icon").toggleClass("multi-select-icon-selected");
+            })
+        })
+    </script>
 </head>
 <body>
     <div><a href="<c:url value="/flow/reset?campaignId=1"/>">重新开始</a></div>
     <div><a href="<c:url value="/flow/random?campaignId=1"/>">随机数据</a></div>
     <div><a href="<c:url value="/flow/next?campaignId=1"/>">开始下一回合</a></div>
+
+    <div class="multi-select am-btn am-btn-secondary">
+        <i class="am-icon-check multi-select-icon"></i>
+        <span style="margin-right: 25px;">3000000</span>
+    </div>
+    <div class="multi-select am-btn am-btn-secondary">
+        <i class="am-icon-check multi-select-icon"></i>
+        <span style="margin-right: 25px;">3000000</span>
+    </div>
+    <div class="multi-select am-btn am-btn-secondary">
+        <i class="am-icon-check multi-select-icon"></i>
+        <span style="margin-right: 25px;">3000000</span>
+    </div>
 </body>
 </html>

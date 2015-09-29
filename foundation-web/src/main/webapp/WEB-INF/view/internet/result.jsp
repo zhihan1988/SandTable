@@ -13,11 +13,21 @@
    ${result}
 </h3>
 <div>
-    <ul>
-        <li>公司现金：<f:formatNumber value="${companyCash}" pattern="#,#00.#"/></li>
-        <li>上期收入：<f:formatNumber value="${campaignDateInCash}" pattern="#,#00.#"/></li>
-        <li>上期支出：<f:formatNumber value="${campaignDateOutCash}" pattern="#,#00.#"/></li>
-    </ul>
+    <b>财务报告</b>
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+        <tbody>
+        <tr>
+            <td>公司现金</td>
+            <td>上期收入</td>
+            <td>上期支出</td>
+        </tr>
+        <tr>
+            <td><f:formatNumber value="${companyCash}" pattern="#,#00.#"/></td>
+            <td><f:formatNumber value="${campaignDateInCash}" pattern="#,#00.#"/></td>
+            <td><f:formatNumber value="${campaignDateOutCash}" pattern="#,#00.#"/></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="am-panel am-panel-default am-scrollable-horizontal">
@@ -38,7 +48,7 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-        <c:forEach items="${propertyReport}" var="r">
+        <c:forEach items="${propertyReport}" var="r" begin="1">
             <tr>
                 <td>${r.key}</td>
                 <c:forEach items="${r.value}" var="property">
@@ -56,7 +66,7 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-        <c:forEach items="${accountReport}" var="acountMap">
+        <c:forEach items="${accountReport}" var="acountMap" begin="1">
             <tr>
                 <td>${acountMap.key}</td>
                 <c:forEach items="${acountMap.value}" var="account">

@@ -4,7 +4,7 @@ package com.rathink.ie.internet;
  * Created by Hean on 2015/8/26.
  */
 public enum EPropertyName{
-    OFFICE_RATIO("办公室系数", Edept.AD.name(), "PERCENT"),
+//    OFFICE_RATIO("办公室系数", Edept.AD.name(), "PERCENT"),
 
     PRODUCT_ABILITY("产品研发能力", Edept.PRODUCT.name(), "PERCENT"),
     PRODUCT_FEE_RATIO("产品资金投入系数", Edept.PRODUCT.name(), "HIDDEN"),

@@ -21,8 +21,8 @@
 <body>
 <div class="header">
     <div class="am-g">
-        <h1>Web ide</h1>
-        <p>Integrated Development Environment<br/>代码编辑，代码生成，界面设计，调试，编译</p>
+        <h1>企业沙盘</h1>
+        <p>企业运营演练</p>
     </div>
     <hr />
 </div>
@@ -41,8 +41,8 @@
                 <input type="submit" name="" value="忘记密码 ^_^? " class="am-btn am-btn-default am-btn-sm am-fr">
             </div>
         </form>
-        <hr>
-        <p>© 2014 AllMobilize, Inc. Licensed under MIT license.</p>
+      <%--  <hr>
+        <p>© 2015</p>--%>
     </div>
 </div>
 </body>

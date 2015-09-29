@@ -30,9 +30,9 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         EPropertyName ePropertyName = EPropertyName.valueOf(key);
         Integer value = 0;
         switch (ePropertyName) {
-            case OFFICE_RATIO:
+           /* case OFFICE_RATIO:
                 value = calculateOfficeRatio();
-                break;
+                break;*/
             case PRODUCT_ABILITY:
                 value = calculateDeptAbility(Edept.PRODUCT.name());
                 break;
@@ -104,7 +104,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      *
      * @return 办公室系数
      */
-    private Integer calculateOfficeRatio() {
+    /*private Integer calculateOfficeRatio() {
         List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
         Integer officeFee = 0;
         if (companyInstructionList != null) {
@@ -114,11 +114,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         }
         Double officeRatio = Math.pow(officeFee, 0.3) * 2 + 30;
         return officeRatio.intValue();
-    }
-
-    //    private String calculateRecruitmentRatio() {
-//        String officeRatio = get(EPropertyName.OFFICE_RATIO.name());
-//    }
+    }*/
 
     /**
      *
@@ -141,7 +137,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 产品系数
      */
     private Integer calculateProductRatio() {
-        Integer productAbility = preCompanyTermContext.get(EPropertyName.PRODUCT_ABILITY.name());
+        Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + RandomUtil.random(0, 20);
@@ -154,7 +150,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     private Integer calculatePerOrderCost() {
         List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        String grade = "1";
+        String grade = "3";//默认高端
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
         }
@@ -203,7 +199,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
-        Integer marketAbility = preCompanyTermContext.get(EPropertyName.MARKET_ABILITY.name());
+        Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
         Integer productRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
         Double marketX = 0d;
@@ -250,10 +246,10 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return
      */
     private Integer calculateSatisfaction() {
-        Integer preOperationAbility = preCompanyTermContext.get(EPropertyName.OPERATION_ABILITY.name());
+        Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Double satisfaction = (1 + preOperationAbility / PERCENT) * (1 + operationFeeRatio / PERCENT) * 14 + preProductRatio * 0.4 + 10 + RandomUtil.random(0, 20);
+        Double satisfaction = (1 + operationAbility / PERCENT) * (1 + operationFeeRatio / PERCENT) * 14 + preProductRatio * 0.4 + 10 + RandomUtil.random(0, 20);
         return satisfaction.intValue();
     }
 

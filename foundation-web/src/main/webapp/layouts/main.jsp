@@ -42,7 +42,7 @@
 <div class="am-cf admin-main">
 
 
-<div class="admin-content" style="height: auto;padding: 10px">
+<div class="admin-content" style="height: auto;">
 <sitemesh:write property='body'/>
 </div>
 

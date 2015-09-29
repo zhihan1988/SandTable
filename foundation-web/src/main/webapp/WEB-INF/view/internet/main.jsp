@@ -23,82 +23,150 @@
         .main-panel .am-panel-group .am-panel .am-panel-hd{
             background: #EEE;
         }
+
+        .scrollspy-nav {
+            top: 0;
+            z-index: 100;
+            background: #0e90d2;
+            width: 100%;
+            padding: 0 10px;
+        }
+        .scrollspy-nav ul {
+            margin: 0;
+            padding: 0;
+        }
+        .scrollspy-nav li {
+            display: inline-block;
+            list-style: none;
+        }
+        .scrollspy-nav a {
+            color: #eee;
+            padding: 10px 5px;
+            display: inline-block;
+        }
+        .scrollspy-nav a.am-active {
+            color: #fff;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
-
-<h3>${campaign.name} -- ${campaign.formatCampaignDate}</h3>
+<nav class="scrollspy-nav" data-am-scrollspy-nav="{offsetTop: 2}" data-am-sticky>
+    <ul>
+        <li><a href="#report">报告</a></li>
+        <li><a href="#human">人才</a></li>
+        <li><a href="#product">产品</a></li>
+        <li><a href="#market">市场</a></li>
+        <li><a href="#operation">运营</a></li>
+    </ul>
+</nav>
 <div>
-    <button type="button" id="endCampaignDate" class="am-btn am-btn-primary am-btn-block">结束回合</button>
+    <h3 style="margin: auto">${campaign.name} -- ${campaign.formatCampaignDate}</h3>
+    <button type="button" id="endCampaignDate" class="am-btn am-btn-warning">结束回合</button>
     <div id="endCampaignDate-warning" class="am-alert am-alert-warning" data-am-alert style="display: none">
         <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
         <span id="warning-message">回合结束，等待其他公司完成操作</span>
     </div>
 </div>
-<div>
-    <ul>
-        <li>公司现金：<f:formatNumber value="${companyCash}" pattern="#,#00.#"/></li>
-        <li>上期收入：<f:formatNumber value="${campaignDateInCash}" pattern="#,#00.#"/></li>
-        <li>上期支出：<f:formatNumber value="${campaignDateOutCash}" pattern="#,#00.#"/></li>
-    </ul>
-</div>
 <div class="main-panel">
 <div class="am-panel-group" id="accordion">
-    <div class="am-panel am-panel-default">
+    <div class="am-panel am-panel-default" id="report">
         <div class="am-panel-hd">
-            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-                办公室<i class="am-icon-arrow-down am-fr"></i>
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-5'}">
+                报告<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-0'}">
-            <div class="introduce">
-                <p>
-                    选用较好的办公室有利于招聘人才，但这个因素是有限的。
-                </p>
-            </div>
-            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                <c:if test="${preOfficeInstruction.id != null}">
-                    <li style="border: 1px solid #DDD;padding: 5px;">
-                        <div>
-                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                                <li><img style="margin: 0" class="am-thumbnail" src="<c:url value="/img/${preOfficeInstruction.companyChoice.img}"/>" /></li>
-                                <li>
-                                    <p style="margin: 0">${preOfficeInstruction.companyChoice.name}</p>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <p style="margin: 0">月租:${preOfficeInstruction.value}</p>
-                            <p style="margin: 0">简介:${preOfficeInstruction.companyChoice.description}<p>
-                        </div>
-                    </li>
-                </c:if>
-            </ul>
+        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-5'}">
+            <b>财务报告</b>
+            <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+                <tbody>
+                <tr>
+                    <td>公司现金</td>
+                    <td>上期收入</td>
+                    <td>上期支出</td>
+                </tr>
+                <tr>
+                    <td><f:formatNumber value="${companyCash}" pattern="#,#00.#"/></td>
+                    <td><f:formatNumber value="${campaignDateInCash}" pattern="#,#00.#"/></td>
+                    <td><f:formatNumber value="${campaignDateOutCash}" pattern="#,#00.#"/></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-        <div id="do-not-say-0" class="am-panel-collapse am-collapse">
-            <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
-            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
-                <c:forEach items="${officeChoiceList}" var="officeChoice">
-                    <li style="border: 1px solid #DDD;padding: 5px;">
-                        <div>
-                            <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
-                                <li>
-                                    <img style="width: 80px;margin: 0;" src="<c:url value="/img/${officeChoice.img}"/>"/>
-                                </li>
-                                <li>
-                                    <p style="margin: 0">${officeChoice.name}</p>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <p style="margin: 0">月租：${officeChoice.value}</p>
-                            <p style="margin: 0">简介：${officeChoice.description}<p>
-                            <p style="margin: 0"><input type="radio" name="officeInstructionFee" value="${officeChoice.id}_${officeChoice.value}"
-                                                        <c:if test="${preOfficeInstruction.companyChoice.name == officeChoice.name}">checked="checked"</c:if>><p>
-                        </div>
-                    </li>
-                </c:forEach>
-            </ul>
+        <div id="do-not-say-5" class="am-panel-collapse am-collapse">
+            <div class="am-panel am-panel-default am-scrollable-horizontal" style="padding: 5px;">
+                <b>产品定位竞争报告</b>
+                <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+                    <tbody>
+                    <tr>
+                        <td>产品定位</td>
+                        <c:forEach items="${productStudyCompetitionReport}" var="g">
+                            <td>${g.key}</td>
+                        </c:forEach>
+                    </tr>
+                    <tr>
+                        <td>竞争人数(包含自己)</td>
+                        <c:forEach items="${productStudyCompetitionReport}" var="g">
+                            <td>${g.value}</td>
+                        </c:forEach>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+                <b>市场活动竞争报告</b>
+                <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+                    <tbody>
+                    <tr>
+                        <td>市场活动</td>
+                        <c:forEach items="${marketCompetitionReport}" var="g">
+                            <td>${g.key}</td>
+                        </c:forEach>
+                    </tr>
+                    <tr>
+                        <td>竞争人数(包含自己)</td>
+                        <c:forEach items="${marketCompetitionReport}" var="g">
+                            <td>${g.value}</td>
+                        </c:forEach>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
+                    <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
+                        <tr>
+                            <td></td>
+                            <c:forEach items="${r.value}" var="property">
+                                <td>${property.key}</td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                    <c:forEach items="${propertyReport}" var="r" begin="1">
+                        <tr>
+                            <td>${r.key}</td>
+                            <c:forEach items="${r.value}" var="property">
+                                <td>${property.value}</td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </table>
+                <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
+                    <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
+                        <tr>
+                            <td></td>
+                            <c:forEach items="${acountMap.value}" var="account">
+                                <td>${account.key}</td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                    <c:forEach items="${accountReport}" var="acountMap" begin="1">
+                        <tr>
+                            <td>${acountMap.key}</td>
+                            <c:forEach items="${acountMap.value}" var="account">
+                                <td>${account.value}</td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -197,8 +265,7 @@
         </div>
     </div>
 
-    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')}">
-    <div class="am-panel am-panel-default">
+    <div class="am-panel am-panel-default" id="product">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-2'}">
                 产品研发<i class="am-icon-arrow-down am-fr"></i>
@@ -231,7 +298,7 @@
                 <table class="am-table">
                     <thead>
                     <tr>
-                        <th>定位</th>
+                        <th>产品定位</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -253,7 +320,7 @@
                 <table class="am-table">
                     <thead>
                     <tr>
-                        <th>投入</th>
+                        <th>研发投入</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -276,9 +343,8 @@
             </div>
         </div>
     </div>
-    </c:if>
-    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')&&!fn:startsWith(campaign.currentCampaignDate, '0102')}">
-    <div class="am-panel am-panel-default">
+
+    <div class="am-panel am-panel-default" id="market">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-4'}">
                 市场营销<i class="am-icon-arrow-down am-fr"></i>
@@ -335,139 +401,81 @@
             </div>
         </div>
     </div>
-    </c:if>
-    <c:if test="${!fn:startsWith(campaign.currentCampaignDate, '0101')&&!fn:startsWith(campaign.currentCampaignDate, '0102')}">
-    <div class="am-panel am-panel-default">
+
+    <div class="am-panel am-panel-default" id="operation">
         <div class="am-panel-hd">
             <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
                 运营<i class="am-icon-arrow-down am-fr"></i>
             </h4>
         </div>
-        <div class="am-panel-bd"  data-am-collapse="{parent: '#accordion', target: '#do-not-say-3'}">
-            <div class="introduce">
-                <p>较好的运营水平有助于提高满意度，较高的满意度意味着较高的用户留存率。</p>
-                <p>较好的运营人才和较多的运营投入有助于提升运营能力。</p>
-                <p>本期总用户数和客单价决定了本期的收入。</p>
-            </div>
-            <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
-                <c:choose>
-                    <c:when test="${property.display == 'PERCENT'}">
-                        ${property.label}:
-                        <div class="am-progress">
-                            <div class="am-progress-bar" style="width: ${property.value}%">${property.value}%</div>
+        <div class="am-panel-bd">
+            <div class="am-tabs" data-am-tabs>
+                <ul class="am-tabs-nav am-nav am-nav-tabs">
+                    <li class="am-active"><a href="#tab1">信息</a></li>
+                    <li><a href="#tab2">操作</a></li>
+                    <li><a href="#tab3">帮助</a></li>
+                </ul>
+
+                <div class="am-tabs-bd">
+                    <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+                        <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
+                            <c:choose>
+                                <c:when test="${property.display == 'PERCENT'}">
+                                    ${property.label}:
+                                    <div class="am-progress">
+                                        <div class="am-progress-bar" style="width: ${property.value}%">${property.value}%</div>
+                                    </div>
+                                </c:when>
+                                <c:when test="${property.display == 'TEXT'}">
+                                    <p>${property.label}:${property.value}</p>
+                                </c:when>
+                                <c:otherwise>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                    </div>
+                    <div class="am-tab-panel am-fade" id="tab2">
+                        <div class="am-panel-bd">
+                            <table class="am-table" style="height: 300px;">
+                                <thead>
+                                <tr>
+                                    <th>投入</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach items="${operationChoiceList}" var="operationChoice">
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
+                                            <select id="instruction_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                                <option value="${operationChoice.id}_-1">不需要</option>
+                                                <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
+                                                    <option value="${operationChoice.id}_${fee}">${fee}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
                         </div>
-                    </c:when>
-                    <c:when test="${property.display == 'TEXT'}">
-                        <p>${property.label}:${property.value}</p>
-                    </c:when>
-                    <c:otherwise>
-                    </c:otherwise>
-                </c:choose>
-            </c:forEach>
-        </div>
-        <div id="do-not-say-3" class="am-panel-collapse am-collapse">
-            <div class="am-panel-bd">
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>投入</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${operationChoiceList}" var="operationChoice">
-                        <tr>
-                            <td>
-                                <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
-                                <select id="instruction_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="${operationChoice.id}_-1">不需要</option>
-                                    <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
-                                        <option value="${operationChoice.id}_${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
+                    </div>
+                    <div class="am-tab-panel am-fade" id="tab3">
+                        <div class="introduce">
+                            <p>较好的运营水平有助于提高满意度，较高的满意度意味着较高的用户留存率。</p>
+                            <p>较好的运营人才和较多的运营投入有助于提升运营能力。</p>
+                            <p>本期总用户数和客单价决定了本期的收入。</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
-    </c:if>
+    <div style="height: 100px;"></div>
 </div>
-</div>
-<div class="am-panel am-panel-default am-scrollable-horizontal">
-
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
-        <thead>
-        <tr>
-            <th>产品定位竞争报告</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${productStudyCompetitionReport}" var="g">
-            <tr>
-                <td>${g.key}:${g.value}</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
-        <thead>
-        <tr>
-            <th>市场活动竞争报告</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${marketCompetitionReport}" var="g">
-            <tr>
-                <td>${g.key}:${g.value}</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
-        <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
-            <tr>
-                <td></td>
-                <c:forEach items="${r.value}" var="property">
-                    <td>${property.key}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-        <c:forEach items="${propertyReport}" var="r" begin="1">
-            <tr>
-                <td>${r.key}</td>
-                <c:forEach items="${r.value}" var="property">
-                    <td>${property.value}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-    </table>
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
-        <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
-            <tr>
-                <td></td>
-                <c:forEach items="${acountMap.value}" var="account">
-                    <td>${account.key}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-        <c:forEach items="${accountReport}" var="acountMap" begin="1">
-            <tr>
-                <td>${acountMap.key}</td>
-                <c:forEach items="${acountMap.value}" var="account">
-                    <td>${account.value}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-    </table>
 </div>
 
-<div data-am-widget="gotop" class="am-gotop am-gotop-default" >
-    <a href="#top" title="回到顶部">
-        <span class="am-gotop-title">回到顶部</span>
-        <i class="am-gotop-icon am-icon-chevron-up"></i>
-    </a>
 </div>
 
 <script>
@@ -477,14 +485,6 @@
         var campaignDate = '${campaign.currentCampaignDate}';
         var companyId = '${company.id}';
 
-        //办公室初始值
-        var isOfficeCheck = $('input:radio[name="officeInstructionFee"]').is(":checked");
-        if (!isOfficeCheck) {
-            $("input:radio[name=officeInstructionFee]:eq(0)").attr("checked", 'checked');
-        }
-        var $choice = $("input:radio[name=officeInstructionFee]:checked");
-        var choiceArray = $choice.val().split("_");
-        makeUniqueInstruction(companyId, choiceArray[0], choiceArray[1]);
         //产品定位初始值
         var productStudy = $("select[id='productStudy']").val();
         if(productStudy){
@@ -525,16 +525,6 @@
                         makeUniqueInstruction(companyId, choiceId, value);
                     }
                 });
-        //办公室
-        $("input:radio[name='officeInstructionFee']").change(function () {
-            var $choice = $(this);
-            var array = $choice.val().split("_");
-            var choiceId = array[0];
-            var value = array[1];
-            if (value != -1) {
-                makeUniqueInstruction(companyId, choiceId, value);
-            }
-        });
 
         $("a[id^='humanInstruction_']").click(function() {
             if(confirm("辞退员工将扣除两个月薪水作为补贴，是否继续？")) {

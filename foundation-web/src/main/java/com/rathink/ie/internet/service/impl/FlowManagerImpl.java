@@ -259,11 +259,13 @@ public class FlowManagerImpl implements FlowManager {
                 CompanyInstruction successCompanyInstruction = null;
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
                     CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
-                    Integer officeRatio = companyTermContext.get(EPropertyName.OFFICE_RATIO.name());
                     Double fee = Double.valueOf(companyInstruction.getValue());
                     Double feeRatio = Math.pow(fee, 0.5) * 0.35;//薪酬系数
-                    Integer randomRatio = RandomUtil.random(0, 40);
-                    Double recruitmentRatio = officeRatio * 10 / 100 + feeRatio * 50 / 100 + randomRatio;
+                    Integer randomRatio = RandomUtil.random(0, 60);
+                    Double recruitmentRatio = feeRatio * 40 / 100 + randomRatio;
+                    logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
+                            companyTermContext.getCompanyTerm().getCompany().getName(), companyChoice.getName(),
+                            fee, feeRatio, randomRatio, recruitmentRatio);
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
                         successCompanyInstruction = companyInstruction;
@@ -333,11 +335,6 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
 
-            List<CompanyInstruction> officeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
-            Integer officeFee = instructionManager.sumFee(officeInstructionList) * CampaignUtil.TIME_UNIT;
-            Account adAccount = accountManager.packageAccount(String.valueOf(officeFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(adAccount);
-
             List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
             Iterator<CompanyInstruction> companyInstructionIterator = humanInstructionList.iterator();
             while (companyInstructionIterator.hasNext()) {
@@ -349,6 +346,10 @@ public class FlowManagerImpl implements FlowManager {
             Integer humanFee = instructionManager.sumFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
             Account humanAccount = accountManager.packageAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(humanAccount);
+
+            Integer adFee = humanFee * 20 / 100 + 20000;
+            Account adAccount = accountManager.packageAccount(String.valueOf(adFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(adAccount);
 
             List<CompanyInstruction> productFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
             Integer productFee = instructionManager.sumFee(productFeeInstructionList);
