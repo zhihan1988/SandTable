@@ -11,7 +11,7 @@
 
 <div>
     <ul class="am-nav am-nav-pills">
-        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">赛事列表</a></li>
+        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">行业列表</a></li>
         <li><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
         <li><a href="#">我的资本</a></li>
     </ul>

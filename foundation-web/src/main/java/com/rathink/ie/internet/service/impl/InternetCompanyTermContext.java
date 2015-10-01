@@ -91,11 +91,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
-                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当期的人才能力（延迟一期生效）
+//                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当期的人才能力（延迟一期生效）
                     if (human.getType().equals(type)) {
                         humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
                     }
-                }
+//                }
             }
         }
         Double ability = humanAbility * 1.2 + 30;
@@ -273,7 +273,9 @@ public class InternetCompanyTermContext extends CompanyTermContext {
             }
         }
         Integer satisfaction = preCompanyTermContext.get(EPropertyName.SATISFACTION.name());
-        return preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;
+        Integer oldUserAmount = preUserAmount * satisfaction / 100 * RandomUtil.random(80, 120) / 100;
+        logger.info("计算老用户数-----------上一期总用户数：{}，满意度：{},本期老用户数：{}",preUserAmount,satisfaction,oldUserAmount);
+        return oldUserAmount;
     }
 
     /**
@@ -283,6 +285,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     private Integer calculateUserAmount() {
         Integer oldUserAmount = get(EPropertyName.OLD_USER_AMOUNT.name());
         Integer newUserAmount = get(EPropertyName.NEW_USER_AMOUNT.name());
+        logger.info("计算总用户数-----------老用户数量:{},新用户数量：{},总用户数量：{}",oldUserAmount,newUserAmount,oldUserAmount+newUserAmount);
         return oldUserAmount + newUserAmount;
     }
 

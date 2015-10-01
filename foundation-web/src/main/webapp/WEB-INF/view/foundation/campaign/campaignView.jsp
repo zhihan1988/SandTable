@@ -7,7 +7,7 @@
 <!doctype html>
 <html class="no-js">
 <head></head>
-<body>
+    <div><a href="<c:url value="/campaign/listCampaign"/>">返回行业列表</a></div>
 
     <h1>${campaign.name}</h1>
 
@@ -24,9 +24,9 @@
             <c:forEach items="${companyList}" var="company" varStatus="vs">
                 <tr>
                     <td>
-                        <a href="<c:url value="#"/>">${company.name}</a>
+                        <a href="<c:url value="/company/${company.id}"/>">${company.name}</a>
                         <c:if test="${company.director.id == myUser.id}">
-                            <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入游戏</a>
+                            <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">开始经营</a>
                         </c:if>
                     </td>
                     <td>${company.slogan}</td>

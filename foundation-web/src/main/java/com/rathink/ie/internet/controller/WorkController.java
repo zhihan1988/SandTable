@@ -8,6 +8,7 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
@@ -90,6 +91,7 @@ public class WorkController {
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
         model.addAttribute("preOfficeInstruction", preOfficeInstruction);
         model.addAttribute("preCampaignDate", preCampaignDate);
+        model.addAttribute("companyNum", CampaignCenter.getCampaignHandler(campaign.getId()).getCompanyTermContextMap().size());
 
         //产品定位冲突报告
         Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();

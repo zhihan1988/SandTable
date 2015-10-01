@@ -260,7 +260,7 @@ public class FlowManagerImpl implements FlowManager {
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
                     CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
                     Double fee = Double.valueOf(companyInstruction.getValue());
-                    Double feeRatio = Math.pow(fee, 0.6) * 0.35;//薪酬系数
+                    Double feeRatio = Math.pow(fee, 0.51) * 0.35;//薪酬系数
                     Integer randomRatio = RandomUtil.random(0, 70);
                     Double recruitmentRatio = feeRatio * 30 / 100 + randomRatio;//招聘能力系数
                     logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
@@ -320,7 +320,7 @@ public class FlowManagerImpl implements FlowManager {
             List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
             for (EPropertyName ePropertyName : EPropertyName.values()) {
                 String key = ePropertyName.name();
-                Integer value = companyTermContext.contains(key) ? companyTermContext.get(key) : companyTermContext.calculate(key);
+                Integer value = companyTermContext.get(key);
                 companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);

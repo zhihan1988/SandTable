@@ -29,23 +29,38 @@
     </style>
 </head>
 <body>
+<header data-am-widget="header"
+        class="am-header am-header-default">
+    <div class="am-header-left am-header-nav">
+        <a href="<c:url value="/campaign/${campaign.id}"/>" class="">
+            <i class="am-header-icon am-icon-home"></i>
+        </a>
+        <a href="#" class="">
+            <%--<i class="am-header-icon am-icon-phone"></i>--%>
+        </a>
+    </div>
 
-<div data-am-widget="tabs" class="am-tabs am-tabs-default" style="margin: 0">
+    <div class="am-header-title">
+        <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
+        <span>操作中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}
+    </div>
+
+    <div class="am-header-right am-header-nav">
+        <%--<i class="am-icon-stop"></i>--%>
+        <a href="#left-link" id="endCampaignDate" class="">
+            结束回合
+        </a>
+    </div>
+</header>
+<div data-am-widget="tabs" class="am-tabs am-tabs-d2" style="margin: 0">
     <ul class="am-tabs-nav am-cf">
-        <li class="am-active"><a href="[data-tab-panel-0]">报表</a></li>
-        <li class=""><a href="[data-tab-panel-1]">人事</a></li>
-        <li class=""><a href="[data-tab-panel-2]">产品</a></li>
-        <li class=""><a href="[data-tab-panel-3]">市场</a></li>
-        <li class=""><a href="[data-tab-panel-4]">运营</a></li>
+        <li class="am-active"><a id="panel-0" href="[data-tab-panel-0]">主页</a></li>
+        <li class=""><a id="panel-hr" href="[data-tab-panel-1]">人事</a></li>
+        <li class=""><a id="panel-product" href="[data-tab-panel-2]">产品</a></li>
+        <li class=""><a id="panel-market" href="[data-tab-panel-3]">市场</a></li>
+        <li class=""><a id="panel-operation" href="[data-tab-panel-4]">运营</a></li>
     </ul>
     <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formatCampaignDate}</h3>
-    <div>
-        <button type="button" id="endCampaignDate" class="am-btn am-btn-warning am-btn-block">结束回合</button>
-        <div id="endCampaignDate-warning" class="am-alert am-alert-warning" data-am-alert style="display: none">
-            <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
-            <span id="warning-message">回合结束，等待其他公司完成操作</span>
-        </div>
-    </div>
     <div class="am-tabs-bd">
         <div data-tab-panel-0 class="am-tab-panel am-active">
             <div class="am-panel-bd">
@@ -64,6 +79,59 @@
                     </tr>
                     </tbody>
                 </table>
+                <div class="am-panel am-panel-default">
+                    <div class="am-panel-bd">
+                        人事部：
+                        <p>已招聘人数：${fn:length(hrInstructionList)}</p>
+                        <a id="enter-hr" href="#">进入人事部</a>
+                    </div>
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+
+                    <div class="am-panel-bd">
+                        产品研发部：
+                        <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
+                            <c:choose>
+                                <c:when test="${property.display == 'TEXT'}">
+                                    <p>${property.label}:${property.value}</p>
+                                </c:when>
+                                <c:otherwise>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <a id="enter-product" href="#">进入产品研发部</a>
+                    </div>
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+
+                    <div class="am-panel-bd">
+                        市场部：
+                        <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
+                            <c:choose>
+                                <c:when test="${property.display == 'TEXT'}">
+                                    <p>${property.label}:${property.value}</p>
+                                </c:when>
+                                <c:otherwise>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <a id="enter-market" href="#">进入市场部</a>
+                    </div>
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+
+                    <div class="am-panel-bd">
+                        运营部：
+                        <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
+                            <c:choose>
+                                <c:when test="${property.display == 'TEXT'}">
+                                    <p>${property.label}:${property.value}</p>
+                                </c:when>
+                                <c:otherwise>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                        <a id="enter-operation" href="#">进入运营部</a>
+                    </div>
+                </div>
+
                 <br/>
                 <b>产品定位竞争报告</b>
                 <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
@@ -104,7 +172,7 @@
         </div>
         <div data-tab-panel-1 class="am-tab-panel ">
             <div class="am-panel am-panel-default" id="human">
-
+                <b>已招聘人员：</b>
                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails" style="margin: 10px;">
                     <c:forEach items="${hrInstructionList}" var="hrInstruction" varStatus="status">
                         <li style="border: 1px solid #DDD;padding: 5px;">
@@ -141,6 +209,7 @@
                     </c:forEach>
                 </ul>
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                <b>待招聘人员：</b>
                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails operation" style="margin: 10px;">
                     <c:forEach items="${humanList}" var="human">
                         <li style="border: 1px solid #DDD;padding: 5px;">
@@ -418,6 +487,12 @@
 <script>
 
     $(function () {
+        $("a[id^='enter-']").click(function () {
+            var id = $(this).attr("id");
+            $("#panel-"+id.split("-")[1]).trigger("click");
+        });
+
+
         var campaignId = '${campaign.id}';
         var campaignDate = '${campaign.currentCampaignDate}';
         var companyId = '${company.id}';
@@ -496,15 +571,14 @@
                             companyId: companyId
                         },
                         function (data) {
-                            setInterval(isNext, 5000);
 //                            $endCampaignDate.addClass("am-disabled");
                             $endCampaignDate.hide();
-                            $("#endCampaignDate-warning").show();
                         }
                 );
             }
         });
 
+        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isNext"/>",
                     {
@@ -515,7 +589,7 @@
                         if (data == 0) {
                             location.reload();
                         } else {
-                            $("#warning-message").text(data + '家公司没有完成操作');
+                            $("#unFinishedNum").text(data);
                         }
                     });
 

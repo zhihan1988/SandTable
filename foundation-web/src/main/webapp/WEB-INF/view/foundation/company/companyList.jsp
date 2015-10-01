@@ -12,7 +12,7 @@
 
 <div>
     <ul class="am-nav am-nav-pills">
-        <li><a href="<c:url value="/campaign/listCampaign"/>">赛事列表</a></li>
+        <li><a href="<c:url value="/campaign/listCampaign"/>">行业列表</a></li>
         <li class="am-active"><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
         <li><a href="#">我的资本</a></li>
     </ul>
@@ -34,7 +34,7 @@
             <tr>
                 <td>
                     <a href="<c:url value="/company/${company.id}"/>">${company.name}</a>
-                    <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入游戏</a>
+                    <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入</a>
                 </td>
                 <td>
                     ${company.slogan}
