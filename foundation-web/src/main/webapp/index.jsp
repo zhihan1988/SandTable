@@ -21,8 +21,8 @@
 <body>
 <div class="header">
     <div class="am-g">
-        <h1>企业沙盘</h1>
-        <p>企业运营演练</p>
+        <h1>商世界</h1>
+        <p>模拟现代商业的游戏</p>
     </div>
     <hr />
 </div>

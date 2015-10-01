@@ -151,8 +151,8 @@ public class FlowManagerImpl implements FlowManager {
                     companyTermContext.put(ePropertyName.name(), 0);
                     companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, 0, companyTerm));
                 } else {
-                    companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2000000);
-                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2000000, companyTerm));
+                    companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2500000);
+                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2500000, companyTerm));
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
@@ -260,9 +260,9 @@ public class FlowManagerImpl implements FlowManager {
                 for (CompanyInstruction companyInstruction : companyInstructionList) {
                     CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
                     Double fee = Double.valueOf(companyInstruction.getValue());
-                    Double feeRatio = Math.pow(fee, 0.5) * 0.35;//薪酬系数
-                    Integer randomRatio = RandomUtil.random(0, 60);
-                    Double recruitmentRatio = feeRatio * 40 / 100 + randomRatio;
+                    Double feeRatio = Math.pow(fee, 0.6) * 0.35;//薪酬系数
+                    Integer randomRatio = RandomUtil.random(0, 70);
+                    Double recruitmentRatio = feeRatio * 30 / 100 + randomRatio;//招聘能力系数
                     logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
                             companyTermContext.getCompanyTerm().getCompany().getName(), companyChoice.getName(),
                             fee, feeRatio, randomRatio, recruitmentRatio);

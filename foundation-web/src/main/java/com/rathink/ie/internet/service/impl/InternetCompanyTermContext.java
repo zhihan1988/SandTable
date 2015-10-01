@@ -91,8 +91,10 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {
                 CompanyChoice human = companyInstruction.getCompanyChoice();
-                if (human.getType().equals(type)) {
-                    humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
+                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当期的人才能力（延迟一期生效）
+                    if (human.getType().equals(type)) {
+                        humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
+                    }
                 }
             }
         }
@@ -137,7 +139,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 产品系数
      */
     private Integer calculateProductRatio() {
-        Integer productAbility = get(EPropertyName.PRODUCT_ABILITY.name());
+        Integer productAbility = preCompanyTermContext.get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + RandomUtil.random(0, 20);
@@ -199,7 +201,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
-        Integer marketAbility = get(EPropertyName.MARKET_ABILITY.name());
+        Integer marketAbility = preCompanyTermContext.get(EPropertyName.MARKET_ABILITY.name());
         Integer productRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
         Double marketX = 0d;
@@ -246,7 +248,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return
      */
     private Integer calculateSatisfaction() {
-        Integer operationAbility = get(EPropertyName.OPERATION_ABILITY.name());
+        Integer operationAbility = preCompanyTermContext.get(EPropertyName.OPERATION_ABILITY.name());
         Integer operationFeeRatio = get(EPropertyName.OPERATION_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Double satisfaction = (1 + operationAbility / PERCENT) * (1 + operationFeeRatio / PERCENT) * 14 + preProductRatio * 0.4 + 10 + RandomUtil.random(0, 20);
@@ -290,7 +292,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     private Integer currentIncome() {
         Integer userAmount = preCompanyTermContext.get(EPropertyName.USER_AMOUNT.name());
-        Integer perOrderCost = get(EPropertyName.PER_ORDER_COST.name());
+        Integer perOrderCost = preCompanyTermContext.get(EPropertyName.PER_ORDER_COST.name());
         return userAmount * perOrderCost;
     }
 
