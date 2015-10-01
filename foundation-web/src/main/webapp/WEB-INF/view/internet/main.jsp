@@ -26,14 +26,23 @@
         .main-panel .am-panel-group .am-panel .am-panel-hd{
             background: #EEE;
         }
+        .door {
+            position: relative;
+            padding-left: 10px;
+        }
+        .door-enter {
+            position: absolute;
+            top: 0px;
+            right: 10px;
+            color:#0e90d2;
+        }
     </style>
 </head>
 <body>
-<header data-am-widget="header"
-        class="am-header am-header-default">
+<header data-am-widget="header" class="am-header am-header-default">
     <div class="am-header-left am-header-nav">
         <a href="<c:url value="/campaign/${campaign.id}"/>" class="">
-            <i class="am-header-icon am-icon-home"></i>
+            行业
         </a>
         <a href="#" class="">
             <%--<i class="am-header-icon am-icon-phone"></i>--%>
@@ -42,7 +51,7 @@
 
     <div class="am-header-title">
         <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
-        <span>操作中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}
+        <span>进行中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}
     </div>
 
     <div class="am-header-right am-header-nav">
@@ -55,10 +64,14 @@
 <div data-am-widget="tabs" class="am-tabs am-tabs-d2" style="margin: 0">
     <ul class="am-tabs-nav am-cf">
         <li class="am-active"><a id="panel-0" href="[data-tab-panel-0]">主页</a></li>
-        <li class=""><a id="panel-hr" href="[data-tab-panel-1]">人事</a></li>
-        <li class=""><a id="panel-product" href="[data-tab-panel-2]">产品</a></li>
+        <li class=""><a id="panel-hr" href="[data-tab-panel-1]">招聘</a></li>
+        <c:if test="${campaign.currentCampaignDate != '010101'}">
+            <li class=""><a id="panel-product" href="[data-tab-panel-2]">产品</a></li>
+        </c:if>
+        <c:if test="${campaign.currentCampaignDate != '010101' && campaign.currentCampaignDate != '010204'}">
         <li class=""><a id="panel-market" href="[data-tab-panel-3]">市场</a></li>
         <li class=""><a id="panel-operation" href="[data-tab-panel-4]">运营</a></li>
+        </c:if>
     </ul>
     <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formatCampaignDate}</h3>
     <div class="am-tabs-bd">
@@ -79,56 +92,63 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="am-panel am-panel-default">
-                    <div class="am-panel-bd">
-                        人事部：
-                        <p>已招聘人数：${fn:length(hrInstructionList)}</p>
-                        <a id="enter-hr" href="#">进入人事部</a>
-                    </div>
-                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                <div id="enter-hr" class="am-panel am-panel-default">
+                    <div class="am-panel">
 
-                    <div class="am-panel-bd">
-                        产品研发部：
+                    <div id="enter-human" class="door">
+                        <b>招聘</b>
+                        <p>在职人数：${fn:length(hrInstructionList)}</p>
+                        <span class="door-enter">进入<i class="am-icon-chevron-right"></i></span>
+                    </div>
+
+                    <c:if test="${campaign.currentCampaignDate != '010101'}">
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                    <div id="enter-product" class="door">
+                        <b>产品</b>
                         <c:forEach items="${deptPropertyMap['PRODUCT']}" var="property">
                             <c:choose>
-                                <c:when test="${property.display == 'TEXT'}">
+                                <c:when test="${property.display != 'HIDDEN'}">
                                     <p>${property.label}:${property.value}</p>
                                 </c:when>
                                 <c:otherwise>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
-                        <a id="enter-product" href="#">进入产品研发部</a>
+                        <span class="door-enter">进入<i class="am-icon-chevron-right"></i></span>
                     </div>
-                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                    </c:if>
 
-                    <div class="am-panel-bd">
-                        市场部：
+                    <c:if test="${campaign.currentCampaignDate != '010101' && campaign.currentCampaignDate != '010204'}">
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                    <div id="enter-market" class="door">
+                        <b>市场</b>
                         <c:forEach items="${deptPropertyMap['MARKET']}" var="property">
                             <c:choose>
-                                <c:when test="${property.display == 'TEXT'}">
+                                <c:when test="${property.display != 'HIDDEN'}">
                                     <p>${property.label}:${property.value}</p>
                                 </c:when>
                                 <c:otherwise>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
-                        <a id="enter-market" href="#">进入市场部</a>
+                        <span class="door-enter">进入<i class="am-icon-chevron-right"></i></span>
                     </div>
-                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
 
-                    <div class="am-panel-bd">
-                        运营部：
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
+                    <div class="door" id="enter-operation">
+                        <b>运营</b>
                         <c:forEach items="${deptPropertyMap['OPERATION']}" var="property">
                             <c:choose>
-                                <c:when test="${property.display == 'TEXT'}">
+                                <c:when test="${property.display != 'HIDDEN'}">
                                     <p>${property.label}:${property.value}</p>
                                 </c:when>
                                 <c:otherwise>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
-                        <a id="enter-operation" href="#">进入运营部</a>
+                        <span class="door-enter">进入<i class="am-icon-chevron-right"></i></span>
+                    </div>
+                    </c:if>
                     </div>
                 </div>
 
@@ -487,7 +507,7 @@
 <script>
 
     $(function () {
-        $("a[id^='enter-']").click(function () {
+        $("div[id^='enter-']").click(function () {
             var id = $(this).attr("id");
             $("#panel-"+id.split("-")[1]).trigger("click");
         });

@@ -8,10 +8,26 @@
 <html class="no-js">
 <head></head>
 <body>
+<header data-am-widget="header" class="am-header am-header-default">
+    <div class="am-header-left am-header-nav">
+        <a href="<c:url value="/campaign/${campaign.id}"/>" class="">
+            行业
+        </a>
+        <a href="#" class="">
+            <%--<i class="am-header-icon am-icon-phone"></i>--%>
+        </a>
+    </div>
 
-<h3>
-   ${result}
-</h3>
+    <div class="am-header-title">
+        ${result}
+    </div>
+
+    <div class="am-header-right am-header-nav">
+        <a href="#" class="">
+        </a>
+    </div>
+</header>
+
 <div>
     <b>财务报告</b>
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap">

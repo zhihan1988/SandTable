@@ -347,7 +347,7 @@ public class FlowManagerImpl implements FlowManager {
             Account humanAccount = accountManager.packageAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(humanAccount);
 
-            Integer adFee = humanFee * 20 / 100 + 20000;
+            Integer adFee = humanFee * 20 / 100 + humanInstructionList.size() * 2000 + 20000;
             Account adAccount = accountManager.packageAccount(String.valueOf(adFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(adAccount);
 

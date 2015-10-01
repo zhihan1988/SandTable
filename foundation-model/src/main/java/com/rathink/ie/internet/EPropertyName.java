@@ -20,7 +20,7 @@ public enum EPropertyName{
     SATISFACTION("满意度", Edept.OPERATION.name(), "PERCENT"),
     OLD_USER_AMOUNT("老用户数量", Edept.OPERATION.name(), "TEXT"),
     USER_AMOUNT("总用户数", Edept.OPERATION.name(),"TEXT"),
-    CURRENT_PERIOD_INCOME("本期收入", Edept.OPERATION.name(),"TEXT");
+    CURRENT_PERIOD_INCOME("上期收入", Edept.OPERATION.name(),"TEXT");
 
     private String label;
     private String dept;//所属部门
