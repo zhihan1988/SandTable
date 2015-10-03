@@ -2,9 +2,9 @@ package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.ibase.work.model.Resource;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryChoice;
 
 import java.util.*;
 
@@ -13,20 +13,20 @@ import java.util.*;
  */
 public class CampaignContext {
     private Campaign campaign;
-    private Set<CompanyInstruction> currentCompanyInstructionSet = new HashSet<>();
+    private Set<CompanyTermInstruction> currentCompanyTermInstructionSet = new HashSet<>();
     private Map<String, CompanyTermContext> companyTermContextMap;
     private Map<String, Integer> competitionMap = new HashMap<>();
-    private Map<String, List<CompanyChoice>> typeCompanyChoiceMap = new HashMap<>();
-    private Map<String, List<CompanyInstruction>> choiceInstructionMap = new HashMap<>();
-    private List<CompanyChoice> currentCompanyChoiceList = new ArrayList<>();
-    private Set<Resource> humanRepository = new HashSet<>();
+    private Map<String, List<CampaignTermChoice>> typeCompanyChoiceMap = new HashMap<>();
+    private Map<String, List<CompanyTermInstruction>> choiceInstructionMap = new HashMap<>();
+    private List<CampaignTermChoice> currentCampaignTermChoiceList = new ArrayList<>();
+    private Set<IndustryChoice> humanRepository = new HashSet<>();
 
     public void next() {
-        currentCompanyInstructionSet.clear();
+        currentCompanyTermInstructionSet.clear();
         competitionMap.clear();
         typeCompanyChoiceMap.clear();
         choiceInstructionMap.clear();
-        currentCompanyChoiceList.clear();
+        currentCampaignTermChoiceList.clear();
     }
 
     public Campaign getCampaign() {
@@ -55,74 +55,74 @@ public class CampaignContext {
 
     /**
      * 当前比赛进度的全部可供选择的决策项
-     * @param currentCompanyChoiceList
+     * @param currentCampaignTermChoiceList
      */
-    public void setCurrentCompanyChoiceList(List<CompanyChoice> currentCompanyChoiceList) {
-        this.currentCompanyChoiceList = currentCompanyChoiceList;
-        for (CompanyChoice companyChoice : currentCompanyChoiceList) {
-            String baseType = companyChoice.getBaseType();
+    public void setCurrentCampaignTermChoiceList(List<CampaignTermChoice> currentCampaignTermChoiceList) {
+        this.currentCampaignTermChoiceList = currentCampaignTermChoiceList;
+        for (CampaignTermChoice campaignTermChoice : currentCampaignTermChoiceList) {
+            String baseType = campaignTermChoice.getBaseType();
             if (typeCompanyChoiceMap.containsKey(baseType)) {
-                typeCompanyChoiceMap.get(baseType).add(companyChoice);
+                typeCompanyChoiceMap.get(baseType).add(campaignTermChoice);
             } else {
-                List<CompanyChoice> ccList = new ArrayList<>();
-                ccList.add(companyChoice);
+                List<CampaignTermChoice> ccList = new ArrayList<>();
+                ccList.add(campaignTermChoice);
                 typeCompanyChoiceMap.put(baseType, ccList);
             }
         }
     }
 
-    public List<CompanyChoice> getCurrentCompanyChoiceList() {
-        return currentCompanyChoiceList;
+    public List<CampaignTermChoice> getCurrentCampaignTermChoiceList() {
+        return currentCampaignTermChoiceList;
     }
 
-    public List<CompanyChoice> listCurrentCompanyChoiceByType(String baseType) {
+    public List<CampaignTermChoice> listCurrentCompanyChoiceByType(String baseType) {
         return typeCompanyChoiceMap.get(baseType);
     }
 
     /**
      * 当前比赛进度的全部决策
-     * @param companyInstructionList
+     * @param companyTermInstructionList
      */
-    public void addAllCurrentInstruction(List<CompanyInstruction> companyInstructionList) {
-        currentCompanyInstructionSet.addAll(companyInstructionList);
+    public void addAllCurrentInstruction(List<CompanyTermInstruction> companyTermInstructionList) {
+        currentCompanyTermInstructionSet.addAll(companyTermInstructionList);
 
-        for (CompanyInstruction companyInstruction : companyInstructionList) {
-            String companyChoiceId = companyInstruction.getCompanyChoice().getId();
+        for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
+            String companyChoiceId = companyTermInstruction.getCampaignTermChoice().getId();
             if (choiceInstructionMap.containsKey(companyChoiceId)) {
-                choiceInstructionMap.get(companyChoiceId).add(companyInstruction);
+                choiceInstructionMap.get(companyChoiceId).add(companyTermInstruction);
             } else {
-                List<CompanyInstruction> ciList = new ArrayList<>();
-                ciList.add(companyInstruction);
+                List<CompanyTermInstruction> ciList = new ArrayList<>();
+                ciList.add(companyTermInstruction);
                 choiceInstructionMap.put(companyChoiceId, ciList);
             }
         }
     }
 
-    public List<CompanyInstruction> listCurrentCompanyInstructionByChoice(String choiceId) {
+    public List<CompanyTermInstruction> listCurrentCompanyInstructionByChoice(String choiceId) {
         return choiceInstructionMap.get(choiceId);
     }
 
-    public Set<CompanyInstruction> getCurrentCompanyInstructionSet() {
-        return currentCompanyInstructionSet;
+    public Set<CompanyTermInstruction> getCurrentCompanyTermInstructionSet() {
+        return currentCompanyTermInstructionSet;
     }
 
-    public void addHumanResource(Set<Resource> humanSet) {
+    public void addHumanResource(Set<IndustryChoice> humanSet) {
         humanRepository.addAll(humanSet);
     }
 
     /**
      * 产生这一轮的随机数据
      */
-    public List<Resource> randomHumans() {
-        List<Resource> randomHumanList = new ArrayList<>();
+    public List<IndustryChoice> randomHumans() {
+        List<IndustryChoice> randomHumanList = new ArrayList<>();
         Integer needNum = getCompanyTermContextMap().size() * 3;
         for (int i = 0; i < needNum; i++) {
-             Iterator<Resource> humanIterator = humanRepository.iterator();
+             Iterator<IndustryChoice> humanIterator = humanRepository.iterator();
             Integer choiceSize = humanRepository.size();
             if(choiceSize==0) break;
             int index = RandomUtil.random(0, choiceSize);
             for (int m = 0; humanIterator.hasNext(); m++) {
-                Resource human = humanIterator.next();
+                IndustryChoice human = humanIterator.next();
                 if (m == index) {
                     randomHumanList.add(human);
                     humanIterator.remove();

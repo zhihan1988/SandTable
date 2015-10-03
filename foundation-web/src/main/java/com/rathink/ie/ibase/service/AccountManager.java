@@ -3,9 +3,7 @@ package com.rathink.ie.ibase.service;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
 
-import java.util.List;
 import java.util.Map;
 
 /**

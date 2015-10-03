@@ -1,26 +1,20 @@
 package com.rathink.ie.ibase.work.model;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Industry;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "company_choice")
-public class CompanyChoice {
+public class CampaignTermChoice {
     private String id;
-    private String baseType;//表示是一个什么类型的选择 例如HumanChoice or OfficeChoice
-    private String type;//提供给子类使用的类型字段 每个类型有不同的定义
+    private String baseType;
     private CampaignChance campaignChance;
     private String campaignDate;
     private Campaign campaign;
-    private String dept;//哪个部门的选项
-    private String fees;
-    private String name;
-    private String value;
-    private String value2;
-    private String description;
-    private String img;
+    private IndustryChoice industryChoice;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -40,15 +34,6 @@ public class CompanyChoice {
 
     public void setBaseType(String baseType) {
         this.baseType = baseType;
-    }
-
-    @Column(name = "type")
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -80,66 +65,53 @@ public class CompanyChoice {
         this.campaign = campaign;
     }
 
-    @Column(name = "dept")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "industry_choice_id")
+    public IndustryChoice getIndustryChoice() {
+        return industryChoice;
+    }
+
+    public void setIndustryChoice(IndustryChoice industryChoice) {
+        this.industryChoice = industryChoice;
+    }
+
+    @Transient
+    public String getType() {
+        return industryChoice.getType();
+    }
+
+    @Transient
     public String getDept() {
-        return dept;
+        return industryChoice.getDept();
     }
 
-    public void setDept(String dept) {
-        this.dept = dept;
-    }
-
-    @Column(name = "fees")
+    @Transient
     public String getFees() {
-        return fees;
+        return industryChoice.getFees();
     }
 
-    public void setFees(String fees) {
-        this.fees = fees;
-    }
-
-    @Column(name = "name")
+    @Transient
     public String getName() {
-        return name;
+        return industryChoice.getName();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Column(name = "value")
+    @Transient
     public String getValue() {
-        return value;
+        return industryChoice.getValue();
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Column(name = "value2")
+    @Transient
     public String getValue2() {
-        return value2;
+        return industryChoice.getValue2();
     }
 
-    public void setValue2(String value2) {
-        this.value2 = value2;
-    }
-
-    @Column(name = "description")
+    @Transient
     public String getDescription() {
-        return description;
+        return industryChoice.getDescription();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Column(name = "img")
+    @Transient
     public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
+        return industryChoice.getImg();
     }
 }

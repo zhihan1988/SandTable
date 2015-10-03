@@ -3,8 +3,8 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
@@ -86,11 +86,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
         Double humanAbility = 0d;
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                CompanyChoice human = companyInstruction.getCompanyChoice();
+        if (companyTermInstructionList != null) {
+            for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
+                CampaignTermChoice human = companyTermInstruction.getCampaignTermChoice();
 //                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当期的人才能力（延迟一期生效）
                     if (human.getType().equals(type)) {
                         humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
@@ -123,11 +123,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 产品资金投入系数
      */
     private Integer calculateProductFeeRatio() {
-        List<CompanyInstruction> typeCompanyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CompanyTermInstruction> typeCompanyTermInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         Integer fee = 0;
-        if (typeCompanyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
-                fee += Integer.valueOf(companyInstruction.getValue());
+        if (typeCompanyTermInstructionList != null) {
+            for (CompanyTermInstruction companyTermInstruction : typeCompanyTermInstructionList) {
+                fee += Integer.valueOf(companyTermInstruction.getValue());
             }
         }
         Double productFeeRatio = Math.pow(fee,0.4) *0.8 + 10;
@@ -151,7 +151,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return  客单价
      */
     private Integer calculatePerOrderCost() {
-        List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyTermInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         String grade = "3";//默认高端
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             grade = productStudyInstructionList.get(0).getValue();
@@ -166,11 +166,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     private Integer calculateProductCompetitionRatio() {
         //自己公司的定位
-        List<CompanyInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CompanyTermInstruction> productStudyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
         Integer sameGradeCount = 1;
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
-            CompanyInstruction productStudy = productStudyInstructionList.get(0);
-            sameGradeCount = getCampaignContext().getCompetitionMap().get(productStudy.getCompanyChoice().getId());
+            CompanyTermInstruction productStudy = productStudyInstructionList.get(0);
+            sameGradeCount = getCampaignContext().getCompetitionMap().get(productStudy.getCampaignTermChoice().getId());
         }
         //产品竞争系数计算公式
         Double productCompetitionRatio = 0d;
@@ -199,17 +199,17 @@ public class InternetCompanyTermContext extends CompanyTermContext {
     private Integer calculateNewUserAmount() {
 
         Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
-        List<CompanyInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyTermInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
         Integer marketAbility = preCompanyTermContext.get(EPropertyName.MARKET_ABILITY.name());
         Integer productRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
         Integer productCompetitionRatio = get(EPropertyName.PRODUCT_COMPETITION_RATIO.name());
         Double marketX = 0d;
         if (marketInstructionList != null) {
-            for (CompanyInstruction companyInstruction : marketInstructionList) {
-                CompanyChoice companyChoice = companyInstruction.getCompanyChoice();
+            for (CompanyTermInstruction companyTermInstruction : marketInstructionList) {
+                CampaignTermChoice campaignTermChoice = companyTermInstruction.getCampaignTermChoice();
                 //市场活动竞争人数
-                Integer count = competitionMap.get(companyInstruction.getCompanyChoice().getId());
+                Integer count = competitionMap.get(companyTermInstruction.getCampaignTermChoice().getId());
                 //市场活动竞争系数
                 Double marketCompetitionRatio = 0d;
                 try {
@@ -217,8 +217,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-                Double marketCost = Double.valueOf(companyChoice.getValue());
-                Integer marketFee = Integer.valueOf(companyInstruction.getValue());
+                Double marketCost = Double.valueOf(campaignTermChoice.getValue());
+                Integer marketFee = Integer.valueOf(companyTermInstruction.getValue());
 
                 marketX += marketFee * (marketCompetitionRatio + 100) / 100 / marketCost / productCompetitionRatio * 100;
             }
@@ -232,11 +232,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 运营资金投入系数
      */
     private Integer calculateOperationFeeRatio() {
-        List<CompanyInstruction> typeCompanyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+        List<CompanyTermInstruction> typeCompanyTermInstructionList = listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
         Integer operationFee = 0;
-        if (typeCompanyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : typeCompanyInstructionList) {
-                operationFee += Integer.valueOf(companyInstruction.getValue());
+        if (typeCompanyTermInstructionList != null) {
+            for (CompanyTermInstruction companyTermInstruction : typeCompanyTermInstructionList) {
+                operationFee += Integer.valueOf(companyTermInstruction.getValue());
             }
         }
         Double operationFeeRatio = Math.pow(operationFee, 0.5) * 0.2;
@@ -260,12 +260,12 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 老用户数
      */
     private Integer calculateOldUserAmount() {
-        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        CompanyInstruction productStudy = companyInstructionList == null ? null : companyInstructionList.get(0);
+        List<CompanyTermInstruction> companyTermInstructionList = listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyTermInstruction productStudy = companyTermInstructionList == null ? null : companyTermInstructionList.get(0);
         Integer preUserAmount = 0;
         if (preCompanyTermContext != null) {
             InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-            CompanyInstruction preProductStudy = instructionManager.getUniqueInstructionByBaseType(preCompanyTermContext.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
+            CompanyTermInstruction preProductStudy = instructionManager.getUniqueInstructionByBaseType(preCompanyTermContext.getCompanyTerm(), EChoiceBaseType.PRODUCT_STUDY.name());
             preUserAmount = preCompanyTermContext.get(EPropertyName.USER_AMOUNT.name());
 
             if (productStudy != null && preProductStudy != null && !productStudy.getValue().equals(preProductStudy.getValue())) {//定位变动用户损失

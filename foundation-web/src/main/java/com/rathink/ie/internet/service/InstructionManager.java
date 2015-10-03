@@ -2,8 +2,8 @@ package com.rathink.ie.internet.service;
 
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 
 import java.util.List;
 
@@ -19,27 +19,27 @@ public interface InstructionManager {
      * @param fee
      * @return
      */
-    CompanyInstruction saveOrUpdateInstructionByChoice(Company company, String choiceId, String fee);
+    CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String choiceId, String fee);
 
     void deleteInstruction(Company company, String companyChoiceId);
 
-    List<CompanyInstruction> listCompanyInstructionByType(Company company, String baseType);
+    List<CompanyTermInstruction> listCompanyInstructionByType(Company company, String baseType);
 
-    List<CompanyInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType);
+    List<CompanyTermInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType);
 
 //    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept);
 
-    List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm);
+    List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm);
 
-    List<CompanyInstruction> listCompanyInstruction(CompanyChoice companyChoice);
+    List<CompanyTermInstruction> listCompanyInstruction(CampaignTermChoice campaignTermChoice);
 
-    Integer countCompanyInstruction(CompanyChoice companyChoice);
+    Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice);
 
 //    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
-    CompanyInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
+    CompanyTermInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
 
-    Integer sumFee(List<CompanyInstruction> companyInstructionList);
+    Integer sumFee(List<CompanyTermInstruction> companyTermInstructionList);
 
     void fireHuman(String companyInstructionId);
 }

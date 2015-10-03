@@ -3,7 +3,7 @@ package com.rathink.ie.ibase.service;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 
 import java.util.*;
 
@@ -14,8 +14,8 @@ public abstract class CompanyTermContext {
     protected CampaignContext campaignContext;
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
-    protected Map<String,List<CompanyInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
-    protected List<CompanyInstruction> companyInstructionList = new ArrayList<>();
+    protected Map<String,List<CompanyTermInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
+    protected List<CompanyTermInstruction> companyTermInstructionList = new ArrayList<>();
     protected List<Account> accountList = new ArrayList<>();
     protected List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
     protected CompanyTermContext preCompanyTermContext;
@@ -61,28 +61,28 @@ public abstract class CompanyTermContext {
         this.companyTerm = companyTerm;
     }
 
-    public List<CompanyInstruction> listCompanyInstructionByType(String choiceType) {
+    public List<CompanyTermInstruction> listCompanyInstructionByType(String choiceType) {
         return typeCompanyInstructionMap.get(choiceType);
     }
 
-    public void putCompanyInstructionList(List<CompanyInstruction> companyInstructionList) {
+    public void putCompanyInstructionList(List<CompanyTermInstruction> companyTermInstructionList) {
         typeCompanyInstructionMap = new HashMap<>();
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                String choiceType = companyInstruction.getCompanyChoice().getBaseType();
+        if (companyTermInstructionList != null) {
+            for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
+                String choiceType = companyTermInstruction.getIndustryChoice().getBaseType();
                 if (typeCompanyInstructionMap.containsKey(choiceType)) {
-                    typeCompanyInstructionMap.get(choiceType).add(companyInstruction);
+                    typeCompanyInstructionMap.get(choiceType).add(companyTermInstruction);
                 } else {
                     List typeCompanyInstructionList = new ArrayList<>();
-                    typeCompanyInstructionList.add(companyInstruction);
+                    typeCompanyInstructionList.add(companyTermInstruction);
                     typeCompanyInstructionMap.put(choiceType, typeCompanyInstructionList);
                 }
             }
         }
     }
 
-    public List<CompanyInstruction> getCompanyInstructionList() {
-        return companyInstructionList;
+    public List<CompanyTermInstruction> getCompanyTermInstructionList() {
+        return companyTermInstructionList;
     }
 
     public List<CompanyTermProperty> getCompanyTermPropertyList() {

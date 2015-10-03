@@ -7,7 +7,7 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AccountManager;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
@@ -106,19 +106,19 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     public Map<String, String> getCompanyTermReport(CompanyTerm companyTerm) {
         Map<String, String> companyTermReport = new HashMap<>();
         Company company = companyTerm.getCompany();
-        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
         int count = hrInstructionList == null ? 0 : hrInstructionList.size();
         companyTermReport.put("在职人数", String.valueOf(count));
 
-        CompanyInstruction productStudyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
-        String productName = productStudyInstruction == null ? "" : productStudyInstruction.getCompanyChoice().getName();
+        CompanyTermInstruction productStudyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
+        String productName = productStudyInstruction == null ? "" : productStudyInstruction.getCampaignTermChoice().getName();
         companyTermReport.put("产品定位", productName);
 
-        List<CompanyInstruction> marketInstructionList = instructionManager.listCompanyInstructionByType(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstructionByType(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
         String marketActivitys = "";
         if (marketInstructionList != null) {
-            for (CompanyInstruction companyInstruction : marketInstructionList) {
-                marketActivitys += companyInstruction.getCompanyChoice().getName();
+            for (CompanyTermInstruction companyTermInstruction : marketInstructionList) {
+                marketActivitys += companyTermInstruction.getCampaignTermChoice().getName();
             }
         }
         companyTermReport.put("市场营销", marketActivitys);

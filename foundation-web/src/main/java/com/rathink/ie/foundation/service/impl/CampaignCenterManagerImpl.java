@@ -8,7 +8,7 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
@@ -78,8 +78,8 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         //2
         companyTermContext.setCompanyTerm(companyTerm);
         //3
-        List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-        companyTermContext.putCompanyInstructionList(companyInstructionList);
+        List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+        companyTermContext.putCompanyInstructionList(companyTermInstructionList);
         //4
         List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
         companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);

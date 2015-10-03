@@ -9,12 +9,10 @@ import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.*;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
@@ -62,21 +60,21 @@ public class WorkController {
         CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
         List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
-        List<CompanyChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OFFICE.name());
-        List<CompanyChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.HUMAN.name());
-        List<CompanyChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
-        List<CompanyChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
-        List<CompanyChoice> productStudyFeeList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        List<CompanyChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OPERATION.name());
+        List<CampaignTermChoice> officeChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OFFICE.name());
+        List<CampaignTermChoice> humanList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.HUMAN.name());
+        List<CampaignTermChoice> marketActivityChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CampaignTermChoice> productStudyList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
+        List<CampaignTermChoice> productStudyFeeList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        List<CampaignTermChoice> operationChoiceList = choiceManager.listCompanyChoice(campaign.getId(), currentCampaignDate, EChoiceBaseType.OPERATION.name());
         Integer companyCash = accountManager.getCompanyCash(company);
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
         Integer campaignDateOutCash = accountManager.countAccountEntryFee(
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
-        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
 
-        CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
-        CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.OFFICE.name());
+        CompanyTermInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
+        CompanyTermInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.OFFICE.name());
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
@@ -157,20 +155,20 @@ public class WorkController {
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        CompanyChoice companyChoice = (CompanyChoice) baseManager.getObject(CompanyChoice.class.getName(), choiceId);
+        CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), choiceId);
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCampaign().getCurrentCampaignDate());
-        CompanyInstruction companyInstruction = null;
+        CompanyTermInstruction companyTermInstruction = null;
         try {
-            companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, companyChoice.getBaseType());
+            companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, campaignTermChoice.getBaseType());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        if (companyInstruction == null) {
+        if (companyTermInstruction == null) {
             instructionManager.saveOrUpdateInstructionByChoice(company, choiceId, value);
         } else {
-            companyInstruction.setCompanyChoice(companyChoice);
-            companyInstruction.setValue(value);
-            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
+            companyTermInstruction.setCampaignTermChoice(campaignTermChoice);
+            companyTermInstruction.setValue(value);
+            baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
         }
         return "success";
     }

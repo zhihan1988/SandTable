@@ -1,9 +1,8 @@
 package com.rathink.ie.internet.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.Resource;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.IndustryChoice;
 
 import java.util.List;
 import java.util.Set;
@@ -13,12 +12,10 @@ import java.util.Set;
  */
 public interface ChoiceManager {
 
-    List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate);
+    List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate);
 
-    List<CompanyChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType);
+    List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType);
 
-    List<CompanyChoice> randomChoices(Campaign campaign);
+    List<CampaignTermChoice> randomChoices(Campaign campaign);
 
-    @Deprecated
-    Set<Resource> loadAllHumans(Campaign campaign);
 }

@@ -11,7 +11,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "company_instruction")
-public class CompanyInstruction {
+public class CompanyTermInstruction {
     private String id;
     private String status;
     private String baseType;
@@ -19,7 +19,8 @@ public class CompanyInstruction {
     private Campaign campaign;
     private Company company;
     private String dept;
-    private CompanyChoice companyChoice;
+    private CampaignTermChoice campaignTermChoice;
+    private IndustryChoice industryChoice;
     private String value;
     private User creator;
     private CompanyTerm companyTerm;
@@ -93,14 +94,23 @@ public class CompanyInstruction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_choice_id")
-    public CompanyChoice getCompanyChoice() {
-        return companyChoice;
+    public CampaignTermChoice getCampaignTermChoice() {
+        return campaignTermChoice;
     }
 
-    public void setCompanyChoice(CompanyChoice companyChoice) {
-        this.companyChoice = companyChoice;
+    public void setCampaignTermChoice(CampaignTermChoice campaignTermChoice) {
+        this.campaignTermChoice = campaignTermChoice;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "industry_choice_id")
+    public IndustryChoice getIndustryChoice() {
+        return industryChoice;
+    }
+
+    public void setIndustryChoice(IndustryChoice industryChoice) {
+        this.industryChoice = industryChoice;
+    }
 
     @Column(name = "value")
     public String getValue() {

@@ -199,19 +199,19 @@
                             <div>
                                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                                     <li>
-                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${hrInstruction.companyChoice.img}"/>"/>
+                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${hrInstruction.campaignTermChoice.img}"/>"/>
                                     </li>
                                     <li>
-                                        <p style="margin: 0">${hrInstruction.companyChoice.name}</p>
+                                        <p style="margin: 0">${hrInstruction.campaignTermChoice.name}</p>
                                         <p style="margin: 0">
                                             <c:choose>
-                                                <c:when test="${hrInstruction.companyChoice.type == 'PRODUCT'}">
+                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'PRODUCT'}">
                                                     产品研发
                                                 </c:when>
-                                                <c:when test="${hrInstruction.companyChoice.type == 'MARKET'}">
+                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'MARKET'}">
                                                     市场
                                                 </c:when>
-                                                <c:when test="${hrInstruction.companyChoice.type == 'OPERATION'}">
+                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'OPERATION'}">
                                                     运营
                                                 </c:when>
                                             </c:choose>
@@ -221,7 +221,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p style="margin: 0">能力：${hrInstruction.companyChoice.value}</p>
+                                <p style="margin: 0">能力：${hrInstruction.campaignTermChoice.value}</p>
                                 <p style="margin: 0">薪资：${hrInstruction.value}</p>
                                 <a id="humanInstruction_${hrInstruction.id}" href="#">辞退</a>
                             </div>
@@ -312,7 +312,7 @@
                             <td>
                                 <select id="productStudy" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                     <c:forEach items="${productStudyList}" var="productStudy">
-                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.companyChoice.name==productStudy.name}">selected="selected"</c:if>>
+                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.campaignTermChoice.name==productStudy.name}">selected="selected"</c:if>>
                                                 ${productStudy.name}
                                         </option>
                                     </c:forEach>

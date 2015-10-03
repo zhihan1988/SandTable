@@ -16,9 +16,9 @@ import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
-import com.rathink.ie.ibase.work.model.Resource;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
@@ -169,20 +169,20 @@ public class FlowManagerImpl implements FlowManager {
 
         XQuery xQuery = new XQuery();
         xQuery.setHql("from Resource where baseType = 'HUMAN'");
-        List<Resource> allHumanList = baseManager.listObject(xQuery);
+        List<IndustryChoice> allHumanList = baseManager.listObject(xQuery);
         campaignContext.addHumanResource(new HashSet<>(allHumanList));
     }
 
     private void releaseHuman(CampaignContext campaignContext) {
-        Set<Resource> humanResourceSet = new HashSet<>();
-        Set<CompanyInstruction> companyInstructionSet = campaignContext.getCurrentCompanyInstructionSet();
-        Set<String> instructionChoiceIdSet = companyInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
-                .map(companyInstruction -> companyInstruction.getCompanyChoice().getId()).collect(Collectors.toSet());
-        List<CompanyChoice> companyChoiceList = campaignContext.getCurrentCompanyChoiceList();
-        companyChoiceList.stream().filter(companyChoice ->
+        Set<IndustryChoice> humanIndustryChoiceSet = new HashSet<>();
+        Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
+        Set<String> instructionChoiceIdSet = companyTermInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
+                .map(companyInstruction -> companyInstruction.getCampaignTermChoice().getId()).collect(Collectors.toSet());
+        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.getCurrentCampaignTermChoiceList();
+        campaignTermChoiceList.stream().filter(companyChoice ->
                 companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId()))
                 .forEach(companyChoice -> {
-                    Resource human = new Resource();
+                    IndustryChoice human = new IndustryChoice();
                     human.setBaseType(companyChoice.getBaseType());
                     human.setDept(companyChoice.getDept());
                     human.setName(companyChoice.getName());
@@ -190,9 +190,9 @@ public class FlowManagerImpl implements FlowManager {
                     human.setFees(companyChoice.getFees());
                     human.setValue(companyChoice.getValue());
                     human.setImg(companyChoice.getImg());
-                    humanResourceSet.add(human);
+                    humanIndustryChoiceSet.add(human);
                 });
-        campaignContext.addHumanResource(humanResourceSet);
+        campaignContext.addHumanResource(humanIndustryChoiceSet);
     }
 
     /**
@@ -229,53 +229,53 @@ public class FlowManagerImpl implements FlowManager {
      */
     private void randomChoice(CampaignContext campaignContext) {
         //准备供用户决策用的随机数据
-        List<CompanyChoice> companyChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
-        campaignContext.setCurrentCompanyChoiceList(companyChoiceList);
+        List<CampaignTermChoice> campaignTermChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
+        campaignContext.setCurrentCampaignTermChoiceList(campaignTermChoiceList);
     }
 
     private void collectCompanyInstruction(CampaignContext campaignContext) {
-        List<CompanyInstruction> allCompanyInstructionList = new ArrayList<>();
+        List<CompanyTermInstruction> allCompanyTermInstructionList = new ArrayList<>();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            List<CompanyInstruction> companyInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-            companyTermContext.putCompanyInstructionList(companyInstructionList);
-            allCompanyInstructionList.addAll(companyInstructionList);
+            List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+            companyTermContext.putCompanyInstructionList(companyTermInstructionList);
+            allCompanyTermInstructionList.addAll(companyTermInstructionList);
         }
-        campaignContext.addAllCurrentInstruction(allCompanyInstructionList);
+        campaignContext.addAllCurrentInstruction(allCompanyTermInstructionList);
     }
 
     private void competitiveBidding(CampaignContext campaignContext) {
 
-        List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
-        if (companyChoiceList == null || companyChoiceList.size() == 0) return;
+        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
+        if (campaignTermChoiceList == null || campaignTermChoiceList.size() == 0) return;
         //竞标
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (CompanyChoice companyChoice : companyChoiceList) {
-            List<CompanyInstruction> companyInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(companyChoice.getId());
-            if (companyInstructionList != null && companyInstructionList.size() > 0) {
+        for (CampaignTermChoice campaignTermChoice : campaignTermChoiceList) {
+            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(campaignTermChoice.getId());
+            if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
                 Double maxRecruitmentRatio = 0d;
-                CompanyInstruction successCompanyInstruction = null;
-                for (CompanyInstruction companyInstruction : companyInstructionList) {
-                    CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyInstruction.getCompany().getId());
-                    Double fee = Double.valueOf(companyInstruction.getValue());
+                CompanyTermInstruction successCompanyTermInstruction = null;
+                for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
+                    CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyTermInstruction.getCompany().getId());
+                    Double fee = Double.valueOf(companyTermInstruction.getValue());
                     Double feeRatio = Math.pow(fee, 0.51) * 0.35;//薪酬系数
                     Integer randomRatio = RandomUtil.random(0, 70);
                     Double recruitmentRatio = feeRatio * 30 / 100 + randomRatio;//招聘能力系数
                     logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
-                            companyTermContext.getCompanyTerm().getCompany().getName(), companyChoice.getName(),
+                            companyTermContext.getCompanyTerm().getCompany().getName(), campaignTermChoice.getName(),
                             fee, feeRatio, randomRatio, recruitmentRatio);
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
-                        successCompanyInstruction = companyInstruction;
+                        successCompanyTermInstruction = companyTermInstruction;
                     }
                 }
-                successCompanyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                successCompanyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
                 //保存选中的
 //                baseManager.saveOrUpdate(CompanyInstruction.class.getName(), successCompanyInstruction);
                 //保存未选中的
-                companyInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+                companyTermInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
                     companyInstruction.setStatus(EInstructionStatus.WXZ.getValue());
 //                    baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
                 });
@@ -285,8 +285,8 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     private void competitiveUnBidding(CampaignContext campaignContext) {
-        Set<CompanyInstruction> companyInstructionSet = campaignContext.getCurrentCompanyInstructionSet();
-        companyInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+        Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
+        companyTermInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
             companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
 //            baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
         });
@@ -295,17 +295,17 @@ public class FlowManagerImpl implements FlowManager {
 
     private void calculateCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
-        List<CompanyChoice> companyChoiceList = new ArrayList<>();
+        List<CampaignTermChoice> campaignTermChoiceList = new ArrayList<>();
         //产品定位
-        List<CompanyChoice> productStudyList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        if(productStudyList!=null) companyChoiceList.addAll(productStudyList);
+        List<CampaignTermChoice> productStudyList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
+        if(productStudyList!=null) campaignTermChoiceList.addAll(productStudyList);
         //市场活动
-        List<CompanyChoice> marketActivityList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        if(marketActivityList!=null) companyChoiceList.addAll(marketActivityList);
-        for (CompanyChoice companyChoice : companyChoiceList) {
-            List<CompanyInstruction> companyInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(companyChoice.getId());
-            if (companyInstructionList != null && companyInstructionList.size() > 0) {
-                competitionMap.put(companyChoice.getId(), companyInstructionList.size());
+        List<CampaignTermChoice> marketActivityList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+        if(marketActivityList!=null) campaignTermChoiceList.addAll(marketActivityList);
+        for (CampaignTermChoice campaignTermChoice : campaignTermChoiceList) {
+            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(campaignTermChoice.getId());
+            if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
+                competitionMap.put(campaignTermChoice.getId(), companyTermInstructionList.size());
             }
         }
         campaignContext.setCompetitionMap(competitionMap);
@@ -335,11 +335,11 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
 
-            List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
-            Iterator<CompanyInstruction> companyInstructionIterator = humanInstructionList.iterator();
+            List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
+            Iterator<CompanyTermInstruction> companyInstructionIterator = humanInstructionList.iterator();
             while (companyInstructionIterator.hasNext()) {
-                CompanyInstruction companyInstruction = companyInstructionIterator.next();
-                if (companyInstruction.getCampaignDate().equals(currentCampaignDate)) {
+                CompanyTermInstruction companyTermInstruction = companyInstructionIterator.next();
+                if (companyTermInstruction.getCampaignDate().equals(currentCampaignDate)) {
                     companyInstructionIterator.remove();
                 }
             }
@@ -351,17 +351,17 @@ public class FlowManagerImpl implements FlowManager {
             Account adAccount = accountManager.packageAccount(String.valueOf(adFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(adAccount);
 
-            List<CompanyInstruction> productFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+            List<CompanyTermInstruction> productFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
             Integer productFee = instructionManager.sumFee(productFeeInstructionList);
             Account productFeeAccount = accountManager.packageAccount(String.valueOf(productFee), EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(productFeeAccount);
 
-            List<CompanyInstruction> marketFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
+            List<CompanyTermInstruction> marketFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
             Integer marketFee = instructionManager.sumFee(marketFeeInstructionList);
             Account marketFeeAccount = accountManager.packageAccount(String.valueOf(marketFee), EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(marketFeeAccount);
 
-            List<CompanyInstruction> operationFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
+            List<CompanyTermInstruction> operationFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
             Integer operationFee = instructionManager.sumFee(operationFeeInstructionList);
             Account operationFeeAccount = accountManager.packageAccount(String.valueOf(operationFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(operationFeeAccount);
@@ -381,8 +381,8 @@ public class FlowManagerImpl implements FlowManager {
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTermContext preCompanyTermContext = companyTermContext.getPreCompanyTermContext();
-            List<CompanyInstruction> preCompanyInstructionList = preCompanyTermContext.getCompanyInstructionList();
-            preCompanyInstructionList.forEach(companyInstruction -> baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction));
+            List<CompanyTermInstruction> preCompanyTermInstructionList = preCompanyTermContext.getCompanyTermInstructionList();
+            preCompanyTermInstructionList.forEach(companyInstruction -> baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyInstruction));
             List<CompanyTermProperty> preCompanyTermPropertyList = preCompanyTermContext.getCompanyTermPropertyList();
             preCompanyTermPropertyList.forEach(companyTermProperty -> baseManager.saveOrUpdate(CompanyTermProperty.class.getName(), companyTermProperty));
             List<Account> preAccountList = preCompanyTermContext.getAccountList();
@@ -392,8 +392,8 @@ public class FlowManagerImpl implements FlowManager {
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(),company);
         }
-        List<CompanyChoice> companyChoiceList = campaignContext.getCurrentCompanyChoiceList();
-        companyChoiceList.forEach(companyChoice -> baseManager.saveOrUpdate(CompanyChoice.class.getName(), companyChoice));
+        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.getCurrentCampaignTermChoiceList();
+        campaignTermChoiceList.forEach(companyChoice -> baseManager.saveOrUpdate(CampaignTermChoice.class.getName(), companyChoice));
     }
 
     /**
@@ -436,11 +436,11 @@ public class FlowManagerImpl implements FlowManager {
 
         //删除所有决策信息
         XQuery instructionQuery = new XQuery();
-        instructionQuery.setHql("from CompanyInstruction where campaign.id = :campaignId");
+        instructionQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId");
         instructionQuery.put("campaignId", campaign.getId());
-        List<CompanyInstruction> companyInstructionList = baseManager.listObject(instructionQuery);
-        if (companyInstructionList != null) {
-            companyInstructionList.forEach(session::delete);
+        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(instructionQuery);
+        if (companyTermInstructionList != null) {
+            companyTermInstructionList.forEach(session::delete);
         }
 
         //删除所有属性信息 及财务信息
@@ -471,11 +471,11 @@ public class FlowManagerImpl implements FlowManager {
 
         //删除所有随机选项
         XQuery choiceQuery = new XQuery();
-        choiceQuery.setHql("from CompanyChoice where campaign.id = :campaignId");
+        choiceQuery.setHql("from CampaignTermChoice where campaign.id = :campaignId");
         choiceQuery.put("campaignId", campaign.getId());
-        List<CompanyChoice> companyChoiceList = baseManager.listObject(choiceQuery);
-        if (companyChoiceList != null) {
-            companyChoiceList.forEach(session::delete);
+        List<CampaignTermChoice> campaignTermChoiceList = baseManager.listObject(choiceQuery);
+        if (campaignTermChoiceList != null) {
+            campaignTermChoiceList.forEach(session::delete);
         }
         campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate("010101"));
         campaign.setStatus(Campaign.Status.PREPARE.getValue());

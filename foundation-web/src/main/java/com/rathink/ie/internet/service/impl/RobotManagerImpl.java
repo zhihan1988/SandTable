@@ -4,12 +4,10 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.service.CompanyTermManager;
-import com.rathink.ie.ibase.work.model.CompanyChoice;
-import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.ibase.work.model.CampaignTermChoice;
+import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.RobotManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,31 +38,31 @@ public class RobotManagerImpl implements RobotManager {
 
     public void randomFee(CompanyTermContext companyTermContext, String baseType) {
         CampaignContext campaignContext = companyTermContext.getCampaignContext();
-        List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(baseType);
-        CompanyChoice companyChoice = companyChoiceList.get(RandomUtil.random(0, companyChoiceList.size()));
-        String[] feeArray = companyChoice.getFees().split(",");
+        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.listCurrentCompanyChoiceByType(baseType);
+        CampaignTermChoice campaignTermChoice = campaignTermChoiceList.get(RandomUtil.random(0, campaignTermChoiceList.size()));
+        String[] feeArray = campaignTermChoice.getFees().split(",");
         String fee = feeArray[RandomUtil.random(0, feeArray.length - 1)];
-        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), fee);
+        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), campaignTermChoice.getId(), fee);
     }
 
     public void keepPre(CompanyTermContext companyTermContext, String baseType) {
-        CompanyInstruction companyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getCompanyTerm(), baseType);
-        if (companyInstruction != null) return;
+        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getCompanyTerm(), baseType);
+        if (companyTermInstruction != null) return;
 
-        CompanyInstruction preCompanyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getPreCompanyTermContext().getCompanyTerm(), baseType);
-        CompanyChoice companyChoice = null;
-        List<CompanyChoice> officeList = companyTermContext.getCampaignContext().listCurrentCompanyChoiceByType(baseType);
-        if (preCompanyInstruction == null) {
-            companyChoice = officeList.get(RandomUtil.random(0, officeList.size()));
+        CompanyTermInstruction preCompanyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTermContext.getPreCompanyTermContext().getCompanyTerm(), baseType);
+        CampaignTermChoice campaignTermChoice = null;
+        List<CampaignTermChoice> officeList = companyTermContext.getCampaignContext().listCurrentCompanyChoiceByType(baseType);
+        if (preCompanyTermInstruction == null) {
+            campaignTermChoice = officeList.get(RandomUtil.random(0, officeList.size()));
         } else {
-            for (CompanyChoice cc : officeList) {
-                if (cc.getName().equals(preCompanyInstruction.getCompanyChoice().getName())) {
-                    companyChoice = cc;
+            for (CampaignTermChoice cc : officeList) {
+                if (cc.getName().equals(preCompanyTermInstruction.getCampaignTermChoice().getName())) {
+                    campaignTermChoice = cc;
                     break;
                 }
             }
         }
-        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), companyChoice.getId(), companyChoice.getValue());
+        instructionManager.saveOrUpdateInstructionByChoice(companyTermContext.getCompanyTerm().getCompany(), campaignTermChoice.getId(), campaignTermChoice.getValue());
     }
 
 
@@ -73,11 +71,11 @@ public class RobotManagerImpl implements RobotManager {
 //        Campaign campaign = companyTerm.getCampaign();
         Company company = companyTermContext.getCompanyTerm().getCompany();
         //已招聘的人
-        List<CompanyInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
         int productNum = 0, operationNum = 0, marketNum = 0;
         if (humanInstructionList != null) {
-            for (CompanyInstruction companyInstruction : humanInstructionList) {
-                Edept dept = Edept.valueOf(companyInstruction.getCompanyChoice().getType());
+            for (CompanyTermInstruction companyTermInstruction : humanInstructionList) {
+                Edept dept = Edept.valueOf(companyTermInstruction.getCampaignTermChoice().getType());
                 switch (dept) {
                     case PRODUCT:
                         productNum++;
@@ -92,21 +90,21 @@ public class RobotManagerImpl implements RobotManager {
             }
         }
         //招聘选择
-        List<CompanyChoice> companyChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
-        Map<String, List<CompanyChoice>> deptCompanyChoiceMap = new HashMap<>();
-        for (CompanyChoice companyChoice : companyChoiceList) {
-            String humanDept = companyChoice.getType();
+        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
+        Map<String, List<CampaignTermChoice>> deptCompanyChoiceMap = new HashMap<>();
+        for (CampaignTermChoice campaignTermChoice : campaignTermChoiceList) {
+            String humanDept = campaignTermChoice.getType();
             if (deptCompanyChoiceMap.containsKey(humanDept)) {
-                deptCompanyChoiceMap.get(humanDept).add(companyChoice);
+                deptCompanyChoiceMap.get(humanDept).add(campaignTermChoice);
             }else {
-                List<CompanyChoice> list = new ArrayList<>();
-                list.add(companyChoice);
+                List<CampaignTermChoice> list = new ArrayList<>();
+                list.add(campaignTermChoice);
                 deptCompanyChoiceMap.put(humanDept, list);
             }
         }
         //招聘
         for (String dept : deptCompanyChoiceMap.keySet()) {
-            List<CompanyChoice> list = deptCompanyChoiceMap.get(dept);
+            List<CampaignTermChoice> list = deptCompanyChoiceMap.get(dept);
             if (list.size() > 0) {
                 int num = 1;
                 switch (dept) {
@@ -120,10 +118,10 @@ public class RobotManagerImpl implements RobotManager {
                         num = marketNum;
                 }
                 if (num < 2) {
-                    CompanyChoice companyChoice = list.get(RandomUtil.random(0, list.size()));
-                    String[] feeArray = companyChoice.getFees().split(",");
+                    CampaignTermChoice campaignTermChoice = list.get(RandomUtil.random(0, list.size()));
+                    String[] feeArray = campaignTermChoice.getFees().split(",");
                     String fee = feeArray[RandomUtil.random(0, feeArray.length)];
-                    instructionManager.saveOrUpdateInstructionByChoice(company, companyChoice.getId(), fee);
+                    instructionManager.saveOrUpdateInstructionByChoice(company, campaignTermChoice.getId(), fee);
                 }
             }
         }
