@@ -23,7 +23,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
     @Autowired
     private BaseManager baseManager;
 
-    public List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate) {
+    public List<CampaignTermChoice> listCompanyChoice(String campaignId, Integer campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CampaignTermChoice where campaign.id = :campaignId and campaignDate = :campaignDate");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap();
@@ -35,7 +35,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
     }
 
     @Override
-    public List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType){
+    public List<CampaignTermChoice> listCompanyChoice(String campaignId, Integer campaignDate, String choiceType){
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CampaignTermChoice where campaign.id = :campaignId and campaignDate = :campaignDate and baseType = :choiceType");
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap();

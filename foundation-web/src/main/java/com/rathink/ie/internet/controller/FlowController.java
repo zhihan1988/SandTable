@@ -71,8 +71,8 @@ public class FlowController {
         CompanyTermContext companyTermContext = companyTermHandlerMap.get(request.getParameter("companyId"));
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
-        String currentCampaignDate = campaign.getCurrentCampaignDate();
-        String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
+        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
+        Integer nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
         company.setCurrentCampaignDate(nextCampaignDate);
 
         boolean isAllNext = true;
@@ -93,7 +93,7 @@ public class FlowController {
     @ResponseBody
     public Integer isNext(HttpServletRequest request, Model model) throws Exception {
         int unFinishNum = 0;
-        String campaignDate = request.getParameter("campaignDate");
+        Integer campaignDate = Integer.parseInt(request.getParameter("campaignDate"));
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             Company company = companyTermContext.getCompanyTerm().getCompany();
@@ -109,8 +109,8 @@ public class FlowController {
     public String random(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-        String currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
-        String nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
+        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        Integer nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             Company company = companyTermContext.getCompanyTerm().getCompany();

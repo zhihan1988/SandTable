@@ -15,10 +15,11 @@ public class CampaignUtil {
      * 获取当前赛季
      * @return
      */
-    public static String getCurrentCampaignDate(){
-        LocalDate nowDate = LocalDate.now();
+    public static Integer getCurrentCampaignDate(){
+       /* LocalDate nowDate = LocalDate.now();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyMM");
-        return joinSeason(nowDate.format(format));
+        return joinSeason(nowDate.format(format));*/
+        return 1;
     }
 
     /**
@@ -26,27 +27,28 @@ public class CampaignUtil {
      * @param campaignDate
      * @return
      */
-    public static String getPreCampaignDate(String campaignDate) {
-        return getCampaignDate(campaignDate, TIME_UNIT * -1);
+    public static Integer getPreCampaignDate(Integer campaignDate) {
+//        return getCampaignDate(campaignDate, TIME_UNIT * -1);
+        return --campaignDate;
     }
-
     /**
      * 获取下一轮赛季
      * @param campaignDate
      * @return
      */
-    public static String getNextCampaignDate(String campaignDate) {
-        return getCampaignDate(campaignDate, TIME_UNIT);
+    public static Integer getNextCampaignDate(Integer campaignDate) {
+//        return getCampaignDate(campaignDate, TIME_UNIT);
+        return ++campaignDate;
     }
 
-    private static String removeSeason(String campaignDate) {
+  /*  private static String removeSeason(Integer campaignDate) {
         String year = campaignDate.substring(0, 2);
         String month = campaignDate.substring(4, 6);
         campaignDate = year + month;
         return campaignDate;
     }
 
-    private static String joinSeason(String campaignDate) {
+    private static String joinSeason(Integer campaignDate) {
         String year = campaignDate.substring(0, 2);
         String month = campaignDate.substring(2, 4);
         String season;
@@ -78,30 +80,22 @@ public class CampaignUtil {
         return campaignDate;
     }
 
-    private static String getCampaignDate(String campaignDate, Integer num) {
+    private static Integer getCampaignDate(Integer campaignDate, Integer num) {
         String noSeasonCampaignDate = removeSeason(campaignDate);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
         YearMonth date = YearMonth.parse(noSeasonCampaignDate, formatter);
         date = date.plus(num, ChronoUnit.MONTHS);
         return joinSeason(date.format(formatter));
-    }
+    }*/
 
-    public static String formatCampaignDate(String campaignDate) {
-        Integer year = Integer.parseInt(campaignDate.substring(0, 2));
+    public static String formatCampaignDate(Integer campaignDate) {
+      /*  Integer year = Integer.parseInt(campaignDate.substring(0, 2));
         Integer season = Integer.parseInt(campaignDate.substring(2, 4));
         StringBuffer formatCampaignDateBuffer = new StringBuffer(100);
         formatCampaignDateBuffer.append("第").append(year).append("年")
                 .append("第").append(season).append("季度");
-        return formatCampaignDateBuffer.toString();
-    }
-
-    public static void main(String[] args) {
-       /* String date = "150308";
-        for (int i = 0; i < 20; i++) {
-            date = CampaignUtil.getPreCampaignDate(date);
-            System.out.println(date);
-        }*/
-        System.out.println(CampaignUtil.joinSeason("1501"));
+        return formatCampaignDateBuffer.toString();*/
+        return null;
     }
 
 }

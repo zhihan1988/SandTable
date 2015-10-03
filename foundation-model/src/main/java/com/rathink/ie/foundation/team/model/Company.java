@@ -8,7 +8,7 @@ import javax.persistence.Table;
 @Table(name = "company")
 public class Company extends Team {
     private String status;
-    private String currentCampaignDate;
+    private Integer currentCampaignDate;
     private String slogan;
     private String memo;
     private Integer result;
@@ -23,11 +23,11 @@ public class Company extends Team {
     }
 
     @Column(name = "current_campaign_date")
-    public String getCurrentCampaignDate() {
+    public Integer getCurrentCampaignDate() {
         return currentCampaignDate;
     }
 
-    public void setCurrentCampaignDate(String currentCampaignDate) {
+    public void setCurrentCampaignDate(Integer currentCampaignDate) {
         this.currentCampaignDate = currentCampaignDate;
     }
 

@@ -12,7 +12,7 @@ public class CompanyTerm {
     private String id;
     private Campaign campaign;
     private Company company;
-    private String campaignDate;
+    private Integer campaignDate;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -46,11 +46,11 @@ public class CompanyTerm {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaignDate() {
+    public Integer getCampaignDate() {
         return campaignDate;
     }
 
-    public void setCampaignDate(String campaignDate) {
+    public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
 }

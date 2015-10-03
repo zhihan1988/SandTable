@@ -72,7 +72,7 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public Integer countAccountEntryFee(Company company, String campaignDate, String type, String direction) {
+    public Integer countAccountEntryFee(Company company, Integer campaignDate, String type, String direction) {
         Integer companyCash = 0;
         XQuery xQuery = new XQuery();
         xQuery.setHql("from AccountEntry where account.company.id = :companyId and account.campaignDate = :campaignDate" +

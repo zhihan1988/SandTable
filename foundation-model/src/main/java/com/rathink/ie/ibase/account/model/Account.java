@@ -14,7 +14,7 @@ public class Account {
     private String id;
     private Campaign campaign;
     private Company company;
-    private String campaignDate;//哪一季度展示（不是指在哪一季度产生的数据）
+    private Integer campaignDate;
     private CompanyTerm companyTerm;
     private List<AccountEntry> accountEntryList;
 
@@ -50,11 +50,11 @@ public class Account {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaignDate() {
+    public Integer getCampaignDate() {
         return campaignDate;
     }
 
-    public void setCampaignDate(String campaignDate) {
+    public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
 

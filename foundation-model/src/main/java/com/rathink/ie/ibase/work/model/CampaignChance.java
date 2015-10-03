@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class CampaignChance {
     private String id;
     private String type;                // 机会类型
-    private String campaignDate;
+    private Integer campaignDate;
     private Campaign campaign;
     private String dept;
 
@@ -38,11 +38,11 @@ public class CampaignChance {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaignDate() {
+    public Integer getCampaignDate() {
         return campaignDate;
     }
 
-    public void setCampaignDate(String campaignDate) {
+    public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
 

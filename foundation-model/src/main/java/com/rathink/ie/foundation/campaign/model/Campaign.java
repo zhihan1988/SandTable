@@ -17,7 +17,7 @@ import java.util.Date;
     private String password;
     private Date createDatetime;// 创建时间
     private Date startDatetime;// 游戏开始时间
-    private String currentCampaignDate;//当前进度 年/季度/月份 例如010205
+    private Integer currentCampaignDate;//当前进度 年/季度/月份 例如010205
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -95,11 +95,11 @@ import java.util.Date;
     }
 
     @Column(name = "current_campaign_date")
-    public String getCurrentCampaignDate() {
+    public Integer getCurrentCampaignDate() {
         return currentCampaignDate;
     }
 
-    public void setCurrentCampaignDate(String currentCampaignDate) {
+    public void setCurrentCampaignDate(Integer currentCampaignDate) {
         this.currentCampaignDate = currentCampaignDate;
     }
 
@@ -142,12 +142,13 @@ import java.util.Date;
 
     @Transient
     public String getFormatCampaignDate(){
-        Integer year = Integer.parseInt(getCurrentCampaignDate().substring(0, 2));
+        /*Integer year = Integer.parseInt(getCurrentCampaignDate().substring(0, 2));
         Integer season = Integer.parseInt(getCurrentCampaignDate().substring(2, 4));
         StringBuffer formatCampaignDateBuffer = new StringBuffer(100);
         formatCampaignDateBuffer.append("第").append(year).append("年")
                 .append("第").append(season).append("季度");
-        return formatCampaignDateBuffer.toString();
+        return formatCampaignDateBuffer.toString();*/
+        return null;
     }
 
 }

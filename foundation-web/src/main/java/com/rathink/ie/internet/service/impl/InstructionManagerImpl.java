@@ -136,7 +136,7 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
    /* @Override
-    public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate) {
+    public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, Integer campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId and campaignDate = :campaignDate");
         xQuery.put("campaignId", campaignId);

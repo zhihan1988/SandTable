@@ -35,7 +35,7 @@ public interface InstructionManager {
 
     Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice);
 
-//    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
+//    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, Integer campaignDate);
 
     CompanyTermInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
 

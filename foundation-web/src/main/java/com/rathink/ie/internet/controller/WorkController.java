@@ -55,8 +55,8 @@ public class WorkController {
         String companyId = request.getParameter("companyId");
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        String currentCampaignDate = campaign.getCurrentCampaignDate();
-        String preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
+        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
+        Integer preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
         CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
         List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);

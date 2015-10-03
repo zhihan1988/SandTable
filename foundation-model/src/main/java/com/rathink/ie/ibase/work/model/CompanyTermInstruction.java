@@ -15,7 +15,7 @@ public class CompanyTermInstruction {
     private String id;
     private String status;
     private String baseType;
-    private String campaignDate;
+    private Integer campaignDate;
     private Campaign campaign;
     private Company company;
     private String dept;
@@ -55,11 +55,11 @@ public class CompanyTermInstruction {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaignDate() {
+    public Integer getCampaignDate() {
         return campaignDate;
     }
 
-    public void setCampaignDate(String campaignDate) {
+    public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
 

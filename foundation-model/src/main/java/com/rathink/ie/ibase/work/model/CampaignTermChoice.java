@@ -12,7 +12,7 @@ public class CampaignTermChoice {
     private String id;
     private String baseType;
     private CampaignChance campaignChance;
-    private String campaignDate;
+    private Integer campaignDate;
     private Campaign campaign;
     private IndustryChoice industryChoice;
 
@@ -47,11 +47,11 @@ public class CampaignTermChoice {
     }
 
     @Column(name = "campaign_date")
-    public String getCampaignDate() {
+    public Integer getCampaignDate() {
         return campaignDate;
     }
 
-    public void setCampaignDate(String campaignDate) {
+    public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
 

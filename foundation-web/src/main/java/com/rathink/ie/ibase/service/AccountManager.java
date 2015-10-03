@@ -15,7 +15,7 @@ public interface AccountManager {
 
     Integer getCompanyCash(Company company);
 
-    Integer countAccountEntryFee(Company company, String campaignDate, String type, String direction);
+    Integer countAccountEntryFee(Company company, Integer campaignDate, String type, String direction);
 
     Map<String, Map<String, String>> getAccountReport(Company company);
 }

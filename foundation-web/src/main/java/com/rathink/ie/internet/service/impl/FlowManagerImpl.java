@@ -113,7 +113,7 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     public void initCampaignContext(CampaignContext campaignContext){
-        final String INIT_CAMPAIGN_DATE = "010101";
+        final Integer INIT_CAMPAIGN_DATE = 1;
 
         //1.比赛开始
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignContext.getCampaign().getId());
@@ -328,7 +328,7 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     private void calculateAccount(CampaignContext campaignContext) {
-        String currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
@@ -477,7 +477,7 @@ public class FlowManagerImpl implements FlowManager {
         if (campaignTermChoiceList != null) {
             campaignTermChoiceList.forEach(session::delete);
         }
-        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate("010101"));
+        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(1));
         campaign.setStatus(Campaign.Status.PREPARE.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         List<Company> companyList = campaignManager.listCompany(campaign);

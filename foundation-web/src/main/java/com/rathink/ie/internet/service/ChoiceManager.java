@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public interface ChoiceManager {
 
-    List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate);
+    List<CampaignTermChoice> listCompanyChoice(String campaignId, Integer campaignDate);
 
-    List<CampaignTermChoice> listCompanyChoice(String campaignId, String campaignDate, String choiceType);
+    List<CampaignTermChoice> listCompanyChoice(String campaignId, Integer campaignDate, String choiceType);
 
     List<CampaignTermChoice> randomChoices(Campaign campaign);
 

@@ -20,7 +20,7 @@ public class CompanyTermManagerImpl implements CompanyTermManager {
     private BaseManager baseManager;
 
     @Override
-    public CompanyTerm getCompanyTerm(Company company, String campaignDate) {
+    public CompanyTerm getCompanyTerm(Company company, Integer campaignDate) {
         String hql = "from CompanyTerm where company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("companyId", company.getId());
@@ -29,7 +29,7 @@ public class CompanyTermManagerImpl implements CompanyTermManager {
         return companyTerm;
     }
 
-    public List<CompanyTerm> listCompanyTerm(String campaignId, String campaignDate) {
+    public List<CompanyTerm> listCompanyTerm(String campaignId, Integer campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where campaign.id = :campaignId and campaignDate = :campaignDate");
         xQuery.put("campaignId", campaignId);
