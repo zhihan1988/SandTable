@@ -1,6 +1,7 @@
 package com.ming800.core.p.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "base_document")
+@Inheritance(strategy=InheritanceType.JOINED)
 public class Document {
 
     private String id;
@@ -17,11 +19,13 @@ public class Document {
     private String name;
     private String keywords;
     private DocumentContent documentContent;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date theDatetime;
     private Integer documentOrder;
     private String group;
-    private Integer theStatus;
+    private String status;
     private String sampleContent;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date publishDate;
     private List<DocumentAttachment> documentAttachmentList;
 
@@ -111,13 +115,16 @@ public class Document {
     }
 
     @Column(name="status")
-    public Integer getTheStatus() {
-        return theStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setTheStatus(Integer theStatus) {
-        this.theStatus = theStatus;
+    public void setStatus(String status) {
+        this.status = status;
     }
+
+
+
 
     @Column(name= "sample_content")
     public String getSampleContent() {

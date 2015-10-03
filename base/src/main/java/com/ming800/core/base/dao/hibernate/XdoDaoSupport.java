@@ -81,12 +81,12 @@ public class XdoDaoSupport implements XdoDao {
     }
 
     @Override
-    public void batchSaveOrUpdate(String type, String modelType, Collection<? extends Object> collection) {
+    public void batchSaveOrUpdate(String type, String modelType, List<Object> objectList) {
 
         StatelessSession session = sessionFactory.openStatelessSession();
         Transaction tx = session.beginTransaction();
 
-        for (Object object : collection) {
+        for (Object object : objectList) {
             if ("save".equals(type)) {
                 session.insert(modelType, object);
             } else {

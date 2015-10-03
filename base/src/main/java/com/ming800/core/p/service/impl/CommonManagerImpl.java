@@ -30,6 +30,8 @@ public class CommonManagerImpl implements CommonManager {
     private static HashMap<String, CommonDocument> commonDocumentMap = new HashMap<>();
     private static HashMap<String, CommonRecommended>  commonRecommendedMap = new HashMap<>();
     private static HashMap<String, CommonTag>    commonTagMap = new HashMap<>();
+    private static HashMap<String, CommonSerial> autoSerialMap = new HashMap<>();
+    private static HashMap<String, String> logisticsCompanyMap = new HashMap<>();
    // private static int jmenuId = 1;
 
     private static void initCommon() throws Exception {
@@ -40,13 +42,15 @@ public class CommonManagerImpl implements CommonManager {
             logger.info("开始解析文件：" + xmlFiles.getURL());
             if (xmlFiles != null) {
                 getCommonBannerByGroup(new SAXReader().read(xmlFiles.getInputStream()));
+                getAutoSerialByGroup(new SAXReader().read(xmlFiles.getInputStream()));
                 getCommonDocumentByGroup(new SAXReader().read(xmlFiles.getInputStream()));
                 getCommonRecommendedByGroup(new SAXReader().read(xmlFiles.getInputStream()));
                 getCommonTagByGroup(new SAXReader().read(xmlFiles.getInputStream()));
-
+                getLogisticsCompany(new SAXReader().read(xmlFiles.getInputStream()));
             }
         }catch (Exception e){
-              e.printStackTrace();
+             // e.printStackTrace();
+            System.out.println("if you do not use the file '/setting/common.xml',please ignore this message!");
         }
 
 
@@ -136,7 +140,7 @@ public class CommonManagerImpl implements CommonManager {
                        CommonRecommended recommended = new CommonRecommended();
                        recommended.setGroup(group);
                        recommended.setNote(note);
-                       recommended.setAmount(amount);
+                       recommended.setAmount((amount != null && !"".equals(amount))?amount:"5");
                        recommended.setRecommendedModel(recommendedModel);
                        commonRecommendedMap.put(group,recommended);
                    }
@@ -144,6 +148,62 @@ public class CommonManagerImpl implements CommonManager {
            }
         return  commonRecommendedMap;
 
+    }
+
+    /**
+     * 解析自动获取序列号
+     * @param  infoDocument is a Document
+     * @return autoSerialMap
+     */
+    private  static  HashMap getAutoSerialByGroup(Document infoDocument){
+        if(infoDocument!=null){
+            //begin
+            List<Node> autoSerialNodeList = infoDocument.selectNodes("common/autoserials/autoserial");
+            if(autoSerialNodeList!=null){
+                for(Node node : autoSerialNodeList){
+                    String group = node.selectSingleNode("@group").getText();
+                    String note = node.selectSingleNode("@note").getText();
+                    String autoserialModel = node.selectSingleNode("@autoserialModel").getText();
+                    String prefix = node.selectSingleNode("@prefix").getText();
+                    String length = node.selectSingleNode("@length").getText();
+                    String cacheSize = node.selectSingleNode("@cacheSize").getText();
+                    String step = node.selectSingleNode("@step").getText();
+                    CommonSerial commonSerial = new CommonSerial();
+                    commonSerial.setGroup(group);
+                    commonSerial.setNote(note);
+                    commonSerial.setAutoserialModel(autoserialModel);
+                    commonSerial.setPrefix(prefix);
+                    commonSerial.setCacheSize(cacheSize);
+                    commonSerial.setLength(length);
+                    commonSerial.setStep(step);
+                    autoSerialMap.put(group,commonSerial);
+                }
+            }
+        }
+        return  autoSerialMap;
+
+    }
+
+    /**
+     * 解析快递公司配置文件*/
+    private static HashMap getLogisticsCompany(Document infoDocument){
+        if(infoDocument!=null){
+            List<Node> autoSerialNodeList = infoDocument.selectNodes("common/logisticsCompanys/logisticsCompany");
+            if(autoSerialNodeList!=null){
+                for(Node node : autoSerialNodeList){
+                    String memo = node.selectSingleNode("@memo").getText();
+                    String name = node.selectSingleNode("@name").getText();
+                    logisticsCompanyMap.put(memo,name);
+                }
+            }
+        }
+        return logisticsCompanyMap;
+    }
+
+    /**
+     * 获取快递公司列表*/
+    public HashMap getLogisticsCompany() throws Exception{
+        return logisticsCompanyMap;
     }
 
     @Override
@@ -183,6 +243,15 @@ public class CommonManagerImpl implements CommonManager {
             throw  new Exception("commonBanner is null");
         }
         return  commonBanner;
+    }
+
+    @Override
+    public CommonSerial getAutoSerial(String group) throws  Exception{
+        CommonSerial conmmonSerial = autoSerialMap.get(group);
+        if(conmmonSerial == null){
+            throw  new Exception("conmmonSerial is null");
+        }
+        return  conmmonSerial;
     }
 
 

@@ -27,19 +27,25 @@ public class PCPageList extends TagSupport {
 
 
     public int doStartTag() {
-        StringBuffer paramBuf = new StringBuffer();
-        paramBuf.append(PageEntity.PARAM_NAME_PAGERECORDS)
-                .append("=")
-                .append(this.bean.getSize());//单次查询记录数(步长pageSize)
-        this.param = paramBuf.toString();
+//        StringBuffer paramBuf = new StringBuffer();
+//        paramBuf.append(PageEntity.PARAM_NAME_PAGERECORDS)
+//                .append("=")
+//                .append(this.bean.getSize());//单次查询记录数(步长pageSize)
+        this.param = "";
         return TagSupport.EVAL_BODY_INCLUDE;//子标签将查询参数拼接上(qm,conditions)
     }
 
 
     public int doEndTag() {
+        this.param = this.param.substring(1,this.param.length());
+        StringBuffer paramBuf = new StringBuffer();
+        paramBuf.append(PageEntity.PARAM_NAME_PAGERECORDS)
+                .append("=")
+                .append(this.bean.getSize());//单次查询记录数(步长pageSize)
+
         StringBuilder pageHref = new StringBuilder();
         pageHref.append(this.url).append("?")
-                .append(this.param).append("&").append(PageEntity.PARAM_NAME_PAGEINDEX).append("=");
+                .append(this.param).append("&").append(paramBuf.toString()).append("&").append(PageEntity.PARAM_NAME_PAGEINDEX).append("=");
         pageCount = this.bean.getpCount();//总页数
         String tagStr = pageCount == 0 ? "" : getPagesUrl(this.bean.getIndex(), pageCount, pageHref);
         JspWriter out = this.pageContext.getOut();
@@ -61,8 +67,8 @@ public class PCPageList extends TagSupport {
      */
     private String getPagesUrl(int index, int pageCount, StringBuilder pageHref) {
         StringBuilder content = new StringBuilder();
-        content.append("<ul class=\"am-pagination am-pagination-centered\">");
-        content.append(getPrePage(index, pageHref));
+        content.append("<ul class=\"am-pagination am-pagination-centered pages-new\">");
+        //content.append(getPrePage(index, pageHref));
         if (pageCount <= DISPLAY_PAGES) {//总页数小于指定页数，则展示所有分页
             content.append(getDisplayPages(index, 1, pageCount, pageHref));
         } else {
@@ -137,9 +143,9 @@ public class PCPageList extends TagSupport {
     private String getNextPage(int index, int pageCount, StringBuilder pageHref) {
         int nextIndex = index + 1;
         if (nextIndex > pageCount) {
-            return "<li class=\"am-disabled bigRound\"><a href=\"#\">&raquo;</a></li>";
+            return "<li class=\"am-disabled bigRound\"><a href=\"#\">最后一页</a></li>";
         } else {
-            return new StringBuilder("<li class=\"bigRound\"><a href=\"").append(pageHref).append(nextIndex).append("\">&raquo;</a></li>").toString();
+            return new StringBuilder("<li class=\"bigRound\"><a href=\"").append(pageHref).append(pageCount).append("\">最后一页</a></li>").toString();
         }
     }
 

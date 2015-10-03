@@ -12,13 +12,12 @@ import javax.persistence.*;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "core_p_auto_serial")
+@Table(name = "base_auto_serial")
 public class AutoSerial {
 
     private String id;
-    private String serial;
-    private String model;
-
+    private Long serial;
+    private String group;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -32,22 +31,16 @@ public class AutoSerial {
     }
 
     @Column(name = "serial")
-    public String getSerial() {
+    public Long getSerial() {
         return serial;
     }
 
-    public void setSerial(String serial) {
+    public void setSerial(Long serial) {
         this.serial = serial;
     }
 
-    @Column(name = "model")
-    public String getModel() {
-        return model;
-    }
+    @Column(name = "groupName")
+    public String getGroup() {return group;}
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-
+    public void setGroup(String group) {this.group = group;}
 }

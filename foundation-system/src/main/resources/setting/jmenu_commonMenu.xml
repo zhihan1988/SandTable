@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmenu id="commonMenu">
+    <jnode id="efecOrderAndConsumer" url="/main.do?jnodeId=efecOrderAndConsumer" text_zh_CN="运营管理">
+        <jnode url="" id="orderManager" access="admin,manager" state="closed" text_zh_CN="比赛管理">
+            <jnode url="/basic/xm.do?qm=plistPurchaseOrder_default&amp;viewIdentify=orderProduct&amp;viewProductModel=order" access="admin" text_zh_CN="比赛列表">
+                <match url="/basic/xm.do?qm=plistPurchaseOrder_default&amp;viewIdentify=orderProduct&amp;viewProductModel=order"/>
+                <match url="/basic/xm.do?qm=viewPurchaseOrder&amp;viewIdentify=orderProduct"/>
+                <match url="/basic/xm.do?qm=viewPurchaseOrderProduct&amp;viewProductModel=order"/>
+                <match url="/basic/xm.do?qm=viewPurchaseOrderProduct&amp;viewIdentify=orderProduct"/>
+                <match url="/basic/xm.do?qm=viewProduct&amp;viewIdentify=orderProduct"/>
+            </jnode>
+        </jnode>
+        <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="企业管理">
+            <jnode url="/basic/xm.do?qm=plistConsumer_default" access="admin,manager" text_zh_CN="企业列表">
+                <match url="/basic/xm.do?qm=viewConsumer&amp;viewConsumer=consumer"/>
+                <match url="/basic/xm.do?qm=plistConsumer_default"/>
+                <match url="/basic/xm.do?qm=formConsumer"/>
+                <match url="/basic/xm.do?qm=plistPurchaseOrder_consumer&amp;view=consumer"/>
+                <match url="/basic/xm.do?qm=viewProduct&amp;viewIdentify=consumer"/>
+                <match url="/basic/xm.do?qm=viewPurchaseOrderProduct&amp;viewProductModel=consumer"/>
+                <match url="/basic/xm.do?qm=viewPurchaseOrder&amp;viewIdentify=consumer"/>
+                <match url="/basic/xm.do?qm=plistConsumerCoupon_default"/>
+            </jnode>
+        </jnode>
+        <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="投资机构管理">
+            <jnode url="/basic/xm.do?qm=plistCoupon_default&amp;view=coupon" access="admin,manager" text_zh_CN="投资机构列表">
+                <match url="/basic/xm.do?qm=plistCoupon_default&amp;view=coupon"/>
+                <match url="/basic/xm.do?qm=viewCouponBatch&amp;view=coupon"/>
+            </jnode>
+        </jnode>
+        <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="用户管理">
+            <jnode url="/basic/xm.do?qm=plistCoupon_default&amp;view=coupon" access="admin,manager" text_zh_CN="用户列表">
+                <match url="/basic/xm.do?qm=plistCoupon_default&amp;view=coupon"/>
+                <match url="/basic/xm.do?qm=viewCouponBatch&amp;view=coupon"/>
+            </jnode>
+        </jnode>
+    </jnode>
+    <jnode id="efecProductAndTenant" url="/main.do?jnodeId=efecProductAndTenant" text_zh_CN="基础设置">
+        <jnode url="" id="productManager" access="admin,manager" state="closed" text_zh_CN="行业管理">
+            <jnode url="/basic/xm.do?qm=plistProduct_default&amp;view=newProduct" access="admin" text_zh_CN="行业管理">
+                <match url="/basic/xm.do?qm=plistProduct_defalut&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=plistProduct_tenant&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=viewProduct&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=formProduct&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=formProduct_Description&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=formProduct_ProductModel&amp;view=newProduct"/>
+                <match url="/product/saveNewProduct.do?view=newProduct"/>
+                <match url="/basic/xm.do?qm=plistTenantProduct_default"/>
+                <match url="/basic/xm.do?view=newProduct"/>
+                <match url="/product/saveNewProduct.do?view=newProduct"/>
+            </jnode>
+        </jnode>
+        <jnode url="" id="tenantManager" access="admin" state="closed" text_zh_CN="参数管理">
+            <jnode url="/basic/xm.do?qm=plistTenant_default&amp;view=tenant" access="admin,manager" text_zh_CN="参数设置">
+                <match url="/basic/xm.do?qm=plistTenant_default"/>
+            </jnode>
+        </jnode>
+    </jnode>
+</jmenu>
+
+
+
+
+
+

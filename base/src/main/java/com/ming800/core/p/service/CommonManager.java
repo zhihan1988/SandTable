@@ -1,9 +1,8 @@
 package com.ming800.core.p.service;
 
-import com.ming800.core.p.model.CommonBanner;
-import com.ming800.core.p.model.CommonDocument;
-import com.ming800.core.p.model.CommonRecommended;
-import com.ming800.core.p.model.CommonTag;
+import com.ming800.core.p.model.*;
+
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,4 +51,15 @@ public interface CommonManager {
      */
     CommonDocument getDocument(String group) throws  Exception;
 
+    /**
+     * 序列号
+     * @param group is groupName
+     * @return commonSerial
+     * @throws Exception
+     */
+    CommonSerial getAutoSerial(String group) throws  Exception;
+
+    /**
+     * 获取配置文件中的快递公司列表*/
+    HashMap getLogisticsCompany() throws Exception;
 }

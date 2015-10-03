@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 public class JmenuController extends BaseController {
 
     @RequestMapping({"/getXPage.do"})
-    public String getXPage(HttpServletRequest request,HttpServletResponse response){
-        response.setHeader("X-Frame-Options","");
-        return "forward:/basic/xm.do?qm="+request.getParameter("qm");
+    public String getXPage(HttpServletRequest request, HttpServletResponse response) {
+        response.setHeader("X-Frame-Options", "");
+        return "forward:/basic/xm.do?qm=" + request.getParameter("qm");
     }
 
 
@@ -33,11 +33,16 @@ public class JmenuController extends BaseController {
     public String getManageJmenuHeader(HttpServletRequest request, Model model) {
 
         String match = request.getParameter("match"); //用来得到menuId，筛选jmenu
+//        System.out.println("======================================");
+//        System.out.println(match);
+//        System.out.println("======================================");
         String resultPage = request.getParameter("resultPage");
         String jnodeId = request.getParameter("jnodeId");
         String jmenuId = request.getParameter("jmenuId");
         Jmenu jmenu = JmenuManagerImpl.getJmenu(jmenuId);
+//        System.out.println("startTime: " + System.currentTimeMillis());
         Jnode currentJnode = getCurrentJnode(jmenu, match);
+//        System.out.println("endTime: " + System.currentTimeMillis());
         model.addAttribute("jmenu", jmenu);
         if (currentJnode != null) {
             model.addAttribute("currentJnode", currentJnode);
