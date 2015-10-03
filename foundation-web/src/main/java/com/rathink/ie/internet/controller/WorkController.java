@@ -2,18 +2,18 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.service.AccountManager;
-import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CompanyTermManager;
+import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyChoice;
 import com.rathink.ie.ibase.work.model.CompanyInstruction;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
@@ -39,6 +39,8 @@ public class WorkController {
     private static Logger logger = LoggerFactory.getLogger(WorkController.class);
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private CampaignManager campaignManager;
     @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
@@ -71,7 +73,7 @@ public class WorkController {
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
         Integer campaignDateOutCash = accountManager.countAccountEntryFee(
                 company, preCompanyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "-1");
-        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstructionByDept(company, Edept.HR.name());
+        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
 
         CompanyInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
         CompanyInstruction preOfficeInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.OFFICE.name());
@@ -94,7 +96,7 @@ public class WorkController {
         model.addAttribute("companyNum", CampaignCenter.getCampaignHandler(campaign.getId()).getCompanyTermContextMap().size());
 
         //产品定位冲突报告
-        Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();
+       /* Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();
         List<CompanyChoice> preProductStudyList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
         if (preProductStudyList != null) {
             for (CompanyChoice productStudy : preProductStudyList) {
@@ -102,9 +104,9 @@ public class WorkController {
                 productStudyCompetitionReport.put(productStudy.getName(), count);
             }
         }
-        model.addAttribute("productStudyCompetitionReport", productStudyCompetitionReport);
+        model.addAttribute("productStudyCompetitionReport", productStudyCompetitionReport);*/
         //市场活动冲突报告
-        Map<String, Integer> marketCompetitionReport = new LinkedHashMap();
+    /*    Map<String, Integer> marketCompetitionReport = new LinkedHashMap();
         List<CompanyChoice> preMarketActivityList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
         if (preMarketActivityList != null) {
             for (CompanyChoice marketChoice : preMarketActivityList) {
@@ -112,8 +114,19 @@ public class WorkController {
                 marketCompetitionReport.put(marketChoice.getName(), count);
             }
         }
-        model.addAttribute("marketCompetitionReport", marketCompetitionReport);
+        model.addAttribute("marketCompetitionReport", marketCompetitionReport);*/
 
+        //公司的竞争报告
+        Map<String, Map<String, String>> competitionMap = new HashMap<>();
+        List<Company> companyList = campaignManager.listCompany(campaign);
+        for (Company c : companyList) {
+            CompanyTerm pct = companyTermManager.getCompanyTerm(c, preCampaignDate);
+            Map<String,String> map = internetPropertyManager.getCompanyTermReport(pct);
+            competitionMap.put(c.getName(), map);
+        }
+        model.addAttribute("competitionMap", competitionMap);
+
+        //调试报告
         Map<String, Map<String, Integer>> propertyReport = internetPropertyManager.getPropertyReport(company);
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);

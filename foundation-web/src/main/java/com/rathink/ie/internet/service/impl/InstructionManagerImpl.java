@@ -93,6 +93,17 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     @Override
+    public List<CompanyInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyInstruction where baseType = :baseType and  status=:status and companyTerm.id = :companyTermId");
+        xQuery.put("baseType", baseType);
+        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("companyTermId", companyTerm.getId());
+        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
+        return companyInstructionList;
+    }
+
+   /* @Override
     public List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where dept = :dept and  status=:status and company.id = :companyId");
@@ -101,7 +112,7 @@ public class InstructionManagerImpl implements InstructionManager {
         xQuery.put("companyId", company.getId());
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
-    }
+    }*/
 
     public List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm){
         XQuery xQuery = new XQuery();
@@ -128,7 +139,7 @@ public class InstructionManagerImpl implements InstructionManager {
         return list.get(0).intValue();
     }
 
-    @Override
+   /* @Override
     public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyInstruction where campaign.id = :campaignId and campaignDate = :campaignDate");
@@ -136,7 +147,7 @@ public class InstructionManagerImpl implements InstructionManager {
         xQuery.put("campaignDate", campaignDate);
         List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
         return companyInstructionList;
-    }
+    }*/
 
     public CompanyInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType) {
         String hql = "from CompanyInstruction where baseType = :baseType and companyTerm.id = :companyTermId";

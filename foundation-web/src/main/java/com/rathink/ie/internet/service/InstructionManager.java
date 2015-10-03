@@ -25,7 +25,9 @@ public interface InstructionManager {
 
     List<CompanyInstruction> listCompanyInstructionByType(Company company, String baseType);
 
-    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept);
+    List<CompanyInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType);
+
+//    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept);
 
     List<CompanyInstruction> listCompanyInstruction(CompanyTerm companyTerm);
 
@@ -33,7 +35,7 @@ public interface InstructionManager {
 
     Integer countCompanyInstruction(CompanyChoice companyChoice);
 
-    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
+//    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, String campaignDate);
 
     CompanyInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
 

@@ -6,7 +6,12 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
+import com.rathink.ie.ibase.service.AccountManager;
+import com.rathink.ie.ibase.work.model.CompanyInstruction;
+import com.rathink.ie.internet.EAccountEntityType;
+import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,19 @@ import java.util.*;
 public class InternetPropertyManagerImpl implements InternetPropertyManager {
     @Autowired
     private BaseManager baseManager;
+    @Autowired
+    private InstructionManager instructionManager;
+    @Autowired
+    private AccountManager accountManager;
+
+    public CompanyTermProperty getCompanyTermProperty(CompanyTerm companyTerm, EPropertyName ePropertyName) {
+        String hql = "from CompanyTermProperty where name = :name and companyTerm.id = :companyTermId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyTermId", companyTerm.getId());
+        queryParamMap.put("name", ePropertyName.name());
+        CompanyTermProperty companyTermProperty = (CompanyTermProperty) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        return companyTermProperty;
+    }
 
     public List<CompanyTermProperty> listCompanyTermProperty(CompanyTerm companyTerm) {
         XQuery xQuery = new XQuery();
@@ -84,4 +102,36 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
             return order1 - order2;
         }
     }
+
+    public Map<String, String> getCompanyTermReport(CompanyTerm companyTerm) {
+        Map<String, String> companyTermReport = new HashMap<>();
+        Company company = companyTerm.getCompany();
+        List<CompanyInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        int count = hrInstructionList == null ? 0 : hrInstructionList.size();
+        companyTermReport.put("在职人数", String.valueOf(count));
+
+        CompanyInstruction productStudyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
+        String productName = productStudyInstruction == null ? "" : productStudyInstruction.getCompanyChoice().getName();
+        companyTermReport.put("产品定位", productName);
+
+        List<CompanyInstruction> marketInstructionList = instructionManager.listCompanyInstructionByType(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
+        String marketActivitys = "";
+        if (marketInstructionList != null) {
+            for (CompanyInstruction companyInstruction : marketInstructionList) {
+                marketActivitys += companyInstruction.getCompanyChoice().getName();
+            }
+        }
+        companyTermReport.put("市场营销", marketActivitys);
+
+        Integer campaignDateInCash = accountManager.countAccountEntryFee(
+                company, companyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
+        companyTermReport.put("上期收入", String.valueOf(campaignDateInCash));
+
+        //上期用户数
+        CompanyTermProperty userAmountProperty = getCompanyTermProperty(companyTerm, EPropertyName.USER_AMOUNT);
+        Integer oldUserAmount = userAmountProperty.getValue();
+        companyTermReport.put("上期用户数", String.valueOf(oldUserAmount));
+        return companyTermReport;
+    }
+
 }
