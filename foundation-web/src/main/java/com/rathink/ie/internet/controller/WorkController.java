@@ -93,27 +93,6 @@ public class WorkController {
         model.addAttribute("preCampaignDate", preCampaignDate);
         model.addAttribute("companyNum", CampaignCenter.getCampaignHandler(campaign.getId()).getCompanyTermContextMap().size());
 
-        //产品定位冲突报告
-       /* Map<String, Integer> productStudyCompetitionReport = new LinkedHashMap();
-        List<CompanyChoice> preProductStudyList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.PRODUCT_STUDY.name());
-        if (preProductStudyList != null) {
-            for (CompanyChoice productStudy : preProductStudyList) {
-                Integer count = instructionManager.countCompanyInstruction(productStudy);
-                productStudyCompetitionReport.put(productStudy.getName(), count);
-            }
-        }
-        model.addAttribute("productStudyCompetitionReport", productStudyCompetitionReport);*/
-        //市场活动冲突报告
-    /*    Map<String, Integer> marketCompetitionReport = new LinkedHashMap();
-        List<CompanyChoice> preMarketActivityList = choiceManager.listCompanyChoice(campaign.getId(), preCampaignDate, EChoiceBaseType.MARKET_ACTIVITY.name());
-        if (preMarketActivityList != null) {
-            for (CompanyChoice marketChoice : preMarketActivityList) {
-                Integer count = instructionManager.countCompanyInstruction(marketChoice);
-                marketCompetitionReport.put(marketChoice.getName(), count);
-            }
-        }
-        model.addAttribute("marketCompetitionReport", marketCompetitionReport);*/
-
         //公司的竞争报告
         Map<String, Map<String, String>> competitionMap = new HashMap<>();
         List<Company> companyList = campaignManager.listCompany(campaign);

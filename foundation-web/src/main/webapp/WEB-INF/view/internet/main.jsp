@@ -153,24 +153,6 @@
                 </div>
 
                 <br/>
-                <b>产品定位竞争报告</b>
-                <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
-                    <tbody>
-                    <tr>
-                        <td>定位</td>
-                        <c:forEach items="${productStudyCompetitionReport}" var="g">
-                            <td>${g.key}</td>
-                        </c:forEach>
-                    </tr>
-                    <tr>
-                        <td>人数</td>
-                        <c:forEach items="${productStudyCompetitionReport}" var="g">
-                            <td>${g.value}</td>
-                        </c:forEach>
-                    </tr>
-                    </tbody>
-                </table>
-                <br/>
                 <b>市场活动竞争报告</b>
                 <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
                     <tbody>

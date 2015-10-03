@@ -51,13 +51,14 @@ public class InstructionManagerImpl implements InstructionManager {
             companyTermInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
             companyTermInstruction.setCampaign(campaign);
             companyTermInstruction.setCompany(company);
+            companyTermInstruction.setCompanyTerm(companyTerm);
+            companyTermInstruction.setCampaignTermChoice(campaignTermChoice);
+            companyTermInstruction.setBaseType(campaignTermChoice.getBaseType());
+            companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
+            companyTermInstruction.setDept(campaignTermChoice.getDept());
+            companyTermInstruction.setIndustryChoice(campaignTermChoice.getIndustryChoice());
         }
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        companyTermInstruction.setCampaignTermChoice(campaignTermChoice);
-        companyTermInstruction.setBaseType(campaignTermChoice.getBaseType());
-        companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
         companyTermInstruction.setValue(value);
-        companyTermInstruction.setDept(campaignTermChoice.getDept());
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
         return companyTermInstruction;
