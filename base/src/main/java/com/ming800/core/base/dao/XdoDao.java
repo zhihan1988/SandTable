@@ -3,7 +3,6 @@ package com.ming800.core.base.dao;
 import com.ming800.core.taglib.PageEntity;
 import com.ming800.core.does.model.PageInfo;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public interface XdoDao {
     Object getUniqueObjectByConditions(String queryHql, LinkedHashMap<String, Object> queryParamMap);
 
 
-    void batchSaveOrUpdate(String type, String modelType, Collection<? extends Object> collection);
+    void batchSaveOrUpdate(String type, String modelType, List<Object> objectList);
 
     Object executeSql(String type, String queryStr, LinkedHashMap<String, Object> queryParamMap);
 

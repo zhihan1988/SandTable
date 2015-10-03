@@ -61,16 +61,39 @@ public class XQuery {
         }
     }
 
-    //只能用于List操作
-    public XQuery(String doQueryName, String conditions , String sort, HttpServletRequest request) throws Exception {
+    public XQuery(String doQueryName, HttpServletRequest request, Integer psize) throws Exception {
         Do tempDo = doManager.getDoByQueryModel(doQueryName.split("_")[0]);
         //判断是否是分页查询
-        if (request!=null) {
+        if (doQueryName.startsWith("plist")) {
+            this.setPageEntity(XDoUtil.getPageEntity(request, psize));
+        }
+
+        DoQuery tempDoQuery = tempDo.getDoQueryByName(doQueryName.split("_")[1]);
+        generateQueryString(tempDo.getXentity().getModel(), tempDoQuery, request.getParameter("conditions"), this);
+
+        //判断是否有排序参数
+        if (request.getParameter("sort") != null) {
+            this.setSortHql(fetchOrderStr(tempDoQuery, request.getParameter("sort")));
+        } else if (tempDoQuery.getOrderBy() != null && tempDoQuery.getOrderBy() != "") {
+            this.setSortHql(fetchOrderStr(tempDoQuery, tempDoQuery.getOrderBy()));
+        }
+
+        //补全查询语句
+        if (sortHql != null) {
+            this.setHql(this.getHql() + sortHql);
+        }
+    }
+
+    //只能用于List操作
+    public XQuery(String doQueryName, String conditions, String sort, HttpServletRequest request) throws Exception {
+        Do tempDo = doManager.getDoByQueryModel(doQueryName.split("_")[0]);
+        //判断是否是分页查询
+        if (request != null) {
             this.setPageEntity(XDoUtil.getPageEntity(request));
         }
 
         DoQuery tempDoQuery = tempDo.getDoQueryByName(doQueryName.split("_")[1]);
-        generateQueryString(tempDo.getXentity().getModel(), tempDoQuery,conditions, this);
+        generateQueryString(tempDo.getXentity().getModel(), tempDoQuery, conditions, this);
 
         //判断是否有排序参数
         if (sort != null && !"".equals(sort)) {
@@ -169,9 +192,6 @@ public class XQuery {
     //更新查询参数
     public void put(String key, Object value) {
 //        if (queryParamMap.get(key) != null) {
-        if (queryParamMap == null) {
-            queryParamMap = new LinkedHashMap<>();
-        }
         queryParamMap.put(key, value);
 //        } else {
 //            throw new RuntimeException("参数不存在!");
@@ -244,16 +264,17 @@ public class XQuery {
 
             Object value = null;
 
-            if(propertyName.equalsIgnoreCase("createDatetime")){
-                if(t == 1){//暂时先考虑只有两个时间的分段查询  第二次查询createDatetime
+            if (propertyName.equalsIgnoreCase("createDatetime") || propertyName.equalsIgnoreCase("createDateTime")) {
+                if (t == 1) {//暂时先考虑只有两个时间的分段查询  第二次查询createDatetime
                     //获得指定的参数的值
-                    value = convertPropertyValue(queryCondition, tempConditions, operator,true,true);
-                }else{
-                    value = convertPropertyValue(queryCondition, tempConditions, operator,true,false);
+                    value = convertPropertyValue(queryCondition, tempConditions, operator, true, true);
+                } else {
+                    value = convertPropertyValue(queryCondition, tempConditions, operator, true, false);
                     t++;
+                    propertyName += "2";
                 }
-            }else{
-                value = convertPropertyValue(queryCondition, tempConditions, operator,false,false);
+            } else {
+                value = convertPropertyValue(queryCondition, tempConditions, operator, false, false);
             }
 
 
@@ -435,7 +456,7 @@ public class XQuery {
     /**
      * 取值
      */
-    private Object convertPropertyValue(QueryCondition condition, String tempConditions, String tempOperator,boolean flag1,boolean flag2) {
+    private Object convertPropertyValue(QueryCondition condition, String tempConditions, String tempOperator, boolean flag1, boolean flag2) {
 
         Object value = "";
         String propertyValue = condition.getValue();
@@ -444,10 +465,10 @@ public class XQuery {
             int times = 0;
             for (String str : tempConditions.split(";")) {
                 String[] tempStr = str.split(":");
-                if(flag1 && flag2){//判断是找createDatetime 并且是找第二个createDatetime
+                if (flag1 && flag2) {//判断是找createDatetime 并且是找第二个createDatetime
                     if (condition.getName().equals(tempStr[0].trim()) && (times == 0)) {//判断是第一个createDatetime
                         times++;
-                        break;
+                        continue;
                     }
                 }
                 if (condition.getName().equals(tempStr[0].trim())) {

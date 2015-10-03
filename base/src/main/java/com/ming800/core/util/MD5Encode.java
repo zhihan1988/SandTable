@@ -52,10 +52,4 @@ public class MD5Encode {
         }
         return resultString;
     }
-
-    public static void main(String[] args) {
-//        StringUtil.encodePassword("123456", "SHA");
-
-        System.out.println(StringUtil.encodePassword("123456", "SHA"));
-    }
 }
