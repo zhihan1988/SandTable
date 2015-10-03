@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "resource")
+@Table(name = "industry_choice")
 public class IndustryChoice {
     private String id;
     private String baseType;//表示是一个什么类型的选择 例如HumanChoice or OfficeChoice

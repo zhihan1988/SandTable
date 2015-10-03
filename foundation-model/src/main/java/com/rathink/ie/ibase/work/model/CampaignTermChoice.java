@@ -7,7 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "company_choice")
+@Table(name = "campaign_term_choice")
 public class CampaignTermChoice {
     private String id;
     private String baseType;

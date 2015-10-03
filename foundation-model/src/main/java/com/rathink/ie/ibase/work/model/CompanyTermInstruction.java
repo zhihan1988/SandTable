@@ -10,7 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "company_instruction")
+@Table(name = "company_term_instruction")
 public class CompanyTermInstruction {
     private String id;
     private String status;
