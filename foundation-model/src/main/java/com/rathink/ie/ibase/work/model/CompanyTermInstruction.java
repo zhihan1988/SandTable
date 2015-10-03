@@ -93,7 +93,7 @@ public class CompanyTermInstruction {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_choice_id")
+    @JoinColumn(name = "campaign_term_choice_id")
     public CampaignTermChoice getCampaignTermChoice() {
         return campaignTermChoice;
     }

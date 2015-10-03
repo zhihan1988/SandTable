@@ -34,14 +34,14 @@ public class InstructionManagerImpl implements InstructionManager {
     private AccountManager accountManager;
 
     @Override
-    public CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String companyChoiceId, String value) {
+    public CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String campaignTermChoiceId, String value) {
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
-        CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), companyChoiceId);
+        CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), campaignTermChoiceId);
         Campaign campaign = company.getCampaign();
-        String hql = "from CompanyTermInstruction where companyChoice.id = :companyChoiceId" +
+        String hql = "from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId" +
                 " and company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyChoiceId", companyChoiceId);
+        queryParamMap.put("campaignTermChoiceId", campaignTermChoiceId);
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
         CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
@@ -64,11 +64,11 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     @Override
-    public void deleteInstruction(Company company, String companyChoiceId) {
-        String hql = "from CompanyTermInstruction where companyChoice.id = :companyChoiceId" +
+    public void deleteInstruction(Company company, String campaignTermChoiceId) {
+        String hql = "from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId" +
                 " and company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyChoiceId", companyChoiceId);
+        queryParamMap.put("campaignTermChoiceId", campaignTermChoiceId);
         queryParamMap.put("companyId", company.getId());
         queryParamMap.put("campaignDate", company.getCurrentCampaignDate());
         CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
@@ -121,16 +121,16 @@ public class InstructionManagerImpl implements InstructionManager {
     @Override
     public List<CompanyTermInstruction> listCompanyInstruction(CampaignTermChoice campaignTermChoice) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyTermInstruction where companyChoice.id = :companyChoiceId");
-        xQuery.put("companyChoiceId", campaignTermChoice.getId());
+        xQuery.setHql("from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId");
+        xQuery.put("campaignTermChoiceId", campaignTermChoice.getId());
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
     }
 
     public Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice) {
-        String sql = "select count(id) from company_instruction where company_choice_id = :companyChoiceId";
+        String sql = "select count(id) from company_instruction where campaign_term_choice_id = :campaignTermChoiceId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyChoiceId", campaignTermChoice.getId());
+        queryParamMap.put("campaignTermChoiceId", campaignTermChoice.getId());
         List<BigInteger> list = (List) baseManager.executeSql("list", sql, queryParamMap);
         return list.get(0).intValue();
     }

@@ -1,5 +1,6 @@
 package com.rathink.ie.ibase.work.model;
 
+import com.rathink.ie.foundation.campaign.model.Industry;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ public class IndustryChoice {
     private String value2;
     private String description;
     private String img;
+    private Industry industry;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -108,5 +110,15 @@ public class IndustryChoice {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "industry_id")
+    public Industry getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(Industry industry) {
+        this.industry = industry;
     }
 }

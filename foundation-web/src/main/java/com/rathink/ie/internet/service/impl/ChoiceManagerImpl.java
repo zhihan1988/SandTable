@@ -51,10 +51,10 @@ public class ChoiceManagerImpl implements ChoiceManager {
     public List<CampaignTermChoice> randomChoices(Campaign campaign) {
         List<IndustryChoice> industryChoiceList = new ArrayList<>();
         industryChoiceList.addAll(produceHumanChoice(campaign));
-        industryChoiceList.addAll(produceMarketActivityChoice(campaign));
-        industryChoiceList.addAll(produceProductStudyChoice(campaign));
-        industryChoiceList.addAll(produceProductStudyFeeChoice(campaign));
-        industryChoiceList.addAll(produceOperationChoice(campaign));
+        industryChoiceList.addAll(loadIndustryChoice(campaign.getIndustry().getId(), EChoiceBaseType.MARKET_ACTIVITY.name()));
+        industryChoiceList.addAll(loadIndustryChoice(campaign.getIndustry().getId(), EChoiceBaseType.PRODUCT_STUDY.name()));
+        industryChoiceList.addAll(loadIndustryChoice(campaign.getIndustry().getId(), EChoiceBaseType.PRODUCT_STUDY_FEE.name()));
+        industryChoiceList.addAll(loadIndustryChoice(campaign.getIndustry().getId(), EChoiceBaseType.OPERATION.name()));
 
         List<CampaignTermChoice> campaignTermChoiceList = new ArrayList<>();
         for (IndustryChoice industryChoice : industryChoiceList) {
@@ -62,6 +62,7 @@ public class ChoiceManagerImpl implements ChoiceManager {
             campaignTermChoice.setIndustryChoice(industryChoice);
             campaignTermChoice.setCampaign(campaign);
             campaignTermChoice.setCampaignDate(campaign.getCurrentCampaignDate());
+            campaignTermChoice.setBaseType(industryChoice.getBaseType());
             campaignTermChoiceList.add(campaignTermChoice);
         }
 
@@ -74,80 +75,13 @@ public class ChoiceManagerImpl implements ChoiceManager {
         return humanIndustryChoiceList;
     }
 
-    private List<IndustryChoice> produceProductStudyChoice(Campaign campaign) {
-        List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        IndustryChoice productStudy = new IndustryChoice();
-        productStudy.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
-        productStudy.setDept(Edept.PRODUCT.name());
-        productStudy.setName("高端");
-        productStudy.setValue("3");
-        industryChoiceList.add(productStudy);
-        IndustryChoice productStudy2 = new IndustryChoice();
-        productStudy2.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
-        productStudy2.setDept(Edept.PRODUCT.name());
-        productStudy2.setName("中端");
-        productStudy2.setValue("2");
-        industryChoiceList.add(productStudy2);
-        IndustryChoice productStudy3 = new IndustryChoice();
-        productStudy3.setBaseType(EChoiceBaseType.PRODUCT_STUDY.name());
-        productStudy3.setDept(Edept.PRODUCT.name());
-        productStudy3.setName("低端");
-        productStudy3.setValue("1");
-        industryChoiceList.add(productStudy3);
-        return industryChoiceList;
-    }
-
-    private List<IndustryChoice> produceProductStudyFeeChoice(Campaign campaign) {
-        List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        IndustryChoice productStudyFee = new IndustryChoice();
-        productStudyFee.setBaseType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        productStudyFee.setDept(Edept.PRODUCT.name());
-        productStudyFee.setName("产品研发投入");
-        productStudyFee.setFees("20000,40000,80000,160000,320000");
-        industryChoiceList.add(productStudyFee);
-        return industryChoiceList;
-    }
-
-    private List<IndustryChoice> produceOperationChoice(Campaign campaign) {
-        List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        IndustryChoice operationChoice = new IndustryChoice();
-        operationChoice.setBaseType(EChoiceBaseType.OPERATION.name());
-        operationChoice.setDept(Edept.OPERATION.name());
-        operationChoice.setFees("40000,80000,160000,320000,640000");
-        industryChoiceList.add(operationChoice);
-        return industryChoiceList;
-    }
-
-    private List<IndustryChoice> produceMarketActivityChoice(Campaign campaign) {
-        List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        IndustryChoice marketActivityChoice = new IndustryChoice();
-        marketActivityChoice.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        marketActivityChoice.setDept(Edept.MARKET.name());
-        marketActivityChoice.setName("社交网络");
-        marketActivityChoice.setValue("30");
-        marketActivityChoice.setFees("10000,20000,40000,80000,160000");
-        industryChoiceList.add(marketActivityChoice);
-        IndustryChoice marketActivityChoice2 = new IndustryChoice();
-        marketActivityChoice2.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        marketActivityChoice2.setDept(Edept.MARKET.name());
-        marketActivityChoice2.setName("搜索引擎");
-        marketActivityChoice2.setValue("35");
-        marketActivityChoice2.setFees("10000,20000,40000,80000,160000");
-        industryChoiceList.add(marketActivityChoice2);
-        IndustryChoice marketActivityChoice3 = new IndustryChoice();
-        marketActivityChoice3.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        marketActivityChoice3.setDept(Edept.MARKET.name());
-        marketActivityChoice3.setName("地面推广");
-        marketActivityChoice3.setValue("40");
-        marketActivityChoice3.setFees("10000,20000,40000,80000,160000");
-        industryChoiceList.add(marketActivityChoice3);
-        IndustryChoice marketActivityChoice4 = new IndustryChoice();
-        marketActivityChoice4.setBaseType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        marketActivityChoice4.setDept(Edept.MARKET.name());
-        marketActivityChoice4.setName("户外广告");
-        marketActivityChoice4.setValue("50");
-        marketActivityChoice4.setFees("10000,20000,40000,80000,160000");
-        industryChoiceList.add(marketActivityChoice4);
+    public List<IndustryChoice> loadIndustryChoice(String industryId, String baseType) {
+        XQuery xQuery = new XQuery();
+        String hql = "from IndustryChoice where industry.id=:industryId and baseType = :baseType";
+        xQuery.setHql(hql);
+        xQuery.put("industryId", industryId);
+        xQuery.put("baseType", baseType);
+        List<IndustryChoice> industryChoiceList = baseManager.listObject(xQuery);
         return industryChoiceList;
     }
 
