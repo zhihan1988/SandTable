@@ -73,7 +73,7 @@
         <li class=""><a id="panel-operation" href="[data-tab-panel-4]">运营</a></li>
         </c:if>
     </ul>
-    <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formatCampaignDate}</h3>
+    <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
     <div class="am-tabs-bd">
         <div data-tab-panel-0 class="am-tab-panel am-active">
             <div class="am-panel-bd">

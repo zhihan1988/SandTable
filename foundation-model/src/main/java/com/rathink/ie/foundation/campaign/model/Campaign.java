@@ -142,16 +142,16 @@ import java.util.Date;
 
     @Transient
     public Integer getPreCampaignDate() {
-        return CampaignUtil.getPreCampaignDate(currentCampaignDate, industry.getTerm());
+        return currentCampaignDate - 1;
     }
 
     @Transient
     public Integer getNextCampaignDate() {
-        return CampaignUtil.getNextCampaignDate(currentCampaignDate, industry.getTerm());
+        return currentCampaignDate + 1;
     }
 
     @Transient
-    public String getFormatCampaignDate() {
+    public String getFormattedCampaignDate() {
         return CampaignUtil.formatCampaignDate(currentCampaignDate, industry.getTerm());
     }
 

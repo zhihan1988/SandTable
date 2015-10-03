@@ -1,8 +1,5 @@
 package com.rathink.ie.foundation.campaign.model;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
 /**
@@ -11,52 +8,42 @@ import java.util.NoSuchElementException;
 public class CampaignUtil {
 
     /**
-     * 获取上一轮赛季
-     * @param campaignDate
-     * @return
-     */
-    public static Integer getPreCampaignDate(Integer campaignDate, Integer term) {
-        return campaignDate + term;
-    }
-
-    /**
-     * 获取下一轮赛季
-     * @param campaignDate
-     * @return
-     */
-    public static Integer getNextCampaignDate(Integer campaignDate, Integer term) {
-        return campaignDate - term;
-    }
-
-    /**
      *
      * @param campaignDate
      * @param term  1：月  3：季度  12:年
      * @return
      */
     public static String formatCampaignDate(Integer campaignDate, Integer term) {
-        LocalDate nowDate = LocalDate.now();
-        nowDate = nowDate.plus(campaignDate, ChronoUnit.MONTHS);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
-        String formatNowDate = formatter.format(nowDate);
-        String year = formatNowDate.substring(0, 2);
-        String month = formatNowDate.substring(2, 4);
+        Integer total = campaignDate * term;
+        int year = (total - 1) / 12;
+        int month = total - 12 * year;
+
+        int showYear = year + 1;
+        int showMonth = month;
+
         StringBuffer stringBuffer = new StringBuffer();
 
         if (term == 1) {
-            stringBuffer.append("第" + year + "年，第" + month + "月份");
-        } else if (term == 3){
-            String quarter = CampaignUtil.calculateQuarter(month);
-            stringBuffer.append("第" + year + "年，第" + quarter + "季度");
+            stringBuffer.append("第" + showYear + "年，第" + showMonth + "月份");
+        } else if (term == 3) {
+            int quarter = (month - 1) / 3 + 1;
+            stringBuffer.append("第" + showYear + "年，第" + quarter + "季度");
         } else if (term == 12) {
-            stringBuffer.append("第" + year + "年");
+            stringBuffer.append("第" + showYear + "年");
         } else {
             throw new NoSuchElementException("term:" + term);
         }
         return stringBuffer.toString();
     }
 
-    private static String calculateQuarter(String month) {
+    public static void main(String[] args) {
+        System.out.println(CampaignUtil.formatCampaignDate(1, 12));
+        System.out.println(CampaignUtil.formatCampaignDate(8, 12));
+        System.out.println(CampaignUtil.formatCampaignDate(12, 12));
+        System.out.println(CampaignUtil.formatCampaignDate(13, 12));
+    }
+
+    /*private static String calculateQuarter(String month) {
         String quarter;
         switch (month) {
             case "01":
@@ -83,5 +70,5 @@ public class CampaignUtil {
                 throw new NoSuchElementException("month:" + month);
         }
         return quarter;
-    }
+    }*/
 }
