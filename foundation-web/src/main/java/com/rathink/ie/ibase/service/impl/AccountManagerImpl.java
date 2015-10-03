@@ -3,7 +3,7 @@ package com.rathink.ie.ibase.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -113,7 +113,7 @@ public class AccountManagerImpl implements AccountManager {
                     accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
                 });
             }
-            propertyReport.put(CampaignUtil.formatCampaignDate(companyTerm.getCampaignDate()), accountMap);
+            propertyReport.put(company.getCampaign().getFormatCampaignDate(), accountMap);
         }
         return propertyReport;
     }

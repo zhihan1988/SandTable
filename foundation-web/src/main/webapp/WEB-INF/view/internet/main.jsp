@@ -65,10 +65,10 @@
     <ul class="am-tabs-nav am-cf">
         <li class="am-active"><a id="panel-0" href="[data-tab-panel-0]">主页</a></li>
         <li class=""><a id="panel-hr" href="[data-tab-panel-1]">招聘</a></li>
-        <c:if test="${campaign.currentCampaignDate != '010101'}">
+        <c:if test="${campaign.currentCampaignDate > 1}">
             <li class=""><a id="panel-product" href="[data-tab-panel-2]">产品</a></li>
         </c:if>
-        <c:if test="${campaign.currentCampaignDate != '010101' && campaign.currentCampaignDate != '010204'}">
+        <c:if test="${campaign.currentCampaignDate > 2}">
         <li class=""><a id="panel-market" href="[data-tab-panel-3]">市场</a></li>
         <li class=""><a id="panel-operation" href="[data-tab-panel-4]">运营</a></li>
         </c:if>
@@ -101,7 +101,7 @@
                         <span class="door-enter">进入<i class="am-icon-chevron-right"></i></span>
                     </div>
 
-                    <c:if test="${campaign.currentCampaignDate != '010101'}">
+                    <c:if test="${campaign.currentCampaignDate > 1}">
                     <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
                     <div id="enter-product" class="door">
                         <b>产品</b>
@@ -118,7 +118,7 @@
                     </div>
                     </c:if>
 
-                    <c:if test="${campaign.currentCampaignDate != '010101' && campaign.currentCampaignDate != '010204'}">
+                    <c:if test="${campaign.currentCampaignDate > 2}">
                     <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
                     <div id="enter-market" class="door">
                         <b>市场</b>

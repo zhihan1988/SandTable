@@ -3,7 +3,7 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AccountManager;
@@ -88,7 +88,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
                     propertyMap.put(EPropertyName.valueOf(companyTermProperty.getName()).getLabel(), companyTermProperty.getValue());
                 }
             }
-            String formatCampaignDate = CampaignUtil.formatCampaignDate(companyTerm.getCampaignDate());
+            String formatCampaignDate = company.getCampaign().getFormatCampaignDate();
             propertyReport.put(formatCampaignDate, propertyMap);
         }
         return propertyReport;

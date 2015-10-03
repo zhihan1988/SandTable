@@ -7,7 +7,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -113,11 +113,11 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     public void initCampaignContext(CampaignContext campaignContext){
-        final Integer INIT_CAMPAIGN_DATE = 1;
+        final Integer INIT_CAMPAIGN_DATE = 0;
 
         //1.比赛开始
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignContext.getCampaign().getId());
-        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(INIT_CAMPAIGN_DATE));
+        campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
         campaign.setStatus(Campaign.Status.RUN.getValue());
         campaignContext.setCampaign(campaign);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
@@ -201,7 +201,7 @@ public class FlowManagerImpl implements FlowManager {
      */
     private void newRound(CampaignContext campaignContext) {
         Campaign campaign = campaignContext.getCampaign();
-        campaign.setCurrentCampaignDate(CampaignUtil.getNextCampaignDate(campaign.getCurrentCampaignDate()));
+        campaign.setCurrentCampaignDate(campaign.getNextCampaignDate());
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext preCompanyTermContext = companyTermHandlerMap.get(companyId);
@@ -328,6 +328,7 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     private void calculateAccount(CampaignContext campaignContext) {
+        Integer TIME_UNIT = campaignContext.getCampaign().getIndustry().getTerm();
         Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -343,7 +344,7 @@ public class FlowManagerImpl implements FlowManager {
                     companyInstructionIterator.remove();
                 }
             }
-            Integer humanFee = instructionManager.sumFee(humanInstructionList) * CampaignUtil.TIME_UNIT;
+            Integer humanFee = instructionManager.sumFee(humanInstructionList) * TIME_UNIT;
             Account humanAccount = accountManager.packageAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(humanAccount);
 
@@ -477,7 +478,7 @@ public class FlowManagerImpl implements FlowManager {
         if (campaignTermChoiceList != null) {
             campaignTermChoiceList.forEach(session::delete);
         }
-        campaign.setCurrentCampaignDate(CampaignUtil.getPreCampaignDate(1));
+        campaign.setCurrentCampaignDate(0);
         campaign.setStatus(Campaign.Status.PREPARE.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         List<Company> companyList = campaignManager.listCompany(campaign);

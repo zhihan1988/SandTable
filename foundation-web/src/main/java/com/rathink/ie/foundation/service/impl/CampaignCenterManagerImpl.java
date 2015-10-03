@@ -4,7 +4,7 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
@@ -56,7 +56,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
         for (CompanyTerm companyTerm : companyTermList) {
             CompanyTermContext companyTermContext = initCompanyTermHandler(companyTerm, campaignContext);
-            CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), CampaignUtil.getPreCampaignDate(campaign.getCurrentCampaignDate()));
+            CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), campaign.getPreCampaignDate());
             if (preCompanyTerm != null) {
                 CompanyTermContext preCompanyTermContext = initCompanyTermHandler(preCompanyTerm, campaignContext);
                 companyTermContext.setPreCompanyTermContext(preCompanyTermContext);

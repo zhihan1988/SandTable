@@ -5,7 +5,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.*;
@@ -56,7 +56,7 @@ public class WorkController {
         Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Integer preCampaignDate = CampaignUtil.getPreCampaignDate(currentCampaignDate);
+        Integer preCampaignDate = campaign.getPreCampaignDate();
         CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company, preCampaignDate);
         List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);

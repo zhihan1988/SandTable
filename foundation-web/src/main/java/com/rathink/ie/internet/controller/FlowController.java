@@ -5,7 +5,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
-import com.rathink.ie.foundation.util.CampaignUtil;
+import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
@@ -72,7 +72,7 @@ public class FlowController {
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Integer nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
+        Integer nextCampaignDate = campaign.getNextCampaignDate();
         company.setCurrentCampaignDate(nextCampaignDate);
 
         boolean isAllNext = true;
@@ -110,16 +110,11 @@ public class FlowController {
         String campaignId = request.getParameter("campaignId");
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
         Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
-        Integer nextCampaignDate = CampaignUtil.getNextCampaignDate(currentCampaignDate);
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             Company company = companyTermContext.getCompanyTerm().getCompany();
-           /* if (!company.getId().matches("1|2")) {
-                robotManager.randomInstruction(companyTermContext);
-            }*/
             if (company.getCurrentCampaignDate().equals(currentCampaignDate)) {
                 robotManager.randomInstruction(companyTermContext);
-//                company.setCurrentCampaignDate(nextCampaignDate);
             }
         }
         return "success";

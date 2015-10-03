@@ -12,6 +12,8 @@ public class Industry {
     private String id;
     private String name;
     private Date createDatetime;
+    private Integer term;
+    private Integer totalTerm;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -40,5 +42,23 @@ public class Industry {
 
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
+    }
+
+    @Column(name = "term")
+    public Integer getTerm() {
+        return term;
+    }
+
+    public void setTerm(Integer term) {
+        this.term = term;
+    }
+
+    @Column(name = "total_term")
+    public Integer getTotalTerm() {
+        return totalTerm;
+    }
+
+    public void setTotalTerm(Integer totalTerm) {
+        this.totalTerm = totalTerm;
     }
 }
