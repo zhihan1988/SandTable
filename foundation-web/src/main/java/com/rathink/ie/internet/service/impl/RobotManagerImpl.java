@@ -71,7 +71,7 @@ public class RobotManagerImpl implements RobotManager {
 //        Campaign campaign = companyTerm.getCampaign();
         Company company = companyTermContext.getCompanyTerm().getCompany();
         //已招聘的人
-        List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstruction(company, EChoiceBaseType.HUMAN.name());
         int productNum = 0, operationNum = 0, marketNum = 0;
         if (humanInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : humanInstructionList) {

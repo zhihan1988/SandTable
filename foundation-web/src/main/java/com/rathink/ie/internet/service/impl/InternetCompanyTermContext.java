@@ -86,7 +86,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     public Integer calculateDeptAbility(String type) {
         InstructionManager instructionManager = (InstructionManager) ApplicationContextUtil.getApplicationContext().getBean("instructionManagerImpl");
-        List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstructionByType(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(getCompanyTerm().getCompany(), EChoiceBaseType.HUMAN.name());
         Double humanAbility = 0d;
         if (companyTermInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
@@ -107,7 +107,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      * @return 办公室系数
      */
     /*private Integer calculateOfficeRatio() {
-        List<CompanyInstruction> companyInstructionList = listCompanyInstructionByType(EChoiceBaseType.OFFICE.name());
+        List<CompanyInstruction> companyInstructionList = listCompanyInstruction(EChoiceBaseType.OFFICE.name());
         Integer officeFee = 0;
         if (companyInstructionList != null) {
             for (CompanyInstruction companyInstruction : companyInstructionList) {

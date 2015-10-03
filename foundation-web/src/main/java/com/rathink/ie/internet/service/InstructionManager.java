@@ -23,11 +23,9 @@ public interface InstructionManager {
 
     void deleteInstruction(Company company, String companyChoiceId);
 
-    List<CompanyTermInstruction> listCompanyInstructionByType(Company company, String baseType);
+    List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType);
 
-    List<CompanyTermInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType);
-
-//    List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept);
+    List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm, String baseType);
 
     List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm);
 

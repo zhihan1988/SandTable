@@ -78,7 +78,7 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     @Override
-    public List<CompanyTermInstruction> listCompanyInstructionByType(Company company, String baseType) {
+    public List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and company.id = :companyId");
         xQuery.put("baseType", baseType);
@@ -89,7 +89,7 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     @Override
-    public List<CompanyTermInstruction> listCompanyInstructionByType(CompanyTerm companyTerm, String baseType) {
+    public List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm, String baseType) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and companyTerm.id = :companyTermId");
         xQuery.put("baseType", baseType);
@@ -98,17 +98,6 @@ public class InstructionManagerImpl implements InstructionManager {
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
     }
-
-   /* @Override
-    public List<CompanyInstruction> listCompanyInstructionByDept(Company company, String dept) {
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyTermInstruction where dept = :dept and  status=:status and company.id = :companyId");
-        xQuery.put("dept", dept);
-        xQuery.put("status", EInstructionStatus.YXZ.getValue());
-        xQuery.put("companyId", company.getId());
-        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
-        return companyInstructionList;
-    }*/
 
     public List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm){
         XQuery xQuery = new XQuery();

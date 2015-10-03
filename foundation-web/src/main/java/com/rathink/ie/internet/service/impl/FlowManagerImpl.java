@@ -335,7 +335,7 @@ public class FlowManagerImpl implements FlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
 
-            List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstructionByType(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
+            List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
             Iterator<CompanyTermInstruction> companyInstructionIterator = humanInstructionList.iterator();
             while (companyInstructionIterator.hasNext()) {
                 CompanyTermInstruction companyTermInstruction = companyInstructionIterator.next();

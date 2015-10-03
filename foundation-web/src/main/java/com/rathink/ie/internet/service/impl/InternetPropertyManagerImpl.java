@@ -106,7 +106,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     public Map<String, String> getCompanyTermReport(CompanyTerm companyTerm) {
         Map<String, String> companyTermReport = new HashMap<>();
         Company company = companyTerm.getCompany();
-        List<CompanyTermInstruction> hrInstructionList = instructionManager.listCompanyInstructionByType(company, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> hrInstructionList = instructionManager.listCompanyInstruction(company, EChoiceBaseType.HUMAN.name());
         int count = hrInstructionList == null ? 0 : hrInstructionList.size();
         companyTermReport.put("在职人数", String.valueOf(count));
 
@@ -114,7 +114,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         String productName = productStudyInstruction == null ? "" : productStudyInstruction.getCampaignTermChoice().getName();
         companyTermReport.put("产品定位", productName);
 
-        List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstructionByType(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
+        List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstruction(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
         String marketActivitys = "";
         if (marketInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : marketInstructionList) {
