@@ -168,7 +168,7 @@ public class FlowManagerImpl implements FlowManager {
         }
 
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from Resource where baseType = 'HUMAN'");
+        xQuery.setHql("from IndustryChoice where baseType = 'HUMAN'");
         List<IndustryChoice> allHumanList = baseManager.listObject(xQuery);
         campaignContext.addHumanResource(new HashSet<>(allHumanList));
     }

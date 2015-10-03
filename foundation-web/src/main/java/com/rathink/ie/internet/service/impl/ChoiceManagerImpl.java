@@ -50,7 +50,6 @@ public class ChoiceManagerImpl implements ChoiceManager {
     @Override
     public List<CampaignTermChoice> randomChoices(Campaign campaign) {
         List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        industryChoiceList.addAll(productOfficeChoice(campaign));
         industryChoiceList.addAll(produceHumanChoice(campaign));
         industryChoiceList.addAll(produceMarketActivityChoice(campaign));
         industryChoiceList.addAll(produceProductStudyChoice(campaign));
@@ -149,56 +148,6 @@ public class ChoiceManagerImpl implements ChoiceManager {
         marketActivityChoice4.setValue("50");
         marketActivityChoice4.setFees("10000,20000,40000,80000,160000");
         industryChoiceList.add(marketActivityChoice4);
-        return industryChoiceList;
-    }
-
-    private List<IndustryChoice> productOfficeChoice(Campaign campaign) {
-        List<IndustryChoice> industryChoiceList = new ArrayList<>();
-        IndustryChoice officeChoice = new IndustryChoice();
-        officeChoice.setBaseType(EChoiceBaseType.OFFICE.name());
-        officeChoice.setName("科实大厦");
-        officeChoice.setValue("20000");
-        officeChoice.setFees("20000");
-        officeChoice.setDescription("100平米;15人");
-        officeChoice.setDept(Edept.AD.name());
-        officeChoice.setImg("office-1.jpg");
-        industryChoiceList.add(officeChoice);
-        IndustryChoice officeChoice2 = new IndustryChoice();
-        officeChoice2.setBaseType(EChoiceBaseType.OFFICE.name());
-        officeChoice2.setName("建外SOHO");
-        officeChoice2.setValue("30000");
-        officeChoice2.setFees("30000");
-        officeChoice2.setDescription("100平米;15人");
-        officeChoice2.setDept(Edept.AD.name());
-        officeChoice2.setImg("office-2.jpg");
-        industryChoiceList.add(officeChoice2);
-        IndustryChoice IndustryChoice3 = new IndustryChoice();
-        IndustryChoice3.setBaseType(EChoiceBaseType.OFFICE.name());
-        IndustryChoice3.setName("辉煌国际中心");
-        IndustryChoice3.setValue("15000");
-        IndustryChoice3.setFees("15000");
-        IndustryChoice3.setDescription("60平米;8人");
-        IndustryChoice3.setDept(Edept.AD.name());
-        IndustryChoice3.setImg("office-3.jpg");
-        industryChoiceList.add(IndustryChoice3);
-        IndustryChoice IndustryChoice4 = new IndustryChoice();
-        IndustryChoice4.setBaseType(EChoiceBaseType.OFFICE.name());
-        IndustryChoice4.setName("中关村大厦");
-        IndustryChoice4.setValue("40000");
-        IndustryChoice4.setFees("40000");
-        IndustryChoice4.setDescription("150平米;20人");
-        IndustryChoice4.setDept(Edept.AD.name());
-        IndustryChoice4.setImg("office-4.jpg");
-        industryChoiceList.add(IndustryChoice4);
-        IndustryChoice IndustryChoice5 = new IndustryChoice();
-        IndustryChoice5.setBaseType(EChoiceBaseType.OFFICE.name());
-        IndustryChoice5.setName("望京科技园");
-        IndustryChoice5.setValue("30000");
-        IndustryChoice5.setFees("30000");
-        IndustryChoice5.setDescription("200平米;25人");
-        IndustryChoice5.setDept(Edept.AD.name());
-        IndustryChoice5.setImg("office-5.jpg");
-        industryChoiceList.add(IndustryChoice5);
         return industryChoiceList;
     }
 
