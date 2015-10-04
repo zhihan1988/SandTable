@@ -5,8 +5,15 @@ import java.util.NoSuchElementException;
 /**
  * Created by Hean on 2015/8/24.
  */
-public class CampaignUtil {
+public class CampaignDateUtil {
 
+    public static Integer getPreCampaignDate(Integer campaignDate) {
+        return campaignDate - 1;
+    }
+
+    public static Integer getNextCampaignDate(Integer campaignDate) {
+        return campaignDate + 1;
+    }
     /**
      *
      * @param campaignDate
@@ -37,10 +44,10 @@ public class CampaignUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(CampaignUtil.formatCampaignDate(1, 12));
-        System.out.println(CampaignUtil.formatCampaignDate(8, 12));
-        System.out.println(CampaignUtil.formatCampaignDate(12, 12));
-        System.out.println(CampaignUtil.formatCampaignDate(13, 12));
+        System.out.println(CampaignDateUtil.formatCampaignDate(1, 12));
+        System.out.println(CampaignDateUtil.formatCampaignDate(8, 12));
+        System.out.println(CampaignDateUtil.formatCampaignDate(12, 12));
+        System.out.println(CampaignDateUtil.formatCampaignDate(13, 12));
     }
 
     /*private static String calculateQuarter(String month) {

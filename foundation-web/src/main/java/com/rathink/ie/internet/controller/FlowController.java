@@ -5,7 +5,6 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
-import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;

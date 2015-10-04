@@ -2,6 +2,7 @@ package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
+import com.rathink.ie.foundation.campaign.model.CampaignDateUtil;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.account.model.AccountEntry;
@@ -91,7 +92,7 @@ public class AccountManagerImpl implements AccountManager {
 
     public Map<String, Map<String, String>> getAccountReport(Company company) {
         Map<String, Map<String, String>> propertyReport = new LinkedHashMap<>();
-
+        Integer term = company.getCampaign().getIndustry().getTerm();
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where company.id = :companyId order by campaignDate asc");
         xQuery.put("companyId", company.getId());
@@ -112,7 +113,9 @@ public class AccountManagerImpl implements AccountManager {
                     accountMap.put(EAccountEntityType.valueOf(accountEntry.getType()).getLabel(), accountEntry.getValue());
                 });
             }
-            propertyReport.put(company.getCampaign().getFormattedCampaignDate(), accountMap);
+
+            String formatCampaignDate = CampaignDateUtil.formatCampaignDate(companyTerm.getCampaignDate(), term);
+            propertyReport.put(formatCampaignDate, accountMap);
         }
         return propertyReport;
     }

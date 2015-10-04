@@ -4,10 +4,10 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Industry;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
-import com.rathink.ie.foundation.campaign.model.CampaignUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -156,9 +156,24 @@ public class FlowManagerImpl implements FlowManager {
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
+
+            List<Account> accountList = new ArrayList<>();
+            Account humanAccount = accountManager.packageAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(humanAccount);
+            Account adAccount = accountManager.packageAccount("0", EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(adAccount);
+            Account productFeeAccount = accountManager.packageAccount("0", EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(productFeeAccount);
+            Account marketFeeAccount = accountManager.packageAccount("0", EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(marketFeeAccount);
+            Account operationFeeAccount = accountManager.packageAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            accountList.add(operationFeeAccount);
+            Integer currentPeriodIncome = companyTermContext.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
+            Account incomeAccount = accountManager.packageAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
+            accountList.add(incomeAccount);
+            companyTermContext.setAccountList(accountList);
         }
 
-        calculateAccount(campaignContext);
 
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
             List<CompanyTermProperty> companyTermPropertyList = companyTermContext.getCompanyTermPropertyList();
@@ -328,8 +343,10 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     private void calculateAccount(CampaignContext campaignContext) {
-        Integer TIME_UNIT = campaignContext.getCampaign().getIndustry().getTerm();
-        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        Campaign campaign = campaignContext.getCampaign();
+        Industry industry = (Industry) baseManager.getObject(Industry.class.getName(), campaign.getIndustry().getId());
+        Integer TIME_UNIT = industry.getTerm();
+        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);

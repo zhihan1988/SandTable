@@ -448,24 +448,7 @@
 
 <b>调试信息</b>
 <div class="am-scrollable-horizontal">
-    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
-        <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
-            <tr>
-                <td></td>
-                <c:forEach items="${r.value}" var="property">
-                    <td>${property.key}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-        <c:forEach items="${propertyReport}" var="r" begin="1">
-            <tr>
-                <td>${r.key}</td>
-                <c:forEach items="${r.value}" var="property">
-                    <td>${property.value}</td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-    </table>
+
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
         <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
             <tr>
@@ -475,7 +458,7 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-        <c:forEach items="${accountReport}" var="acountMap" begin="1">
+        <c:forEach items="${accountReport}" var="acountMap">
             <tr>
                 <td>${acountMap.key}</td>
                 <c:forEach items="${acountMap.value}" var="account">
@@ -484,6 +467,25 @@
             </tr>
         </c:forEach>
     </table>
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
+        <c:forEach items="${propertyReport}" var="r" begin="0" end="0">
+            <tr>
+                <td></td>
+                <c:forEach items="${r.value}" var="property">
+                    <td>${property.key}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        <c:forEach items="${propertyReport}" var="r" >
+            <tr>
+                <td>${r.key}</td>
+                <c:forEach items="${r.value}" var="property">
+                    <td>${property.value}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+    </table>
+
 </div>
 
 <script>
