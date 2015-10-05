@@ -71,7 +71,11 @@ public class ChoiceManagerImpl implements ChoiceManager {
 
     private List<IndustryChoice> produceHumanChoice(Campaign campaign) {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaign.getId());
-        List<IndustryChoice> humanIndustryChoiceList = campaignContext.randomHumans();
+        List<String> humanIdList = campaignContext.randomHumans();
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from IndustryChoice where id in (:ids)");
+        xQuery.put("ids", humanIdList);
+        List<IndustryChoice> humanIndustryChoiceList = baseManager.listObject(xQuery);
         return humanIndustryChoiceList;
     }
 

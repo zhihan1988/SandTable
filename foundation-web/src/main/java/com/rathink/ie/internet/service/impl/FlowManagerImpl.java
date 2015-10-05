@@ -182,32 +182,26 @@ public class FlowManagerImpl implements FlowManager {
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
 
+        Set<String> humanSet = new HashSet<>();
         XQuery xQuery = new XQuery();
         xQuery.setHql("from IndustryChoice where baseType = 'HUMAN'");
         List<IndustryChoice> allHumanList = baseManager.listObject(xQuery);
-        campaignContext.addHumanResource(new HashSet<>(allHumanList));
+        humanSet.addAll(allHumanList.stream().map(IndustryChoice::getId).collect(Collectors.toSet()));
+        campaignContext.addHumanResource(humanSet);
     }
 
     private void releaseHuman(CampaignContext campaignContext) {
-        Set<IndustryChoice> humanIndustryChoiceSet = new HashSet<>();
-        Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
-        Set<String> instructionChoiceIdSet = companyTermInstructionSet.stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
+        Set<String> humanIndustryChoiceIdSet = new HashSet<>();
+        //本期的人才决策
+        Set<String> instructionChoiceIdSet = campaignContext.getCurrentCompanyTermInstructionSet().stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
                 .map(companyInstruction -> companyInstruction.getCampaignTermChoice().getId()).collect(Collectors.toSet());
+        //本期的人才选项
         List<CampaignTermChoice> campaignTermChoiceList = campaignContext.getCurrentCampaignTermChoiceList();
+        //释放未被选择的人员
         campaignTermChoiceList.stream().filter(companyChoice ->
                 companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId()))
-                .forEach(companyChoice -> {
-                    IndustryChoice human = new IndustryChoice();
-                    human.setBaseType(companyChoice.getBaseType());
-                    human.setDept(companyChoice.getDept());
-                    human.setName(companyChoice.getName());
-                    human.setType(companyChoice.getType());
-                    human.setFees(companyChoice.getFees());
-                    human.setValue(companyChoice.getValue());
-                    human.setImg(companyChoice.getImg());
-                    humanIndustryChoiceSet.add(human);
-                });
-        campaignContext.addHumanResource(humanIndustryChoiceSet);
+                .forEach(companyChoice -> humanIndustryChoiceIdSet.add(companyChoice.getId()));
+        campaignContext.addHumanResource(humanIndustryChoiceIdSet);
     }
 
     /**

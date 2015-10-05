@@ -153,21 +153,25 @@
                 </div>
 
                 <br/>
-                <b>市场活动竞争报告</b>
+                <b>上期竞争报告</b>
                 <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
                     <tbody>
+                    <c:forEach items="${competitionMap}" var="c" end="0">
                     <tr>
-                        <td>活动</td>
-                        <c:forEach items="${marketCompetitionReport}" var="g">
-                            <td>${g.key}</td>
+                        <td></td>
+                        <c:forEach items="${c.value}" var="i">
+                            <td>${i.key}</td>
                         </c:forEach>
                     </tr>
+                    </c:forEach>
+                    <c:forEach items="${competitionMap}" var="c">
                     <tr>
-                        <td>人数</td>
-                        <c:forEach items="${marketCompetitionReport}" var="g">
-                            <td>${g.value}</td>
+                        <td>${c.key}</td>
+                        <c:forEach items="${c.value}" var="i">
+                            <td>${i.value}</td>
                         </c:forEach>
                     </tr>
+                    </c:forEach>
                     </tbody>
                 </table>
             </div>

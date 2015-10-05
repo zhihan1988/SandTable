@@ -19,7 +19,7 @@ public class CampaignContext {
     private Map<String, List<CampaignTermChoice>> typeCompanyChoiceMap = new HashMap<>();
     private Map<String, List<CompanyTermInstruction>> choiceInstructionMap = new HashMap<>();
     private List<CampaignTermChoice> currentCampaignTermChoiceList = new ArrayList<>();
-    private Set<IndustryChoice> humanRepository = new HashSet<>();
+    private Set<String> industryChoiceIdSet = new HashSet<>();
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -106,31 +106,31 @@ public class CampaignContext {
         return currentCompanyTermInstructionSet;
     }
 
-    public void addHumanResource(Set<IndustryChoice> humanSet) {
-        humanRepository.addAll(humanSet);
+    public void addHumanResource(Set<String> humanSet) {
+        industryChoiceIdSet.addAll(humanSet);
     }
 
     /**
      * 产生这一轮的随机数据
      */
-    public List<IndustryChoice> randomHumans() {
-        List<IndustryChoice> randomHumanList = new ArrayList<>();
+    public List<String> randomHumans() {
+        List<String> randomHumanIdList = new ArrayList<>();
         Integer needNum = getCompanyTermContextMap().size() * 3;
         for (int i = 0; i < needNum; i++) {
-             Iterator<IndustryChoice> humanIterator = humanRepository.iterator();
-            Integer choiceSize = humanRepository.size();
+            Iterator<String> humanIterator = industryChoiceIdSet.iterator();
+            Integer choiceSize = industryChoiceIdSet.size();
             if(choiceSize==0) break;
             int index = RandomUtil.random(0, choiceSize);
             for (int m = 0; humanIterator.hasNext(); m++) {
-                IndustryChoice human = humanIterator.next();
+                String humanId = humanIterator.next();
                 if (m == index) {
-                    randomHumanList.add(human);
+                    randomHumanIdList.add(humanId);
                     humanIterator.remove();
                     break;
                 }
             }
         }
-        return randomHumanList;
+        return randomHumanIdList;
     }
 }
 
