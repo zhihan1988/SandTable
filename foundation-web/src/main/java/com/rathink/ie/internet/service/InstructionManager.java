@@ -1,5 +1,6 @@
 package com.rathink.ie.internet.service;
 
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CampaignTermChoice;
@@ -12,28 +13,19 @@ import java.util.List;
  */
 public interface InstructionManager {
 
-    /**
-     * 针对选项choice保存或修改instruction
-     * @param company
-     * @param choiceId
-     * @param fee
-     * @return
-     */
-    CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String choiceId, String fee);
+    CompanyTermInstruction saveOrUpdateInstructionByChoice(CompanyTerm companyTerm, String choiceId, String value);
+
+    CompanyTermInstruction saveOrUpdateInstructionByResource(CompanyTerm companyTerm, String resourceId, String value);
 
     void deleteInstruction(Company company, String companyChoiceId);
+
+    List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, String baseType);
 
     List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType);
 
     List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm, String baseType);
 
     List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm);
-
-    List<CompanyTermInstruction> listCompanyInstruction(CampaignTermChoice campaignTermChoice);
-
-    Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice);
-
-//    List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, Integer campaignDate);
 
     CompanyTermInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType);
 

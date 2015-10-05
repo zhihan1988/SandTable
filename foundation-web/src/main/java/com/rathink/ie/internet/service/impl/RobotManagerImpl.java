@@ -28,15 +28,14 @@ public class RobotManagerImpl implements RobotManager {
 
     @Override
     public void randomInstruction(CompanyTermContext companyTermContext) {
-        keepPre(companyTermContext, EChoiceBaseType.OFFICE.name());
-        keepPre(companyTermContext, EChoiceBaseType.PRODUCT_STUDY.name());
+       /* keepPre(companyTermContext, EChoiceBaseType.PRODUCT_STUDY.name());
         randomFee(companyTermContext, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
         randomFee(companyTermContext, EChoiceBaseType.MARKET_ACTIVITY.name());
         randomFee(companyTermContext, EChoiceBaseType.OPERATION.name());
-        randomHuman(companyTermContext);
+        randomHuman(companyTermContext);*/
     }
 
-    public void randomFee(CompanyTermContext companyTermContext, String baseType) {
+    /*public void randomFee(CompanyTermContext companyTermContext, String baseType) {
         CampaignContext campaignContext = companyTermContext.getCampaignContext();
         List<CampaignTermChoice> campaignTermChoiceList = campaignContext.listCurrentCompanyChoiceByType(baseType);
         CampaignTermChoice campaignTermChoice = campaignTermChoiceList.get(RandomUtil.random(0, campaignTermChoiceList.size()));
@@ -126,5 +125,5 @@ public class RobotManagerImpl implements RobotManager {
             }
         }
 
-    }
+    }*/
 }

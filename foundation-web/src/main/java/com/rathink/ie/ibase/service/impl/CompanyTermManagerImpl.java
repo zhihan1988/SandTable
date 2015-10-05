@@ -20,10 +20,10 @@ public class CompanyTermManagerImpl implements CompanyTermManager {
     private BaseManager baseManager;
 
     @Override
-    public CompanyTerm getCompanyTerm(Company company, Integer campaignDate) {
+    public CompanyTerm getCompanyTerm(String companyId, Integer campaignDate) {
         String hql = "from CompanyTerm where company.id = :companyId and campaignDate = :campaignDate";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("companyId", companyId);
         queryParamMap.put("campaignDate", campaignDate);
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
         return companyTerm;

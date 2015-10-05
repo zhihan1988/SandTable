@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Hean on 2015/10/5.
@@ -19,7 +20,7 @@ public class IndustryResource {
     private String dept;
     private String type;//全部  随机
     private String valueSet;
-    private List<IndustryResourceChoice> industryResourceChoiceList;
+    private Set<IndustryResourceChoice> currentIndustryResourceChoiceSet;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -87,12 +88,13 @@ public class IndustryResource {
         this.valueSet = valueSet;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "industryResource", cascade = CascadeType.ALL)
-    public List<IndustryResourceChoice> getIndustryResourceChoiceList() {
-        return industryResourceChoiceList;
+    @Transient
+    public Set<IndustryResourceChoice> getCurrentIndustryResourceChoiceSet() {
+        return currentIndustryResourceChoiceSet;
     }
 
-    public void setIndustryResourceChoiceList(List<IndustryResourceChoice> industryResourceChoiceList) {
-        this.industryResourceChoiceList = industryResourceChoiceList;
+    @Transient
+    public void setCurrentIndustryResourceChoiceSet(Set<IndustryResourceChoice> currentIndustryResourceChoiceSet) {
+        this.currentIndustryResourceChoiceSet = currentIndustryResourceChoiceSet;
     }
 }

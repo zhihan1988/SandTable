@@ -5,6 +5,7 @@ import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
@@ -90,7 +91,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Double humanAbility = 0d;
         if (companyTermInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-                CampaignTermChoice human = companyTermInstruction.getCampaignTermChoice();
+                IndustryResourceChoice human = companyTermInstruction.getIndustryResourceChoice();
 //                if (!human.getCampaignDate().equals(getCompanyTerm().getCampaignDate())) {//不计算当期的人才能力（延迟一期生效）
                     if (human.getType().equals(type)) {
                         humanAbility += Math.pow(Double.valueOf(human.getValue()), 1.3);
@@ -170,7 +171,9 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer sameGradeCount = 1;
         if (productStudyInstructionList != null && productStudyInstructionList.size() > 0) {
             CompanyTermInstruction productStudy = productStudyInstructionList.get(0);
-            sameGradeCount = getCampaignContext().getCompetitionMap().get(productStudy.getCampaignTermChoice().getId());
+            String choiceId = productStudy.getIndustryResourceChoice().getId();
+            List<CompanyTermInstruction> allCompanyTermInstructionList = campaignContext.getCurrentChoiceInstructionMap().get(choiceId);
+            sameGradeCount = allCompanyTermInstructionList == null ? 0 : allCompanyTermInstructionList.size();
         }
         //产品竞争系数计算公式
         Double productCompetitionRatio = 0d;
@@ -198,7 +201,6 @@ public class InternetCompanyTermContext extends CompanyTermContext {
      */
     private Integer calculateNewUserAmount() {
 
-        Map<String, Integer> competitionMap = getCampaignContext().getCompetitionMap();
         List<CompanyTermInstruction> marketInstructionList = listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
 
         Integer marketAbility = preCompanyTermContext.get(EPropertyName.MARKET_ABILITY.name());
@@ -207,9 +209,10 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Double marketX = 0d;
         if (marketInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : marketInstructionList) {
-                CampaignTermChoice campaignTermChoice = companyTermInstruction.getCampaignTermChoice();
+                String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
+                List<CompanyTermInstruction> allCompanyTermInstructionList = campaignContext.getCurrentChoiceInstructionMap().get(choiceId);
                 //市场活动竞争人数
-                Integer count = competitionMap.get(companyTermInstruction.getCampaignTermChoice().getId());
+                Integer count = allCompanyTermInstructionList == null ? 0 : allCompanyTermInstructionList.size();
                 //市场活动竞争系数
                 Double marketCompetitionRatio = 0d;
                 try {
@@ -217,7 +220,7 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-                Double marketCost = Double.valueOf(campaignTermChoice.getValue());
+                Double marketCost = Double.valueOf(companyTermInstruction.getIndustryResourceChoice().getValue());
                 Integer marketFee = Integer.valueOf(companyTermInstruction.getValue());
 
                 marketX += marketFee * (marketCompetitionRatio + 100) / 100 / marketCost / productCompetitionRatio * 100;

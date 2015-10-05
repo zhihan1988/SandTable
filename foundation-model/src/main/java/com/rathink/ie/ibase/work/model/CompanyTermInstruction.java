@@ -19,8 +19,6 @@ public class CompanyTermInstruction {
     private Campaign campaign;
     private Company company;
     private String dept;
-    private CampaignTermChoice campaignTermChoice;
-    private IndustryChoice industryChoice;
     private IndustryResource industryResource;
     private IndustryResourceChoice industryResourceChoice;
     private String value;
@@ -92,26 +90,6 @@ public class CompanyTermInstruction {
 
     public void setDept(String dept) {
         this.dept = dept;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "campaign_term_choice_id")
-    public CampaignTermChoice getCampaignTermChoice() {
-        return campaignTermChoice;
-    }
-
-    public void setCampaignTermChoice(CampaignTermChoice campaignTermChoice) {
-        this.campaignTermChoice = campaignTermChoice;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "industry_choice_id")
-    public IndustryChoice getIndustryChoice() {
-        return industryChoice;
-    }
-
-    public void setIndustryChoice(IndustryChoice industryChoice) {
-        this.industryChoice = industryChoice;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -16,16 +16,12 @@ import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CampaignTermChoice;
-import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.work.model.IndustryChoice;
+import com.rathink.ie.ibase.work.model.*;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.service.ChoiceManager;
-import com.rathink.ie.internet.service.FlowManager;
-import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.internet.service.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -46,13 +42,15 @@ public class FlowManagerImpl implements FlowManager {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private ChoiceManager choiceManager;
-    @Autowired
     private InstructionManager instructionManager;
     @Autowired
     private CampaignManager campaignManager;
     @Autowired
     private AccountManager accountManager;
+    @Autowired
+    private IndustryResourceManager industryResourceManager;
+    @Autowired
+    private IndustryResourceChoiceManager industryResourceChoiceManager;
     /**
      * 开始游戏 定时任务执行
      * @param campaignId
@@ -82,14 +80,10 @@ public class FlowManagerImpl implements FlowManager {
         //回合结束前
         //收集决策信息
         collectCompanyInstruction(campaignContext);
-        //释放未被选择的人才
-        releaseHuman(campaignContext);
         //竞标决策
         competitiveBidding(campaignContext);
         //非竞标决策
         competitiveUnBidding(campaignContext);
-
-        calculateCompetitionMap(campaignContext);
         //计算保存新回合的属性数据
         calculateProperty(campaignContext);
         //4计算保存新回合的财务数据
@@ -182,26 +176,6 @@ public class FlowManagerImpl implements FlowManager {
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
 
-        Set<String> humanSet = new HashSet<>();
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from IndustryChoice where baseType = 'HUMAN'");
-        List<IndustryChoice> allHumanList = baseManager.listObject(xQuery);
-        humanSet.addAll(allHumanList.stream().map(IndustryChoice::getId).collect(Collectors.toSet()));
-        campaignContext.addHumanResource(humanSet);
-    }
-
-    private void releaseHuman(CampaignContext campaignContext) {
-        Set<String> humanIndustryChoiceIdSet = new HashSet<>();
-        //本期的人才决策
-        Set<String> instructionChoiceIdSet = campaignContext.getCurrentCompanyTermInstructionSet().stream().filter(companyInstruction -> companyInstruction.getBaseType().equals(EChoiceBaseType.HUMAN.name()))
-                .map(companyInstruction -> companyInstruction.getCampaignTermChoice().getId()).collect(Collectors.toSet());
-        //本期的人才选项
-        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.getCurrentCampaignTermChoiceList();
-        //释放未被选择的人员
-        campaignTermChoiceList.stream().filter(companyChoice ->
-                companyChoice.getBaseType().equals(EChoiceBaseType.HUMAN.name()) && !instructionChoiceIdSet.contains(companyChoice.getId()))
-                .forEach(companyChoice -> humanIndustryChoiceIdSet.add(companyChoice.getId()));
-        campaignContext.addHumanResource(humanIndustryChoiceIdSet);
     }
 
     /**
@@ -237,9 +211,57 @@ public class FlowManagerImpl implements FlowManager {
      * @param campaignContext
      */
     private void randomChoice(CampaignContext campaignContext) {
-        //准备供用户决策用的随机数据
-        List<CampaignTermChoice> campaignTermChoiceList = choiceManager.randomChoices(campaignContext.getCampaign());
-        campaignContext.setCurrentCampaignTermChoiceList(campaignTermChoiceList);
+        Integer COMPANY_HUMAN_NUM_RATIO = 3;//参赛公司与人才的数量比率
+
+        Map<String, IndustryResource> currentTypeIndustryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
+        String industryId = campaignContext.getCampaign().getIndustry().getId();
+        //人员
+        Set<IndustryResourceChoice> industryResourceChoiceSet = new HashSet<>();
+        Integer needNum = campaignContext.getCompanyTermContextMap().size() * COMPANY_HUMAN_NUM_RATIO;
+        IndustryResource humanResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.HUMAN.name());
+        List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstruction(campaignContext.getCampaign(), EChoiceBaseType.HUMAN.name());
+        Set<String> usedResourceChoiceIdSet = humanInstructionList.stream().map(CompanyTermInstruction::getId).collect(Collectors.toSet());
+        List<IndustryResourceChoice> industryResourceChoiceList;
+        if(usedResourceChoiceIdSet.isEmpty()) {
+            industryResourceChoiceList = industryResourceChoiceManager.listIndustryResourceChoice(humanResource.getId());
+        } else {
+            industryResourceChoiceList = industryResourceChoiceManager.listIndustryResourceChoice(humanResource.getId(), usedResourceChoiceIdSet);
+        }
+
+        for (int i = 0; i < needNum; i++) {
+            Iterator<IndustryResourceChoice> industryResourceChoiceIterator = industryResourceChoiceList.iterator();
+            Integer choiceSize = industryResourceChoiceList.size();
+            int index = RandomUtil.random(0, choiceSize);
+            for (int m = 0; industryResourceChoiceIterator.hasNext(); m++) {
+                IndustryResourceChoice irc = industryResourceChoiceIterator.next();
+                if (m == index) {
+                    industryResourceChoiceSet.add(irc);
+                    industryResourceChoiceIterator.remove();
+                    break;
+                }
+            }
+        }
+        humanResource.setCurrentIndustryResourceChoiceSet(industryResourceChoiceSet);
+
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY.name(), humanResource);
+        //产品定位
+        IndustryResource productStudyResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY.name());
+        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyResource.getId())));
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY.name(), productStudyResource);
+        //产品投入
+        IndustryResource productStudyFeeResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
+        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyFeeResource.getId())));
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY_FEE.name(), productStudyFeeResource);
+        //市场活动
+        IndustryResource marketActivityResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.MARKET_ACTIVITY.name());
+        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketActivityResource.getId())));
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.MARKET_ACTIVITY.name(), marketActivityResource);
+        //运营投入
+        IndustryResource operationResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.OPERATION.name());
+        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(operationResource.getId())));
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.OPERATION.name(), operationResource);
+
+        campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
     }
 
     private void collectCompanyInstruction(CampaignContext campaignContext) {
@@ -257,12 +279,12 @@ public class FlowManagerImpl implements FlowManager {
 
     private void competitiveBidding(CampaignContext campaignContext) {
 
-        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.HUMAN.name());
-        if (campaignTermChoiceList == null || campaignTermChoiceList.size() == 0) return;
+        Set<IndustryResourceChoice> humanSet = campaignContext.getCurrentTypeIndustryResourceMap().get(EChoiceBaseType.HUMAN.name()).getCurrentIndustryResourceChoiceSet();
+        if (humanSet == null || humanSet.size() == 0) return;
         //竞标
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (CampaignTermChoice campaignTermChoice : campaignTermChoiceList) {
-            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(campaignTermChoice.getId());
+        for (IndustryResourceChoice human : humanSet) {
+            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.getCurrentChoiceInstructionMap().get(human.getId());
             if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
                 Double maxRecruitmentRatio = 0d;
                 CompanyTermInstruction successCompanyTermInstruction = null;
@@ -273,7 +295,7 @@ public class FlowManagerImpl implements FlowManager {
                     Integer randomRatio = RandomUtil.random(0, 70);
                     Double recruitmentRatio = feeRatio * 30 / 100 + randomRatio;//招聘能力系数
                     logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
-                            companyTermContext.getCompanyTerm().getCompany().getName(), campaignTermChoice.getName(),
+                            companyTermContext.getCompanyTerm().getCompany().getName(), human.getName(),
                             fee, feeRatio, randomRatio, recruitmentRatio);
                     if (recruitmentRatio > maxRecruitmentRatio) {
                         maxRecruitmentRatio = recruitmentRatio;
@@ -302,24 +324,23 @@ public class FlowManagerImpl implements FlowManager {
     }
 
 
-    private void calculateCompetitionMap(CampaignContext campaignContext) {
+    /*private void calculateCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
-        List<CampaignTermChoice> campaignTermChoiceList = new ArrayList<>();
+        Set<IndustryResourceChoice> currentIndustryResourceChoiceList = new HashSet<>();
+        Map<String, IndustryResource> currentTypeIndustryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
         //产品定位
-        List<CampaignTermChoice> productStudyList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.PRODUCT_STUDY.name());
-        if(productStudyList!=null) campaignTermChoiceList.addAll(productStudyList);
+        currentIndustryResourceChoiceList.addAll(currentTypeIndustryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY.name()).getCurrentIndustryResourceChoiceSet());
         //市场活动
-        List<CampaignTermChoice> marketActivityList = campaignContext.listCurrentCompanyChoiceByType(EChoiceBaseType.MARKET_ACTIVITY.name());
-        if(marketActivityList!=null) campaignTermChoiceList.addAll(marketActivityList);
-        for (CampaignTermChoice campaignTermChoice : campaignTermChoiceList) {
-            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(campaignTermChoice.getId());
+        currentIndustryResourceChoiceList.addAll(currentTypeIndustryResourceMap.get(EChoiceBaseType.MARKET_ACTIVITY.name()).getCurrentIndustryResourceChoiceSet());
+        for (IndustryResourceChoice industryResourceChoice : currentIndustryResourceChoiceList) {
+            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(industryResourceChoice.getId());
             if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
-                competitionMap.put(campaignTermChoice.getId(), companyTermInstructionList.size());
+                competitionMap.put(industryResourceChoice.getId(), companyTermInstructionList.size());
             }
         }
         campaignContext.setCompetitionMap(competitionMap);
 
-    }
+    }*/
 
     private void calculateProperty(CampaignContext campaignContext) {
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
@@ -404,8 +425,6 @@ public class FlowManagerImpl implements FlowManager {
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(),company);
         }
-        List<CampaignTermChoice> campaignTermChoiceList = campaignContext.getCurrentCampaignTermChoiceList();
-        campaignTermChoiceList.forEach(companyChoice -> baseManager.saveOrUpdate(CampaignTermChoice.class.getName(), companyChoice));
     }
 
     /**

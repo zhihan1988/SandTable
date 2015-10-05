@@ -111,17 +111,17 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
         companyTermReport.put("在职人数", String.valueOf(count));
 
         CompanyTermInstruction productStudyInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
-        String productName = productStudyInstruction == null ? "" : productStudyInstruction.getCampaignTermChoice().getName();
+        String productName = productStudyInstruction == null ? "" : productStudyInstruction.getIndustryResourceChoice().getName();
         companyTermReport.put("产品定位", productName);
 
         List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstruction(companyTerm, EChoiceBaseType.MARKET_ACTIVITY.name());
-        String marketActivitys = "";
+        String marketActivities = "";
         if (marketInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : marketInstructionList) {
-                marketActivitys += companyTermInstruction.getCampaignTermChoice().getName();
+                marketActivities += companyTermInstruction.getIndustryResourceChoice().getName();
             }
         }
-        companyTermReport.put("市场营销", marketActivitys);
+        companyTermReport.put("市场营销", marketActivities);
 
         Integer campaignDateInCash = accountManager.countAccountEntryFee(
                 company, companyTerm.getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");

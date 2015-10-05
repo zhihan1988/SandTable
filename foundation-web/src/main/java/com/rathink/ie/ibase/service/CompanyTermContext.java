@@ -69,13 +69,13 @@ public abstract class CompanyTermContext {
         typeCompanyInstructionMap = new HashMap<>();
         if (companyTermInstructionList != null) {
             for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-                String choiceType = companyTermInstruction.getIndustryChoice().getBaseType();
-                if (typeCompanyInstructionMap.containsKey(choiceType)) {
-                    typeCompanyInstructionMap.get(choiceType).add(companyTermInstruction);
+                String baseType = companyTermInstruction.getBaseType();
+                if (typeCompanyInstructionMap.containsKey(baseType)) {
+                    typeCompanyInstructionMap.get(baseType).add(companyTermInstruction);
                 } else {
                     List typeCompanyInstructionList = new ArrayList<>();
                     typeCompanyInstructionList.add(companyTermInstruction);
-                    typeCompanyInstructionMap.put(choiceType, typeCompanyInstructionList);
+                    typeCompanyInstructionMap.put(baseType, typeCompanyInstructionList);
                 }
             }
         }

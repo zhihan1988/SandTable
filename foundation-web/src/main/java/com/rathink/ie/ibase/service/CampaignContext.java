@@ -1,10 +1,9 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.work.model.IndustryChoice;
+import com.rathink.ie.ibase.work.model.IndustryResource;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -15,18 +14,15 @@ public class CampaignContext {
     private Campaign campaign;
     private Set<CompanyTermInstruction> currentCompanyTermInstructionSet = new HashSet<>();
     private Map<String, CompanyTermContext> companyTermContextMap;
-    private Map<String, Integer> competitionMap = new HashMap<>();
-    private Map<String, List<CampaignTermChoice>> typeCompanyChoiceMap = new HashMap<>();
-    private Map<String, List<CompanyTermInstruction>> choiceInstructionMap = new HashMap<>();
-    private List<CampaignTermChoice> currentCampaignTermChoiceList = new ArrayList<>();
-    private Set<String> industryChoiceIdSet = new HashSet<>();
+    private Map<String, IndustryResource> currentTypeIndustryResourceMap = new HashMap<>();//key:资源类型  value:资源
+    private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
+//    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
-        competitionMap.clear();
-        typeCompanyChoiceMap.clear();
-        choiceInstructionMap.clear();
-        currentCampaignTermChoiceList.clear();
+        currentChoiceInstructionMap.clear();
+//        currentResourceInstructionMap.clear();
+        currentTypeIndustryResourceMap.clear();
     }
 
     public Campaign getCampaign() {
@@ -45,40 +41,6 @@ public class CampaignContext {
         this.companyTermContextMap = companyTermContextMap;
     }
 
-    public Map<String, Integer> getCompetitionMap() {
-        return competitionMap;
-    }
-
-    public void setCompetitionMap(Map<String, Integer> competitionMap) {
-        this.competitionMap = competitionMap;
-    }
-
-    /**
-     * 当前比赛进度的全部可供选择的决策项
-     * @param currentCampaignTermChoiceList
-     */
-    public void setCurrentCampaignTermChoiceList(List<CampaignTermChoice> currentCampaignTermChoiceList) {
-        this.currentCampaignTermChoiceList = currentCampaignTermChoiceList;
-        for (CampaignTermChoice campaignTermChoice : currentCampaignTermChoiceList) {
-            String baseType = campaignTermChoice.getBaseType();
-            if (typeCompanyChoiceMap.containsKey(baseType)) {
-                typeCompanyChoiceMap.get(baseType).add(campaignTermChoice);
-            } else {
-                List<CampaignTermChoice> ccList = new ArrayList<>();
-                ccList.add(campaignTermChoice);
-                typeCompanyChoiceMap.put(baseType, ccList);
-            }
-        }
-    }
-
-    public List<CampaignTermChoice> getCurrentCampaignTermChoiceList() {
-        return currentCampaignTermChoiceList;
-    }
-
-    public List<CampaignTermChoice> listCurrentCompanyChoiceByType(String baseType) {
-        return typeCompanyChoiceMap.get(baseType);
-    }
-
     /**
      * 当前比赛进度的全部决策
      * @param companyTermInstructionList
@@ -87,50 +49,36 @@ public class CampaignContext {
         currentCompanyTermInstructionSet.addAll(companyTermInstructionList);
 
         for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-            String companyChoiceId = companyTermInstruction.getCampaignTermChoice().getId();
-            if (choiceInstructionMap.containsKey(companyChoiceId)) {
-                choiceInstructionMap.get(companyChoiceId).add(companyTermInstruction);
+            String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
+            if (StringUtils.isNotBlank(choiceId)) {
+                if (currentChoiceInstructionMap.containsKey(choiceId)) {
+                    currentChoiceInstructionMap.get(choiceId).add(companyTermInstruction);
+                } else {
+                    List<CompanyTermInstruction> ciList = new ArrayList<>();
+                    ciList.add(companyTermInstruction);
+                    currentChoiceInstructionMap.put(choiceId, ciList);
+                }
             } else {
-                List<CompanyTermInstruction> ciList = new ArrayList<>();
-                ciList.add(companyTermInstruction);
-                choiceInstructionMap.put(companyChoiceId, ciList);
+//                currentResourceInstructionMap
             }
+
         }
     }
 
-    public List<CompanyTermInstruction> listCurrentCompanyInstructionByChoice(String choiceId) {
-        return choiceInstructionMap.get(choiceId);
+    public Map<String, IndustryResource> getCurrentTypeIndustryResourceMap() {
+        return currentTypeIndustryResourceMap;
+    }
+
+    public void setCurrentTypeIndustryResourceMap(Map<String, IndustryResource> currentTypeIndustryResourceMap) {
+        this.currentTypeIndustryResourceMap = currentTypeIndustryResourceMap;
     }
 
     public Set<CompanyTermInstruction> getCurrentCompanyTermInstructionSet() {
         return currentCompanyTermInstructionSet;
     }
 
-    public void addHumanResource(Set<String> humanSet) {
-        industryChoiceIdSet.addAll(humanSet);
-    }
-
-    /**
-     * 产生这一轮的随机数据
-     */
-    public List<String> randomHumans() {
-        List<String> randomHumanIdList = new ArrayList<>();
-        Integer needNum = getCompanyTermContextMap().size() * 3;
-        for (int i = 0; i < needNum; i++) {
-            Iterator<String> humanIterator = industryChoiceIdSet.iterator();
-            Integer choiceSize = industryChoiceIdSet.size();
-            if(choiceSize==0) break;
-            int index = RandomUtil.random(0, choiceSize);
-            for (int m = 0; humanIterator.hasNext(); m++) {
-                String humanId = humanIterator.next();
-                if (m == index) {
-                    randomHumanIdList.add(humanId);
-                    humanIterator.remove();
-                    break;
-                }
-            }
-        }
-        return randomHumanIdList;
+    public Map<String, List<CompanyTermInstruction>> getCurrentChoiceInstructionMap() {
+        return currentChoiceInstructionMap;
     }
 }
 

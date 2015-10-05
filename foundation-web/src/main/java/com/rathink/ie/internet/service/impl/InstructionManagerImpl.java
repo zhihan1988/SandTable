@@ -10,6 +10,8 @@ import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.service.InstructionManager;
@@ -34,29 +36,54 @@ public class InstructionManagerImpl implements InstructionManager {
     private AccountManager accountManager;
 
     @Override
-    public CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String campaignTermChoiceId, String value) {
-        CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), campaignTermChoiceId);
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaignTermChoice.getCampaignDate());
-        Campaign campaign = company.getCampaign();
-        String hql = "from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId" +
-                " and company.id = :companyId and campaignDate = :campaignDate";
+    public CompanyTermInstruction saveOrUpdateInstructionByChoice(CompanyTerm companyTerm, String choiceId, String value) {
+        IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
+        IndustryResource industryResource = industryResourceChoice.getIndustryResource();
+
+        String hql = "from CompanyTermInstruction where industryResourceChoice.id = :industryResourceChoiceId and companyTerm.id = :companyTermId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("campaignTermChoiceId", campaignTermChoiceId);
-        queryParamMap.put("companyId", company.getId());
-        queryParamMap.put("campaignDate", campaign.getCurrentCampaignDate());
+        queryParamMap.put("industryResourceChoiceId", industryResourceChoice.getId());
+        queryParamMap.put("companyTermId", companyTerm.getId());
         CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
 
         if (companyTermInstruction == null) {
             companyTermInstruction = new CompanyTermInstruction();
-            companyTermInstruction.setCampaignDate(campaign.getCurrentCampaignDate());
-            companyTermInstruction.setCampaign(campaign);
-            companyTermInstruction.setCompany(company);
+            companyTermInstruction.setCampaignDate(companyTerm.getCampaignDate());
+            companyTermInstruction.setCampaign(companyTerm.getCampaign());
+            companyTermInstruction.setCompany(companyTerm.getCompany());
             companyTermInstruction.setCompanyTerm(companyTerm);
-            companyTermInstruction.setCampaignTermChoice(campaignTermChoice);
-            companyTermInstruction.setBaseType(campaignTermChoice.getBaseType());
+            companyTermInstruction.setIndustryResourceChoice(industryResourceChoice);
+            companyTermInstruction.setIndustryResource(industryResourceChoice.getIndustryResource());
+            companyTermInstruction.setBaseType(industryResource.getName());
             companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
-            companyTermInstruction.setDept(campaignTermChoice.getDept());
-            companyTermInstruction.setIndustryChoice(campaignTermChoice.getIndustryChoice());
+            companyTermInstruction.setDept(industryResource.getDept());
+        }
+        companyTermInstruction.setValue(value);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        return companyTermInstruction;
+    }
+
+    @Override
+    public CompanyTermInstruction saveOrUpdateInstructionByResource(CompanyTerm companyTerm, String resourceId, String value) {
+        IndustryResource industryResource = (IndustryResource) baseManager.getObject(IndustryResource.class.getName(), resourceId);
+
+        String hql = "from CompanyTermInstruction where industryResource.id = :industryResourceId and companyTerm.id = :companyTermId";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("industryResourceId", industryResource.getId());
+        queryParamMap.put("companyTermId", companyTerm.getId());
+        CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+
+        if (companyTermInstruction == null) {
+            companyTermInstruction = new CompanyTermInstruction();
+            companyTermInstruction.setCampaignDate(companyTerm.getCampaignDate());
+            companyTermInstruction.setCampaign(companyTerm.getCampaign());
+            companyTermInstruction.setCompany(companyTerm.getCompany());
+            companyTermInstruction.setCompanyTerm(companyTerm);
+            companyTermInstruction.setIndustryResource(industryResource);
+            companyTermInstruction.setBaseType(industryResource.getName());
+            companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
+            companyTermInstruction.setDept(industryResource.getDept());
         }
         companyTermInstruction.setValue(value);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
@@ -76,6 +103,16 @@ public class InstructionManagerImpl implements InstructionManager {
         if (companyTermInstruction != null) {
             baseManager.delete(CompanyTermInstruction.class.getName(), companyTermInstruction.getId());
         }
+    }
+    @Override
+    public List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, String baseType){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId and baseType = :baseType and  status=:status");
+        xQuery.put("campaignId", campaign.getId());
+        xQuery.put("baseType", baseType);
+        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
+        return companyTermInstructionList;
     }
 
     @Override
@@ -108,31 +145,12 @@ public class InstructionManagerImpl implements InstructionManager {
         return companyTermInstructionList;
     }
 
-    @Override
-    public List<CompanyTermInstruction> listCompanyInstruction(CampaignTermChoice campaignTermChoice) {
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId");
-        xQuery.put("campaignTermChoiceId", campaignTermChoice.getId());
-        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
-        return companyTermInstructionList;
-    }
-
-    public Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice) {
+/*    public Integer countCompanyInstruction(CampaignTermChoice campaignTermChoice) {
         String sql = "select count(id) from company_instruction where campaign_term_choice_id = :campaignTermChoiceId";
         LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
         queryParamMap.put("campaignTermChoiceId", campaignTermChoice.getId());
         List<BigInteger> list = (List) baseManager.executeSql("list", sql, queryParamMap);
         return list.get(0).intValue();
-    }
-
-   /* @Override
-    public List<CompanyInstruction> listCampaignCompanyInstructionByDate(String campaignId, Integer campaignDate) {
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId and campaignDate = :campaignDate");
-        xQuery.put("campaignId", campaignId);
-        xQuery.put("campaignDate", campaignDate);
-        List<CompanyInstruction> companyInstructionList = baseManager.listObject(xQuery);
-        return companyInstructionList;
     }*/
 
     public CompanyTermInstruction getUniqueInstructionByBaseType(CompanyTerm companyTerm, String baseType) {
@@ -160,7 +178,7 @@ public class InstructionManagerImpl implements InstructionManager {
         CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getObject(CompanyTermInstruction.class.getName(), companyInstructionId);
         Integer fee = Integer.valueOf(companyTermInstruction.getValue()) * 2;
         Company company = companyTermInstruction.getCompany();
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company.getId(), company.getCurrentCampaignDate());
         Account account = accountManager.packageAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
         companyTermInstruction.setStatus(EInstructionStatus.YSC.getValue());

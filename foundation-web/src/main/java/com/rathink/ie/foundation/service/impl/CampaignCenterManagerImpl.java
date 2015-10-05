@@ -8,7 +8,6 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.internet.service.ChoiceManager;
 import com.rathink.ie.internet.service.InstructionManager;
 import com.rathink.ie.internet.service.InternetPropertyManager;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
@@ -32,8 +31,6 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
     private InternetPropertyManager internetPropertyManager;
     @Autowired
     private InstructionManager instructionManager;
-    @Autowired
-    private ChoiceManager choiceManager;
 
     @Override
     public void initCampaignCenter() {
@@ -55,7 +52,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
         for (CompanyTerm companyTerm : companyTermList) {
             CompanyTermContext companyTermContext = initCompanyTermHandler(companyTerm, campaignContext);
-            CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany(), campaign.getPreCampaignDate());
+            CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(companyTerm.getCompany().getId(), campaign.getPreCampaignDate());
             if (preCompanyTerm != null) {
                 CompanyTermContext preCompanyTermContext = initCompanyTermHandler(preCompanyTerm, campaignContext);
                 companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
