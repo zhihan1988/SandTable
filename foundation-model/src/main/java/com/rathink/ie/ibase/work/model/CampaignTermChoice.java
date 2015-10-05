@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+@Deprecated
 @Entity
 @Table(name = "campaign_term_choice")
 public class CampaignTermChoice {
