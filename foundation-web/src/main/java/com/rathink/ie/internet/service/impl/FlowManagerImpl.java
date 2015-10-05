@@ -425,11 +425,11 @@ public class FlowManagerImpl implements FlowManager {
     }
 
     public void end(CampaignContext campaignContext) {
-        final String END_DATE = "030101";
-        if (campaignContext.getCampaign().getCurrentCampaignDate().equals(END_DATE)) {
+        Integer endDate = campaignContext.getCampaign().getIndustry().getTotalTerm() + 1;
+        if (campaignContext.getCampaign().getCurrentCampaignDate().equals(endDate)) {
             for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
                 Company company = companyTermContext.getCompanyTerm().getCompany();
-                if (company.getCurrentCampaignDate().equals(END_DATE)) {
+                if (company.getCurrentCampaignDate().equals(endDate)) {
                     company.setStatus(ECompanyStatus.FINISH.name());
                     Integer campaignDateInCash = accountManager.countAccountEntryFee(
                             company, companyTermContext.getPreCompanyTermContext().getCompanyTerm().getCampaignDate(), EAccountEntityType.COMPANY_CASH.name(), "1");
