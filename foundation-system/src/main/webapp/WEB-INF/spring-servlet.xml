@@ -22,14 +22,14 @@
     </bean>
 
 
-   <!--<mvc:interceptors>-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/"/>-->
-            <!--<mvc:mapping path="/**"/>-->
-            <!--<mvc:mapping path="**"/>-->
-            <!--<bean class="com.rathink.ie.system.interceptor.DriverInterceptor"/>-->
-        <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
+   <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/"/>
+            <mvc:mapping path="/**"/>
+            <mvc:mapping path="**"/>
+            <bean class="com.rathink.ie.system.interceptor.DriverInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 
 
     <bean id="multipartResolver"

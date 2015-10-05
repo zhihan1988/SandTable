@@ -23,8 +23,7 @@
         </property>
         <property name="packagesToScan">
             <list>
-                <value>com.ming800.**.model</value>
-                <value>com.efeiyi.**.model</value>
+                <value>com.rathink.ie.**.**.model</value>
             </list>
         </property>
     </bean>

@@ -1,0 +1,171 @@
+<module name="foundation" label="foundation" version="" package="com.rathink.ie.foundation" path="">
+
+    <entities>
+        <entity name="Campaign" label="比赛"
+                basic="simple" others=""
+                model="com.rathink.ie.foundation.campaign.model.Campaign">
+            <fields>
+                <field name="status" label="比赛状态" inputType="text">
+                    <statusType fieldName="status">
+                        <item label="已删除" value="0"/>
+                        <item label="未开始" value="1"/>
+                        <item label="进行中" value="2"/>
+                        <item label="以结束" value="3"/>
+                    </statusType>
+                </field>
+            </fields>
+
+            <does>
+                <do name="plistCampaign" label="比赛列表"  result="/foundation/campaignList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="status" defaultValue="0" operation="ne" inputType="default"/>
+                    </query>
+                </do>
+
+                <do name="removeCampaign" label="删除比赛纪录" access="" result="json"/>
+
+
+            </does>
+        </entity>
+
+
+        <entity name="CompanyTerm" label="参与比赛的公司"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.property.model.CompanyTerm">
+            <!--<fields>-->
+                <!--<field name="status" label="比赛状态" inputType="text">-->
+                    <!--<statusType fieldName="status">-->
+                        <!--<item label="已删除" value="0"/>-->
+                        <!--<item label="未开始" value="1"/>-->
+                        <!--<item label="进行中" value="2"/>-->
+                        <!--<item label="以结束" value="3"/>-->
+                    <!--</statusType>-->
+                <!--</field>-->
+            <!--</fields>-->
+
+            <does>
+                <do name="plistCompanyTerm" label="企业列表"  result="/foundation/companyList">
+                    <query name="campaign" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="campaign.id" operation="eq"/>
+                    </query>
+                </do>
+
+                <do name="removeCompanyTerm" label="删除比赛纪录" access="" result="json"/>
+
+
+            </does>
+        </entity>
+
+
+        <entity name="Industry" label="行业"
+                basic="simple" others=""
+                model="com.rathink.ie.foundation.campaign.model.Industry">
+            <!--<fields>-->
+                <!--<field name="status" label="比赛状态" inputType="text">-->
+                    <!--<statusType fieldName="status">-->
+                        <!--<item label="已删除" value="0"/>-->
+                        <!--<item label="未开始" value="1"/>-->
+                        <!--<item label="进行中" value="2"/>-->
+                        <!--<item label="以结束" value="3"/>-->
+                    <!--</statusType>-->
+                <!--</field>-->
+            <!--</fields>-->
+
+            <does>
+                <do name="plistIndustry" label="比赛列表"  result="/foundation/industryList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
+                    </query>
+                </do>
+
+                <do name="removeIndustry" label="删除比赛纪录" access="" result="json"/>
+
+
+            </does>
+        </entity>
+
+        <entity name="IndustryChoice" label="行业"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.work.model.IndustryChoice">
+            <!--<fields>-->
+                <!--<field name="status" label="比赛状态" inputType="text">-->
+                    <!--<statusType fieldName="status">-->
+                        <!--<item label="已删除" value="0"/>-->
+                        <!--<item label="未开始" value="1"/>-->
+                        <!--<item label="进行中" value="2"/>-->
+                        <!--<item label="以结束" value="3"/>-->
+                    <!--</statusType>-->
+                <!--</field>-->
+            <!--</fields>-->
+
+            <does>
+                <do name="plistIndustryChoice" label="列表"  result="/foundation/industryChoiceList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
+                    </query>
+                </do>
+
+            <do name="saveOrUpdateIndustryChoice" label="保存" result="redirect:/basic/xm.do?qm=plistIndustryChoice_default"/>
+            <do name="formIndustryChoice" label="编辑" result="/foundation/industryChoiceForm"/>
+
+            </does>
+        </entity>
+
+
+        <entity name="IndustryChoiceSetting" label="行业对象"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.work.model.IndustryChoiceSetting">
+            <!--<fields>-->
+            <!--<field name="status" label="比赛状态" inputType="text">-->
+            <!--<statusType fieldName="status">-->
+            <!--<item label="已删除" value="0"/>-->
+            <!--<item label="未开始" value="1"/>-->
+            <!--<item label="进行中" value="2"/>-->
+            <!--<item label="以结束" value="3"/>-->
+            <!--</statusType>-->
+            <!--</field>-->
+            <!--</fields>-->
+
+            <does>
+                <do name="plistIndustryChoiceSetting" label="行业对象列表"  result="/foundation/industryChoiceSettingList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
+                    </query>
+                </do>
+
+                <do name="formIndustryChoiceSetting" label="编辑数据" access="" result="/foundation/industryChoiceSettingForm"/>
+                <do name="saveOrUpdateIndustryChoiceSetting" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryChoiceSetting_default"/>
+
+
+            </does>
+        </entity>
+
+        <entity name="IndustryExpression" label="公式"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.work.model.IndustryExpression">
+            <!--<fields>-->
+            <!--<field name="status" label="比赛状态" inputType="text">-->
+            <!--<statusType fieldName="status">-->
+            <!--<item label="已删除" value="0"/>-->
+            <!--<item label="未开始" value="1"/>-->
+            <!--<item label="进行中" value="2"/>-->
+            <!--<item label="以结束" value="3"/>-->
+            <!--</statusType>-->
+            <!--</field>-->
+            <!--</fields>-->
+
+            <does>
+                <do name="plistIndustryExpression" label="公式列表"  result="/foundation/industryExpressionList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
+                    </query>
+                </do>
+                <do name="formIndustryExpression" label="编辑数据" access="" result="/foundation/industryExpressionForm"/>
+                <do name="saveOrUpdateIndustryExpression" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryExpression_default"/>
+
+
+            </does>
+        </entity>
+
+    </entities>
+</module>
