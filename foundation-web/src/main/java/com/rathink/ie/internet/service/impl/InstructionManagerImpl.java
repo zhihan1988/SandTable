@@ -35,8 +35,8 @@ public class InstructionManagerImpl implements InstructionManager {
 
     @Override
     public CompanyTermInstruction saveOrUpdateInstructionByChoice(Company company, String campaignTermChoiceId, String value) {
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, company.getCurrentCampaignDate());
         CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), campaignTermChoiceId);
+        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company, campaignTermChoice.getCampaignDate());
         Campaign campaign = company.getCampaign();
         String hql = "from CompanyTermInstruction where campaignTermChoice.id = :campaignTermChoiceId" +
                 " and company.id = :companyId and campaignDate = :campaignDate";
