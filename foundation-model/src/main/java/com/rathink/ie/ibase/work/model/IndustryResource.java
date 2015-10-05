@@ -4,6 +4,7 @@ import com.rathink.ie.foundation.campaign.model.Industry;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by Hean on 2015/10/5.
@@ -18,6 +19,7 @@ public class IndustryResource {
     private String dept;
     private String type;//全部  随机
     private String valueSet;
+    private List<IndustryResourceChoice> industryResourceChoiceList;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -83,5 +85,14 @@ public class IndustryResource {
 
     public void setValueSet(String valueSet) {
         this.valueSet = valueSet;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "industryResource", cascade = CascadeType.ALL)
+    public List<IndustryResourceChoice> getIndustryResourceChoiceList() {
+        return industryResourceChoiceList;
+    }
+
+    public void setIndustryResourceChoiceList(List<IndustryResourceChoice> industryResourceChoiceList) {
+        this.industryResourceChoiceList = industryResourceChoiceList;
     }
 }

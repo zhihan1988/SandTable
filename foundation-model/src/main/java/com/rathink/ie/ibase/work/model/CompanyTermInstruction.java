@@ -21,6 +21,8 @@ public class CompanyTermInstruction {
     private String dept;
     private CampaignTermChoice campaignTermChoice;
     private IndustryChoice industryChoice;
+    private IndustryResource industryResource;
+    private IndustryResourceChoice industryResourceChoice;
     private String value;
     private User creator;
     private CompanyTerm companyTerm;
@@ -110,6 +112,26 @@ public class CompanyTermInstruction {
 
     public void setIndustryChoice(IndustryChoice industryChoice) {
         this.industryChoice = industryChoice;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "industry_resource_id")
+    public IndustryResource getIndustryResource() {
+        return industryResource;
+    }
+
+    public void setIndustryResource(IndustryResource industryResource) {
+        this.industryResource = industryResource;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "industry_resource_choice_id")
+    public IndustryResourceChoice getIndustryResourceChoice() {
+        return industryResourceChoice;
+    }
+
+    public void setIndustryResourceChoice(IndustryResourceChoice industryResourceChoice) {
+        this.industryResourceChoice = industryResourceChoice;
     }
 
     @Column(name = "value")

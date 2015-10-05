@@ -13,6 +13,7 @@ public class IndustryResourceChoice {
     private String value2;
     private String img;
     private String type;//提供给子类使用的类型字段 每个类型有不同的定义
+    private IndustryResource industryResource;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -70,4 +71,13 @@ public class IndustryResourceChoice {
         this.type = type;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "industry_resource_id")
+    public IndustryResource getIndustryResource() {
+        return industryResource;
+    }
+
+    public void setIndustryResource(IndustryResource industryResource) {
+        this.industryResource = industryResource;
+    }
 }
