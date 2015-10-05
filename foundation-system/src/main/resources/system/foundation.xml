@@ -86,7 +86,7 @@
 
         <entity name="IndustryChoice" label="行业"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryChoice">
+                model="com.rathink.ie.ibase.work.model.IndustryResourceChoice">
             <!--<fields>-->
                 <!--<field name="status" label="比赛状态" inputType="text">-->
                     <!--<statusType fieldName="status">-->
@@ -105,7 +105,7 @@
                     </query>
                 </do>
 
-            <do name="saveOrUpdateIndustryChoice" label="保存" result="redirect:/basic/xm.do?qm=plistIndustryChoice_default"/>
+            <do name="saveOrUpdateIndustryChoice" label="保存" result="redirect:/basic/xm.do?qm=plistIndustry_default"/>
             <do name="formIndustryChoice" label="编辑" result="/foundation/industryChoiceForm"/>
 
             </does>
@@ -114,7 +114,7 @@
 
         <entity name="IndustryChoiceSetting" label="行业对象"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryChoiceSetting">
+                model="com.rathink.ie.ibase.work.model.IndustryResource">
             <!--<fields>-->
             <!--<field name="status" label="比赛状态" inputType="text">-->
             <!--<statusType fieldName="status">-->
@@ -134,7 +134,7 @@
                 </do>
 
                 <do name="formIndustryChoiceSetting" label="编辑数据" access="" result="/foundation/industryChoiceSettingForm"/>
-                <do name="saveOrUpdateIndustryChoiceSetting" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryChoiceSetting_default"/>
+                <do name="saveOrUpdateIndustryChoiceSetting" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustry_default"/>
 
 
             </does>
@@ -143,17 +143,6 @@
         <entity name="IndustryExpression" label="公式"
                 basic="simple" others=""
                 model="com.rathink.ie.ibase.work.model.IndustryExpression">
-            <!--<fields>-->
-            <!--<field name="status" label="比赛状态" inputType="text">-->
-            <!--<statusType fieldName="status">-->
-            <!--<item label="已删除" value="0"/>-->
-            <!--<item label="未开始" value="1"/>-->
-            <!--<item label="进行中" value="2"/>-->
-            <!--<item label="以结束" value="3"/>-->
-            <!--</statusType>-->
-            <!--</field>-->
-            <!--</fields>-->
-
             <does>
                 <do name="plistIndustryExpression" label="公式列表"  result="/foundation/industryExpressionList">
                     <query name="default" label="默认" type="auto" orderBy="id:desc">
@@ -162,7 +151,6 @@
                 </do>
                 <do name="formIndustryExpression" label="编辑数据" access="" result="/foundation/industryExpressionForm"/>
                 <do name="saveOrUpdateIndustryExpression" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryExpression_default"/>
-
 
             </does>
         </entity>

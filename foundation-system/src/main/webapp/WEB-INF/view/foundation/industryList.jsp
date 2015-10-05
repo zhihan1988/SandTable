@@ -48,7 +48,7 @@
                         <div class="am-btn-toolbar">
                             <div class="am-btn-group am-btn-group-xs">
                                 <a class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"
-                                        href="<c:url value="/basic/xm.do?qm=plistIndustryChoiceSetting_default"/>"><span
+                                        href="<c:url value="/basic/xm.do?qm=plistIndustryChoiceSetting_default&industryId=${obj.id}"/>"><span
                                         class="am-icon-trash-o">对象设置</span>
                                 </a>
                                 <a class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"

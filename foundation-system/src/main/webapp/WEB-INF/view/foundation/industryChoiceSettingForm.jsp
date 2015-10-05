@@ -17,12 +17,34 @@
 <form class="am-form am-form-horizontal" action="<c:url value="/basic/xm.do"/>">
 
   <input type="hidden" name="id" value="${object.id}">
+  <input type="hidden" name="industry.id" value="${pageContext.request.getParameter("industryId")}">
   <input type="hidden" name="qm" value="saveOrUpdateIndustryChoiceSetting">
 
   <div class="am-form-group">
     <label for="doc-ipt-3" class="am-u-sm-2 am-form-label">名称</label>
     <div class="am-u-sm-10">
       <input type="text" name="name" value="${object.name}" id="doc-ipt-3" >
+    </div>
+  </div>
+
+  <div class="am-form-group">
+    <label for="doc-ipt-pwd-3" class="am-u-sm-2 am-form-label">标题</label>
+    <div class="am-u-sm-10">
+      <input type="text" name="title" value="${object.title}" id="doc-ipt-pwd-3" >
+    </div>
+  </div>
+
+  <div class="am-form-group">
+    <label for="doc-ipt-pwd-4" class="am-u-sm-2 am-form-label">部门</label>
+    <div class="am-u-sm-10">
+      <input type="text" name="dept" value="${object.dept}" id="doc-ipt-pwd-4" >
+    </div>
+  </div>
+
+  <div class="am-form-group">
+    <label for="doc-ipt-pwd-5" class="am-u-sm-2 am-form-label">类型</label>
+    <div class="am-u-sm-10">
+      <input type="text" name="type" value="${object.type}" id="doc-ipt-pwd-5" >
     </div>
   </div>
 
