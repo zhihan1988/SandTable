@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -47,10 +48,10 @@ public class HomeController {
             model.addAttribute("result", industryExpressionSimulation.getResult3());
         }
 
-        model.addAttribute("ability1",industryExpressionVariateList.get(0));
-        model.addAttribute("ability2",industryExpressionVariateList.get(1));
-        if (industryExpressionVariateList.size()==3){
-            model.addAttribute("ability3",industryExpressionVariateList.get(2));
+        model.addAttribute("ability1", industryExpressionVariateList.get(0));
+        model.addAttribute("ability2", industryExpressionVariateList.get(1));
+        if (industryExpressionVariateList.size() == 3) {
+            model.addAttribute("ability3", industryExpressionVariateList.get(2));
         }
 //        String expression = "a+b+c";
 //        IndustryAnalyzer industryAnalyzer = new IndustryAnalyzer(expression);
@@ -72,5 +73,15 @@ public class HomeController {
 
         return "/foundation/expressionResult";
     }
+
+//    @RequestMapping("/test.do")
+//    public void test() {
+//        String hql = "select obj from " + IndustryExpression.class.getName() + " obj where obj.name=:name";
+//        LinkedHashMap<String, Object> param = new LinkedHashMap<>();
+//        param.put("name", "测试数据");
+//        IndustryExpression industryExpression = (IndustryExpression) baseManager.getUniqueObjectByConditions(hql, param);
+//        IndustryAnalyzer industryAnalyzer = new IndustryAnalyzer(industryExpression.getExpression());
+//
+//    }
 
 }
