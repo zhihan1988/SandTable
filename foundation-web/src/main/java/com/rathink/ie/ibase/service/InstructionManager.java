@@ -1,4 +1,4 @@
-package com.rathink.ie.internet.service;
+package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
@@ -30,5 +30,4 @@ public interface InstructionManager {
 
     Integer sumFee(List<CompanyTermInstruction> companyTermInstructionList);
 
-    void fireHuman(String companyInstructionId);
 }

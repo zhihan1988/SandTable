@@ -8,7 +8,7 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.ibase.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

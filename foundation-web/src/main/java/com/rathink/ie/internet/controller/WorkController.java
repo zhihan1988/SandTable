@@ -13,8 +13,9 @@ import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.InternetPropertyManager;
+import com.rathink.ie.ibase.service.InstructionManager;
+import com.rathink.ie.ibase.service.PropertyManager;
+import com.rathink.ie.internet.service.InternetWorkManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class WorkController {
     @Autowired
     private AccountManager accountManager;
     @Autowired
-    private InternetPropertyManager internetPropertyManager;
+    private PropertyManager propertyManager;
+    @Autowired
+    private InternetWorkManager internetWorkManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -66,8 +69,8 @@ public class WorkController {
 //        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company.getId(), preCampaignDate);
 
         //上一期的属性数据
-        List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
-        Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
+        List<CompanyTermProperty> preCompanyTermPropertyList = propertyManager.listCompanyTermProperty(preCompanyTerm);
+        Map<String, List<CompanyTermProperty>> deptPropertyMap = propertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
 
         Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
 
@@ -101,13 +104,13 @@ public class WorkController {
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company c : companyList) {
             CompanyTerm pct = companyTermManager.getCompanyTerm(c.getId(), preCampaignDate);
-            Map<String, String> map = internetPropertyManager.getCompanyTermReport(pct);
+            Map<String, String> map = internetWorkManager.getCompanyTermReport(pct);
             competitionMap.put(c.getName(), map);
         }
         model.addAttribute("competitionMap", competitionMap);
 
         //调试报告
-        Map<String, Map<String, Integer>> propertyReport = internetPropertyManager.getPropertyReport(company);
+        Map<String, Map<String, Integer>> propertyReport = propertyManager.getPropertyReport(company);
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);
         model.addAttribute("accountReport", accountReport);
@@ -168,7 +171,7 @@ public class WorkController {
     @ResponseBody
     public String fire(HttpServletRequest request, Model model) throws Exception {
         String instructionId = request.getParameter("instructionId");
-        instructionManager.fireHuman(instructionId);
+        internetWorkManager.fireHuman(instructionId);
         return "success";
     }
 }

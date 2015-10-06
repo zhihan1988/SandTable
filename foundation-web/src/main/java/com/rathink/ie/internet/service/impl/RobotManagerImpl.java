@@ -1,21 +1,10 @@
 package com.rathink.ie.internet.service.impl;
 
-import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.foundation.util.RandomUtil;
-import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.internet.service.RobotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/21.

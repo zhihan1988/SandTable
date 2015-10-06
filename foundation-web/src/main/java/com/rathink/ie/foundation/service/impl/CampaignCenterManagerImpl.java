@@ -8,8 +8,8 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.internet.service.InstructionManager;
-import com.rathink.ie.internet.service.InternetPropertyManager;
+import com.rathink.ie.ibase.service.InstructionManager;
+import com.rathink.ie.ibase.service.PropertyManager;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
     @Autowired
     private CompanyTermManager companyTermManager;
     @Autowired
-    private InternetPropertyManager internetPropertyManager;
+    private PropertyManager propertyManager;
     @Autowired
     private InstructionManager instructionManager;
 
@@ -77,7 +77,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm);
         companyTermContext.putCompanyInstructionList(companyTermInstructionList);
         //4
-        List<CompanyTermProperty> companyTermPropertyList = internetPropertyManager.listCompanyTermProperty(companyTerm);
+        List<CompanyTermProperty> companyTermPropertyList = propertyManager.listCompanyTermProperty(companyTerm);
         companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
 
         return companyTermContext;

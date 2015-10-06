@@ -1,4 +1,4 @@
-package com.rathink.ie.internet.service.impl;
+package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
@@ -13,7 +13,7 @@ import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.service.InstructionManager;
+import com.rathink.ie.ibase.service.InstructionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -172,14 +172,4 @@ public class InstructionManagerImpl implements InstructionManager {
         return fee;
     }
 
-    public void fireHuman(String companyInstructionId) {
-        CompanyTermInstruction companyTermInstruction = (CompanyTermInstruction) baseManager.getObject(CompanyTermInstruction.class.getName(), companyInstructionId);
-        Integer fee = Integer.valueOf(companyTermInstruction.getValue()) * 2;
-        Company company = companyTermInstruction.getCompany();
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company.getId(), company.getCurrentCampaignDate());
-        Account account = accountManager.packageAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
-        companyTermInstruction.setStatus(EInstructionStatus.YSC.getValue());
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-    }
 }

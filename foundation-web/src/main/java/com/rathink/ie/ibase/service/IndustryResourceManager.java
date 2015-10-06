@@ -1,4 +1,4 @@
-package com.rathink.ie.internet.service;
+package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.ibase.work.model.IndustryResource;
 

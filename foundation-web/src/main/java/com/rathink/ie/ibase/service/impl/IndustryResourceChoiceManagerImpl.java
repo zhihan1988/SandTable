@@ -1,9 +1,9 @@
-package com.rathink.ie.internet.service.impl;
+package com.rathink.ie.ibase.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
-import com.rathink.ie.internet.service.IndustryResourceChoiceManager;
+import com.rathink.ie.ibase.service.IndustryResourceChoiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
