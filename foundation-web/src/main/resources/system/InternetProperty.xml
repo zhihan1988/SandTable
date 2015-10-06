@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module name="property" label="比赛" version="" package="com.rathink.ie.ibase.property" path="">
+    <entities>
+        <entity name="CompanyTermProperty" label="属性"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.property.model.CompanyTermProperty">
+            <fields>
+                <field name="name" label="属性名称" inputType="select_status" key="name">
+                    <statusType fieldName="name">
+                        <item label="产品研发能力" value="PRODUCT_ABILITY"/>
+                        <item label="产品资金投入系数" value="PRODUCT_FEE_RATIO"/>
+                        <item label="产品系数" value="PRODUCT_RATIO"/>
+                        <item label="客单价" value="PER_ORDER_COST"/>
+                        <item label="产品竞争系数" value="PRODUCT_COMPETITION_RATIO"/>
+
+                        <item label="市场能力" value="MARKET_ABILITY"/>
+                        <item label="新用户数" value="NEW_USER_AMOUNT"/>
+
+                        <item label="运营能力" value="OPERATION_ABILITY"/>
+                        <item label="运营资金投入系数" value="OPERATION_FEE_RATIO"/>
+                        <item label="满意度" value="SATISFACTION"/>
+                        <item label="老用户数量" value="OLD_USER_AMOUNT"/>
+                        <item label="总用户数" value="USER_AMOUNT"/>
+                        <item label="上期收入" value="CURRENT_PERIOD_INCOME"/>
+                    </statusType>
+                </field>
+            </fields>
+        </entity>
+    </entities>
+</module>

@@ -475,7 +475,7 @@
             <tr>
                 <td></td>
                 <c:forEach items="${r.value}" var="property">
-                    <td>${property.key}</td>
+                    <td><ming800:status name="name" dataType="CompanyTermProperty.name" checkedValue="${property.key}" type="normal"/></td>
                 </c:forEach>
             </tr>
         </c:forEach>
