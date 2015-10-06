@@ -26,7 +26,7 @@
                     <td>
                         <a href="<c:url value="/company/${company.id}"/>">${company.name}</a>
                         <c:if test="${company.director.id == myUser.id}">
-                            <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">开始经营</a>
+                            <a href="<c:url value="/work/main.do?companyId=${company.id}&campaignId=${company.campaign.id}"/>">开始经营</a>
                         </c:if>
                     </td>
                     <td>${company.slogan}</td>

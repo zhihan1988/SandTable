@@ -185,19 +185,19 @@
                             <div>
                                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                                     <li>
-                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${hrInstruction.campaignTermChoice.img}"/>"/>
+                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${hrInstruction.industryResourceChoice.img}"/>"/>
                                     </li>
                                     <li>
-                                        <p style="margin: 0">${hrInstruction.campaignTermChoice.name}</p>
+                                        <p style="margin: 0">${hrInstruction.industryResourceChoice.name}</p>
                                         <p style="margin: 0">
                                             <c:choose>
-                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'PRODUCT'}">
+                                                <c:when test="${hrInstruction.industryResourceChoice.type == 'PRODUCT'}">
                                                     产品研发
                                                 </c:when>
-                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'MARKET'}">
+                                                <c:when test="${hrInstruction.industryResourceChoice.type == 'MARKET'}">
                                                     市场
                                                 </c:when>
-                                                <c:when test="${hrInstruction.campaignTermChoice.type == 'OPERATION'}">
+                                                <c:when test="${hrInstruction.industryResourceChoice.type == 'OPERATION'}">
                                                     运营
                                                 </c:when>
                                             </c:choose>
@@ -207,7 +207,7 @@
                                 </ul>
                             </div>
                             <div>
-                                <p style="margin: 0">能力：${hrInstruction.campaignTermChoice.value}</p>
+                                <p style="margin: 0">能力：${hrInstruction.industryResourceChoice.value}</p>
                                 <p style="margin: 0">薪资：${hrInstruction.value}</p>
                                 <a id="humanInstruction_${hrInstruction.id}" href="#">辞退</a>
                             </div>
@@ -217,24 +217,25 @@
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />
                 <b>待招聘人员：</b>
                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails operation" style="margin: 10px;">
-                    <c:forEach items="${humanList}" var="human">
+
+                    <c:forEach items="${humanResource.currentIndustryResourceChoiceSet}" var="choice">
                         <li style="border: 1px solid #DDD;padding: 5px;">
                             <div>
                                 <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-thumbnails">
                                     <li>
-                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${human.img}"/>"/>
+                                        <img style="width: 80px;margin: 0;" src="<c:url value="/img/${choice.img}"/>"/>
                                     </li>
                                     <li>
-                                        <p style="margin: 0">${human.name}</p>
+                                        <p style="margin: 0">${choice.name}</p>
                                         <p style="margin: 0">
                                             <c:choose>
-                                                <c:when test="${human.type == 'PRODUCT'}">
+                                                <c:when test="${choice.type == 'PRODUCT'}">
                                                     产品研发
                                                 </c:when>
-                                                <c:when test="${human.type == 'MARKET'}">
+                                                <c:when test="${choice.type == 'MARKET'}">
                                                     市场
                                                 </c:when>
-                                                <c:when test="${human.type == 'OPERATION'}">
+                                                <c:when test="${choice.type == 'OPERATION'}">
                                                     运营
                                                 </c:when>
                                             </c:choose>
@@ -244,13 +245,13 @@
                                 </ul>
                             </div>
                             <div>
-                                <p style="margin: 0">能力：${human.value}</p>
+                                <p style="margin: 0">能力：${choice.value}</p>
                                 <p style="margin: 0">
                                     薪资：
-                                    <select id="instruction_${human.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                        <option value="${human.id}_-1">不需要</option>
-                                        <c:forEach items="${fn:split(human.fees, ',')}" var="fee">
-                                            <option value="${human.id}_${fee}">${fee}</option>
+                                    <select id="instruction_${choice.id}" name="humanInstructionFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                        <option value="${choice.id}_-1">不需要</option>
+                                        <c:forEach items="${fn:split(humanResource.valueSet, ',')}" var="fee">
+                                            <option value="${choice.id}_${fee}">${fee}</option>
                                         </c:forEach>
                                     </select>
                                 </p>
@@ -297,9 +298,10 @@
                         <tr>
                             <td>
                                 <select id="productStudy" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <c:forEach items="${productStudyList}" var="productStudy">
-                                        <option value="${productStudy.id}_${productStudy.value}" <c:if test="${preProductStudyInstruction.campaignTermChoice.name==productStudy.name}">selected="selected"</c:if>>
-                                                ${productStudy.name}
+                                    <c:forEach items="${productStudyResource.currentIndustryResourceChoiceSet}" var="choice">
+                                        <option value="${choice.id}_${choice.value}"
+                                                <c:if test="${preProductStudyInstruction.industryResourceChoice.name==choice.name}">selected="selected"</c:if>>
+                                                ${choice.name}
                                         </option>
                                     </c:forEach>
                                 </select>
@@ -315,15 +317,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${productStudyFeeList}" var="productStudyFee">
+                        <c:forEach items="${productStudyFeeResource.currentIndustryResourceChoiceSet}" var="choice">
                             <tr>
                                 <td>
-                                    <input type="hidden" name="productStudyFeeId" value="${productStudyFee.id}"/>
-                                    <select id="instruction_${productStudyFee.id}" name="productStudyFee"
+                                    <select id="instruction_${productStudyFeeResource.id}" name="productStudyFee"
                                             data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                        <option value="${productStudyFee.id}_-1">不需要</option>
-                                        <c:forEach items="${fn:split(productStudyFee.fees, ',')}" var="fee">
-                                            <option value="${productStudyFee.id}_${fee}">${fee}</option>
+                                        <option value="${choice.id}_-1">不需要</option>
+                                        <c:forEach items="${fn:split(productStudyFeeResource.valueSet, ',')}" var="fee">
+                                            <option value="${choice.id}_${fee}">${fee}</option>
                                         </c:forEach>
                                     </select>
                                 </td>
@@ -370,15 +371,15 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${marketActivityChoiceList}" var="marketActivityChoice">
+                    <c:forEach items="${marketActivityResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
-                            <td><input type="hidden" name="marketActivityChoiceId" value="${marketActivityChoice.id}"/>${marketActivityChoice.name}</td>
-                            <td>${marketActivityChoice.value}</td>
+                            <td>${choice.name}</td>
+                            <td>${choice.value}</td>
                             <td>
-                                <select id="instruction_${marketActivityChoice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="${marketActivityChoice.id}_-1">不需要</option>
-                                    <c:forEach items="${fn:split(marketActivityChoice.fees, ',')}" var="fee">
-                                        <option value="${marketActivityChoice.id}_${fee}">${fee}</option>
+                                <select id="instruction_${choice.id}" name="marketActivityChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${choice.id}_-1">不需要</option>
+                                    <c:forEach items="${fn:split(marketActivityResource.valueSet, ',')}" var="fee">
+                                        <option value="${choice.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -422,14 +423,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${operationChoiceList}" var="operationChoice">
+                    <c:forEach items="${operationResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
                             <td>
-                                <input type="hidden" name="operationChoiceId" value="${operationChoice.id}"/>
-                                <select id="instruction_${operationChoice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="${operationChoice.id}_-1">不需要</option>
-                                    <c:forEach items="${fn:split(operationChoice.fees, ',')}" var="fee">
-                                        <option value="${operationChoice.id}_${fee}">${fee}</option>
+                                <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${choice.id}_-1">不需要</option>
+                                    <c:forEach items="${fn:split(operationResource.valueSet, ',')}" var="fee">
+                                        <option value="${choice.id}_${fee}">${fee}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -504,12 +504,13 @@
         var campaignId = '${campaign.id}';
         var campaignDate = '${campaign.currentCampaignDate}';
         var companyId = '${company.id}';
+        var companyTermId = '${companyTerm.id}';
 
         //产品定位初始值
         var productStudy = $("select[id='productStudy']").val();
         if(productStudy){
             var productStudyArray = productStudy.split("_");
-            makeUniqueInstruction(companyId, productStudyArray[0], productStudyArray[1]);
+            makeUniqueInstruction(companyTermId, productStudyArray[0], productStudyArray[1]);
         }
 
         $("select[id^='instruction']")
@@ -521,7 +522,7 @@
                     if (value != -1) {
                         $.post("<c:url value="/work/makeInstruction"/>",
                                 {
-                                    companyId: companyId,
+                                    companyTermId: companyTermId,
                                     choiceId: choiceId,
                                     value: value
                                 });
@@ -542,9 +543,18 @@
                     var choiceId = array[0];
                     var value = array[1];
                     if (value != -1) {
-                        makeUniqueInstruction(companyId, choiceId, value);
+                        makeUniqueInstruction(companyTermId, choiceId, value);
                     }
                 });
+
+        function makeUniqueInstruction(companyTermId,choiceId,value) {
+            $.post("<c:url value="/work/makeUniqueInstruction"/>",
+                    {
+                        companyTermId: companyTermId,
+                        choiceId: choiceId,
+                        value: value
+                    });
+        }
 
         $("a[id^='humanInstruction_']").click(function() {
             if(confirm("辞退员工将扣除两个月薪水作为补贴，是否继续？")) {
@@ -559,16 +569,6 @@
                         });
                 }
         })
-
-
-        function makeUniqueInstruction(companyId,choiceId,value) {
-            $.post("<c:url value="/work/makeUniqueInstruction"/>",
-                    {
-                        companyId: companyId,
-                        choiceId: choiceId,
-                        value: value
-                    });
-        }
 
         $("#endCampaignDate").click(function () {
             if(confirm("是否结束当前回合的操作？")) {

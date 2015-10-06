@@ -12,6 +12,7 @@ import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.service.InstructionManager;
@@ -51,16 +52,24 @@ public class WorkController {
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
-        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
-        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        Campaign campaign = campaignContext.getCampaign();
+        CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        Company company = companyTerm.getCompany();
+        CompanyTerm preCompanyTerm = companyTermContext.getPreCompanyTermContext().getCompanyTerm();
+//        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
+//        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), company.getCampaign().getId());
+//        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         Integer preCampaignDate = campaign.getPreCampaignDate();
-        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company.getId(), preCampaignDate);
+//        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company.getId(), preCampaignDate);
+
+        //上一期的属性数据
         List<CompanyTermProperty> preCompanyTermPropertyList = internetPropertyManager.listCompanyTermProperty(preCompanyTerm);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = internetPropertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaign.getId());
         Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
 
         Integer companyCash = accountManager.getCompanyCash(company);
@@ -73,6 +82,7 @@ public class WorkController {
         CompanyTermInstruction preProductStudyInstruction = preCompanyTerm == null ? null : instructionManager.getUniqueInstructionByBaseType(preCompanyTerm, EChoiceBaseType.PRODUCT_STUDY.name());
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
+        model.addAttribute("companyTerm", companyTerm);
         model.addAttribute("deptPropertyMap", deptPropertyMap);
         model.addAttribute("industryResourceMap", industryResourceMap);
         model.addAttribute("companyCash", companyCash);
@@ -80,15 +90,19 @@ public class WorkController {
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
-        model.addAttribute("preCampaignDate", preCampaignDate);
         model.addAttribute("companyNum", CampaignCenter.getCampaignHandler(campaign.getId()).getCompanyTermContextMap().size());
+        model.addAttribute("humanResource", industryResourceMap.get(EChoiceBaseType.HUMAN.name()));
+        model.addAttribute("productStudyResource", industryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY.name()));
+        model.addAttribute("productStudyFeeResource", industryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY_FEE.name()));
+        model.addAttribute("marketActivityResource", industryResourceMap.get(EChoiceBaseType.MARKET_ACTIVITY.name()));
+        model.addAttribute("operationResource", industryResourceMap.get(EChoiceBaseType.OPERATION.name()));
 
         //公司的竞争报告
         Map<String, Map<String, String>> competitionMap = new HashMap<>();
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company c : companyList) {
             CompanyTerm pct = companyTermManager.getCompanyTerm(c.getId(), preCampaignDate);
-            Map<String,String> map = internetPropertyManager.getCompanyTermReport(pct);
+            Map<String, String> map = internetPropertyManager.getCompanyTermReport(pct);
             competitionMap.put(c.getName(), map);
         }
         model.addAttribute("competitionMap", competitionMap);
@@ -110,44 +124,36 @@ public class WorkController {
     @ResponseBody
     public String makeInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyTermId = request.getParameter("companyTermId");
-        String resourceId = request.getParameter("resourceId");
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         if (StringUtils.isNotBlank(choiceId)) {
             instructionManager.saveOrUpdateInstructionByChoice(companyTerm, choiceId, value);
-        } else if (StringUtils.isNotBlank(resourceId)) {
-            instructionManager.saveOrUpdateInstructionByResource(companyTerm, resourceId, value);
         }
 
         return "success";
     }
 
-/*    @RequestMapping("/makeUniqueInstruction")
+    @RequestMapping("/makeUniqueInstruction")
     @ResponseBody
     public String makeUniqueInstruction(HttpServletRequest request, Model model) throws Exception {
-        String companyId = request.getParameter("companyId");
+        String companyTermId = request.getParameter("companyTermId");
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
-        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        CampaignTermChoice campaignTermChoice = (CampaignTermChoice) baseManager.getObject(CampaignTermChoice.class.getName(), choiceId);
-        CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company.getId(), company.getCampaign().getCurrentCampaignDate());
-        CompanyTermInstruction companyTermInstruction = null;
-        try {
-            companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, campaignTermChoice.getBaseType());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
+        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, industryResourceChoice.getIndustryResource().getName());
+
         if (companyTermInstruction == null) {
-            instructionManager.saveOrUpdateInstructionByChoice(company, choiceId, value);
+            instructionManager.saveOrUpdateInstructionByChoice(companyTerm, choiceId, value);
         } else {
-            companyTermInstruction.setCampaignTermChoice(campaignTermChoice);
+            companyTermInstruction.setIndustryResourceChoice(industryResourceChoice);
             companyTermInstruction.setValue(value);
             baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
         }
         return "success";
-    }*/
+    }
 
     @RequestMapping("/cancelInstruction")
     @ResponseBody

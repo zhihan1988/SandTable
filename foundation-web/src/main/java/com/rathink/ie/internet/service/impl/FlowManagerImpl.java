@@ -65,9 +65,10 @@ public class FlowManagerImpl implements FlowManager {
 
         campaignContext = CampaignCenter.getCampaignHandler(campaignId);
 
+        saveCampaignContext(campaignContext);
+
         randomChoice(campaignContext);
 
-        saveCampaignContext(campaignContext);
     }
 
     /**
@@ -97,9 +98,9 @@ public class FlowManagerImpl implements FlowManager {
         //新回合开始后
         campaignContext = CampaignCenter.getCampaignHandler(campaignId);
 
-        randomChoice(campaignContext);
-
         saveCampaignContext(campaignContext);
+
+        randomChoice(campaignContext);
 
         dieOut(campaignContext);
 
@@ -243,22 +244,22 @@ public class FlowManagerImpl implements FlowManager {
         }
         humanResource.setCurrentIndustryResourceChoiceSet(industryResourceChoiceSet);
 
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY.name(), humanResource);
+        currentTypeIndustryResourceMap.put(EChoiceBaseType.HUMAN.name(), humanResource);
         //产品定位
         IndustryResource productStudyResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY.name());
         productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyResource.getId())));
         currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY.name(), productStudyResource);
         //产品投入
         IndustryResource productStudyFeeResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyFeeResource.getId())));
+        productStudyFeeResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyFeeResource.getId())));
         currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY_FEE.name(), productStudyFeeResource);
         //市场活动
         IndustryResource marketActivityResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.MARKET_ACTIVITY.name());
-        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketActivityResource.getId())));
+        marketActivityResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketActivityResource.getId())));
         currentTypeIndustryResourceMap.put(EChoiceBaseType.MARKET_ACTIVITY.name(), marketActivityResource);
         //运营投入
         IndustryResource operationResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.OPERATION.name());
-        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(operationResource.getId())));
+        operationResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(operationResource.getId())));
         currentTypeIndustryResourceMap.put(EChoiceBaseType.OPERATION.name(), operationResource);
 
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
@@ -499,15 +500,6 @@ public class FlowManagerImpl implements FlowManager {
             }
         }
 
-
-        //删除所有随机选项
-        XQuery choiceQuery = new XQuery();
-        choiceQuery.setHql("from CampaignTermChoice where campaign.id = :campaignId");
-        choiceQuery.put("campaignId", campaign.getId());
-        List<CampaignTermChoice> campaignTermChoiceList = baseManager.listObject(choiceQuery);
-        if (campaignTermChoiceList != null) {
-            campaignTermChoiceList.forEach(session::delete);
-        }
         campaign.setCurrentCampaignDate(0);
         campaign.setStatus(Campaign.Status.PREPARE.getValue());
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);

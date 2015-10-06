@@ -48,7 +48,7 @@ import java.util.Date;
         this.status = status;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "industry_id")
     public Industry getIndustry() {
         return industry;

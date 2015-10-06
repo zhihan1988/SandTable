@@ -3,6 +3,7 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.CampaignDateUtil;
+import com.rathink.ie.foundation.campaign.model.Industry;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
@@ -73,7 +74,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
     
     public Map<String, Map<String, Integer>> getPropertyReport(Company company) {
         Map<String, Map<String, Integer>> propertyReport = new LinkedHashMap<>();
-        Integer term = company.getCampaign().getIndustry().getTerm();
+        Industry industry = (Industry) baseManager.getObject(Industry.class.getName(), company.getCampaign().getIndustry().getId());
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where company.id = :companyId order by campaignDate asc");
         xQuery.put("companyId", company.getId());
@@ -88,7 +89,7 @@ public class InternetPropertyManagerImpl implements InternetPropertyManager {
                     propertyMap.put(EPropertyName.valueOf(companyTermProperty.getName()).getLabel(), companyTermProperty.getValue());
                 }
             }
-            String formatCampaignDate = CampaignDateUtil.formatCampaignDate(companyTerm.getCampaignDate(), term);
+            String formatCampaignDate = CampaignDateUtil.formatCampaignDate(companyTerm.getCampaignDate(), industry.getTerm());
             propertyReport.put(formatCampaignDate, propertyMap);
         }
         return propertyReport;

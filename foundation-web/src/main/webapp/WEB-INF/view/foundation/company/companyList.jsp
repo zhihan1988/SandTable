@@ -34,7 +34,7 @@
             <tr>
                 <td>
                     <a href="<c:url value="/company/${company.id}"/>">${company.name}</a>
-                    <a href="<c:url value="/work/main.do?companyId=${company.id}"/>">进入</a>
+                    <a href="<c:url value="/work/main.do?companyId=${company.id}&campaignId=${company.campaign.id}"/>">进入</a>
                 </td>
                 <td>
                     ${company.slogan}
