@@ -13,10 +13,12 @@
 </head>
 <body>
 
+<c:forEach items="${result}" var="table">
+
 
 <table class="am-table am-table-bordered">
     <tbody>
-    <c:forEach items="${result}" var="y">
+    <c:forEach items="${table}" var="y">
         <tr>
             <c:forEach items="${y}" var="x">
                 <td>
@@ -27,6 +29,6 @@
     </c:forEach>
     </tbody>
 </table>
-
+</c:forEach>
 </body>
 </html>

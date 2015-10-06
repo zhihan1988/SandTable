@@ -63,7 +63,7 @@
               </div>
             </div>
           </td>
-          <td class="am-hide-sm-only">${obj.name}</td>
+          <td class="am-hide-sm-only"><a href="<c:url value="/basic/xm.do?qm=viewIndustryExpression&id=${obj.id}"/>">${obj.name}</a></td>
           <td class="am-hide-sm-only">${obj.ability}</td>
           <td class="am-hide-sm-only">${obj.expression}</td>
           <td class="am-hide-sm-only">${obj.initialValue}</td>

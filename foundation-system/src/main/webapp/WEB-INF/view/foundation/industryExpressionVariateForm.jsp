@@ -12,30 +12,31 @@
   <title></title>
 </head>
 <body>
-<div><h2>设置公式</h2></div>
+<div><h2>设置变量</h2></div>
 
 <form class="am-form am-form-horizontal" action="<c:url value="/basic/xm.do"/>">
 
   <input type="hidden" name="id" value="${object.id}">
-  <input type="hidden" name="qm" value="saveOrUpdateIndustryExpression">
+  <input type="hidden" name="qm" value="saveOrUpdateIndustryExpressionVariate">
+  <input type="hidden" name="industryExpression.id" value="${pageContext.request.getParameter("industryExpressionId")}">
 
   <div class="am-form-group">
-    <label for="doc-ipt-3" class="am-u-sm-2 am-form-label">名称</label>
+    <label for="doc-ipt-3" class="am-u-sm-2 am-form-label">变量名</label>
     <div class="am-u-sm-10">
       <input type="text" name="name" value="${object.name}" id="doc-ipt-3" >
     </div>
   </div>
 
   <div class="am-form-group">
-    <label for="doc-ipt-4" class="am-u-sm-2 am-form-label">变量名称</label>
+    <label for="doc-ipt-4" class="am-u-sm-2 am-form-label">初始值</label>
     <div class="am-u-sm-10">
-      <input type="text" name="ability" value="${object.ability}" id="doc-ipt-4" >
+      <input type="text" name="initialValue" value="${object.initialValue}" id="doc-ipt-4" >
     </div>
   </div>
   <div class="am-form-group">
-    <label for="doc-ipt-5" class="am-u-sm-2 am-form-label">表达式</label>
+    <label for="doc-ipt-5" class="am-u-sm-2 am-form-label">步长</label>
     <div class="am-u-sm-10">
-      <input type="text" name="expression" value="${object.expression}" id="doc-ipt-5">
+      <input type="text" name="step" value="${object.step}" id="doc-ipt-5">
     </div>
   </div>
 

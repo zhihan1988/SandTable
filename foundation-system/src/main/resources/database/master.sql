@@ -20,3 +20,14 @@ ALTER TABLE `industry_expression` ADD COLUMN `ability` char(128) AFTER `step`;
 
 
 ALTER TABLE `shapan`.`industry_choice_setting` CHANGE COLUMN `value` `value_set` varchar(255) DEFAULT NULL;
+
+
+CREATE TABLE `industry_expression_variate` (
+	`id` char(16) NOT NULL,
+	`name` char(128),
+	`industry_expression_id` char(16),
+	`initial_value` char(16),
+	`step` char(16),
+	`status` char(8),
+	PRIMARY KEY (`id`)
+);

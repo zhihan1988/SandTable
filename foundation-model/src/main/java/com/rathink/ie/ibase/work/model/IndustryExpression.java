@@ -3,6 +3,7 @@ package com.rathink.ie.ibase.work.model;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by pgwt on 10/3/15.
@@ -17,6 +18,7 @@ public class IndustryExpression {
     private String ability; //变量名
     private String initialValue ; //初始值
     private String step ; //步长
+    private List<IndustryExpressionVariate> industryExpressionVariateList;
 
 
     @Id
@@ -73,5 +75,14 @@ public class IndustryExpression {
 
     public void setStep(String step) {
         this.step = step;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "industryExpression")
+    public List<IndustryExpressionVariate> getIndustryExpressionVariateList() {
+        return industryExpressionVariateList;
+    }
+
+    public void setIndustryExpressionVariateList(List<IndustryExpressionVariate> industryExpressionVariateList) {
+        this.industryExpressionVariateList = industryExpressionVariateList;
     }
 }

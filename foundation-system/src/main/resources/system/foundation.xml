@@ -151,7 +151,23 @@
                 </do>
                 <do name="formIndustryExpression" label="编辑数据" access="" result="/foundation/industryExpressionForm"/>
                 <do name="saveOrUpdateIndustryExpression" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryExpression_default"/>
+                <do name="viewIndustryExpression" label="表达式详情" access="" result="/foundation/industryExpressionView"/>
+            </does>
+        </entity>
 
+        <entity name="IndustryExpressionVariate" label="表达式变量"
+                basic="simple" others=""
+                model="com.rathink.ie.ibase.work.model.IndustryExpressionVariate">
+            <does>
+                <do name="listIndustryExpressionVariate" label="变量列表"  result="/foundation/industryExpressionVariateList">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
+                        <condition name="industryExpression.id" operation="eq"/>
+                    </query>
+                </do>
+                <do name="formIndustryExpressionVariate" label="编辑变量" access="" result="/foundation/industryExpressionVariateForm"/>
+                <do name="saveOrUpdateIndustryExpressionVariate" label="编辑数据" access="" result="redirect:/basic/xm.do?qm=plistIndustryExpression_default"/>
+                <do name="removeIndustryExpressionVariate" label="删除变量" access="" result="json"/>
             </does>
         </entity>
 

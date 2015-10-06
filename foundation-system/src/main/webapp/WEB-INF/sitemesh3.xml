@@ -11,5 +11,6 @@
     <!--<mapping path="/master/toTenantMaster.do" decorator="/layouts/main.jsp"/>-->
     <!--<mapping path="/product/project/toTenantProject.do" decorator="/layouts/main.jsp"/>-->
     <!--<mapping path="/imgView.jsp*" exclue="true" />-->
-    <mapping path="/**" exclue="true" decorator="/layouts/main.jsp"/>
+ <mapping path="/result.do" exclue="true" decorator="/layouts/empty.jsp"/>
+ <mapping path="/**" exclue="true" decorator="/layouts/main.jsp"/>
 </sitemesh>
