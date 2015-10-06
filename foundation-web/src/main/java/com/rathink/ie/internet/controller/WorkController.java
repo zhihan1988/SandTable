@@ -15,6 +15,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.service.PropertyManager;
+import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.InternetWorkManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +112,7 @@ public class WorkController {
         model.addAttribute("competitionMap", competitionMap);
 
         //调试报告
-        Map<String, Map<String, Integer>> propertyReport = propertyManager.getPropertyReport(company);
+        Map<String, Map<String, Integer>> propertyReport = propertyManager.getPropertyReport(company, new CompanyTermPropertyComparator());
         Map<String, Map<String, String>> accountReport = accountManager.getAccountReport(company);
         model.addAttribute("propertyReport", propertyReport);
         model.addAttribute("accountReport", accountReport);
@@ -173,5 +175,14 @@ public class WorkController {
         String instructionId = request.getParameter("instructionId");
         internetWorkManager.fireHuman(instructionId);
         return "success";
+    }
+
+    class CompanyTermPropertyComparator implements Comparator<CompanyTermProperty> {
+        @Override
+        public int compare(CompanyTermProperty o1, CompanyTermProperty o2) {
+            Integer order1 = EPropertyName.valueOf(o1.getName()).ordinal();
+            Integer order2 = EPropertyName.valueOf(o2.getName()).ordinal();
+            return order1 - order2;
+        }
     }
 }

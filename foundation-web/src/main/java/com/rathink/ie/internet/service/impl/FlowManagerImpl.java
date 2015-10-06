@@ -357,8 +357,7 @@ public class FlowManagerImpl implements FlowManager {
 
     private void calculateAccount(CampaignContext campaignContext) {
         Campaign campaign = campaignContext.getCampaign();
-        Industry industry = (Industry) baseManager.getObject(Industry.class.getName(), campaign.getIndustry().getId());
-        Integer TIME_UNIT = industry.getTerm();
+        Integer TIME_UNIT = campaign.getIndustry().getTerm();
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {

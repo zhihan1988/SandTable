@@ -50,15 +50,6 @@ public class InternetWorkManagerImpl implements InternetWorkManager {
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
     }
 
-    class CompanyTermPropertyComparator implements Comparator<CompanyTermProperty> {
-        @Override
-        public int compare(CompanyTermProperty o1, CompanyTermProperty o2) {
-            Integer order1 = EPropertyName.valueOf(o1.getName()).ordinal();
-            Integer order2 = EPropertyName.valueOf(o2.getName()).ordinal();
-            return order1 - order2;
-        }
-    }
-
     public Map<String, String> getCompanyTermReport(CompanyTerm companyTerm) {
         Map<String, String> companyTermReport = new HashMap<>();
         Company company = companyTerm.getCompany();
