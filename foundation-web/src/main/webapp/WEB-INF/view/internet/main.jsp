@@ -152,28 +152,6 @@
                     </div>
                 </div>
 
-                <br/>
-                <b>上期竞争报告</b>
-                <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
-                    <tbody>
-                    <c:forEach items="${competitionMap}" var="c" end="0">
-                    <tr>
-                        <td></td>
-                        <c:forEach items="${c.value}" var="i">
-                            <td>${i.key}</td>
-                        </c:forEach>
-                    </tr>
-                    </c:forEach>
-                    <c:forEach items="${competitionMap}" var="c">
-                    <tr>
-                        <td>${c.key}</td>
-                        <c:forEach items="${c.value}" var="i">
-                            <td>${i.value}</td>
-                        </c:forEach>
-                    </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
             </div>
         </div>
         <div data-tab-panel-1 class="am-tab-panel ">
@@ -450,9 +428,30 @@
     </div>
 </div>
 
-<b>调试信息</b>
-<div class="am-scrollable-horizontal">
 
+<div class="am-scrollable-horizontal">
+    <b>上期竞争报告</b>
+    <table class="am-table am-table-bordered am-table-compact am-text-nowrap">
+        <tbody>
+        <c:forEach items="${competitionMap}" var="c" end="0">
+            <tr>
+                <td></td>
+                <c:forEach items="${c.value}" var="i">
+                    <td>${i.key}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        <c:forEach items="${competitionMap}" var="c">
+            <tr>
+                <td>${c.key}</td>
+                <c:forEach items="${c.value}" var="i">
+                    <td>${i.value}</td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    <b>调试信息</b>
     <table class="am-table am-table-bordered am-table-compact am-text-nowrap" style="margin-top: 20px;">
         <c:forEach items="${accountReport}" var="acountMap" begin="0" end="0">
             <tr>

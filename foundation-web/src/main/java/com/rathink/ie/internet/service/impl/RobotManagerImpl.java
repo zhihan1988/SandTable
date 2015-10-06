@@ -4,7 +4,6 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.Edept;

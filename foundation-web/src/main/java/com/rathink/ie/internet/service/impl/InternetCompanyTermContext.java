@@ -3,7 +3,6 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CampaignTermChoice;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/4.
