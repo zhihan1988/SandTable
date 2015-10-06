@@ -4,10 +4,6 @@
         <jnode url="" id="orderManager" access="admin,manager" state="closed" text_zh_CN="比赛管理">
             <jnode url="/basic/xm.do?qm=plistCampaign_default" access="admin" text_zh_CN="比赛列表">
                 <match url="/basic/xm.do?qm=plistPurchaseOrder_default&amp;viewIdentify=orderProduct&amp;viewProductModel=order"/>
-                <match url="/basic/xm.do?qm=viewPurchaseOrder&amp;viewIdentify=orderProduct"/>
-                <match url="/basic/xm.do?qm=viewPurchaseOrderProduct&amp;viewProductModel=order"/>
-                <match url="/basic/xm.do?qm=viewPurchaseOrderProduct&amp;viewIdentify=orderProduct"/>
-                <match url="/basic/xm.do?qm=viewProduct&amp;viewIdentify=orderProduct"/>
             </jnode>
         </jnode>
         <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="企业管理">
@@ -38,14 +34,13 @@
     <jnode id="efecProductAndTenant" url="/home.do?jnodeId=efecProductAndTenant" text_zh_CN="基础设置">
         <jnode url="" id="productManager" access="admin,manager" state="closed" text_zh_CN="行业管理">
             <jnode url="/basic/xm.do?qm=plistIndustry_default" access="admin" text_zh_CN="行业管理">
-                <match url="/basic/xm.do?qm=plistProduct_defalut&amp;view=newProduct"/>
-                <match url="/basic/xm.do?qm=plistProduct_tenant&amp;view=newProduct"/>
-                <match url="/basic/xm.do?qm=viewProduct&amp;view=newProduct"/>
-            </jnode>
-            <jnode url="/basic/xm.do?qm=plistIndustryChoice_default" access="admin" text_zh_CN="基础数据管理">
-                <match url="/basic/xm.do?qm=plistProduct_defalut&amp;view=newProduct"/>
-                <match url="/basic/xm.do?qm=plistProduct_tenant&amp;view=newProduct"/>
-                <match url="/basic/xm.do?qm=viewProduct&amp;view=newProduct"/>
+                <match url="/basic/xm.do?qm=plistIndustryChoiceSetting_default"/>
+                <match url="/basic/xm.do?qm=formIndustryChoiceSetting"/>
+                <match url="/basic/xm.do?qm=plistIndustryChoice_default"/>
+                <match url="/basic/xm.do?qm=formIndustryChoice"/>
+                <match url="/basic/xm.do?qm=plistIndustryExpression_default"/>
+                <match url="/basic/xm.do?qm=plistIndustryExpression_default"/>
+                <match url="/basic/xm.do?qm=formIndustryExpression"/>
             </jnode>
         </jnode>
         <jnode url="" id="tenantManager" access="admin" state="closed" text_zh_CN="参数管理">

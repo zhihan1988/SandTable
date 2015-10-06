@@ -29,7 +29,7 @@
   <body>
     <div class="am-g">
       <div style="text-align: left;margin-bottom: 10px">
-        <a type="button" class="am-btn am-btn-default am-btn-xs" href="<c:url value="/basic/xm.do?qm=formIndustryChoiceSetting"/>"><span class="am-icon-plus"></span>新建</a>
+        <a type="button" class="am-btn am-btn-default am-btn-xs" href="<c:url value="/basic/xm.do?qm=formIndustryChoiceSetting&industryId=${pageContext.request.getParameter('industryId')}"/>"><span class="am-icon-plus"></span>新建</a>
       </div>
       <div class="am-u-sm-12 am-u-md-6">
       </div>
@@ -52,6 +52,10 @@
                   <a class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"
                      href="<c:url value="/basic/xm.do?qm=formIndustryChoiceSetting&id=${obj.id}"/>"><span
                           class="am-icon-trash-o">修改</span>
+                  </a>
+                  <a class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"
+                     href="<c:url value="/basic/xm.do?qm=plistIndustryChoice_default&irId=${obj.id}"/>"><span
+                          class="am-icon-trash-o">设置基础数据</span>
                   </a>
                 </div>
               </div>

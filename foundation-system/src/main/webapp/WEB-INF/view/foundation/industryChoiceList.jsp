@@ -29,7 +29,7 @@
 <body>
   <div class="am-g">
     <div style="text-align: left;margin-bottom: 10px">
-      <a type="button" class="am-btn am-btn-default am-btn-xs" href="<c:url value="/basic/xm.do?qm=formIndustryChoice"/>"><span class="am-icon-plus"></span>新建</a>
+      <a type="button" class="am-btn am-btn-default am-btn-xs" href="<c:url value="/basic/xm.do?qm=formIndustryChoice&irId=${pageContext.request.getParameter('irId')}"/>"><span class="am-icon-plus"></span>新建</a>
     </div>
     <div class="am-u-sm-12 am-u-md-6">
     </div>
@@ -59,7 +59,7 @@
             </div>
           </td>
           <td class="am-hide-sm-only">${obj.name}</td>
-          <td class="am-hide-sm-only">${obj.baseType}</td>
+          <td class="am-hide-sm-only">${obj.type}</td>
           <td class="am-hide-sm-only">${obj.value}</td>
           <td class="am-hide-sm-only">${obj.value2}</td>
           </c:forEach>

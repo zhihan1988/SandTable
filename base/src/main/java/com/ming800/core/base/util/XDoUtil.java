@@ -145,7 +145,7 @@ public class XDoUtil {
 
             Object objectValue = null;
             //判断该属性不是简单类行
-            if (field.getType().getName().startsWith("com.ming800") || field.getType().getName().startsWith("com.efeiyi.ec")) { //处理实体属性
+            if (field.getType().getName().startsWith("com.ming800") || field.getType().getName().startsWith("com.rathink")) { //处理实体属性
                 String fieldValue = request.getParameter(field.getName() + ".id");
                 if (fieldValue == null) {//异步请求时，使用property_id来发送关联实体的id
                     fieldValue = request.getParameter(field.getName() + "_id");

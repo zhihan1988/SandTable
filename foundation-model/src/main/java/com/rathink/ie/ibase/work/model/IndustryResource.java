@@ -12,7 +12,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "industry_resource")
-public class IndustryResource {
+    public class IndustryResource {
     private String id;
     private String name;
     private String title;
