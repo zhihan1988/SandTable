@@ -3,7 +3,9 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CompanyTermContext;
+import com.rathink.ie.ibase.service.IndustryExpressionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryAnalyzer;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
@@ -12,8 +14,11 @@ import com.rathink.ie.ibase.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -29,9 +34,6 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         EPropertyName ePropertyName = EPropertyName.valueOf(key);
         Integer value = 0;
         switch (ePropertyName) {
-           /* case OFFICE_RATIO:
-                value = calculateOfficeRatio();
-                break;*/
             case PRODUCT_ABILITY:
                 value = calculateDeptAbility(Edept.PRODUCT.name());
                 break;
@@ -103,22 +105,6 @@ public class InternetCompanyTermContext extends CompanyTermContext {
 
     /**
      *
-     * @return 办公室系数
-     */
-    /*private Integer calculateOfficeRatio() {
-        List<CompanyInstruction> companyInstructionList = listCompanyInstruction(EChoiceBaseType.OFFICE.name());
-        Integer officeFee = 0;
-        if (companyInstructionList != null) {
-            for (CompanyInstruction companyInstruction : companyInstructionList) {
-                officeFee += Integer.valueOf(companyInstruction.getValue());
-            }
-        }
-        Double officeRatio = Math.pow(officeFee, 0.3) * 2 + 30;
-        return officeRatio.intValue();
-    }*/
-
-    /**
-     *
      * @return 产品资金投入系数
      */
     private Integer calculateProductFeeRatio() {
@@ -129,8 +115,11 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 fee += Integer.valueOf(companyTermInstruction.getValue());
             }
         }
-        Double productFeeRatio = Math.pow(fee,0.4) *0.8 + 10;
-        return productFeeRatio.intValue();
+        IndustryExpressionManager industryExpressionManager = (IndustryExpressionManager) ApplicationContextUtil.getApplicationContext().getBean("industryExpressionManagerImpl");
+        IndustryAnalyzer industryAnalyzer = industryExpressionManager.create("PRODUCT_FEE_RATIO");
+        industryAnalyzer.add("FEE", fee);
+        Integer productFeeRatio = industryAnalyzer.getResult();
+        return productFeeRatio;
     }
 
     /**
@@ -141,8 +130,14 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productAbility = preCompanyTermContext.get(EPropertyName.PRODUCT_ABILITY.name());
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
-        Integer productRatio = productAbility * 30 / 100 + productFeeRatio * 30 / 100 + preProductRatio * 30 / 100 + RandomUtil.random(0, 20);
-        return productRatio;
+
+        IndustryExpressionManager industryExpressionManager = (IndustryExpressionManager) ApplicationContextUtil.getApplicationContext().getBean("industryExpressionManagerImpl");
+
+        IndustryAnalyzer industryAnalyzer = industryExpressionManager.create("PRODUCT_RATIO");
+        industryAnalyzer.add("PRODUCT_ABILITY",productAbility);
+        industryAnalyzer.add("PRODUCT_FEE_RATIO",productFeeRatio);
+        industryAnalyzer.add("PRE_PRODUCT_RATIO",preProductRatio);
+        return industryAnalyzer.getResult();
     }
 
     /**

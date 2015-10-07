@@ -1,7 +1,6 @@
 package com.rathink.ie.ibase.work.model;
 
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.xidea.el.Expression;
@@ -27,8 +26,9 @@ public class IndustryAnalyzer {
         abilityMap.put(abilityName,value);
     }
 
-    public Object getResult(){
-        return this.expression.evaluate(abilityMap);
+    public Integer getResult(){
+        Double result = Double.parseDouble(expression.evaluate(abilityMap).toString());
+        return result.intValue();
     }
 
     public void reset(){
