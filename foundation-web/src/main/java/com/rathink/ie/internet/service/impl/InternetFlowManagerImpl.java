@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
  * Created by Hean on 2015/8/24.
  */
 @Service
-public class FlowManagerImpl extends AbstractFlowManager {
-    private static Logger logger = LoggerFactory.getLogger(FlowManagerImpl.class);
+public class InternetFlowManagerImpl extends AbstractFlowManager {
+    private static Logger logger = LoggerFactory.getLogger(InternetFlowManagerImpl.class);
 
 
     @Override

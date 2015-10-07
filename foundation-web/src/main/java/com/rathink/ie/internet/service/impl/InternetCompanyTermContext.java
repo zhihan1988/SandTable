@@ -3,7 +3,6 @@ package com.rathink.ie.internet.service.impl;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.service.IndustryExpressionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryAnalyzer;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
@@ -14,11 +13,8 @@ import com.rathink.ie.ibase.service.InstructionManager;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -26,7 +22,7 @@ import java.util.List;
  */
 @Component
 public class InternetCompanyTermContext extends CompanyTermContext {
-    private static Logger logger = LoggerFactory.getLogger(FlowManagerImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(InternetCompanyTermContext.class);
 
     final Double PERCENT = 100d;
     @Override
