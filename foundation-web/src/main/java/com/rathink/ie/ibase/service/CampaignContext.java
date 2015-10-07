@@ -16,7 +16,8 @@ public class CampaignContext {
     private Map<String, CompanyTermContext> companyTermContextMap;
     private Map<String, IndustryResource> currentTypeIndustryResourceMap = new HashMap<>();//key:资源类型  value:资源
     private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
-//    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
+    //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
+    private Map<String, String> expressionMap = new HashMap<>();
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -79,6 +80,14 @@ public class CampaignContext {
 
     public Map<String, List<CompanyTermInstruction>> getCurrentChoiceInstructionMap() {
         return currentChoiceInstructionMap;
+    }
+
+    public Map<String, String> getExpressionMap() {
+        return expressionMap;
+    }
+
+    public void setExpressionMap(Map<String, String> expressionMap) {
+        this.expressionMap = expressionMap;
     }
 }
 

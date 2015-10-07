@@ -115,8 +115,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
                 fee += Integer.valueOf(companyTermInstruction.getValue());
             }
         }
-        IndustryExpressionManager industryExpressionManager = (IndustryExpressionManager) ApplicationContextUtil.getApplicationContext().getBean("industryExpressionManagerImpl");
-        IndustryAnalyzer industryAnalyzer = industryExpressionManager.create("PRODUCT_FEE_RATIO");
+        String expressionStr = campaignContext.getExpressionMap().get("PRODUCT_FEE_RATIO");
+        IndustryAnalyzer industryAnalyzer = new IndustryAnalyzer(expressionStr);
         industryAnalyzer.add("FEE", fee);
         Integer productFeeRatio = industryAnalyzer.getResult();
         return productFeeRatio;
@@ -131,9 +131,8 @@ public class InternetCompanyTermContext extends CompanyTermContext {
         Integer productFeeRatio = get(EPropertyName.PRODUCT_FEE_RATIO.name());
         Integer preProductRatio = preCompanyTermContext.get(EPropertyName.PRODUCT_RATIO.name());
 
-        IndustryExpressionManager industryExpressionManager = (IndustryExpressionManager) ApplicationContextUtil.getApplicationContext().getBean("industryExpressionManagerImpl");
-
-        IndustryAnalyzer industryAnalyzer = industryExpressionManager.create("PRODUCT_RATIO");
+        String expressionStr = campaignContext.getExpressionMap().get("PRODUCT_RATIO");
+        IndustryAnalyzer industryAnalyzer = new IndustryAnalyzer(expressionStr);
         industryAnalyzer.add("PRODUCT_ABILITY",productAbility);
         industryAnalyzer.add("PRODUCT_FEE_RATIO",productFeeRatio);
         industryAnalyzer.add("PRE_PRODUCT_RATIO",preProductRatio);

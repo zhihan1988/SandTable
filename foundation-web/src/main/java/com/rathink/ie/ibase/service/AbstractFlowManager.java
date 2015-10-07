@@ -11,6 +11,7 @@ import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryExpression;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.service.FlowManager;
@@ -130,6 +131,12 @@ public abstract class AbstractFlowManager implements FlowManager {
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
 
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from IndustryExpression");
+        List<IndustryExpression> industryExpressionList = baseManager.listObject(xQuery);
+        for (IndustryExpression industryExpression : industryExpressionList) {
+            campaignContext.getExpressionMap().put(industryExpression.getName(),industryExpression.getExpression());
+        }
     }
 
     /**
