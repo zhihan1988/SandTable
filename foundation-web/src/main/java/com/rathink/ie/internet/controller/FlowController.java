@@ -1,8 +1,10 @@
 package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
+import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.ibase.service.CampaignCenter;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Observable;
 
 /**
  * Created by Hean on 2015/8/28.
@@ -28,8 +31,6 @@ public class FlowController {
     @Autowired
     private BaseManager baseManager;
     @Autowired
-    private FlowManager flowManager;
-    @Autowired
     private CampaignCenterManager campaignCenterManager;
     @Autowired
     private RobotManager robotManager;
@@ -38,6 +39,8 @@ public class FlowController {
     @ResponseBody
     public String begin(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
         flowManager.begin(campaignId);
         return "success";
     }
@@ -46,6 +49,8 @@ public class FlowController {
     @ResponseBody
     public String next(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
         flowManager.next(campaignId);
         return "success";
     }
@@ -54,8 +59,9 @@ public class FlowController {
     @ResponseBody
     public String reset(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-        flowManager.reset(campaignId);
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
+        flowManager.reset(campaignId);
         campaignCenterManager.initCampaignHandler(campaign);
         flowManager.begin(campaignId);
         return "success";
@@ -63,44 +69,23 @@ public class FlowController {
 
     @RequestMapping("/companyNext")
     @ResponseBody
-    public synchronized Boolean companyNext(HttpServletRequest request, Model model) throws Exception {
+    public synchronized void companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        Campaign campaign = campaignContext.getCampaign();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        CompanyTermContext companyTermContext = companyTermHandlerMap.get(request.getParameter("companyId"));
-        Company company = companyTermContext.getCompanyTerm().getCompany();
-
-        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Integer nextCampaignDate = campaign.getNextCampaignDate();
-        company.setCurrentCampaignDate(nextCampaignDate);
-
-        boolean isAllNext = true;
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext ctContext = companyTermHandlerMap.get(companyId);
-            Company c = ctContext.getCompanyTerm().getCompany();
-            if (c.getStatus().equals(ECompanyStatus.NORMAL.name()) && !nextCampaignDate.equals(c.getCurrentCampaignDate())) {
-                isAllNext = false;
-            }
-        }
-        if (isAllNext) {
-            flowManager.next(campaign.getId());
-        }
-        return isAllNext;
+        String campaignDate = request.getParameter("campaignDate");
+        String key = campaignDate + ":" + request.getParameter("roundType");
+        RoundEndObserable roundEndObserable = (RoundEndObserable) campaignContext.getObservableMap().get(key);
+        roundEndObserable.finish(request.getParameter("companyId"));
+        return;
     }
 
-    @RequestMapping("/isNext")
+    @RequestMapping("/isCampaignNext")
     @ResponseBody
     public Integer isNext(HttpServletRequest request, Model model) throws Exception {
-        int unFinishNum = 0;
-        Integer campaignDate = Integer.parseInt(request.getParameter("campaignDate"));
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
-            Company company = companyTermContext.getCompanyTerm().getCompany();
-            if (company.getStatus().equals(ECompanyStatus.NORMAL.name()) && campaignDate.equals(company.getCurrentCampaignDate())) {
-                unFinishNum++;
-            }
-        }
-        return unFinishNum;
+        String campaignDate = request.getParameter("campaignDate");
+        String key = campaignDate + ":" + request.getParameter("roundType");
+        RoundEndObserable roundEndObserable = (RoundEndObserable) campaignContext.getObservableMap().get(key);
+        return roundEndObserable.getUnFinishedNum();
     }
 
     @RequestMapping("/random")

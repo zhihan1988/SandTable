@@ -23,6 +23,7 @@
         <thead>
         <tr>
             <th>名称</th>
+            <th>行业</th>
             <th>模式</th>
             <th>状态</th>
             <th>开始时间</th>
@@ -32,6 +33,7 @@
         <c:forEach items="${campaignList}" var="campaign" varStatus="vs">
             <tr>
                 <td><a href="<c:url value="/campaign/${campaign.id}"/>">${campaign.name}</a></td>
+                <td>${campaign.industry.name}</td>
                 <td>
                 <c:choose>
                     <c:when test="${campaign.mode == 'private'}">

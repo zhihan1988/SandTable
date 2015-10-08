@@ -1,36 +1,34 @@
-package com.rathink.ie.internet.service.impl;
+package com.rathink.ie.manufacturing.service;
 
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
-import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
+import com.rathink.ie.ibase.service.CompanyTermManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
-import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.service.FlowManager;
+import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Hean on 2015/8/24.
  */
-@Service(value = "internetFlowManagerImpl")
-public class InternetFlowManagerImpl extends AbstractFlowManager {
-    private static Logger logger = LoggerFactory.getLogger(InternetFlowManagerImpl.class);
-
+@Service(value = "manufacturingFlowManagerImpl")
+public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
+    private static Logger logger = LoggerFactory.getLogger(ManufacturingFlowManagerImpl.class);
 
     @Override
     protected void initPropertyList() {
@@ -76,124 +74,79 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
 
 
     protected void randomChoice() {
-        Integer COMPANY_HUMAN_NUM_RATIO = 3;//参赛公司与人才的数量比率
 
         Map<String, IndustryResource> currentTypeIndustryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
         String industryId = campaignContext.getCampaign().getIndustry().getId();
-        //人员
-        Set<IndustryResourceChoice> industryResourceChoiceSet = new HashSet<>();
-        Integer needNum = campaignContext.getCompanyTermContextMap().size() * COMPANY_HUMAN_NUM_RATIO;
-        IndustryResource humanResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.HUMAN.name());
-        List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstruction(campaignContext.getCampaign(), EChoiceBaseType.HUMAN.name());
-        Set<String> usedResourceChoiceIdSet = humanInstructionList.stream().map(CompanyTermInstruction::getId).collect(Collectors.toSet());
-        List<IndustryResourceChoice> industryResourceChoiceList;
-        if(usedResourceChoiceIdSet.isEmpty()) {
-            industryResourceChoiceList = industryResourceChoiceManager.listIndustryResourceChoice(humanResource.getId());
-        } else {
-            industryResourceChoiceList = industryResourceChoiceManager.listIndustryResourceChoice(humanResource.getId(), usedResourceChoiceIdSet);
+
+        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        if (currentCampaignDate == 1) {
+            //生产线
+            IndustryResource produceLineResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+            produceLineResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(produceLineResource.getId())));
+            currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.PRODUCE_LINE.name(), produceLineResource);
         }
+        if (currentCampaignDate % 4 == 1) {
+            //市场投放
+            IndustryResource marketFeeResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET_FEE.name());
+            marketFeeResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketFeeResource.getId())));
+            currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.MARKET_FEE.name(), marketFeeResource);
 
-        for (int i = 0; i < needNum; i++) {
-            Iterator<IndustryResourceChoice> industryResourceChoiceIterator = industryResourceChoiceList.iterator();
-            Integer choiceSize = industryResourceChoiceList.size();
-            int index = RandomUtil.random(0, choiceSize);
-            for (int m = 0; industryResourceChoiceIterator.hasNext(); m++) {
-                IndustryResourceChoice irc = industryResourceChoiceIterator.next();
-                if (m == index) {
-                    industryResourceChoiceSet.add(irc);
-                    industryResourceChoiceIterator.remove();
-                    break;
-                }
-            }
+            //订单
+            IndustryResource marketOrderResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET_ORDER.name());
+            marketOrderResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketOrderResource.getId())));
+            currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.MARKET_ORDER.name(), marketOrderResource);
         }
-        humanResource.setCurrentIndustryResourceChoiceSet(industryResourceChoiceSet);
-
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.HUMAN.name(), humanResource);
-        //产品定位
-        IndustryResource productStudyResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY.name());
-        productStudyResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyResource.getId())));
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY.name(), productStudyResource);
-        //产品投入
-        IndustryResource productStudyFeeResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-        productStudyFeeResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(productStudyFeeResource.getId())));
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.PRODUCT_STUDY_FEE.name(), productStudyFeeResource);
-        //市场活动
-        IndustryResource marketActivityResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.MARKET_ACTIVITY.name());
-        marketActivityResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketActivityResource.getId())));
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.MARKET_ACTIVITY.name(), marketActivityResource);
-        //运营投入
-        IndustryResource operationResource = industryResourceManager.getUniqueIndustryResource(industryId, EChoiceBaseType.OPERATION.name());
-        operationResource.setCurrentIndustryResourceChoiceSet(new HashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(operationResource.getId())));
-        currentTypeIndustryResourceMap.put(EChoiceBaseType.OPERATION.name(), operationResource);
-
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
     }
 
     @Override
     public void initNextObserable() {
         Campaign campaign = campaignContext.getCampaign();
+        Integer campaignDate = campaign.getCurrentCampaignDate();
         Set<String> companyIdSet = campaignContext.getCompanyTermContextMap().keySet();
-        RoundEndObserable roundEndObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
-        roundEndObserable.addObserver((o, arg) -> {next(arg.toString());});
-        String key = campaign.getCurrentCampaignDate() + ":DATE_ROUND";
-        campaignContext.getObservableMap().put(key, roundEndObserable);
+        Map<String, Observable> observableMap = campaignContext.getObservableMap();
+
+        RoundEndObserable dateRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
+        dateRoundObserable.addObserver((o, arg) -> next(arg.toString()));
+        observableMap.put(campaignDate + ":" + "DATE_ROUND", dateRoundObserable);
+
+        if (campaign.getCurrentCampaignDate() % 4 == 1) {
+            RoundEndObserable marketPayRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
+            marketPayRoundObserable.addObserver(new Observer() {
+                @Override
+                public void update(Observable o, Object arg) {
+                    Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), arg.toString());
+                    List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
+                    for (CompanyTerm companyTerm : companyTermList) {
+                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_FEE.name());
+                        companyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+                    }
+                }
+            });
+            observableMap.put(campaignDate + ":" + "MARKET_PAY_ROUND", marketPayRoundObserable);
+
+            RoundEndObserable orderRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
+            orderRoundObserable.addObserver(new Observer() {
+                @Override
+                public void update(Observable o, Object arg) {
+                    Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), arg.toString());
+                    List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
+                    for (CompanyTerm companyTerm : companyTermList) {
+                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_ORDER.name());
+                        companyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+                    }
+                }
+            });
+            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);
+        }
     }
 
     protected void competitiveBidding() {
 
-        Set<IndustryResourceChoice> humanSet = campaignContext.getCurrentTypeIndustryResourceMap().get(EChoiceBaseType.HUMAN.name()).getCurrentIndustryResourceChoiceSet();
-        if (humanSet == null || humanSet.size() == 0) return;
-        //竞标
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (IndustryResourceChoice human : humanSet) {
-            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.getCurrentChoiceInstructionMap().get(human.getId());
-            if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
-                Double maxRecruitmentRatio = 0d;
-                CompanyTermInstruction successCompanyTermInstruction = null;
-                for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-                    CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyTermInstruction.getCompany().getId());
-                    Double fee = Double.valueOf(companyTermInstruction.getValue());
-                    Double feeRatio = Math.pow(fee, 0.51) * 0.35;//薪酬系数
-                    Integer randomRatio = RandomUtil.random(0, 70);
-                    Double recruitmentRatio = feeRatio * 30 / 100 + randomRatio;//招聘能力系数
-                    logger.info("公司：{}，员工：{}，工资：{}，薪酬系数：{}，随机值：{}，招聘能力系数：{}",
-                            companyTermContext.getCompanyTerm().getCompany().getName(), human.getName(),
-                            fee, feeRatio, randomRatio, recruitmentRatio);
-                    if (recruitmentRatio > maxRecruitmentRatio) {
-                        maxRecruitmentRatio = recruitmentRatio;
-                        successCompanyTermInstruction = companyTermInstruction;
-                    }
-                }
-                successCompanyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
-                //保存选中的
-//                baseManager.saveOrUpdate(CompanyInstruction.class.getName(), successCompanyInstruction);
-                //保存未选中的
-                companyTermInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
-                    companyInstruction.setStatus(EInstructionStatus.WXZ.getValue());
-//                    baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
-                });
-            }
-        }
-
     }
 
-    /*private void calculateCompetitionMap(CampaignContext campaignContext) {
-        Map<String, Integer> competitionMap = new HashMap<>();
-        Set<IndustryResourceChoice> currentIndustryResourceChoiceList = new HashSet<>();
-        Map<String, IndustryResource> currentTypeIndustryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
-        //产品定位
-        currentIndustryResourceChoiceList.addAll(currentTypeIndustryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY.name()).getCurrentIndustryResourceChoiceSet());
-        //市场活动
-        currentIndustryResourceChoiceList.addAll(currentTypeIndustryResourceMap.get(EChoiceBaseType.MARKET_ACTIVITY.name()).getCurrentIndustryResourceChoiceSet());
-        for (IndustryResourceChoice industryResourceChoice : currentIndustryResourceChoiceList) {
-            List<CompanyTermInstruction> companyTermInstructionList = campaignContext.listCurrentCompanyInstructionByChoice(industryResourceChoice.getId());
-            if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
-                competitionMap.put(industryResourceChoice.getId(), companyTermInstructionList.size());
-            }
-        }
-        campaignContext.setCompetitionMap(competitionMap);
-
-    }*/
 
     protected void calculateProperty() {
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
@@ -258,5 +211,7 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
             companyTermContext.setAccountList(accountList);
         }
     }
+
+
 
 }

@@ -2,6 +2,7 @@ package com.rathink.ie.internet.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.EIndustryType;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
@@ -16,6 +17,7 @@ import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.service.PropertyManager;
 import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.internet.ERoundType;
 import com.rathink.ie.internet.service.InternetWorkManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -94,12 +96,13 @@ public class WorkController {
         model.addAttribute("campaignDateOutCash", campaignDateOutCash);
         model.addAttribute("hrInstructionList", hrInstructionList);
         model.addAttribute("preProductStudyInstruction", preProductStudyInstruction);
-        model.addAttribute("companyNum", CampaignCenter.getCampaignHandler(campaign.getId()).getCompanyTermContextMap().size());
+        model.addAttribute("companyNum", campaignContext.getCompanyTermContextMap().size());
         model.addAttribute("humanResource", industryResourceMap.get(EChoiceBaseType.HUMAN.name()));
         model.addAttribute("productStudyResource", industryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY.name()));
         model.addAttribute("productStudyFeeResource", industryResourceMap.get(EChoiceBaseType.PRODUCT_STUDY_FEE.name()));
         model.addAttribute("marketActivityResource", industryResourceMap.get(EChoiceBaseType.MARKET_ACTIVITY.name()));
         model.addAttribute("operationResource", industryResourceMap.get(EChoiceBaseType.OPERATION.name()));
+        model.addAttribute("roundType", ERoundType.DATE_ROUND.name());
 
         //公司的竞争报告
         Map<String, Map<String, String>> competitionMap = new HashMap<>();

@@ -45,6 +45,8 @@ public abstract class AbstractFlowManager implements FlowManager {
     protected IndustryResourceManager industryResourceManager;
     @Autowired
     protected IndustryResourceChoiceManager industryResourceChoiceManager;
+    @Autowired
+    protected CompanyTermManager companyTermManager;
 
     @Override
     public void begin(String campaignId) {
@@ -58,6 +60,7 @@ public abstract class AbstractFlowManager implements FlowManager {
 
         randomChoice();
 
+        initNextObserable();
     }
 
     public void next(String campaignId) {
@@ -89,6 +92,8 @@ public abstract class AbstractFlowManager implements FlowManager {
         dieOut();
 
         end();
+
+        initNextObserable();
     }
 
 
@@ -274,6 +279,8 @@ public abstract class AbstractFlowManager implements FlowManager {
             }
         }
     }
+
+    public abstract void initNextObserable();
 
 
     @Override

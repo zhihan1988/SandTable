@@ -20,6 +20,8 @@ public interface InstructionManager {
 
     List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, String baseType);
 
+    List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, Integer campaignDate, String baseType);
+
     List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType);
 
     List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm, String baseType);

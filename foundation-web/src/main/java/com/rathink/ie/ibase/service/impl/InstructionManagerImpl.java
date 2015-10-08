@@ -102,6 +102,7 @@ public class InstructionManagerImpl implements InstructionManager {
             baseManager.delete(CompanyTermInstruction.class.getName(), companyTermInstruction.getId());
         }
     }
+
     @Override
     public List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, String baseType){
         XQuery xQuery = new XQuery();
@@ -112,6 +113,20 @@ public class InstructionManagerImpl implements InstructionManager {
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
     }
+
+    @Override
+    public List<CompanyTermInstruction> listCompanyInstruction(Campaign campaign, Integer campaignDate, String baseType){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId and campaignDate = :campaignDate" +
+                " and baseType = :baseType and  status=:status");
+        xQuery.put("campaignId", campaign.getId());
+        xQuery.put("campaignDate", campaignDate);
+        xQuery.put("baseType", baseType);
+        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
+        return companyTermInstructionList;
+    }
+
 
     @Override
     public List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType) {

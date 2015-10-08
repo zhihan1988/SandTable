@@ -11,6 +11,7 @@ import java.util.Date;
 public class Industry {
     private String id;
     private String name;
+    private String type;
     private Date createDatetime;
     private Integer term;
     private Integer totalTerm;
@@ -33,6 +34,15 @@ public class Industry {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(name = "type")
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Column(name = "create_datetime")

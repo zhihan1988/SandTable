@@ -6,6 +6,7 @@ import com.rathink.ie.ibase.work.model.IndustryResource;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Hean on 2015/9/10.
@@ -18,6 +19,7 @@ public class CampaignContext {
     private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
     //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
     private Map<String, String> expressionMap = new HashMap<>();
+    private Map<String, Observable> observableMap = new HashMap<>();//key campaignDate_roundType
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -44,6 +46,7 @@ public class CampaignContext {
 
     /**
      * 当前比赛进度的全部决策
+     *
      * @param companyTermInstructionList
      */
     public void addAllCurrentInstruction(List<CompanyTermInstruction> companyTermInstructionList) {
@@ -88,6 +91,10 @@ public class CampaignContext {
 
     public void setExpressionMap(Map<String, String> expressionMap) {
         this.expressionMap = expressionMap;
+    }
+
+    public Map<String, Observable> getObservableMap() {
+        return observableMap;
     }
 }
 

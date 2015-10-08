@@ -504,6 +504,7 @@
         var campaignDate = '${campaign.currentCampaignDate}';
         var companyId = '${company.id}';
         var companyTermId = '${companyTerm.id}';
+        var roundType = '${roundType}';
 
         //产品定位初始值
         var productStudy = $("select[id='productStudy']").val();
@@ -575,7 +576,9 @@
                 $.post("<c:url value="/flow/companyNext.do"/>",
                         {
                             campaignId: campaignId,
-                            companyId: companyId
+                            companyId: companyId,
+                            campaignDate: campaignDate,
+                            roundType: roundType
                         },
                         function (data) {
 //                            $endCampaignDate.addClass("am-disabled");
@@ -587,10 +590,11 @@
 
         setInterval(isNext, 5000);
         function isNext() {
-            $.post("<c:url value="/flow/isNext"/>",
+            $.post("<c:url value="/flow/isCampaignNext"/>",
                     {
                         campaignId:campaignId,
-                        campaignDate: campaignDate
+                        campaignDate: campaignDate,
+                        roundType: roundType
                     },
                     function (data) {
                         if (data == 0) {
