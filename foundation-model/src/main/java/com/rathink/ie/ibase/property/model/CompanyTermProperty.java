@@ -16,10 +16,10 @@ public class CompanyTermProperty {
 
     public CompanyTermProperty(){}
 
-    public CompanyTermProperty(EPropertyName ePropertyName, Integer value, CompanyTerm companyTerm) {
-        this.name = ePropertyName.name();
+    public CompanyTermProperty(String propertyName, String dept, Integer value, CompanyTerm companyTerm) {
+        this.name = propertyName;
+        this.dept = dept;
         this.value = value;
-        this.dept = ePropertyName.getDept();
         this.companyTerm = companyTerm;
     }
 

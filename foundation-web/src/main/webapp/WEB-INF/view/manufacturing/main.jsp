@@ -71,6 +71,7 @@
             <div class="am-panel am-panel-default">
             <div class="am-panel-bd operation">
                 <h3>工厂1</h3>
+                <b>已完成的生产线</b>
                 <table class="am-table">
                     <thead>
                     <tr>
@@ -79,16 +80,52 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${produceLineResource.currentIndustryResourceChoiceSet}" var="choice" begin="0" end="3">
+                    <c:forEach items="${finishedProduceLineList}" var="line">
+                        <tr>
+                            <td>${line.industryResourceChoice.name}</td>
+                            <td>${line.value}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <b>未完成的生产线</b>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>生产线</th>
+                        <th>生产线类型</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${unFinishedProduceLineList}" var="line">
+                        <tr>
+                            <td>${line.industryResourceChoice.name}</td>
+                            <td>${line.value}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+
+
+                <b>待修建的生产线</b>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>生产线</th>
+                        <th>生产线类型</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${produceLineResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
                             <td>${choice.name}</td>
                             <td>
                                 <select id="instruction_${choice.id}" name="produceLine">
                                     <option value="-1">无</option>
-                                    <option value="1">手工</option>
-                                    <option value="2">半自动</option>
-                                    <option value="3">自动</option>
-                                    <option value="4">柔性</option>
+                                    <option value="${choice.id}#MANUAL">手工</option>
+                                    <option value="${choice.id}#HALF_AUTOMATIC">半自动</option>
+                                    <option value="${choice.id}#AUTOMATIC">自动</option>
+                                    <option value="${choice.id}#FLEXBILITY">柔性</option>
                                 </select>
                             </td>
                         </tr>
@@ -110,11 +147,12 @@
                             <tr>
                                 <td>${choice.name}</td>
                                 <td>
-                                    <select>
-                                        <option>手工</option>
-                                        <option>半自动</option>
-                                        <option>自动</option>
-                                        <option>柔性</option>
+                                    <select id="instruction_${choice.id}" name="produceLine">
+                                        <option value="-1">无</option>
+                                        <option value="${choice.id}_MANUAL">手工</option>
+                                        <option value="${choice.id}_HALF_AUTOMATIC">半自动</option>
+                                        <option value="${choice.id}_AUTOMATIC">自动</option>
+                                        <option value="${choice.id}_FLEXBILITY">柔性</option>
                                     </select>
                                 </td>
                             </tr>
@@ -136,11 +174,12 @@
                             <tr>
                                 <td>${choice.name}</td>
                                 <td>
-                                    <select>
-                                        <option>手工</option>
-                                        <option>半自动</option>
-                                        <option>自动</option>
-                                        <option>柔性</option>
+                                    <select id="instruction_${choice.id}" name="produceLine">
+                                        <option value="-1">无</option>
+                                        <option value="${choice.id}_MANUAL">手工</option>
+                                        <option value="${choice.id}_HALF_AUTOMATIC">半自动</option>
+                                        <option value="${choice.id}_AUTOMATIC">自动</option>
+                                        <option value="${choice.id}_FLEXBILITY">柔性</option>
                                     </select>
                                 </td>
                             </tr>
@@ -168,17 +207,10 @@
         var companyTermId = '${companyTerm.id}';
         var roundType = '${roundType}';
 
-        //产品定位初始值
-        var productStudy = $("select[id='productStudy']").val();
-        if(productStudy){
-            var productStudyArray = productStudy.split("_");
-            makeUniqueInstruction(companyTermId, productStudyArray[0], productStudyArray[1]);
-        }
-
         $("select[id^='instruction']")
                 .change(function () {
                     var $choice = $(this);
-                    var array = $choice.val().split("_");
+                    var array = $choice.val().split("#");
                     var choiceId = array[0];
                     var value = array[1];
                     if (value != -1) {
@@ -197,26 +229,7 @@
                     }
 
                 });
-        //产品定位
-        $("select[id='productStudy']")
-                .change(function () {
-                    var $choice = $(this);
-                    var array = $choice.val().split("_");
-                    var choiceId = array[0];
-                    var value = array[1];
-                    if (value != -1) {
-                        makeUniqueInstruction(companyTermId, choiceId, value);
-                    }
-                });
 
-        function makeUniqueInstruction(companyTermId,choiceId,value) {
-            $.post("<c:url value="/work/makeUniqueInstruction"/>",
-                    {
-                        companyTermId: companyTermId,
-                        choiceId: choiceId,
-                        value: value
-                    });
-        }
 
         $("a[id^='humanInstruction_']").click(function() {
             if(confirm("辞退员工将扣除两个月薪水作为补贴，是否继续？")) {

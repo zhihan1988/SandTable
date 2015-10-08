@@ -40,10 +40,11 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
             for (EPropertyName ePropertyName : EPropertyName.values()) {
                 if (!ePropertyName.equals(EPropertyName.CURRENT_PERIOD_INCOME)) {
                     companyTermContext.put(ePropertyName.name(), 0);
-                    companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, 0, companyTerm));
+                    companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), 0, companyTerm));
                 } else {
                     companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2500000);
-                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2500000, companyTerm));
+                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME.name(),
+                            EPropertyName.CURRENT_PERIOD_INCOME.getDept(), 2500000, companyTerm));
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
@@ -139,7 +140,7 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
         campaignContext.getObservableMap().put(key, roundEndObserable);
     }
 
-    protected void competitiveBidding() {
+    protected void processInstruction() {
 
         Set<IndustryResourceChoice> humanSet = campaignContext.getCurrentTypeIndustryResourceMap().get(EChoiceBaseType.HUMAN.name()).getCurrentIndustryResourceChoiceSet();
         if (humanSet == null || humanSet.size() == 0) return;
@@ -175,6 +176,11 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
             }
         }
 
+        Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
+        companyTermInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+            companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+        });
+
     }
 
     /*private void calculateCompetitionMap(CampaignContext campaignContext) {
@@ -204,7 +210,7 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
             for (EPropertyName ePropertyName : EPropertyName.values()) {
                 String key = ePropertyName.name();
                 Integer value = companyTermContext.get(key);
-                companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
+                companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), value, companyTerm));
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
         }

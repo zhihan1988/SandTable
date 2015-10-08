@@ -101,7 +101,7 @@
                     <td>${choice.name}</td>
                     <td>${choice.type}</td>
                     <td>${choice.value2}</td>
-                    <td><input type="radio" name="orderChoice" value="${choice.id}_${choice.value}"/></td>
+                    <td><input type="radio" name="orderChoice" value="${choice.id}#${choice.value}"/></td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -122,7 +122,7 @@
                 .change(function () {
                     var $choice = $(this);
                     console.info($choice);
-                    var array = $choice.val().split("_");
+                    var array = $choice.val().split("#");
                     var choiceId = array[0];
                     var value = array[1];
                     if (value != -1) {

@@ -1,5 +1,6 @@
-package com.rathink.ie.manufacturing.service;
+package com.rathink.ie.manufacturing.service.impl;
 
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.ibase.account.model.Account;
@@ -7,18 +8,19 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.service.CompanyTermManager;
+import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.service.FlowManager;
+import com.rathink.ie.manufacturing.EManufacturingAccountEntityType;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
+import com.rathink.ie.manufacturing.EManufacturingPropertyName;
+import com.rathink.ie.manufacturing.EProduceLineType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -38,10 +40,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             for (EPropertyName ePropertyName : EPropertyName.values()) {
                 if (!ePropertyName.equals(EPropertyName.CURRENT_PERIOD_INCOME)) {
                     companyTermContext.put(ePropertyName.name(), 0);
-                    companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, 0, companyTerm));
+                    companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), 0, companyTerm));
                 } else {
                     companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2500000);
-                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME, 2500000, companyTerm));
+                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME.name(), EPropertyName.CURRENT_PERIOD_INCOME.getDept(), 2500000, companyTerm));
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
@@ -143,24 +145,44 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
-    protected void competitiveBidding() {
-
-    }
-
-
-    protected void calculateProperty() {
+    protected void processInstruction() {
+        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+            List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+
             List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
-            for (EPropertyName ePropertyName : EPropertyName.values()) {
-                String key = ePropertyName.name();
-                Integer value = companyTermContext.get(key);
-                companyTermPropertyList.add(new CompanyTermProperty(ePropertyName, value, companyTerm));
+            for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
+                Integer instructionDate = companyTermInstruction.getCampaignDate();
+                String lineType = companyTermInstruction.getValue();
+                EProduceLineType eProduceLineType = EProduceLineType.valueOf(lineType);
+                if (currentCampaignDate - instructionDate >= eProduceLineType.getInstallCycle()) {
+                    companyTermInstruction.setStatus(EInstructionStatus.YXZ.name());
+                } else {
+
+                }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
         }
+    }
+
+
+    protected void calculateProperty() {
+
+        /*Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+            List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
+            for (EManufacturingPropertyName ePropertyName : EManufacturingPropertyName.values()) {
+                String key = ePropertyName.name();
+                Integer value = companyTermContext.get(key);
+                companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), value, companyTerm));
+            }
+            companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
+        }*/
     }
 
     protected void calculateAccount() {
@@ -173,40 +195,16 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
 
-            List<CompanyTermInstruction> humanInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EChoiceBaseType.HUMAN.name());
-            Iterator<CompanyTermInstruction> companyInstructionIterator = humanInstructionList.iterator();
-            while (companyInstructionIterator.hasNext()) {
-                CompanyTermInstruction companyTermInstruction = companyInstructionIterator.next();
-                if (companyTermInstruction.getCampaignDate().equals(currentCampaignDate)) {
-                    companyInstructionIterator.remove();
-                }
+            Integer produceLineTotalCost = 0;
+            List<CompanyTermInstruction> instructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+            for (CompanyTermInstruction instruction : instructionList) {
+                EProduceLineType eProduceLineType = EProduceLineType.valueOf(instruction.getValue());
+                Integer cost = eProduceLineType.getCost();
+                produceLineTotalCost += cost;
             }
-            Integer humanFee = instructionManager.sumFee(humanInstructionList) * TIME_UNIT;
-            Account humanAccount = accountManager.packageAccount(String.valueOf(humanFee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(humanAccount);
-
-            Integer adFee = humanFee * 20 / 100 + humanInstructionList.size() * 2000 + 20000;
-            Account adAccount = accountManager.packageAccount(String.valueOf(adFee), EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(adAccount);
-
-            List<CompanyTermInstruction> productFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.PRODUCT_STUDY_FEE.name());
-            Integer productFee = instructionManager.sumFee(productFeeInstructionList);
-            Account productFeeAccount = accountManager.packageAccount(String.valueOf(productFee), EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            Account productFeeAccount = accountManager.packageAccount(String.valueOf(produceLineTotalCost)
+                    , EManufacturingAccountEntityType.PRODUCE_LINE_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(productFeeAccount);
-
-            List<CompanyTermInstruction> marketFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.MARKET_ACTIVITY.name());
-            Integer marketFee = instructionManager.sumFee(marketFeeInstructionList);
-            Account marketFeeAccount = accountManager.packageAccount(String.valueOf(marketFee), EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(marketFeeAccount);
-
-            List<CompanyTermInstruction> operationFeeInstructionList = companyTermContext.listCompanyInstructionByType(EChoiceBaseType.OPERATION.name());
-            Integer operationFee = instructionManager.sumFee(operationFeeInstructionList);
-            Account operationFeeAccount = accountManager.packageAccount(String.valueOf(operationFee), EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(operationFeeAccount);
-
-            Integer currentPeriodIncome = companyTermContext.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
-            Account incomeAccount = accountManager.packageAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
-            accountList.add(incomeAccount);
 
             companyTermContext.setAccountList(accountList);
         }

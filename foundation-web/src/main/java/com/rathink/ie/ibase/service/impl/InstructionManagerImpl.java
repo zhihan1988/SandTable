@@ -140,6 +140,17 @@ public class InstructionManagerImpl implements InstructionManager {
     }
 
     @Override
+    public List<CompanyTermInstruction> listCompanyInstruction(Company company, String baseType, String status) {
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and company.id = :companyId");
+        xQuery.put("baseType", baseType);
+        xQuery.put("status", status);
+        xQuery.put("companyId", company.getId());
+        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
+        return companyTermInstructionList;
+    }
+
+    @Override
     public List<CompanyTermInstruction> listCompanyInstruction(CompanyTerm companyTerm, String baseType) {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and companyTerm.id = :companyTermId");

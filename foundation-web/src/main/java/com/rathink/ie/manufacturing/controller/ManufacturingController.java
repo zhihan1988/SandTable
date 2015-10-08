@@ -88,6 +88,11 @@ public class ManufacturingController {
                 return "/manufacturing/order";
             }
         }
+
+        List<CompanyTermInstruction> unFinishedProduceLineList = instructionManager.listCompanyInstruction(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name(), EInstructionStatus.DQD.getValue());
+        List<CompanyTermInstruction> finishedProduceLineList = instructionManager.listCompanyInstruction(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name(), EInstructionStatus.YXZ.getValue());
+        model.addAttribute("unFinishedProduceLineList", unFinishedProduceLineList);
+        model.addAttribute("finishedProduceLineList", finishedProduceLineList);
         model.addAttribute("produceLineResource", industryResourceMap.get(EManufacturingChoiceBaseType.PRODUCE_LINE.name()));
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";

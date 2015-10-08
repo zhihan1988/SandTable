@@ -81,7 +81,7 @@
                     <td>
                         <select id="instruction_${choice.id}" name="market" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                             <c:forEach items="${fn:split(marketFeeResource.valueSet, ',')}" var="fee">
-                                <option value="${choice.id}_${fee}">${fee}</option>
+                                <option value="${choice.id}#${fee}">${fee}</option>
                             </c:forEach>
                         </select>
                     </td>
@@ -104,7 +104,7 @@
         $("select[id^='instruction']")
                 .change(function () {
                     var $choice = $(this);
-                    var array = $choice.val().split("_");
+                    var array = $choice.val().split("#");
                     var choiceId = array[0];
                     var value = array[1];
                     if (value != -1) {

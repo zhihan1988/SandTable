@@ -69,10 +69,9 @@ public abstract class AbstractFlowManager implements FlowManager {
         //回合结束前
         //收集决策信息
         collectCompanyInstruction(campaignContext);
-        //竞标决策
-        competitiveBidding();
-        //非竞标决策
-        competitiveUnBidding();
+
+        processInstruction();
+
         //计算保存新回合的属性数据
         calculateProperty();
         //4计算保存新回合的财务数据
@@ -170,17 +169,7 @@ public abstract class AbstractFlowManager implements FlowManager {
     /**
      * 处理竞标结果
      */
-    protected abstract void competitiveBidding();
-
-    /**
-     * 处理非竞标结果
-     */
-    protected void competitiveUnBidding() {
-        Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
-        companyTermInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
-            companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
-        });
-    }
+    protected abstract void processInstruction();
 
     /**
      * 计算属性数据
