@@ -19,7 +19,7 @@ public class CampaignContext {
     private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
     //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
     private Map<String, String> expressionMap = new HashMap<>();
-    private Map<String, Observable> observableMap = new HashMap<>();//key campaignDate_roundType
+    private Map<String, Observable> observableMap = new HashMap<>();//key campaignDate:roundType
 
     public void next() {
         currentCompanyTermInstructionSet.clear();

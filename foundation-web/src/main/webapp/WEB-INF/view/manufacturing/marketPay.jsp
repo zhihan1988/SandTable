@@ -153,7 +153,7 @@
                  },
                  function (data) {
                      if (data == 0) {
-                         location.href = '<c:url value="/manufacturing/order?companyTermId="/>' + companyTermId;
+                         location.reload();
                      } else {
                          $("#unFinishedNum").text(data);
                      }

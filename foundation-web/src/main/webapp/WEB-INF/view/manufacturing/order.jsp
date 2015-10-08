@@ -159,12 +159,14 @@
             }
         });
 
-        /*setInterval(getOrderPermission, 5000);
-        function getOrderPermission() {
-            $.post("<c:url value="/flow/isNext"/>",
+        setInterval(isNext, 5000);
+        function isNext() {
+            $.post("<c:url value="/flow/isCampaignNext"/>",
                     {
-                        campaignId:campaignId,
-                        campaignDate: campaignDate
+                        campaignId: campaignId,
+                        companyId: companyId,
+                        campaignDate: campaignDate,
+                        roundType: roundType
                     },
                     function (data) {
                         if (data == 0) {
@@ -174,7 +176,7 @@
                         }
                     });
 
-        }*/
+        }
 
 
     });
