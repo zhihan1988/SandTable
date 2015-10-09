@@ -71,62 +71,39 @@
             <div class="am-panel am-panel-default">
             <div class="am-panel-bd operation">
                 <h3>工厂1</h3>
-                <b>已完成的生产线</b>
                 <table class="am-table">
                     <thead>
                     <tr>
                         <th>生产线</th>
                         <th>生产线类型</th>
+                        <th>生产产品型号</th>
+                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${finishedProduceLineList}" var="line">
+                    <c:forEach items="${companyPartList}" var="line">
                         <tr>
-                            <td>${line.industryResourceChoice.name}</td>
-                            <td>${line.value}</td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-                <b>未完成的生产线</b>
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>生产线</th>
-                        <th>生产线类型</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${unFinishedProduceLineList}" var="line">
-                        <tr>
-                            <td>${line.industryResourceChoice.name}</td>
-                            <td>${line.value}</td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-
-
-                <b>待修建的生产线</b>
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>生产线</th>
-                        <th>生产线类型</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${produceLineResource.currentIndustryResourceChoiceSet}" var="choice">
-                        <tr>
-                            <td>${choice.name}</td>
+                            <td>${line.name}</td>
                             <td>
-                                <select id="instruction_${choice.id}" name="produceLine">
+                                <select id="lineType_${part.id}" name="lineType">
                                     <option value="-1">无</option>
-                                    <option value="${choice.id}#MANUAL">手工</option>
-                                    <option value="${choice.id}#HALF_AUTOMATIC">半自动</option>
-                                    <option value="${choice.id}#AUTOMATIC">自动</option>
-                                    <option value="${choice.id}#FLEXBILITY">柔性</option>
+                                    <option value="${line.id}#MANUAL">手工</option>
+                                    <option value="${line.id}#HALF_AUTOMATIC">半自动</option>
+                                    <option value="${line.id}#AUTOMATIC">自动</option>
+                                    <option value="${line.id}#FLEXBILITY">柔性</option>
                                 </select>
+                            </td>
+                            <td>
+                                <select id="produceType_${part.id}" name="produceType">
+                                    <option value="-1">无</option>
+                                    <option value="${line.id}#P1">P1</option>
+                                    <option value="${line.id}#P1">P2</option>
+                                    <option value="${line.id}#P3">P3</option>
+                                    <option value="${line.id}#P4">P4</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button id="build_${part.id}" type="button" class="am-btn am-btn-secondary">建造</button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -207,43 +184,24 @@
         var companyTermId = '${companyTerm.id}';
         var roundType = '${roundType}';
 
-        $("select[id^='instruction']")
-                .change(function () {
-                    var $choice = $(this);
-                    var array = $choice.val().split("#");
-                    var choiceId = array[0];
-                    var value = array[1];
-                    if (value != -1) {
-                        $.post("<c:url value="/work/makeInstruction"/>",
-                                {
-                                    companyTermId: companyTermId,
-                                    choiceId: choiceId,
-                                    value: value
-                                });
-                    } else {
-                        $.post("<c:url value="/work/cancelInstruction"/>",
-                                {
-                                    companyId: companyId,
-                                    choiceId: choiceId
-                                });
-                    }
 
-                });
+        $("#build_").click(function(){
+            var $build = $(this);
+            var partId = $build.attr("id").split("_")[1];
+            var lineType = $("#lineType_" + partId).val();
+            var produceType = $("#produceType_" + partId).val();
+            if(lineType == -1) {
+                alert("请选择生产线类型");
+            } else if(produceType == -1) {
+                alert("请选择生产的产品类型");
+            } else {
+                //开始建造
 
-
-        $("a[id^='humanInstruction_']").click(function() {
-            if(confirm("辞退员工将扣除两个月薪水作为补贴，是否继续？")) {
-                var $humanInstruction = $(this);
-                var instructionId = $humanInstruction.attr("id").split("_")[1];
-                $.post("<c:url value="/work/fire"/>",
-                        {
-                            instructionId: instructionId
-                        },function(data) {
-                            $humanInstruction.after("<span>已辞退</span>");
-                            $humanInstruction.remove();
-                        });
             }
         })
+
+
+
 
         $("#endCampaignDate").click(function () {
             if(confirm("是否结束当前回合的操作？")) {
@@ -256,7 +214,6 @@
                             roundType: roundType
                         },
                         function (data) {
-//                            $endCampaignDate.addClass("am-disabled");
                             $endCampaignDate.hide();
                         }
                 );

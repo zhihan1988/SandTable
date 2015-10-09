@@ -1,14 +1,14 @@
 package com.rathink.ie.manufacturing.service.impl;
 
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.service.InstructionManager;
+import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
@@ -17,7 +17,7 @@ import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.manufacturing.EManufacturingAccountEntityType;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
-import com.rathink.ie.manufacturing.EManufacturingPropertyName;
+import com.rathink.ie.manufacturing.EManufacturingPartStatus;
 import com.rathink.ie.manufacturing.EProduceLineType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,34 @@ import java.util.*;
 @Service(value = "manufacturingFlowManagerImpl")
 public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingFlowManagerImpl.class);
+
+    @Override
+    protected void initPartList() {
+
+        String industryId = campaignContext.getCampaign().getIndustry().getId();
+        IndustryResource produceLineResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+        List<IndustryResourceChoice> produceLineList = industryResourceChoiceManager.listIndustryResourceChoice(produceLineResource.getId());
+
+        Map<String, List<CompanyPart>> companyPartMap = campaignContext.getCompanyPartMap();
+        for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+            Company company = companyTermContext.getCompanyTerm().getCompany();
+
+            List<CompanyPart> companyPartList = new ArrayList<>();
+            for (IndustryResourceChoice produceLine : produceLineList) {
+                CompanyPart companyPart = new CompanyPart();
+                companyPart.setStatus(EManufacturingPartStatus.UN_USE.name());
+                companyPart.setBaseType(produceLineResource.getName());
+                companyPart.setDept(produceLineResource.getDept());
+//            companyPart.setDependence();
+                companyPart.setCampaign(campaignContext.getCampaign());
+                companyPart.setCompany(company);
+                companyPart.setName(produceLine.getName());
+                companyPartList.add(companyPart);
+            }
+            companyPartMap.put(company.getId(), companyPartList);
+        }
+
+    }
 
     @Override
     protected void initPropertyList() {

@@ -1,6 +1,5 @@
 package com.rathink.ie.internet.service.impl;
 
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.util.RandomUtil;
@@ -16,7 +15,6 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.internet.service.FlowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,11 @@ import java.util.stream.Collectors;
 public class InternetFlowManagerImpl extends AbstractFlowManager {
     private static Logger logger = LoggerFactory.getLogger(InternetFlowManagerImpl.class);
 
+
+    @Override
+    protected void initPartList() {
+
+    }
 
     @Override
     protected void initPropertyList() {

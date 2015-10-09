@@ -1,6 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ public class CampaignContext {
     //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
     private Map<String, String> expressionMap = new HashMap<>();
     private Map<String, Observable> observableMap = new HashMap<>();//key campaignDate:roundType
+    private Map<String, List<CompanyPart>> companyPartMap = new HashMap<>();
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -95,6 +97,14 @@ public class CampaignContext {
 
     public Map<String, Observable> getObservableMap() {
         return observableMap;
+    }
+
+    public Map<String, List<CompanyPart>> getCompanyPartMap() {
+        return companyPartMap;
+    }
+
+    public void setCompanyPartMap(Map<String, List<CompanyPart>> companyPartMap) {
+        this.companyPartMap = companyPartMap;
     }
 }
 

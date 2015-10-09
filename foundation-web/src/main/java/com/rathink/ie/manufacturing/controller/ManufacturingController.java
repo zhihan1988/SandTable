@@ -1,19 +1,16 @@
 package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.base.service.BaseManager;
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.controller.BaseIndustryController;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.*;
+import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
-import com.rathink.ie.internet.EChoiceBaseType;
-import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.ERoundType;
-import com.rathink.ie.internet.service.FlowManager;
 import com.rathink.ie.internet.service.InternetWorkManager;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingRoundType;
@@ -23,32 +20,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
 
 /**
  * Created by Hean on 2015/10/7.
  */
 @Controller
 @RequestMapping("/manufacturing")
-public class ManufacturingController {
+public class ManufacturingController extends BaseIndustryController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
+
+   /* @Autowired
+    protected BaseManager baseManager;
     @Autowired
-    private BaseManager baseManager;
+    protected CampaignManager campaignManager;
     @Autowired
-    private CampaignManager campaignManager;
+    protected CompanyTermManager companyTermManager;
     @Autowired
-    private CompanyTermManager companyTermManager;
+    protected InstructionManager instructionManager;
     @Autowired
-    private InstructionManager instructionManager;
+    protected AccountManager accountManager;
     @Autowired
-    private AccountManager accountManager;
+    protected PropertyManager propertyManager;
     @Autowired
-    private PropertyManager propertyManager;
+    protected InternetWorkManager internetWorkManager;
     @Autowired
-    private InternetWorkManager internetWorkManager;
+    protected CompanyPartManager companyPartManager;*/
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -89,10 +90,8 @@ public class ManufacturingController {
             }
         }
 
-        List<CompanyTermInstruction> unFinishedProduceLineList = instructionManager.listCompanyInstruction(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name(), EInstructionStatus.DQD.getValue());
-        List<CompanyTermInstruction> finishedProduceLineList = instructionManager.listCompanyInstruction(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name(), EInstructionStatus.YXZ.getValue());
-        model.addAttribute("unFinishedProduceLineList", unFinishedProduceLineList);
-        model.addAttribute("finishedProduceLineList", finishedProduceLineList);
+        List<CompanyPart> companyPartList = companyPartManager.companyPartList(company);
+        model.addAttribute("companyPartList", companyPartList);
         model.addAttribute("produceLineResource", industryResourceMap.get(EManufacturingChoiceBaseType.PRODUCE_LINE.name()));
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";

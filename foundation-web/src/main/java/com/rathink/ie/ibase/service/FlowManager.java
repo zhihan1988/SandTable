@@ -1,4 +1,4 @@
-package com.rathink.ie.internet.service;
+package com.rathink.ie.ibase.service;
 
 /**
  * Created by Hean on 2015/9/4.

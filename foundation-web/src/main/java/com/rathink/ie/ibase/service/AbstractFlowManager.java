@@ -10,11 +10,10 @@ import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
+import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryExpression;
 import com.rathink.ie.internet.EAccountEntityType;
-import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.service.FlowManager;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -125,6 +124,7 @@ public abstract class AbstractFlowManager implements FlowManager {
             companyTermHandlerMap.put(company.getId(), companyTermContext);
         }
 
+        initPartList();
         initPropertyList();
         initAccountList();
 
@@ -143,6 +143,7 @@ public abstract class AbstractFlowManager implements FlowManager {
         }
     }
 
+    protected abstract void initPartList();
     /**
      * 在比赛开始时 初始化起始属性数据
      */
@@ -226,6 +227,8 @@ public abstract class AbstractFlowManager implements FlowManager {
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(), company);
+            List<CompanyPart> companyPartList = campaignContext.getCompanyPartMap().get(companyId);
+            companyPartList.forEach(companyPart -> baseManager.saveOrUpdate(CompanyPart.class.getName(), companyPart));
         }
     }
 
@@ -277,6 +280,15 @@ public abstract class AbstractFlowManager implements FlowManager {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
         Session session = sessionFactory.getCurrentSession();
+
+        //删除所有part
+        XQuery partQuery = new XQuery();
+        partQuery.setHql("from CompanyPart where campaign.id = :campaignId");
+        partQuery.put("campaignId", campaign.getId());
+        List<CompanyPart> companyPartList = baseManager.listObject(partQuery);
+        if (companyPartList != null) {
+            companyPartList.forEach(session::delete);
+        }
 
         //删除所有决策信息
         XQuery instructionQuery = new XQuery();
