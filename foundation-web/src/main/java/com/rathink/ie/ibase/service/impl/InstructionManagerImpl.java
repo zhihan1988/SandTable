@@ -4,16 +4,14 @@ import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
-import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermManager;
+import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
-import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.ibase.service.InstructionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +51,7 @@ public class InstructionManagerImpl implements InstructionManager {
             companyTermInstruction.setIndustryResourceChoice(industryResourceChoice);
             companyTermInstruction.setIndustryResource(industryResourceChoice.getIndustryResource());
             companyTermInstruction.setBaseType(industryResource.getName());
-            companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
+            companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
             companyTermInstruction.setDept(industryResource.getDept());
         }
         companyTermInstruction.setValue(value);
@@ -80,7 +78,7 @@ public class InstructionManagerImpl implements InstructionManager {
             companyTermInstruction.setCompanyTerm(companyTerm);
             companyTermInstruction.setIndustryResource(industryResource);
             companyTermInstruction.setBaseType(industryResource.getName());
-            companyTermInstruction.setStatus(EInstructionStatus.DQD.getValue());
+            companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
             companyTermInstruction.setDept(industryResource.getDept());
         }
         companyTermInstruction.setValue(value);
@@ -109,7 +107,7 @@ public class InstructionManagerImpl implements InstructionManager {
         xQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId and baseType = :baseType and  status=:status");
         xQuery.put("campaignId", campaign.getId());
         xQuery.put("baseType", baseType);
-        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("status", EInstructionStatus.UN_PROCESS.getValue());
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
     }
@@ -122,7 +120,7 @@ public class InstructionManagerImpl implements InstructionManager {
         xQuery.put("campaignId", campaign.getId());
         xQuery.put("campaignDate", campaignDate);
         xQuery.put("baseType", baseType);
-        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("status", EInstructionStatus.UN_PROCESS.getValue());
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
     }
@@ -133,7 +131,7 @@ public class InstructionManagerImpl implements InstructionManager {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and company.id = :companyId");
         xQuery.put("baseType", baseType);
-        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("status", EInstructionStatus.UN_PROCESS.getValue());
         xQuery.put("companyId", company.getId());
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;
@@ -155,7 +153,7 @@ public class InstructionManagerImpl implements InstructionManager {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTermInstruction where baseType = :baseType and  status=:status and companyTerm.id = :companyTermId");
         xQuery.put("baseType", baseType);
-        xQuery.put("status", EInstructionStatus.YXZ.getValue());
+        xQuery.put("status", EInstructionStatus.UN_PROCESS.getValue());
         xQuery.put("companyTermId", companyTerm.getId());
         List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(xQuery);
         return companyTermInstructionList;

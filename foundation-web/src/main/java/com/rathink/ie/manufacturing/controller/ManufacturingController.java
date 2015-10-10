@@ -11,17 +11,25 @@ import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.internet.EChoiceBaseType;
+import com.rathink.ie.internet.EInstructionStatus;
+import com.rathink.ie.internet.Edept;
 import com.rathink.ie.internet.service.InternetWorkManager;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
+import com.rathink.ie.manufacturing.EManufacturingDept;
 import com.rathink.ie.manufacturing.EManufacturingRoundType;
+import com.rathink.ie.manufacturing.EProduceLineType;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -34,22 +42,6 @@ import java.util.Observable;
 public class ManufacturingController extends BaseIndustryController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
 
-   /* @Autowired
-    protected BaseManager baseManager;
-    @Autowired
-    protected CampaignManager campaignManager;
-    @Autowired
-    protected CompanyTermManager companyTermManager;
-    @Autowired
-    protected InstructionManager instructionManager;
-    @Autowired
-    protected AccountManager accountManager;
-    @Autowired
-    protected PropertyManager propertyManager;
-    @Autowired
-    protected InternetWorkManager internetWorkManager;
-    @Autowired
-    protected CompanyPartManager companyPartManager;*/
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -97,24 +89,37 @@ public class ManufacturingController extends BaseIndustryController {
         return "/manufacturing/main";
     }
 
-    /*@RequestMapping("/order")
-    public String order(HttpServletRequest request, Model model) throws Exception {
+    @RequestMapping("/buildProduceLine")
+    @ResponseBody
+    public Map processInstruction(HttpServletRequest request, Model model) throws Exception {
         String companyTermId = request.getParameter("companyTermId");
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        List<CompanyTermInstruction> marketFeeInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCampaign()
-                , companyTerm.getCampaignDate(), EManufacturingChoiceBaseType.MARKET_FEE.name());
-        marketFeeInstructionList.sort((o1, o2) -> Integer.valueOf(o1.getValue()) - Integer.valueOf(o2.getValue()));
-        model.addAttribute("marketFeeInstructionList", marketFeeInstructionList);
+        String partId = request.getParameter("partId");
+        String produceType = request.getParameter("produceType");
+        String lineType = request.getParameter("lineType");
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(companyTerm.getCampaign().getId());
-        Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
-        model.addAttribute("marketOrderResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
-        model.addAttribute("company", companyTerm.getCompany());
-        model.addAttribute("campaign", companyTerm.getCampaign());
-        model.addAttribute("companyTerm", companyTerm);
-        model.addAttribute("companyNum", campaignContext.getCompanyTermContextMap().size());
-        model.addAttribute("roundType", EManufacturingRoundType.ORDER_ROUND.name());
-        return "/manufacturing/order";
-    }*/
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        CompanyPart companyPart = (CompanyPart) baseManager.getObject(CompanyPart.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(companyPart);
+        companyTermInstruction.setValue(produceType + ";" + lineType);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        companyPart.setStatus(EInstructionStatus.UN_PROCESS.name());
+        companyPart.setValue(lineType);
+        companyPart.setValue2(produceType);
+        baseManager.saveOrUpdate(CompanyPart.class.getName(), companyPart);
+
+        EProduceLineType eProduceLineType = EProduceLineType.valueOf(lineType);
+        Integer installCycle = eProduceLineType.getInstallCycle();
+
+        Map result = new HashMap<>();
+        result.put("installCycle", installCycle);
+        return result;
+    }
 
 }

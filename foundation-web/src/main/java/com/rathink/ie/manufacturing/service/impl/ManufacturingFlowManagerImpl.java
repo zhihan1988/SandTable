@@ -46,7 +46,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             List<CompanyPart> companyPartList = new ArrayList<>();
             for (IndustryResourceChoice produceLine : produceLineList) {
                 CompanyPart companyPart = new CompanyPart();
-                companyPart.setStatus(EManufacturingPartStatus.UN_USE.name());
+                companyPart.setStatus(EManufacturingPartStatus.NOT_OWNED.name());
                 companyPart.setBaseType(produceLineResource.getName());
                 companyPart.setDept(produceLineResource.getDept());
 //            companyPart.setDependence();
@@ -149,7 +149,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
                     for (CompanyTerm companyTerm : companyTermList) {
                         CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_FEE.name());
-                        companyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
                     }
                 }
@@ -164,7 +164,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
                     for (CompanyTerm companyTerm : companyTermList) {
                         CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_ORDER.name());
-                        companyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
                     }
                 }
@@ -187,7 +187,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 String lineType = companyTermInstruction.getValue();
                 EProduceLineType eProduceLineType = EProduceLineType.valueOf(lineType);
                 if (currentCampaignDate - instructionDate >= eProduceLineType.getInstallCycle()) {
-                    companyTermInstruction.setStatus(EInstructionStatus.YXZ.name());
+                    companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.name());
                 } else {
 
                 }

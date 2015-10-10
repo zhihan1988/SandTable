@@ -80,6 +80,7 @@
                     <td>${choice.value}</td>
                     <td>
                         <select id="instruction_${choice.id}" name="market" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                            <option value="${choice.id}#-1">未选择</option>
                             <c:forEach items="${fn:split(marketFeeResource.valueSet, ',')}" var="fee">
                                 <option value="${choice.id}#${fee}">${fee}</option>
                             </c:forEach>

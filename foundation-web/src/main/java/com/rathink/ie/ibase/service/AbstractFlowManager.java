@@ -281,24 +281,6 @@ public abstract class AbstractFlowManager implements FlowManager {
         SessionFactory sessionFactory = (SessionFactory) ApplicationContextUtil.getApplicationContext().getBean("sessionFactory");
         Session session = sessionFactory.getCurrentSession();
 
-        //删除所有part
-        XQuery partQuery = new XQuery();
-        partQuery.setHql("from CompanyPart where campaign.id = :campaignId");
-        partQuery.put("campaignId", campaign.getId());
-        List<CompanyPart> companyPartList = baseManager.listObject(partQuery);
-        if (companyPartList != null) {
-            companyPartList.forEach(session::delete);
-        }
-
-        //删除所有决策信息
-        XQuery instructionQuery = new XQuery();
-        instructionQuery.setHql("from CompanyTermInstruction where campaign.id = :campaignId");
-        instructionQuery.put("campaignId", campaign.getId());
-        List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(instructionQuery);
-        if (companyTermInstructionList != null) {
-            companyTermInstructionList.forEach(session::delete);
-        }
-
         //删除所有属性信息 及财务信息
         XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where campaign.id = :campaignId");
@@ -321,7 +303,25 @@ public abstract class AbstractFlowManager implements FlowManager {
                     accountList.forEach(session::delete);
                 }
                 session.delete(companyTerm);
+
+                //删除所有决策信息
+                XQuery instructionQuery = new XQuery();
+                instructionQuery.setHql("from CompanyTermInstruction where companyTerm.id = :companyTermId");
+                instructionQuery.put("companyTermId", companyTerm.getId());
+                List<CompanyTermInstruction> companyTermInstructionList = baseManager.listObject(instructionQuery);
+                if (companyTermInstructionList != null) {
+                    companyTermInstructionList.forEach(session::delete);
+                }
             }
+        }
+
+        //删除所有part
+        XQuery partQuery = new XQuery();
+        partQuery.setHql("from CompanyPart where campaign.id = :campaignId");
+        partQuery.put("campaignId", campaign.getId());
+        List<CompanyPart> companyPartList = baseManager.listObject(partQuery);
+        if (companyPartList != null) {
+            companyPartList.forEach(session::delete);
         }
 
         campaign.setCurrentCampaignDate(0);

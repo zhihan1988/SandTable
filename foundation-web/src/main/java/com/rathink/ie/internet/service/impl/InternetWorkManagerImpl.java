@@ -46,7 +46,7 @@ public class InternetWorkManagerImpl implements InternetWorkManager {
         CompanyTerm companyTerm = companyTermManager.getCompanyTerm(company.getId(), company.getCurrentCampaignDate());
         Account account = accountManager.packageAccount(String.valueOf(fee), EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
-        companyTermInstruction.setStatus(EInstructionStatus.YSC.getValue());
+        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
     }
 

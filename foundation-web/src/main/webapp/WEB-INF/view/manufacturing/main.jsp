@@ -75,8 +75,8 @@
                     <thead>
                     <tr>
                         <th>生产线</th>
-                        <th>生产线类型</th>
-                        <th>生产产品型号</th>
+                        <th>类型</th>
+                        <th>产品型号</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -84,26 +84,36 @@
                     <c:forEach items="${companyPartList}" var="line">
                         <tr>
                             <td>${line.name}</td>
-                            <td>
-                                <select id="lineType_${part.id}" name="lineType">
+                            <td id="td_lineType_${line.id}">
+                                <select id="lineType_${line.id}" name="lineType">
                                     <option value="-1">无</option>
-                                    <option value="${line.id}#MANUAL">手工</option>
-                                    <option value="${line.id}#HALF_AUTOMATIC">半自动</option>
-                                    <option value="${line.id}#AUTOMATIC">自动</option>
-                                    <option value="${line.id}#FLEXBILITY">柔性</option>
+                                    <option value="MANUAL">手工</option>
+                                    <option value="HALF_AUTOMATIC">半自动</option>
+                                    <option value="AUTOMATIC">自动</option>
+                                    <option value="FLEXBILITY">柔性</option>
                                 </select>
                             </td>
-                            <td>
-                                <select id="produceType_${part.id}" name="produceType">
+                            <td id="td_produceType_${line.id}">
+                                <select id="produceType_${line.id}" name="produceType">
                                     <option value="-1">无</option>
-                                    <option value="${line.id}#P1">P1</option>
-                                    <option value="${line.id}#P1">P2</option>
-                                    <option value="${line.id}#P3">P3</option>
-                                    <option value="${line.id}#P4">P4</option>
+                                    <option value="P1">P1</option>
+                                    <option value="P1">P2</option>
+                                    <option value="P3">P3</option>
+                                    <option value="P4">P4</option>
                                 </select>
                             </td>
-                            <td>
-                                <button id="build_${part.id}" type="button" class="am-btn am-btn-secondary">建造</button>
+                            <td id="operation_${line.id}">
+                                <c:choose>
+                                    <c:when test="${line.status == 'NOT_OWNED'}">
+                                        <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">建造</button>
+                                    </c:when>
+                                    <c:when test="${line.status == 'FREE'}">
+                                        <button id="produce_${line.id}" type="button" class="am-btn am-btn-secondary">生产</button>
+                                    </c:when>
+                                    <c:when test="${line.status == 'USING'}">
+                                        <button id="rebuild_${line.id}" type="button" class="am-btn am-btn-secondary">改造</button>
+                                    </c:when>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>
@@ -185,7 +195,7 @@
         var roundType = '${roundType}';
 
 
-        $("#build_").click(function(){
+        $("button[id^='build_']").click(function(){
             var $build = $(this);
             var partId = $build.attr("id").split("_")[1];
             var lineType = $("#lineType_" + partId).val();
@@ -195,13 +205,35 @@
             } else if(produceType == -1) {
                 alert("请选择生产的产品类型");
             } else {
-                //开始建造
 
+                //开始建造
+                $.getJSON("<c:url value="/manufacturing/buildProduceLine.do"/>",
+                        {
+                            companyTermId: companyTermId,
+                            partId: partId,
+                            lineType: lineType,
+                            produceType: produceType
+                        },
+                        function(data){
+                            //建造结果
+                            var installCycle = data.installCycle;
+                            if(installCycle == 0) {
+                                //建造完成
+                               var $operationDiv = $('#operation_' + partId);
+                                var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
+                                $operationDiv.html($button);
+                                $("#lineType_" + partId).attr("disabled",true);
+                                $("#produceType_" + partId).attr("disabled",true);
+                            } else {
+                                $('#operation_' + partId).html("建造中");
+                            }
+                        });
             }
         })
 
-
-
+        $("button[id^='produce_']").click(function(){
+            alert(123);
+        })
 
         $("#endCampaignDate").click(function () {
             if(confirm("是否结束当前回合的操作？")) {

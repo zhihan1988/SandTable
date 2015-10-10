@@ -121,7 +121,6 @@
         $("input[name='orderChoice']")
                 .change(function () {
                     var $choice = $(this);
-                    console.info($choice);
                     var array = $choice.val().split("#");
                     var choiceId = array[0];
                     var value = array[1];

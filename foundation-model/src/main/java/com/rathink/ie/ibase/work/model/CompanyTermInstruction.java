@@ -15,12 +15,16 @@ public class CompanyTermInstruction {
     private String id;
     private String status;
     private String baseType;
+    @Deprecated
     private Integer campaignDate;
+    @Deprecated
     private Campaign campaign;
+    @Deprecated
     private Company company;
     private String dept;
     private IndustryResource industryResource;
     private IndustryResourceChoice industryResourceChoice;
+    private CompanyPart companyPart;
     private String value;
     private User creator;
     private CompanyTerm companyTerm;
@@ -53,32 +57,32 @@ public class CompanyTermInstruction {
     public void setBaseType(String baseType) {
         this.baseType = baseType;
     }
-
+    @Deprecated
     @Column(name = "campaign_date")
     public Integer getCampaignDate() {
         return campaignDate;
     }
-
+    @Deprecated
     public void setCampaignDate(Integer campaignDate) {
         this.campaignDate = campaignDate;
     }
-
+    @Deprecated
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id")
     public Campaign getCampaign() {
         return campaign;
     }
-
+    @Deprecated
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
     }
-
+    @Deprecated
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     public Company getCompany() {
         return company;
     }
-
+    @Deprecated
     public void setCompany(Company company) {
         this.company = company;
     }
@@ -110,6 +114,16 @@ public class CompanyTermInstruction {
 
     public void setIndustryResourceChoice(IndustryResourceChoice industryResourceChoice) {
         this.industryResourceChoice = industryResourceChoice;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_part_id")
+    public CompanyPart getCompanyPart() {
+        return companyPart;
+    }
+
+    public void setCompanyPart(CompanyPart companyPart) {
+        this.companyPart = companyPart;
     }
 
     @Column(name = "value")

@@ -168,20 +168,20 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
                         successCompanyTermInstruction = companyTermInstruction;
                     }
                 }
-                successCompanyTermInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+                successCompanyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 //保存选中的
 //                baseManager.saveOrUpdate(CompanyInstruction.class.getName(), successCompanyInstruction);
                 //保存未选中的
-                companyTermInstructionList.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
-                    companyInstruction.setStatus(EInstructionStatus.WXZ.getValue());
+                companyTermInstructionList.stream().filter(companyInstruction -> EInstructionStatus.UN_PROCESS.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+                    companyInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
 //                    baseManager.saveOrUpdate(CompanyInstruction.class.getName(), companyInstruction);
                 });
             }
         }
 
         Set<CompanyTermInstruction> companyTermInstructionSet = campaignContext.getCurrentCompanyTermInstructionSet();
-        companyTermInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.DQD.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
-            companyInstruction.setStatus(EInstructionStatus.YXZ.getValue());
+        companyTermInstructionSet.stream().filter(companyInstruction -> EInstructionStatus.UN_PROCESS.getValue().equals(companyInstruction.getStatus())).forEach(companyInstruction -> {
+            companyInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
         });
 
     }

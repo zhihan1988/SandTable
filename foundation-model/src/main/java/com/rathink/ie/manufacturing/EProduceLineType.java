@@ -4,8 +4,16 @@ package com.rathink.ie.manufacturing;
  * Created by Hean on 2015/10/8.
  */
 public enum EProduceLineType {
-    MANUAL,AUTOMATIC,HALF_AUTOMATIC,FLEXBILITY;
+    MANUAL(1,0,1,1,1,1),AUTOMATIC(1,2,1,1,1,1),HALF_AUTOMATIC(1,1,1,1,1,1), FLEXBILITY(1, 3, 1, 1, 1, 1),;
 
+    EProduceLineType(Integer cost, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
+        this.cost = cost;
+        this.installCycle = installCycle;
+        this.produceCycle = produceCycle;
+        this.transferCycle = transferCycle;
+        this.mainternanceFee = mainternanceFee;
+        this.sellValue = sellValue;
+    }
     private Integer cost;//购买价格
     private Integer installCycle;//安装周期
     private Integer produceCycle;//生产周期
