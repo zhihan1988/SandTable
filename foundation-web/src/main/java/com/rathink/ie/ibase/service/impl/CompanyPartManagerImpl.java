@@ -19,10 +19,11 @@ public class CompanyPartManagerImpl implements CompanyPartManager {
     private BaseManager baseManager;
 
     @Override
-    public List<CompanyPart> companyPartList(Company company) {
+    public List<CompanyPart> listCompanyPart(Company company, String baseType) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from CompanyPart where company.id = :companyId");
+        xQuery.setHql("from CompanyPart where company.id = :companyId and baseType = :baseType");
         xQuery.put("companyId", company.getId());
+        xQuery.put("baseType", baseType);
         List<CompanyPart> companyPartList = baseManager.listObject(xQuery);
         return companyPartList;
     }

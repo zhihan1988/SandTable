@@ -11,20 +11,22 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "company_part")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "base_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = "COMPANY_PART")
 public class CompanyPart {
     private String id;
-    private String status;
-    private String baseType;
+//    private String baseType;
     private String dept;
-    private String dependence;
     private Campaign campaign;
     private Company company;
     private String name;
-    private String value;
-    private String value2;
-    private String value3;
-    private String value4;
-    private String value5;
+    private String status;
+//    private String value;
+//    private String value2;
+//    private String value3;
+//    private String value4;
+//    private String value5;
 
 
     @Id
@@ -47,14 +49,14 @@ public class CompanyPart {
         this.status = status;
     }
 
-    @Column(name = "base_type")
+/*    @Column(name = "base_type")
     public String getBaseType() {
         return baseType;
     }
 
     public void setBaseType(String baseType) {
         this.baseType = baseType;
-    }
+    }*/
 
     @Column(name = "dept")
     public String getDept() {
@@ -63,15 +65,6 @@ public class CompanyPart {
 
     public void setDept(String dept) {
         this.dept = dept;
-    }
-
-    @Column(name = "dependence")
-    public String getDependence() {
-        return dependence;
-    }
-
-    public void setDependence(String dependence) {
-        this.dependence = dependence;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -103,48 +96,48 @@ public class CompanyPart {
         this.name = name;
     }
 
-    @Column(name = "value")
-    public String getValue() {
+   /* @Column(name = "value")
+    protected String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    protected void setValue(String value) {
         this.value = value;
     }
 
     @Column(name = "value2")
-    public String getValue2() {
+    protected String getValue2() {
         return value2;
     }
 
-    public void setValue2(String value2) {
+    protected void setValue2(String value2) {
         this.value2 = value2;
     }
 
     @Column(name = "value3")
-    public String getValue3() {
+    protected String getValue3() {
         return value3;
     }
 
-    public void setValue3(String value3) {
+    protected void setValue3(String value3) {
         this.value3 = value3;
     }
 
     @Column(name = "value4")
-    public String getValue4() {
+    protected String getValue4() {
         return value4;
     }
 
-    public void setValue4(String value4) {
+    protected void setValue4(String value4) {
         this.value4 = value4;
     }
 
     @Column(name = "value5")
-    public String getValue5() {
+    protected String getValue5() {
         return value5;
     }
 
-    public void setValue5(String value5) {
+    protected void setValue5(String value5) {
         this.value5 = value5;
-    }
+    }*/
 }

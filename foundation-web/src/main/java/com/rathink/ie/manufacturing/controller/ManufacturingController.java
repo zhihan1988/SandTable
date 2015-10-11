@@ -1,8 +1,6 @@
 package com.rathink.ie.manufacturing.controller;
 
-import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
@@ -11,18 +9,11 @@ import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
-import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.internet.Edept;
-import com.rathink.ie.internet.service.InternetWorkManager;
-import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
-import com.rathink.ie.manufacturing.EManufacturingDept;
-import com.rathink.ie.manufacturing.EManufacturingRoundType;
-import com.rathink.ie.manufacturing.EProduceLineType;
-import org.apache.commons.lang.StringUtils;
+import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.model.ProduceLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,8 +73,10 @@ public class ManufacturingController extends BaseIndustryController {
             }
         }
 
-        List<CompanyPart> companyPartList = companyPartManager.companyPartList(company);
-        model.addAttribute("companyPartList", companyPartList);
+        List<CompanyPart> produceLineList = baseManager.listObject("from CompanyPart");
+//        List<CompanyPart> materialList = companyPartManager.listCompanyPart(company, EManufacturingChoiceBaseType.MATERIAL.name());
+        model.addAttribute("produceLineList", produceLineList);
+//        model.addAttribute("materialList", materialList);
         model.addAttribute("produceLineResource", industryResourceMap.get(EManufacturingChoiceBaseType.PRODUCE_LINE.name()));
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";
@@ -98,21 +91,21 @@ public class ManufacturingController extends BaseIndustryController {
         String lineType = request.getParameter("lineType");
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        CompanyPart companyPart = (CompanyPart) baseManager.getObject(CompanyPart.class.getName(), partId);
+        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), partId);
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
         companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCE_LINE.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(companyPart);
+        companyTermInstruction.setCompanyPart(produceLine);
         companyTermInstruction.setValue(produceType + ";" + lineType);
         companyTermInstruction.setCompanyTerm(companyTerm);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
-        companyPart.setStatus(EInstructionStatus.UN_PROCESS.name());
-        companyPart.setValue(lineType);
-        companyPart.setValue2(produceType);
-        baseManager.saveOrUpdate(CompanyPart.class.getName(), companyPart);
+        produceLine.setStatus(ProduceLine.Status.FREE.name());
+        produceLine.setProduceLineType(lineType);
+        produceLine.setProduceType(produceType);
+        baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
 
         EProduceLineType eProduceLineType = EProduceLineType.valueOf(lineType);
         Integer installCycle = eProduceLineType.getInstallCycle();

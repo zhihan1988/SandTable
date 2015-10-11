@@ -9,5 +9,5 @@ import java.util.List;
  * Created by Hean on 2015/10/9.
  */
 public interface CompanyPartManager {
-    List<CompanyPart> companyPartList(Company company);
+    List<CompanyPart> listCompanyPart(Company company, String baseType);
 }

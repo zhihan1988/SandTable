@@ -64,6 +64,7 @@
 <div data-am-widget="tabs" class="am-tabs am-tabs-d2" style="margin: 0">
     <ul class="am-tabs-nav am-cf">
         <li class="am-active"><a id="panel-0" href="[data-tab-panel-0]">工厂</a></li>
+        <li class="am-active"><a id="panel-1" href="[data-tab-panel-0]">原料</a></li>
     </ul>
     <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
     <div class="am-tabs-bd">
@@ -81,7 +82,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${companyPartList}" var="line">
+                    <c:forEach items="${produceLineList}" var="line">
                         <tr>
                             <td>${line.name}</td>
                             <td id="td_lineType_${line.id}">
@@ -120,59 +121,12 @@
                     </tbody>
                 </table>
             </div>
-                <div class="am-panel-bd operation">
-                    <h3>工厂2</h3>
-                    <table class="am-table">
-                        <thead>
-                        <tr>
-                            <th>生产线</th>
-                            <th>生产线类型</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${produceLineResource.currentIndustryResourceChoiceSet}" var="choice" begin="4" end="6">
-                            <tr>
-                                <td>${choice.name}</td>
-                                <td>
-                                    <select id="instruction_${choice.id}" name="produceLine">
-                                        <option value="-1">无</option>
-                                        <option value="${choice.id}_MANUAL">手工</option>
-                                        <option value="${choice.id}_HALF_AUTOMATIC">半自动</option>
-                                        <option value="${choice.id}_AUTOMATIC">自动</option>
-                                        <option value="${choice.id}_FLEXBILITY">柔性</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="am-panel-bd operation">
-                    <h3>工厂3</h3>
-                    <table class="am-table">
-                        <thead>
-                        <tr>
-                            <th>生产线</th>
-                            <th>生产线类型</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${produceLineResource.currentIndustryResourceChoiceSet}" var="choice" begin="7" end="7">
-                            <tr>
-                                <td>${choice.name}</td>
-                                <td>
-                                    <select id="instruction_${choice.id}" name="produceLine">
-                                        <option value="-1">无</option>
-                                        <option value="${choice.id}_MANUAL">手工</option>
-                                        <option value="${choice.id}_HALF_AUTOMATIC">半自动</option>
-                                        <option value="${choice.id}_AUTOMATIC">自动</option>
-                                        <option value="${choice.id}_FLEXBILITY">柔性</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+        <div data-tab-panel-1 class="am-tab-panel ">
+            <div class="am-panel am-panel-default" id="product">
+                <div class="am-panel-bd">
+
                 </div>
             </div>
         </div>
