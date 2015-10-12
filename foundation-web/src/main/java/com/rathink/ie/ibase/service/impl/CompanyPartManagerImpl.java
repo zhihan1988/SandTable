@@ -5,9 +5,11 @@ import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.service.CompanyPartManager;
 import com.rathink.ie.ibase.work.model.CompanyPart;
+import com.rathink.ie.manufacturing.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -27,4 +29,14 @@ public class CompanyPartManagerImpl implements CompanyPartManager {
         List<CompanyPart> companyPartList = baseManager.listObject(xQuery);
         return companyPartList;
     }
+
+    public Object getUniqueCompanyPart(Company company, String type, String entityName) {
+        String hql = "from :entityName where company.id=:companyId and type = :type";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("entityName", entityName);
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("type", type);
+        return baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+    }
+
 }

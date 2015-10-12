@@ -36,6 +36,9 @@
             right: 10px;
             color:#0e90d2;
         }
+        .repertory ul li{
+            list-style-type:none;
+        }
     </style>
 </head>
 <body>
@@ -63,14 +66,115 @@
 </header>
 <div data-am-widget="tabs" class="am-tabs am-tabs-d2" style="margin: 0">
     <ul class="am-tabs-nav am-cf">
-        <li class="am-active"><a id="panel-0" href="[data-tab-panel-0]">工厂</a></li>
-        <li class="am-active"><a id="panel-1" href="[data-tab-panel-0]">原料</a></li>
+        <li><a id="panel-1" href="[data-tab-panel-1]">主页</a></li>
+        <li class="am-active"><a id="panel-2" href="[data-tab-panel-2]">市场</a></li>
+        <li><a id="panel-3" href="[data-tab-panel-3]">工厂</a></li>
+        <li><a id="panel-4" href="[data-tab-panel-4]">财务</a></li>
     </ul>
     <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
     <div class="am-tabs-bd">
-        <div data-tab-panel-0 class="am-tab-panel am-active">
-            <div class="am-panel am-panel-default">
+        <div data-tab-panel-1 class="am-tab-panel am-active"></div>
+        <div data-tab-panel-2 class="am-tab-panel">
             <div class="am-panel-bd operation">
+                <h3>投放广告</h3>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>产品</th>
+                        <th>市场</th>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${marketFeeResource.currentIndustryResourceChoiceSet}" var="choice">
+                        <tr>
+                            <td>${choice.type}</td>
+                            <td>${choice.value}</td>
+                            <td>
+                                <select id="instruction_${choice.id}" name="market" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <option value="${choice.id}#-1">未选择</option>
+                                    <c:forEach items="${fn:split(marketFeeResource.valueSet, ',')}" var="fee">
+                                        <option value="${choice.id}#${fee}">${fee}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <div class="am-panel-bd operation">
+                <h3>公司投放列表</h3>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>公司</th>
+                        <th>投入</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${marketFeeInstructionList}" var="marketFeeInstruction" varStatus="status">
+                        <tr>
+                            <td>${status.index+1}</td>
+                            <td>${marketFeeInstruction.company.name}</td>
+                            <td>${marketFeeInstruction.value}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <div class="am-panel-bd operation">
+                <h3>市场订单</h3>
+                <table class="am-table">
+                    <thead>
+                    <tr>
+                        <th>订单</th>
+                        <th>产品</th>
+                        <th>金额/成本/利润</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
+                        <tr>
+                            <td>${choice.name}</td>
+                            <td>${choice.type}</td>
+                            <td>${choice.value2}</td>
+                            <td><input type="radio" name="orderChoice" value="${choice.id}#${choice.value}"/></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div data-tab-panel-3 class="am-tab-panel">
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd repertory">
+                    <ul class="am-avg-sm-2">
+                        <li>
+                            <b style="margin-left: 30px;">原料</b>
+                            <ul>
+                                <li>R1 : 0</li>
+                                <li>R2 : 0</li>
+                                <li>R3 : 0</li>
+                                <li>R4 : 0</li>
+                            </ul>
+                        </li>
+                        <li style="border-right: 1px solid #DDDDDD">
+                            <b style="margin-left: 30px;">产品</b>
+                            <ul>
+                                <li>P1 : 0</li>
+                                <li>P2 : 0</li>
+                                <li>P3 : 0</li>
+                                <li>P4 : 0</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="am-panel am-panel-default">
+            <div class="am-panel-bd">
                 <h3>工厂1</h3>
                 <table class="am-table">
                     <thead>
@@ -108,11 +212,15 @@
                                     <c:when test="${line.status == 'NOT_OWNED'}">
                                         <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">建造</button>
                                     </c:when>
+                                    <c:when test="${line.status == 'BUILDING'}">
+                                        建造中
+                                    </c:when>
                                     <c:when test="${line.status == 'FREE'}">
                                         <button id="produce_${line.id}" type="button" class="am-btn am-btn-secondary">生产</button>
-                                    </c:when>
-                                    <c:when test="${line.status == 'USING'}">
                                         <button id="rebuild_${line.id}" type="button" class="am-btn am-btn-secondary">改造</button>
+                                    </c:when>
+                                    <c:when test="${line.status == 'PRODUCING'}">
+                                        生产中
                                     </c:when>
                                 </c:choose>
                             </td>
@@ -123,15 +231,21 @@
             </div>
             </div>
         </div>
-        <div data-tab-panel-1 class="am-tab-panel ">
-            <div class="am-panel am-panel-default" id="product">
+        <div data-tab-panel-4 class="am-tab-panel operation">
+            <div class="am-panel am-panel-default" id="account">
                 <div class="am-panel-bd">
-
+                    <ul>
+                        <li>高利贷</li>
+                        <li>短期贷款</li>
+                        <li>长期贷款</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
 
 <script>
 
@@ -183,11 +297,34 @@
                             }
                         });
             }
-        })
+        });
 
-        $("button[id^='produce_']").click(function(){
-            alert(123);
-        })
+        $("td[id^='operation_']").delegate("button[id^='produce_']","click",function(){
+            var $produce = $(this);
+            var produceLineId = $produce.attr("id").split("_")[1];
+
+            //开始建造
+            $.getJSON("<c:url value="/manufacturing/buildProduceLine.do"/>",
+                    {
+                        companyTermId: companyTermId,
+                        produceLineId: produceLineId
+                    },
+                    function(data){
+                        //建造结果
+                        var installCycle = data.installCycle;
+                        if(installCycle == 0) {
+                            //建造完成
+                            var $operationDiv = $('#operation_' + partId);
+                            var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
+                            $operationDiv.html($button);
+                            $("#lineType_" + partId).attr("disabled",true);
+                            $("#produceType_" + partId).attr("disabled",true);
+                        } else {
+                            $('#operation_' + partId).html("生产中");
+                        }
+                    });
+        });
+
 
         $("#endCampaignDate").click(function () {
             if(confirm("是否结束当前回合的操作？")) {

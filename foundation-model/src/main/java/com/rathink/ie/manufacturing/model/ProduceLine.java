@@ -18,6 +18,8 @@ public class ProduceLine extends CompanyPart {
 
     private String produceLineType;//产品线类型
     private String produceType;//生产类型
+    private String lineBuildNeedCycle;//距离生产线建设完成所需的周期
+    private String produceNeedCycle;//距离生产完某产品所需的周期
 
     @Column(name = "value")
     public String getProduceLineType() {
@@ -37,31 +39,32 @@ public class ProduceLine extends CompanyPart {
         this.produceType = produceType;
     }
 
-
-    /*public String getProduceLineType() {
-            return super.getValue();
-        }
-
-        public void setProduceLineType(String produceLineType) {
-            super.setValue(produceLineType);
-        }
-
-        public String getProduceType() {
-            return super.getValue2();
-        }
-
-        public void setProduceType(String produceType) {
-            super.setValue2(produceType);
-        }
-    */
-    public enum Status {
-        NOT_OWNED,USING,FREE
+    @Column(name = "value3")
+    public String getLineBuildNeedCycle() {
+        return lineBuildNeedCycle;
     }
 
-    enum EProduceLineType {
+    public void setLineBuildNeedCycle(String lineBuildNeedCycle) {
+        this.lineBuildNeedCycle = lineBuildNeedCycle;
+    }
+
+    @Column( name = "value4")
+    public String getProduceNeedCycle() {
+        return produceNeedCycle;
+    }
+
+    public void setProduceNeedCycle(String produceNeedCycle) {
+        this.produceNeedCycle = produceNeedCycle;
+    }
+
+    public enum Status {
+        UN_BUILD,BUILDING,FREE,PRODUCING
+    }
+
+    public enum Type {
         MANUAL(1,0,1,1,1,1),AUTOMATIC(1,2,1,1,1,1),HALF_AUTOMATIC(1,1,1,1,1,1), FLEXBILITY(1, 3, 1, 1, 1, 1),;
 
-        EProduceLineType(Integer cost, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
+        Type(Integer cost, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
             this.cost = cost;
             this.installCycle = installCycle;
             this.produceCycle = produceCycle;

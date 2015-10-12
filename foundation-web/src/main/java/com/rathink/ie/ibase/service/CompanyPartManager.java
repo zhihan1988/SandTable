@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface CompanyPartManager {
     List<CompanyPart> listCompanyPart(Company company, String baseType);
+
+    Object getUniqueCompanyPart(Company company, String name, String entityName);
 }
