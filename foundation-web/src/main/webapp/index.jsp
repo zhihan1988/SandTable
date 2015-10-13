@@ -30,7 +30,7 @@
     <div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
         <form method="post" class="am-form" action="<c:url value="/j_spring_security_check"/>">
             <label for="username">用户名:</label>
-            <input type="text" name="username" id="username" placeholder="输入用户名" value="user3">
+            <input type="text" name="username" id="username" placeholder="输入用户名" value="user1">
             <br>
             <label for="password">密码:</label>
             <input type="password" name="password" id="password" placeholder="输入密码" value="123456">

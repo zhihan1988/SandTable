@@ -352,8 +352,9 @@
 
 
         $("#purchase").click(function(){
-            $("select[id^='materialNum_']").click(function(){
-                var value = $(this).val();
+            $("select[id^='materialNum_']").each(function(){
+                var $material = $(this);
+                var value = $material.val();
                 var materialId = value.split("#")[0];
                 var num = value.split("#")[1];
                 if(num!=-1) {
@@ -365,9 +366,12 @@
                             },
                             function(data){
                                 if(data.status==1) {
-                                    $("#purchase").replaceWith("采购成功，下期入库");
+                                    $material.replaceWith(num);
+                                    $("#purchase").replaceWith("采购结束，原料下期入库");
                                 }
                             });
+                } else {
+                    $material.replaceWith("0");
                 }
             });
         })
