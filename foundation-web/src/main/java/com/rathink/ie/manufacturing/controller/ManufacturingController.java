@@ -13,6 +13,7 @@ import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
+import com.rathink.ie.manufacturing.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -72,10 +73,12 @@ public class ManufacturingController extends BaseIndustryController {
             }*/
         }
 
-        List<CompanyPart> produceLineList = baseManager.listObject("from CompanyPart");
-//        List<CompanyPart> materialList = companyPartManager.listCompanyPart(company, EManufacturingChoiceBaseType.MATERIAL.name());
+        List<ProduceLine> produceLineList = baseManager.listObject("from ProduceLine where company.id =" + companyId);
         model.addAttribute("produceLineList", produceLineList);
-//        model.addAttribute("materialList", materialList);
+        List<Material> materialList = baseManager.listObject("from Material where company.id =" + companyId);
+        model.addAttribute("materialList", materialList);
+        List<Product> productList = baseManager.listObject("from Product where company.id =" + companyId);
+        model.addAttribute("productList", productList);
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";
     }
@@ -137,6 +140,7 @@ public class ManufacturingController extends BaseIndustryController {
         if (material.getAmount() == 0) {
             result.put("status", 0);
             result.put("message", "Ô­ÁÏ²»×ã");
+            return result;
         }
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
@@ -158,4 +162,26 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/purchase")
+    @ResponseBody
+    public Map purchase(HttpServletRequest request, Model model) throws Exception {
+        Map result = new HashMap<>();
+        String companyTermId = request.getParameter("companyTermId");
+        String materialId = request.getParameter("materialId");
+        String materialNum = request.getParameter("materialNum");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Material material = (Material) baseManager.getObject(Material.class.getName(), materialId);
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.MATERIAL.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(material);
+        companyTermInstruction.setValue(materialNum);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        result.put("status", 1);
+        return result;
+    }
 }

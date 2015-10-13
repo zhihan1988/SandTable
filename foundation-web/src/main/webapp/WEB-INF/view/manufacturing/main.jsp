@@ -8,8 +8,8 @@
 <html class="no-js">
 <head>
     <style type="text/css">
-        .operation {
-            padding-bottom: 100px;
+        .panel {
+            display: none;
         }
         .introduce {
             color: #999999;
@@ -64,18 +64,20 @@
         </a>
     </div>
 </header>
-<div data-am-widget="tabs" class="am-tabs am-tabs-d2" style="margin: 0">
-    <ul class="am-tabs-nav am-cf">
-        <li><a id="panel-1" href="[data-tab-panel-1]">主页</a></li>
-        <li class="am-active"><a id="panel-2" href="[data-tab-panel-2]">市场</a></li>
-        <li><a id="panel-3" href="[data-tab-panel-3]">工厂</a></li>
-        <li><a id="panel-4" href="[data-tab-panel-4]">财务</a></li>
-    </ul>
-    <h3 style="margin: 10px 0 0 20px">${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
-    <div class="am-tabs-bd">
-        <div data-tab-panel-1 class="am-tab-panel am-active"></div>
-        <div data-tab-panel-2 class="am-tab-panel">
-            <div class="am-panel-bd operation">
+<div style="margin: 10px;">
+    <div style="text-align:center">
+        <h3>${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
+    </div>
+
+    <div>
+        <div id="panel-1" class="panel">
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">主页</div>
+            </div>
+        </div>
+        <div id="panel-2" class="panel">
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
                 <h3>投放广告</h3>
                 <table class="am-table">
                     <thead>
@@ -103,7 +105,9 @@
                     </tbody>
                 </table>
             </div>
-            <div class="am-panel-bd operation">
+            </div>
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
                 <h3>公司投放列表</h3>
                 <table class="am-table">
                     <thead>
@@ -124,7 +128,9 @@
                     </tbody>
                 </table>
             </div>
-            <div class="am-panel-bd operation">
+            </div>
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
                 <h3>市场订单</h3>
                 <table class="am-table">
                     <thead>
@@ -147,34 +153,73 @@
                     </tbody>
                 </table>
             </div>
+            </div>
         </div>
-        <div data-tab-panel-3 class="am-tab-panel">
+        <div id="panel-3" class="panel">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd repertory">
-                    <ul class="am-avg-sm-2">
-                        <li>
-                            <b style="margin-left: 30px;">原料</b>
-                            <ul>
-                                <li>R1 : 0</li>
-                                <li>R2 : 0</li>
-                                <li>R3 : 0</li>
-                                <li>R4 : 0</li>
-                            </ul>
-                        </li>
-                        <li style="border-right: 1px solid #DDDDDD">
-                            <b style="margin-left: 30px;">产品</b>
-                            <ul>
-                                <li>P1 : 0</li>
-                                <li>P2 : 0</li>
-                                <li>P3 : 0</li>
-                                <li>P4 : 0</li>
-                            </ul>
-                        </li>
-                    </ul>
+                <ul class="am-avg-sm-2">
+                    <li style="border-right: 1px solid #DDDDDD">
+                        <b style="margin-left: 30px;">原料</b>
+                        <ul>
+                            <c:forEach items="${materialList}" var="material">
+                            <li>${material.type} : ${material.amount}</li>
+                            </c:forEach>
+                        </ul>
+                    </li>
+                    <li>
+                        <b style="margin-left: 30px;">产品</b>
+                        <ul>
+                            <li>P1 : 0</li>
+                            <li>P2 : 0</li>
+                            <li>P3 : 0</li>
+                            <li>P4 : 0</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            </div>
+
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>原料类型</th>
+                            <th>采购数量</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${materialList}" var="material">
+                        <tr>
+                            <td>${material.type}</td>
+                            <td>
+                                <select id="materialNum_${material.id}">
+                                    <option value="${material.id}#-1">请选择数量</option>
+                                    <option value="${material.id}#1">1</option>
+                                    <option value="${material.id}#2">2</option>
+                                    <option value="${material.id}#3">3</option>
+                                    <option value="${material.id}#4">4</option>
+                                    <option value="${material.id}#6">6</option>
+                                    <option value="${material.id}#8">8</option>
+                                </select>
+                            </td>
+                        </tr>
+                        </c:forEach>
+                        <tr>
+                            <td colspan="2">
+                                <button id="purchase" type="button" class="am-btn am-btn-secondary">采购</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+
+
             <div class="am-panel am-panel-default">
-            <div class="am-panel-bd">
+                <div class="am-panel-bd">
                 <h3>工厂1</h3>
                 <table class="am-table">
                     <thead>
@@ -182,7 +227,6 @@
                         <th>生产线</th>
                         <th>类型</th>
                         <th>产品型号</th>
-                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -190,26 +234,34 @@
                         <tr>
                             <td>${line.name}</td>
                             <td id="td_lineType_${line.id}">
-                                <select id="lineType_${line.id}" name="lineType">
+                                <span <c:if test="${line.status=='UN_BUILD'}">style="display: none"</c:if>>
+                                   <ming800:status type = "normal" name="lineType" dataType="ProduceLine.produceLineType" checkedValue="${line.produceLineType}"/>
+                                </span>
+                                <select id="lineType_${line.id}" name="lineType" <c:if test="${line.status!='UN_BUILD'}">style="display: none"</c:if>>
                                     <option value="-1">无</option>
-                                    <option value="MANUAL">手工</option>
-                                    <option value="HALF_AUTOMATIC">半自动</option>
-                                    <option value="AUTOMATIC">自动</option>
-                                    <option value="FLEXBILITY">柔性</option>
+                                    <option value="MANUAL" <c:if test="${line.produceLineType=='MANUAL'}">selected="selected"</c:if>>手工</option>
+                                    <option value="HALF_AUTOMATIC" <c:if test="${line.produceLineType=='HALF_AUTOMATIC'}">selected="selected"</c:if>>半自动</option>
+                                    <option value="AUTOMATIC" <c:if test="${line.produceLineType=='AUTOMATIC'}">selected="selected"</c:if>>自动</option>
+                                    <option value="FLEXBILITY" <c:if test="${line.produceLineType=='FLEXBILITY'}">selected="selected"</c:if>>柔性</option>
                                 </select>
                             </td>
                             <td id="td_produceType_${line.id}">
-                                <select id="produceType_${line.id}" name="produceType">
+                                <span <c:if test="${line.status=='UN_BUILD'}">style="display: none"</c:if>>
+                                   <ming800:status type = "normal" name="produceType" dataType="ProduceLine.produceType" checkedValue="${line.produceType}"/>
+                                </span>
+                                <select id="produceType_${line.id}" name="produceType" <c:if test="${line.status!='UN_BUILD'}">style="display: none;" </c:if>>
                                     <option value="-1">无</option>
                                     <option value="P1">P1</option>
-                                    <option value="P1">P2</option>
+                                    <option value="P2">P2</option>
                                     <option value="P3">P3</option>
                                     <option value="P4">P4</option>
                                 </select>
                             </td>
-                            <td id="operation_${line.id}">
+                        </tr>
+                        <tr>
+                            <td id="operation_${line.id}" colspan="3" style="border-top: 0">
                                 <c:choose>
-                                    <c:when test="${line.status == 'NOT_OWNED'}">
+                                    <c:when test="${line.status == 'UN_BUILD'}">
                                         <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">建造</button>
                                     </c:when>
                                     <c:when test="${line.status == 'BUILDING'}">
@@ -231,8 +283,8 @@
             </div>
             </div>
         </div>
-        <div data-tab-panel-4 class="am-tab-panel operation">
-            <div class="am-panel am-panel-default" id="account">
+        <div id="panel-4" class="panel">
+            <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <ul>
                         <li>高利贷</li>
@@ -245,11 +297,47 @@
     </div>
 </div>
 
-
+<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default " id="">
+    <ul class="am-navbar-nav am-cf am-avg-sm-4">
+        <li >
+            <a id="button-1" href="#" class="">
+                <span class="am-icon-home"></span>
+                <span class="am-navbar-label">主页</span>
+            </a>
+        </li>
+        <li >
+            <a id="button-2" href="###" class="">
+                <span class="am-icon-sign-in"></span>
+                <span class="am-navbar-label">市场</span>
+            </a>
+        </li>
+        <li>
+            <a id="button-3" href="###" class="">
+                <span class="am-icon-sign-in"></span>
+                <span class="am-navbar-label">工厂</span>
+            </a>
+        </li>
+        <li >
+            <a id="button-4" href="#" class="">
+                <span class="am-icon-sign-in"></span>
+                <span class="am-navbar-label">财务</span>
+            </a>
+        </li>
+    </ul>
+</div>
 
 <script>
 
     $(function () {
+
+        $("#panel-1").show();
+        $("a[id^='button-']").click(function(){
+            var id = $(this).attr("id");
+            $("div[id^='panel']").hide();
+            $("#panel-"+id.split("-")[1]).show();
+        })
+
+
         $("div[id^='enter-']").click(function () {
             var id = $(this).attr("id");
             $("#panel-"+id.split("-")[1]).trigger("click");
@@ -261,6 +349,29 @@
         var companyId = '${company.id}';
         var companyTermId = '${companyTerm.id}';
         var roundType = '${roundType}';
+
+
+        $("#purchase").click(function(){
+            $("select[id^='materialNum_']").click(function(){
+                var value = $(this).val();
+                var materialId = value.split("#")[0];
+                var num = value.split("#")[1];
+                if(num!=-1) {
+                    $.getJSON("<c:url value="/manufacturing/purchase.do"/>",
+                            {
+                                companyTermId: companyTermId,
+                                materialId: materialId,
+                                materialNum: num
+                            },
+                            function(data){
+                                if(data.status==1) {
+                                    $("#purchase").replaceWith("采购成功，下期入库");
+                                }
+                            });
+                }
+            });
+        })
+
 
 
         $("button[id^='build_']").click(function(){
@@ -290,8 +401,8 @@
                                var $operationDiv = $('#operation_' + partId);
                                 var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
                                 $operationDiv.html($button);
-                                $("#lineType_" + partId).attr("disabled",true);
-                                $("#produceType_" + partId).attr("disabled",true);
+                                $("#lineType_" + partId).replaceWith($("#lineType_" + partId).find("option:selected").text());
+                                $("#produceType_" + partId).replaceWith($("#produceType_" + partId).find("option:selected").text());
                             } else {
                                 $('#operation_' + partId).html("建造中");
                             }
@@ -304,7 +415,7 @@
             var produceLineId = $produce.attr("id").split("_")[1];
 
             //开始建造
-            $.getJSON("<c:url value="/manufacturing/buildProduceLine.do"/>",
+            $.getJSON("<c:url value="/manufacturing/produce.do"/>",
                     {
                         companyTermId: companyTermId,
                         produceLineId: produceLineId
@@ -343,7 +454,7 @@
             }
         });
 
-        setInterval(isNext, 5000);
+//        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isCampaignNext"/>",
                     {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module name="manufacturing" label="比赛" version="" package="com.rathink.ie.manufacturing.model" path="">
+    <entities>
+        <entity name="ProduceLine" label="生产线"
+                basic="simple" others=""
+                model="com.rathink.ie.manufacturing.model.ProduceLine">
+            <fields>
+                <field name="produceLineType" label="生产线类型" inputType="select_status" key="produceLineType">
+                    <statusType fieldName="produceLineType">
+                        <item label="手工" value="MANUAL"/>
+                        <item label="半自动" value="HALF_AUTOMATIC"/>
+                        <item label="自动" value="AUTOMATIC"/>
+                        <item label="柔性" value="FLEXBILITY"/>
+                    </statusType>
+                </field>
+                <field name="produceType" label="生产类型" inputType="select_status" key="produceType">
+                    <statusType fieldName="produceType">
+                        <item label="P1" value="P1"/>
+                        <item label="P2" value="P2"/>
+                        <item label="P3" value="P3"/>
+                        <item label="P4" value="P4"/>
+                    </statusType>
+                </field>
+            </fields>
+        </entity>
+    </entities>
+</module>
