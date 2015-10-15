@@ -156,7 +156,7 @@
             </div>
         </div>
         <div id="panel-3" class="panel">
-            <div class="am-panel am-panel-default">
+          <%--  <div class="am-panel am-panel-default">
                 <div class="am-panel-bd repertory">
                 <ul class="am-avg-sm-2">
                     <li style="border-right: 1px solid #DDDDDD">
@@ -176,8 +176,8 @@
                         </ul>
                     </li>
                 </ul>
-            </div>
-            </div>
+                </div>
+            </div>--%>
 
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
@@ -185,6 +185,7 @@
                         <thead>
                         <tr>
                             <th>原料类型</th>
+                            <th>库存</th>
                             <th>采购数量</th>
                         </tr>
                         </thead>
@@ -192,6 +193,7 @@
                         <c:forEach items="${materialList}" var="material">
                         <tr>
                             <td>${material.type}</td>
+                            <td>${material.amount}</td>
                             <td>
                                 <select id="materialNum_${material.id}">
                                     <option value="${material.id}#-1">请选择数量</option>
@@ -206,7 +208,7 @@
                         </tr>
                         </c:forEach>
                         <tr>
-                            <td colspan="2">
+                            <td colspan="3">
                                 <button id="purchase" type="button" class="am-btn am-btn-secondary">采购</button>
                             </td>
                         </tr>
@@ -215,7 +217,36 @@
                 </div>
             </div>
 
-
+              <div class="am-panel am-panel-default">
+                  <div class="am-panel-bd">
+                      <table class="am-table">
+                          <thead>
+                          <tr>
+                              <th>产品类型</th>
+                              <th>库存</th>
+                              <th>剩余研发周期</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <c:forEach items="${productList}" var="product">
+                          <tr>
+                              <td>
+                                <input type="checkbox" name="developProduct" value="${product.id}">
+                                ${product.type}
+                              </td>
+                              <td>${product.amount}</td>
+                              <td>${product.developNeedCycle}</td>
+                          </tr>
+                          </c:forEach>
+                          <tr>
+                              <td colspan="3">
+                                  <button id="develop" type="button" class="am-btn am-btn-secondary">研发</button>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
 
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
@@ -250,10 +281,11 @@
                                 </span>
                                 <select id="produceType_${line.id}" name="produceType" <c:if test="${line.status!='UN_BUILD'}">style="display: none;" </c:if>>
                                     <option value="-1">无</option>
-                                    <option value="P1">P1</option>
-                                    <option value="P2">P2</option>
-                                    <option value="P3">P3</option>
-                                    <option value="P4">P4</option>
+                                    <c:forEach items="${productList}" var="product">
+                                        <c:if test="${product.developNeedCycle == 0}">
+                                            <option value="${product.type}">${product.type}</option>
+                                        </c:if>
+                                    </c:forEach>
                                 </select>
                             </td>
                         </tr>
@@ -375,6 +407,25 @@
             });
         })
 
+
+        $("#develop").click(function(){
+            var $developButton = $(this);
+            $("input[name='developProduct']:checked").each(function(){
+                var $product = $(this);
+                var productId = $product.val();
+                //开始建造
+                $.getJSON("<c:url value="/manufacturing/develop.do"/>",
+                        {
+                            companyTermId: companyTermId,
+                            partId: productId
+                        },
+                        function(data){
+                            if(data.status == 1) {
+                                $developButton.replaceWith("研发中");
+                            }
+                        });
+            });
+        });
 
 
         $("button[id^='build_']").click(function(){

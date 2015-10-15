@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Table(name = "industry_resource_choice")
 public class IndustryResourceChoice {
     private String id;
+    private String serial;
     private String name;
     private String value;
     private String value2;
@@ -24,6 +25,15 @@ public class IndustryResourceChoice {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Column(name = "serial")
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     @Column(name = "name")

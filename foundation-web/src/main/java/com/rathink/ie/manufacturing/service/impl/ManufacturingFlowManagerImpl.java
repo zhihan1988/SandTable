@@ -85,6 +85,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 product.setName(productChoice.getName());
                 product.setType(productChoice.getType());
                 product.setAmount(0);
+                Integer developNeedCycle = Product.Type.valueOf(productChoice.getType()).getDevelopNeedCycle();
+                product.setDevelopNeedCycle(developNeedCycle);
                 product.setCampaign(campaignContext.getCampaign());
                 product.setCompany(company);
                 product.setStatus(Product.Status.NORMAL.name());
@@ -227,7 +229,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                         baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
                     }
 
-                    produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                    produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                     baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceLineInstruction);
                 }
             }
@@ -241,8 +243,22 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     material.setAmount(material.getAmount() + amount);
                     baseManager.saveOrUpdate(Material.class.getName(), material);
 
-                    materialInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                    materialInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                     baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), materialInstruction);
+                }
+            }
+
+            //产品研发
+            List<CompanyTermInstruction> productInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.PRODUCT.name());
+            if (productInstructionList != null) {
+                for (CompanyTermInstruction productInstruction : productInstructionList) {
+                    Product product = (Product) baseManager.getObject(Product.class.getName(), productInstruction.getCompanyPart().getId());
+                    Integer developNeedCycle = product.getDevelopNeedCycle();
+                    product.setDevelopNeedCycle(--developNeedCycle);
+                    baseManager.saveOrUpdate(Product.class.getName(), product);
+
+                    productInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), productInstruction);
                 }
             }
         }

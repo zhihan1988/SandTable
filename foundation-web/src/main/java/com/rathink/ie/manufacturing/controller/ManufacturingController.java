@@ -86,6 +86,30 @@ public class ManufacturingController extends BaseIndustryController {
         return "/manufacturing/main";
     }
 
+
+    @RequestMapping("/develop")
+    @ResponseBody
+    public Map develop(HttpServletRequest request, Model model) throws Exception {
+        String companyTermId = request.getParameter("companyTermId");
+        String partId = request.getParameter("partId");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Product product = (Product) baseManager.getObject(Product.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCT.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(product);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        return result;
+    }
+
+
     @RequestMapping("/buildProduceLine")
     @ResponseBody
     public Map processInstruction(HttpServletRequest request, Model model) throws Exception {

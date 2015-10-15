@@ -14,20 +14,52 @@ import javax.persistence.Table;
 @Table(name = "company_part")
 @DiscriminatorValue(value = "PRODUCT")
 public class Product extends CompanyPart {
+    private String type;
+    private String amount;
+    private String developNeedCycle;//剩余的研发周期
+
+    @Column(name = "value")
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Column(name = "value2")
+    public Integer getAmount() {
+        return amount == null ? 0 : Integer.valueOf(amount);
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount == null ? null : String.valueOf(amount);
+    }
+
+    public Integer getDevelopNeedCycle() {
+        return developNeedCycle == null ? 0 : Integer.valueOf(developNeedCycle);
+    }
+
+    public void setDevelopNeedCycle(Integer developNeedCycle) {
+        this.developNeedCycle = developNeedCycle == null ? null : String.valueOf(developNeedCycle);
+    }
+
     public enum Status {
         NORMAL
     }
     public enum Type {
-        P1(1,1,2),P2(1,1,2),P3(1,1,2),P4(1,1,2);
+        P1(1, 1, 2, 0), P2(1, 1, 2, 6), P3(1, 1, 2, 6), P4(1, 1, 2, 6),;
 
-        Type(Integer cost, Integer processCost, Integer totalCost) {
+        Type(Integer cost, Integer processCost, Integer totalCost, Integer developNeedCycle) {
             this.cost = cost;
             this.processCost = processCost;
             this.totalCost = totalCost;
+            this.developNeedCycle = developNeedCycle;
         }
         private Integer cost;//成本
         private Integer processCost;;//加工费
         private Integer totalCost;//合计
+        private Integer developNeedCycle;
 
         public Integer getCost() {
             return cost;
@@ -52,29 +84,14 @@ public class Product extends CompanyPart {
         public void setTotalCost(Integer totalCost) {
             this.totalCost = totalCost;
         }
-    }
-    private String type;
-    private String amount;
 
-    @Column(name = "value")
-    public String getType() {
-        return type;
-    }
+        public Integer getDevelopNeedCycle() {
+            return developNeedCycle;
+        }
 
-    public void setType(String type) {
-        this.type = type;
+        public void setDevelopNeedCycle(Integer developNeedCycle) {
+            this.developNeedCycle = developNeedCycle;
+        }
     }
 
-    @Column(name = "value2")
-    public Integer getAmount() {
-        return amount == null ? 0 : Integer.valueOf(amount);
-    }
-
-    public void setAmount(Integer amount) {
-        this.amount = amount == null ? null : String.valueOf(amount);
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
 }

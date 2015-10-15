@@ -21,7 +21,7 @@ public class IndustryResourceChoiceManagerImpl implements IndustryResourceChoice
     @Override
     public List<IndustryResourceChoice> listIndustryResourceChoice(String industryResourceId) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from IndustryResourceChoice where industryResource.id = :industryResourceId");
+        xQuery.setHql("from IndustryResourceChoice where industryResource.id = :industryResourceId order by serial asc");
         xQuery.put("industryResourceId",industryResourceId);
         List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listObject(xQuery);
         return industryResourceChoiceList;
@@ -29,7 +29,7 @@ public class IndustryResourceChoiceManagerImpl implements IndustryResourceChoice
 
     public List<IndustryResourceChoice> listIndustryResourceChoice(String industryResourceId, Set<String> notInIds) {
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from IndustryResourceChoice where industryResource.id = :industryResourceId and id not in (:notInIds)");
+        xQuery.setHql("from IndustryResourceChoice where industryResource.id = :industryResourceId and id not in (:notInIds) order by serial asc");
         xQuery.put("industryResourceId", industryResourceId);
         xQuery.put("notInIds",notInIds);
         List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listObject(xQuery);
