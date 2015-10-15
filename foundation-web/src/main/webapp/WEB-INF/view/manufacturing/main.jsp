@@ -426,16 +426,11 @@
                     },
                     function(data){
                         //建造结果
-                        var installCycle = data.installCycle;
-                        if(installCycle == 0) {
-                            //建造完成
-                            var $operationDiv = $('#operation_' + partId);
-                            var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
-                            $operationDiv.html($button);
-                            $("#lineType_" + partId).attr("disabled",true);
-                            $("#produceType_" + partId).attr("disabled",true);
+                        var status = data.status;
+                        if(status == 1) {
+                            $produce.replaceWith("生产中");
                         } else {
-                            $('#operation_' + partId).html("生产中");
+                            alert(data.message);
                         }
                     });
         });

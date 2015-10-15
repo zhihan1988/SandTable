@@ -14,8 +14,10 @@ import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.service.MaterialManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,8 @@ import java.util.*;
 @RequestMapping("/manufacturing")
 public class ManufacturingController extends BaseIndustryController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
-
+    @Autowired
+    private MaterialManager materialManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -55,14 +58,14 @@ public class ManufacturingController extends BaseIndustryController {
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
             RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
             if (marketFeeObervable.getUnFinishedNum() != 0) {
-                //½øÈëÍ¶±ê»·½Ú
+                //è¿›å…¥æŠ•æ ‡ç¯èŠ‚
                 model.addAttribute("marketFeeResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name()));
                 model.addAttribute("roundType", EManufacturingRoundType.MARKET_PAY_ROUND.name());
                 return "/manufacturing/marketPay";
             }
             RoundEndObserable marketOrderObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.ORDER_ROUND.name());
             if (marketOrderObervable.getUnFinishedNum() != 0) {
-                //½øÈëÇÀµ¥»·½Ú
+                //è¿›å…¥æŠ¢å•ç¯èŠ‚
                 List<CompanyTermInstruction> marketFeeInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCampaign()
                         , companyTerm.getCampaignDate(), EManufacturingChoiceBaseType.MARKET_FEE.name());
                 marketFeeInstructionList.sort((o1, o2) -> Integer.valueOf(o1.getValue()) - Integer.valueOf(o2.getValue()));
@@ -120,7 +123,7 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
-    @RequestMapping("/produce")
+    @RequestMapping(value = "/produce")
     @ResponseBody
     public Map produce(HttpServletRequest request, Model model) throws Exception {
         Map result = new HashMap<>();
@@ -130,16 +133,43 @@ public class ManufacturingController extends BaseIndustryController {
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
+        Company company = companyTerm.getCompany();
 
-        //¼ì²éÔ­ÁÏ¿â´æ
-        String hql = "from Material where company.id=:companyId and type = :type";
-        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("companyId", companyTerm.getCompany().getId());
-        queryParamMap.put("type", produceLine.getProduceType());
-        Material material = (Material) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-        if (material.getAmount() == 0) {
+        Integer R1Amount = materialManager.getMateralAmount(company, Material.Type.R1.name());
+        Integer R2Amount = materialManager.getMateralAmount(company, Material.Type.R2.name());
+        Integer R3Amount = materialManager.getMateralAmount(company, Material.Type.R3.name());
+        Integer R4Amount = materialManager.getMateralAmount(company, Material.Type.R4.name());
+
+        boolean isMaterialAmountEnough = false;
+        Product.Type productType = Product.Type.valueOf(produceLine.getProduceType());
+        switch (productType){
+            case P1:
+                if (R1Amount >=1) {
+                    isMaterialAmountEnough = true;
+                }
+                break;
+            case P2:
+                if (R1Amount >= 1 && R2Amount >= 1) {
+                    isMaterialAmountEnough = true;
+                }
+                break;
+            case P3:
+                if (R2Amount >= 2 && R3Amount >= 1) {
+                    isMaterialAmountEnough = true;
+                }
+                break;
+            case P4:
+                if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
+                    isMaterialAmountEnough = true;
+                }
+                break;
+            default:
+                throw new NoSuchElementException(productType.name());
+        }
+
+        if (!isMaterialAmountEnough) {
             result.put("status", 0);
-            result.put("message", "Ô­ÁÏ²»×ã");
+            result.put("message", "åŸæ–™ä¸è¶³");
             return result;
         }
 
@@ -158,7 +188,7 @@ public class ManufacturingController extends BaseIndustryController {
         baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
 
         result.put("status", 1);
-        result.put("message", "Éú²úÖĞ");
+        result.put("message", "ç”Ÿäº§ä¸­");
         return result;
     }
 

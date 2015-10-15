@@ -19,7 +19,7 @@ public class Material extends CompanyPart {
     }
 
     public enum Type{
-        P1,P2,P3,P4
+        R1,R2,R3,R4
     }
     private String type;
     private String amount;

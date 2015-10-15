@@ -8,4 +8,6 @@ import com.rathink.ie.manufacturing.model.Material;
  */
 public interface MaterialManager {
     Material getMateral(Company company, String type);
+
+    Integer getMateralAmount(Company company, String type);
 }

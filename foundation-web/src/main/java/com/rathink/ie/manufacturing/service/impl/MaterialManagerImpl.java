@@ -28,4 +28,17 @@ public class MaterialManagerImpl implements MaterialManager {
         return material;
     }
 
+    @Override
+    public Integer getMateralAmount(Company company, String type) {
+        Integer amount = 0;
+        String hql = "from Material where company.id=:companyId and type = :type";
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("companyId", company.getId());
+        queryParamMap.put("type", type);
+        Material material = (Material) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
+        if (material != null) {
+            amount = material.getAmount();
+        }
+        return amount;
+    }
 }
