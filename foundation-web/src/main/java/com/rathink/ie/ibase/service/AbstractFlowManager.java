@@ -73,6 +73,8 @@ public abstract class AbstractFlowManager implements FlowManager {
 
         processInstruction();
 
+        processPart();
+
         //计算保存新回合的属性数据
         calculateProperty();
         //4计算保存新回合的财务数据

@@ -123,6 +123,27 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/continueBuildProduceLine")
+    @ResponseBody
+    public Map continueBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
+        String companyTermId = request.getParameter("companyTermId");
+        String partId = request.getParameter("partId");
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(produceLine);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        return result;
+    }
+
     @RequestMapping(value = "/produce")
     @ResponseBody
     public Map produce(HttpServletRequest request, Model model) throws Exception {
@@ -135,10 +156,14 @@ public class ManufacturingController extends BaseIndustryController {
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
         Company company = companyTerm.getCompany();
 
-        Integer R1Amount = materialManager.getMateralAmount(company, Material.Type.R1.name());
-        Integer R2Amount = materialManager.getMateralAmount(company, Material.Type.R2.name());
-        Integer R3Amount = materialManager.getMateralAmount(company, Material.Type.R3.name());
-        Integer R4Amount = materialManager.getMateralAmount(company, Material.Type.R4.name());
+        Material R1 = materialManager.getMateral(company, Material.Type.R1.name());
+        Material R2 = materialManager.getMateral(company, Material.Type.R2.name());
+        Material R3 = materialManager.getMateral(company, Material.Type.R3.name());
+        Material R4 = materialManager.getMateral(company, Material.Type.R4.name());
+        Integer R1Amount = R1.getAmount();
+        Integer R2Amount = R2.getAmount();
+        Integer R3Amount = R3.getAmount();
+        Integer R4Amount = R4.getAmount();
 
         boolean isMaterialAmountEnough = false;
         Product.Type productType = Product.Type.valueOf(produceLine.getProduceType());
@@ -146,21 +171,45 @@ public class ManufacturingController extends BaseIndustryController {
             case P1:
                 if (R1Amount >=1) {
                     isMaterialAmountEnough = true;
+                    R1Amount = R1Amount - 1;
+                    R1.setAmount(R1Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R1);
                 }
                 break;
             case P2:
                 if (R1Amount >= 1 && R2Amount >= 1) {
                     isMaterialAmountEnough = true;
+                    R1Amount = R1Amount - 1;
+                    R1.setAmount(R1Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R1);
+                    R2Amount = R2Amount-1;
+                    R2.setAmount(R2Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R2);
                 }
                 break;
             case P3:
                 if (R2Amount >= 2 && R3Amount >= 1) {
                     isMaterialAmountEnough = true;
+                    R2Amount = R2Amount - 2;
+                    R2.setAmount(R2Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R2);
+                    R3Amount = R3Amount-1;
+                    R3.setAmount(R3Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R3);
                 }
                 break;
             case P4:
                 if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
                     isMaterialAmountEnough = true;
+                    R2Amount = R2Amount - 1;
+                    R2.setAmount(R2Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R2);
+                    R3Amount = R3Amount-1;
+                    R3.setAmount(R3Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R3);
+                    R4Amount = R4Amount-1;
+                    R4.setAmount(R4Amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), R4);
                 }
                 break;
             default:
@@ -183,9 +232,11 @@ public class ManufacturingController extends BaseIndustryController {
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
         produceLine.setStatus(ProduceLine.Status.PRODUCING.name());
-        Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceType()).getProduceCycle();
+        Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getProduceCycle();
         produceLine.setProduceNeedCycle(produceCycle);
         baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
+
+
 
         result.put("status", 1);
         result.put("message", "生产中");

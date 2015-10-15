@@ -62,7 +62,7 @@ public class ProduceLine extends CompanyPart {
     }
 
     public enum Type {
-        MANUAL(1,0,1,1,1,1),AUTOMATIC(1,2,1,1,1,1),HALF_AUTOMATIC(1,1,1,1,1,1), FLEXBILITY(1, 3, 1, 1, 1, 1),;
+        MANUAL(1,0,3,0,1,1),HALF_AUTOMATIC(1,1,2,1,1,2),AUTOMATIC(1,2,1,2,1,4),FLEXBILITY(1, 3, 1, 0, 1, 6),;
 
         Type(Integer cost, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
             this.cost = cost;

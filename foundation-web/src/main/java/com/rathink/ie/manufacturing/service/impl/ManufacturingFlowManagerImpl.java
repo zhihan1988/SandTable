@@ -1,5 +1,6 @@
 package com.rathink.ie.manufacturing.service.impl;
 
+import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
@@ -169,6 +170,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         dateRoundObserable.addObserver((o, arg) -> next(arg.toString()));
         observableMap.put(campaignDate + ":" + "DATE_ROUND", dateRoundObserable);
 
+/*
         if (campaign.getCurrentCampaignDate() % 4 == 1) {
             RoundEndObserable marketPayRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
             marketPayRoundObserable.addObserver(new Observer() {
@@ -200,6 +202,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             });
             observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);
         }
+*/
     }
 
     protected void processInstruction() {
@@ -252,20 +255,26 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             Company company = companyTerm.getCompany();
 
-            List<CompanyPart> produceLineList = companyPartManager.listCompanyPart(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
-            for (CompanyPart companyPart : produceLineList) {
-                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), companyPart.getId());
+            XQuery produceLineQuery = new XQuery();
+            produceLineQuery.setHql("from ProduceLine where company.id = :companyId and status = :status");
+            produceLineQuery.put("companyId", company.getId());
+            produceLineQuery.put("status",ProduceLine.Status.PRODUCING.name());
+            List<ProduceLine> produceLineList = baseManager.listObject(produceLineQuery);
+            for (ProduceLine produceLine : produceLineList) {
                 Integer produceNeedCycle = produceLine.getProduceNeedCycle();
                 produceNeedCycle = produceNeedCycle - 1;
                 produceLine.setProduceNeedCycle(produceNeedCycle);
-                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
 
                 if (produceNeedCycle == 0) {//生产完成
                     Product product = productManager.getProduct(company, produceLine.getProduceType());
                     Integer productAmount = product.getAmount();
                     product.setAmount(++productAmount);
                     baseManager.saveOrUpdate(Product.class.getName(), product);
+
+                    produceLine.setStatus(ProduceLine.Status.FREE.name());
                 }
+
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
             }
         }
 

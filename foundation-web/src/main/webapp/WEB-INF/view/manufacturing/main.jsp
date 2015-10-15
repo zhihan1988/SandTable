@@ -170,10 +170,9 @@
                     <li>
                         <b style="margin-left: 30px;">产品</b>
                         <ul>
-                            <li>P1 : 0</li>
-                            <li>P2 : 0</li>
-                            <li>P3 : 0</li>
-                            <li>P4 : 0</li>
+                            <c:forEach items="${productList}" var="product">
+                                <li>${product.type} : ${product.amount}</li>
+                            </c:forEach>
                         </ul>
                     </li>
                 </ul>
@@ -262,10 +261,10 @@
                             <td id="operation_${line.id}" colspan="3" style="border-top: 0">
                                 <c:choose>
                                     <c:when test="${line.status == 'UN_BUILD'}">
-                                        <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">建造</button>
+                                        <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">投资新生产线</button>
                                     </c:when>
                                     <c:when test="${line.status == 'BUILDING'}">
-                                        建造中
+                                        <button id="continueBuild_${line.id}" type="button" class="am-btn am-btn-secondary">再投生产线</button>
                                     </c:when>
                                     <c:when test="${line.status == 'FREE'}">
                                         <button id="produce_${line.id}" type="button" class="am-btn am-btn-secondary">生产</button>
@@ -414,6 +413,24 @@
             }
         });
 
+
+        $("button[id^='continueBuild_']").click(function(){
+            var $build = $(this);
+            var partId = $build.attr("id").split("_")[1];
+            //开始建造
+            $.getJSON("<c:url value="/manufacturing/continueBuildProduceLine.do"/>",
+                    {
+                        companyTermId: companyTermId,
+                        partId: partId
+                    },
+                    function(data){
+                        if(data.status == 1) {
+                            $build.replaceWith("建造中");
+                        }
+                    });
+        });
+
+
         $("td[id^='operation_']").delegate("button[id^='produce_']","click",function(){
             var $produce = $(this);
             var produceLineId = $produce.attr("id").split("_")[1];
@@ -453,7 +470,7 @@
             }
         });
 
-//        setInterval(isNext, 5000);
+        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isCampaignNext"/>",
                     {
