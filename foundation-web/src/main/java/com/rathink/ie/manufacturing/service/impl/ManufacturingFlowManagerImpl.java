@@ -19,8 +19,10 @@ import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +33,8 @@ import java.util.*;
 @Service(value = "manufacturingFlowManagerImpl")
 public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingFlowManagerImpl.class);
+    @Autowired
+    private ProductManager productManager;
 
     @Override
     protected void initPartList() {
@@ -199,26 +203,73 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     }
 
     protected void processInstruction() {
-        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EManufacturingChoiceBaseType.PRODUCE_LINE.name());
 
-            List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
-            for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-                Integer instructionDate = companyTermInstruction.getCampaignDate();
-                String lineType = companyTermInstruction.getValue();
-                EProduceLineType eProduceLineType = EProduceLineType.valueOf(lineType);
-                if (currentCampaignDate - instructionDate >= eProduceLineType.getInstallCycle()) {
-                    companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.name());
-                } else {
+            //生产线建造
+            List<CompanyTermInstruction> produceLineInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+            if (produceLineInstructionList != null) {
+                for (CompanyTermInstruction produceLineInstruction : produceLineInstructionList) {
+                    ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineInstruction.getCompanyPart().getId());
+//                    Integer instructionDate = produceLineInstruction.getCompanyTerm().getCampaignDate();
+//                    ProduceLine.Type eProduceLineType = ProduceLine.Type.valueOf(produceLineInstruction.getValue());
+                    Integer lineBuildNeedCycle = Integer.valueOf(produceLine.getLineBuildNeedCycle());
+                    if (lineBuildNeedCycle > 0) {
+                        lineBuildNeedCycle--;
+                    }
+                    if (lineBuildNeedCycle == 0) {//建造完成
+                        produceLine.setStatus(ProduceLine.Status.FREE.name());
+                        baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+                    }
 
+                    produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceLineInstruction);
                 }
             }
-            companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
+
+            //原材料采购
+            List<CompanyTermInstruction> materialInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.MATERIAL.name());
+            if (materialInstructionList != null) {
+                for (CompanyTermInstruction materialInstruction : materialInstructionList) {
+                    Material material = (Material) baseManager.getObject(Material.class.getName(), materialInstruction.getCompanyPart().getId());
+                    Integer amount = Integer.valueOf(materialInstruction.getValue());
+                    material.setAmount(material.getAmount() + amount);
+                    baseManager.saveOrUpdate(Material.class.getName(), material);
+
+                    materialInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), materialInstruction);
+                }
+            }
         }
+    }
+
+    protected void processPart() {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+            Company company = companyTerm.getCompany();
+
+            List<CompanyPart> produceLineList = companyPartManager.listCompanyPart(company, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+            for (CompanyPart companyPart : produceLineList) {
+                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), companyPart.getId());
+                Integer produceNeedCycle = produceLine.getProduceNeedCycle();
+                produceNeedCycle = produceNeedCycle - 1;
+                produceLine.setProduceNeedCycle(produceNeedCycle);
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+                if (produceNeedCycle == 0) {//生产完成
+                    Product product = productManager.getProduct(company, produceLine.getProduceType());
+                    Integer productAmount = product.getAmount();
+                    product.setAmount(++productAmount);
+                    baseManager.saveOrUpdate(Product.class.getName(), product);
+                }
+            }
+        }
+
+
     }
 
 

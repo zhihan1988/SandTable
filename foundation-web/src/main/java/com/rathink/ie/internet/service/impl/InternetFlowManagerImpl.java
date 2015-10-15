@@ -186,6 +186,11 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
 
     }
 
+    @Override
+    protected void processPart() {
+
+    }
+
     /*private void calculateCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();
         Set<IndustryResourceChoice> currentIndustryResourceChoiceList = new HashSet<>();

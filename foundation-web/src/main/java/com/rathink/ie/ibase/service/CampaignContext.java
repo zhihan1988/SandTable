@@ -55,8 +55,8 @@ public class CampaignContext {
         currentCompanyTermInstructionSet.addAll(companyTermInstructionList);
 
         for (CompanyTermInstruction companyTermInstruction : companyTermInstructionList) {
-            String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
-            if (StringUtils.isNotBlank(choiceId)) {
+            if (companyTermInstruction.getIndustryResourceChoice() != null) {
+                String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
                 if (currentChoiceInstructionMap.containsKey(choiceId)) {
                     currentChoiceInstructionMap.get(choiceId).add(companyTermInstruction);
                 } else {
@@ -64,10 +64,7 @@ public class CampaignContext {
                     ciList.add(companyTermInstruction);
                     currentChoiceInstructionMap.put(choiceId, ciList);
                 }
-            } else {
-//                currentResourceInstructionMap
             }
-
         }
     }
 

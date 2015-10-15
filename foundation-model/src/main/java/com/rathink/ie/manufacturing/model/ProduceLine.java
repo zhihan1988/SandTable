@@ -40,21 +40,21 @@ public class ProduceLine extends CompanyPart {
     }
 
     @Column(name = "value3")
-    public String getLineBuildNeedCycle() {
-        return lineBuildNeedCycle;
+    public Integer getLineBuildNeedCycle() {
+        return lineBuildNeedCycle == null ? 0 : Integer.valueOf(lineBuildNeedCycle);
     }
 
-    public void setLineBuildNeedCycle(String lineBuildNeedCycle) {
-        this.lineBuildNeedCycle = lineBuildNeedCycle;
+    public void setLineBuildNeedCycle(Integer lineBuildNeedCycle) {
+        this.lineBuildNeedCycle = lineBuildNeedCycle == null ? null : String.valueOf(lineBuildNeedCycle);
     }
 
     @Column( name = "value4")
-    public String getProduceNeedCycle() {
-        return produceNeedCycle;
+    public Integer getProduceNeedCycle() {
+        return produceNeedCycle == null ? 0 : Integer.valueOf(produceNeedCycle);
     }
 
-    public void setProduceNeedCycle(String produceNeedCycle) {
-        this.produceNeedCycle = produceNeedCycle;
+    public void setProduceNeedCycle(Integer produceNeedCycle) {
+        this.produceNeedCycle = produceNeedCycle == null ? null : String.valueOf(produceNeedCycle);
     }
 
     public enum Status {

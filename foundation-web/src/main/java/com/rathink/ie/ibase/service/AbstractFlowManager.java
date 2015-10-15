@@ -46,6 +46,8 @@ public abstract class AbstractFlowManager implements FlowManager {
     protected IndustryResourceChoiceManager industryResourceChoiceManager;
     @Autowired
     protected CompanyTermManager companyTermManager;
+    @Autowired
+    protected CompanyPartManager companyPartManager;
 
     @Override
     public void begin(String campaignId) {
@@ -168,9 +170,14 @@ public abstract class AbstractFlowManager implements FlowManager {
     }
 
     /**
-     * 处理竞标结果
+     * 处理决策
      */
     protected abstract void processInstruction();
+
+    /**
+     * 处理组件周期变化
+     */
+    protected abstract void processPart();
 
     /**
      * 计算属性数据

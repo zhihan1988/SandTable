@@ -114,7 +114,7 @@ public class ManufacturingController extends BaseIndustryController {
             produceLine.setStatus(ProduceLine.Status.BUILDING.name());
         }
         Integer installCycle = ProduceLine.Type.valueOf(lineType).getInstallCycle();
-        produceLine.setProduceNeedCycle(String.valueOf(installCycle));
+        produceLine.setProduceNeedCycle(installCycle);
 
         baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
 
@@ -184,7 +184,7 @@ public class ManufacturingController extends BaseIndustryController {
 
         produceLine.setStatus(ProduceLine.Status.PRODUCING.name());
         Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceType()).getProduceCycle();
-        produceLine.setProduceNeedCycle(String.valueOf(produceCycle));
+        produceLine.setProduceNeedCycle(produceCycle);
         baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
 
         result.put("status", 1);
