@@ -17,6 +17,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
@@ -50,6 +51,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         //产品
         IndustryResource productResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.PRODUCT.name());
         List<IndustryResourceChoice> productList = industryResourceChoiceManager.listIndustryResourceChoice(productResource.getId());
+        //市场
+        IndustryResource marketResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET.name());
+        List<IndustryResourceChoice> marketList = industryResourceChoiceManager.listIndustryResourceChoice(marketResource.getId());
 
         Map<String, List<CompanyPart>> companyPartMap = campaignContext.getCompanyPartMap();
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
@@ -91,6 +95,17 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 product.setCompany(company);
                 product.setStatus(Product.Status.NORMAL.name());
                 baseManager.saveOrUpdate(Product.class.getName(), product);
+            }
+            for (IndustryResourceChoice marketChoice : marketList) {
+                Market market = new Market();
+                market.setName(marketChoice.getName());
+                market.setType(marketChoice.getType());
+                Integer devotionNeedCycle = Market.Type.valueOf(marketChoice.getType()).getDevotionNeedCycle();
+                market.setDevotionNeedCycle(devotionNeedCycle);
+                market.setCompany(company);
+                market.setCampaign(campaignContext.getCampaign());
+                market.setStatus(Market.Status.NORMAL.name());
+                baseManager.saveOrUpdate(Market.class.getName(), market);
             }
 
             companyPartMap.put(company.getId(), companyPartList);

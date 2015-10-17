@@ -72,7 +72,9 @@
     <div>
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
-                <div class="am-panel-bd">主页</div>
+                <div class="am-panel-bd">
+                    <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="test" checkedValue="value3"/>
+                </div>
             </div>
         </div>
         <div id="panel-2" class="panel">
@@ -396,6 +398,10 @@
 </div>
 
 <script>
+
+    function test(element) {
+        console.log($(element).val());
+    }
 
     $(function () {
 

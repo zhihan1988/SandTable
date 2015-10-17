@@ -1,22 +1,25 @@
 package com.rathink.ie.manufacturing.controller;
 
-import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.service.*;
+import com.rathink.ie.ibase.service.CampaignCenter;
+import com.rathink.ie.ibase.service.CampaignContext;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
+import com.rathink.ie.manufacturing.EManufacturingDept;
+import com.rathink.ie.manufacturing.EManufacturingRoundType;
 import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.service.MarketManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +29,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Created by Hean on 2015/10/7.
@@ -39,6 +44,8 @@ public class ManufacturingController extends BaseIndustryController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
     @Autowired
     private MaterialManager materialManager;
+    @Autowired
+    protected MarketManager marketManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -57,9 +64,18 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("campaign", campaign);
         model.addAttribute("companyTerm", companyTerm);
         model.addAttribute("companyNum", campaignContext.getCompanyTermContextMap().size());
+        List<ProduceLine> produceLineList = baseManager.listObject("from ProduceLine where company.id =" + companyId);
+        model.addAttribute("produceLineList", produceLineList);
+        List<Material> materialList = baseManager.listObject("from Material where company.id =" + companyId);
+        model.addAttribute("materialList", materialList);
+        List<Product> productList = baseManager.listObject("from Product where company.id =" + companyId);
+        model.addAttribute("productList", productList);
+        List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
+        model.addAttribute("marketList", marketList);
         if (currentCampaignDate % 4 == 1) {
-
-            model.addAttribute("marketFeeResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name()));
+            IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
+            model.addAttribute("marketFeeResource", marketFeeResource);
+            IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
             RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
             if (marketFeeObervable.getUnFinishedNum() != 0) {
@@ -81,12 +97,7 @@ public class ManufacturingController extends BaseIndustryController {
             }*/
         }
 
-        List<ProduceLine> produceLineList = baseManager.listObject("from ProduceLine where company.id =" + companyId);
-        model.addAttribute("produceLineList", produceLineList);
-        List<Material> materialList = baseManager.listObject("from Material where company.id =" + companyId);
-        model.addAttribute("materialList", materialList);
-        List<Product> productList = baseManager.listObject("from Product where company.id =" + companyId);
-        model.addAttribute("productList", productList);
+
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";
     }

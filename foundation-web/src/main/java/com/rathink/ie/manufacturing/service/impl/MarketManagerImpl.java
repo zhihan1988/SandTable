@@ -1,27 +1,28 @@
 package com.rathink.ie.manufacturing.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
-import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.service.MarketManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Hean on 2015/10/15.
  */
 @Service
-public class MarketManagerImpl {
+public class MarketManagerImpl implements MarketManager {
     @Autowired
     private BaseManager baseManager;
 
-    public IndustryResourceChoice[][] getMarketChoiceArray(List<Market> marketList, List<Product> productList, List<IndustryResourceChoice> marketChoiceList) {
+    @Override
+    public IndustryResourceChoice[][] getMarketChoiceArray(List<Market> marketList, List<Product> productList, Set<IndustryResourceChoice> marketChoiceList) {
 
         Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
         for (IndustryResourceChoice marketChoice : marketChoiceList) {

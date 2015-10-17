@@ -28,6 +28,7 @@
     <script src="<c:url value='/resources/jquery/jquery-1.11.1.min.js'/>"></script>
     <script src="<c:url value='/resources/js/alert.js'/>"></script>
     <script src="<c:url value='/assets/js/amazeui.min.js'/>"></script>
+    <script src="<c:url value="/resources/js/radioSet.js"/>"></script>
     <sitemesh:write property='head'/>
     <style>
         .efy-active {
