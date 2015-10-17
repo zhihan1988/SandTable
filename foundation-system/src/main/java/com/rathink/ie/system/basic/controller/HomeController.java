@@ -74,14 +74,15 @@ public class HomeController {
         return "/foundation/expressionResult";
     }
 
-//    @RequestMapping("/test.do")
-//    public void test() {
-//        String hql = "select obj from " + IndustryExpression.class.getName() + " obj where obj.name=:name";
+    @RequestMapping("/test.do")
+    public String test() {
+        String hql = "select obj from " + IndustryExpression.class.getName() + " obj where obj.name=:name";
 //        LinkedHashMap<String, Object> param = new LinkedHashMap<>();
 //        param.put("name", "测试数据");
 //        IndustryExpression industryExpression = (IndustryExpression) baseManager.getUniqueObjectByConditions(hql, param);
 //        IndustryAnalyzer industryAnalyzer = new IndustryAnalyzer(industryExpression.getExpression());
-//
-//    }
+        return "/test";
+
+    }
 
 }
