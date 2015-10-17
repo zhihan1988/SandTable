@@ -30,10 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Created by Hean on 2015/10/7.
@@ -74,9 +71,26 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("marketList", marketList);
         if (currentCampaignDate % 4 == 1) {
             IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
-            model.addAttribute("marketFeeResource", marketFeeResource);
-            IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
-            model.addAttribute("marketChoiceArray", marketChoiceArray);
+            Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
+            for (IndustryResourceChoice marketChoice : marketFeeResource.getCurrentIndustryResourceChoiceSet()) {
+                resourceChoiceMap.put(marketChoice.getType(), marketChoice);
+            }
+
+            Map marketMap = new HashMap<>();
+            for (Market market : marketList) {
+                if (market.getDevotionNeedCycle() == 0) {
+                    Map productMap = new LinkedHashMap<>();
+                    for (Product product : productList) {
+                        if (product.getDevelopNeedCycle() == 0) {
+                            productMap.put(product.getType(), resourceChoiceMap.get(market.getType() + "_" + product.getType()));
+                        }
+                    }
+                    marketMap.put(market.getType(), productMap);
+                }
+            }
+            model.addAttribute("marketMap", marketMap);
+//            IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
+//            model.addAttribute("marketChoiceArray", marketChoiceArray);
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
             RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
             if (marketFeeObervable.getUnFinishedNum() != 0) {

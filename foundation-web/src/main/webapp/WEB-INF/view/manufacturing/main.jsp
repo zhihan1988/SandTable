@@ -39,6 +39,10 @@
         .repertory ul li{
             list-style-type:none;
         }
+
+        .am-nav-tabs>li>a {
+            padding:.4em 0.5em
+        }
     </style>
 </head>
 <body>
@@ -81,36 +85,45 @@
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                 <h3>投放广告</h3>
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>产品/市场</th>
-                        <th>本地</th>
-                        <th>区域</th>
-                        <th>国内</th>
-                        <th>亚洲</th>
-                        <th>国际</th>
-                    </tr>
-                    </thead>
-                    <c:forEach items="${marketChoiceArray}" var="arr_1" varStatus="status">
-                    <tbody>
-                    <tr>
-                        <td>P${status.index+1}</td>
-                    <c:forEach items="${arr_1}" var="resourceChoice" >
-                        <td>
-                            <c:if test="${resourceChoice.id != null}">
-                                <select>
-                                    <c:forEach items="${fn:split(resourceChoice.industryResource.valueSet, ',')}" var="fee">
-                                        <option value="${resourceChoice.id}_${fee}">${fee}</option>
-                                    </c:forEach>
-                                </select>
+                    <div class="am-tabs" data-am-tabs>
+                        <ul class="am-tabs-nav am-nav am-nav-tabs">
+                            <li class="am-active"><a href="#tab1">本地</a></li>
+                            <c:if test="${marketMap['AREA'] != null}">
+                                <li><a href="#tab2">区域</a></li>
                             </c:if>
-                        </td>
-                    </c:forEach>
-                    </tr>
-                </c:forEach>
-                    </tbody>
-                </table>
+                            <c:if test="${marketMap['DOMESTIC'] != null}">
+                                <li><a href="#tab3">国内</a></li>
+                            </c:if>
+                            <c:if test="${marketMap['ASIA'] != null}">
+                                <li><a href="#tab4">亚洲</a></li>
+                            </c:if>
+                            <c:if test="${marketMap['INTERNATIONAL'] != null}">
+                                <li><a href="#tab5">国际</a></li>
+                            </c:if>
+                        </ul>
+
+                        <div class="am-tabs-bd">
+                            <c:forEach items="${marketMap}" var="market" varStatus="status">
+                                <div class="am-tab-panel am-fade am-in am-active" id="tab${status.index+1}">
+                                    <table class="am-table">
+                                        <c:forEach items="${market.value}" var="productChoiceMap">
+                                            <tr>
+                                                <td>${productChoiceMap.key}</td>
+                                                <td>
+                                                    <select id="marketFee_${productChoiceMap.value.id}">
+                                                        <option value="${productChoiceMap.value.id}#-1">未投入</option>
+                                                        <c:forEach items="${fn:split(productChoiceMap.value.industryResource.valueSet, ',')}" var="fee">
+                                                            <option value="${productChoiceMap.value.id}#${fee}">${fee}</option>
+                                                        </c:forEach>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </table>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="am-panel am-panel-default">
@@ -396,6 +409,29 @@
         var roundType = '${roundType}';
 
 
+        //市场投放
+        $("select[id^='marketFee_']").change(function(){
+            var $choice = $(this);
+            var array = $choice.val().split("#");
+            var choiceId = array[0];
+            var value = array[1];
+            if (value != -1) {
+                $.post("<c:url value="/work/makeInstruction"/>",
+                        {
+                            companyTermId: companyTermId,
+                            choiceId: choiceId,
+                            value: value
+                        });
+            } else {
+                $.post("<c:url value="/work/cancelInstruction"/>",
+                        {
+                            companyId: companyId,
+                            choiceId: choiceId
+                        });
+            }
+        })
+
+        //采购原料
         $("#purchase").click(function(){
             $("select[id^='materialNum_']").each(function(){
                 var $material = $(this);
@@ -421,7 +457,7 @@
             });
         })
 
-
+        //研发投入
         $("#develop").click(function(){
             var $developButton = $(this);
             $("input[name='developProduct']:checked").each(function(){
