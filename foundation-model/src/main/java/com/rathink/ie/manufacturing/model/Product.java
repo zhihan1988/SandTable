@@ -36,6 +36,7 @@ public class Product extends CompanyPart {
         this.amount = amount == null ? null : String.valueOf(amount);
     }
 
+    @Column(name = "value3")
     public Integer getDevelopNeedCycle() {
         return developNeedCycle == null ? 0 : Integer.valueOf(developNeedCycle);
     }

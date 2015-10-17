@@ -326,11 +326,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
             Integer produceLineTotalCost = 0;
             List<CompanyTermInstruction> instructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EManufacturingChoiceBaseType.PRODUCE_LINE.name());
-            for (CompanyTermInstruction instruction : instructionList) {
-                EProduceLineType eProduceLineType = EProduceLineType.valueOf(instruction.getValue());
-                Integer cost = eProduceLineType.getCost();
-                produceLineTotalCost += cost;
-            }
+
             Account productFeeAccount = accountManager.packageAccount(String.valueOf(produceLineTotalCost)
                     , EManufacturingAccountEntityType.PRODUCE_LINE_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
             accountList.add(productFeeAccount);

@@ -82,26 +82,61 @@
                 <table class="am-table">
                     <thead>
                     <tr>
-                        <th>产品</th>
-                        <th>市场</th>
-                        <th>投入</th>
+                        <th>产品/市场</th>
+                        <th>本地</th>
+                        <th>区域</th>
+                        <th>国内</th>
+                        <th>亚洲</th>
+                        <th>国际</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${marketFeeResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
-                            <td>${choice.type}</td>
-                            <td>${choice.value}</td>
+                            <td>P1</td>
                             <td>
-                                <select id="instruction_${choice.id}" name="market" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                    <option value="${choice.id}#-1">未选择</option>
-                                    <c:forEach items="${fn:split(marketFeeResource.valueSet, ',')}" var="fee">
-                                        <option value="${choice.id}#${fee}">${fee}</option>
-                                    </c:forEach>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
                                 </select>
                             </td>
                         </tr>
-                    </c:forEach>
+                        <tr>
+                            <td>P2</td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="10000">10000</option>
+                                </select>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -225,17 +260,20 @@
                               <th>产品类型</th>
                               <th>库存</th>
                               <th>剩余研发周期</th>
+                              <th></th>
                           </tr>
                           </thead>
                           <tbody>
                           <c:forEach items="${productList}" var="product">
                           <tr>
-                              <td>
-                                <input type="checkbox" name="developProduct" value="${product.id}">
-                                ${product.type}
-                              </td>
+                              <td>${product.type}</td>
                               <td>${product.amount}</td>
                               <td>${product.developNeedCycle}</td>
+                              <td>
+                                  <c:if test="${product.developNeedCycle > 0}">
+                                      <input type="checkbox" name="developProduct" value="${product.id}">
+                                  </c:if>
+                              </td>
                           </tr>
                           </c:forEach>
                           <tr>
@@ -521,7 +559,7 @@
             }
         });
 
-        setInterval(isNext, 5000);
+//        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isCampaignNext"/>",
                     {

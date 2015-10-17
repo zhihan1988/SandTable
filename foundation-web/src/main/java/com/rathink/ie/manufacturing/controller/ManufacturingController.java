@@ -1,5 +1,6 @@
 package com.rathink.ie.manufacturing.controller;
 
+import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
@@ -9,8 +10,10 @@ import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
@@ -23,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -54,6 +58,7 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("companyTerm", companyTerm);
         model.addAttribute("companyNum", campaignContext.getCompanyTermContextMap().size());
         if (currentCampaignDate % 4 == 1) {
+
             model.addAttribute("marketFeeResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name()));
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
             RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
@@ -289,4 +294,6 @@ public class ManufacturingController extends BaseIndustryController {
         result.put("status", 1);
         return result;
     }
+
+
 }
