@@ -57,7 +57,7 @@ public interface CommonManager {
      * @return commonSerial
      * @throws Exception
      */
-    CommonSerial getAutoSerial(String group) throws  Exception;
+    CommonSerial getAutoSerial(String group) ;
 
     /**
      * 获取配置文件中的快递公司列表*/

@@ -92,56 +92,26 @@
                         <th>国际</th>
                     </tr>
                     </thead>
+                    <c:forEach items="${marketChoiceArray}" var="arr_1" varStatus="status">
                     <tbody>
-                        <tr>
-                            <td>P1</td>
-                            <td>
+                    <tr>
+                        <td>P${status.index+1}</td>
+                    <c:forEach items="${arr_1}" var="resourceChoice" >
+                        <td>
+                            <c:if test="${resourceChoice.id != null}">
                                 <select>
-                                    <option value="10000">10000</option>
+                                    <c:forEach items="${fn:split(resourceChoice.industryResource.valueSet, ',')}" var="fee">
+                                        <option value="${resourceChoice.id}_${fee}">${fee}</option>
+                                    </c:forEach>
                                 </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>P2</td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="10000">10000</option>
-                                </select>
-                            </td>
-                        </tr>
+                            </c:if>
+                        </td>
+                    </c:forEach>
+                    </tr>
+                </c:forEach>
                     </tbody>
                 </table>
-            </div>
+                </div>
             </div>
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">

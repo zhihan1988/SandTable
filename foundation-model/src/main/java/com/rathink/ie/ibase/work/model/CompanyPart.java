@@ -17,6 +17,7 @@ import javax.persistence.*;
 public class CompanyPart {
     private String id;
 //    private String baseType;
+    private String serial;
     private String dept;
     private Campaign campaign;
     private Company company;
@@ -38,6 +39,15 @@ public class CompanyPart {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Column(name = "serial")
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     @Column(name = "status")

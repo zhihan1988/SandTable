@@ -246,10 +246,10 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public CommonSerial getAutoSerial(String group) throws  Exception{
+    public CommonSerial getAutoSerial(String group) {
         CommonSerial conmmonSerial = autoSerialMap.get(group);
         if(conmmonSerial == null){
-            throw  new Exception("conmmonSerial is null");
+            throw new RuntimeException("commonSerial is null");
         }
         return  conmmonSerial;
     }

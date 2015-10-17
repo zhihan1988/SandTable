@@ -32,11 +32,11 @@ public class MarketManagerImpl implements MarketManager {
         marketList.sort(((o1, o2) -> Market.Type.valueOf(o1.getType()).ordinal() - Market.Type.valueOf(o2.getType()).ordinal()));
         productList.sort((o1, o2) -> Product.Type.valueOf(o1.getType()).ordinal() - Product.Type.valueOf(o2.getType()).ordinal());
 
-        IndustryResourceChoice[][] choiceArray = new IndustryResourceChoice[marketList.size()][productList.size()];
-        for (int i = 0; i < marketList.size(); i++) {
-            Market market = marketList.get(i);
-            for (int j = 0; j < productList.size(); j++) {
-                Product product = productList.get(j);
+        IndustryResourceChoice[][] choiceArray = new IndustryResourceChoice[productList.size()][marketList.size()];
+        for (int i = 0; i < productList.size(); i++) {
+            Product product = productList.get(i);
+            for (int j = 0; j < marketList.size(); j++) {
+                Market market = marketList.get(j);
                 if (market.getDevotionNeedCycle() == 0 && product.getDevelopNeedCycle() == 0) {
                     choiceArray[i][j] = resourceChoiceMap.get(market.getType() +"_"+ product.getType());
                 } else {

@@ -1,6 +1,7 @@
 package com.rathink.ie.manufacturing.service.impl;
 
 import com.ming800.core.does.model.XQuery;
+import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
@@ -36,6 +37,8 @@ import java.util.*;
 public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingFlowManagerImpl.class);
     @Autowired
+    private AutoSerialManager autoSerialManager;
+    @Autowired
     private ProductManager productManager;
 
     @Override
@@ -62,7 +65,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             List<CompanyPart> companyPartList = new ArrayList<>();
             for (IndustryResourceChoice produceLineChoice : produceLineList) {
                 ProduceLine produceLine = new ProduceLine();
-//                produceLine.setBaseType(EPartBaseType.PRODUCE_LINE.name());
+                produceLine.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 produceLine.setDept(produceLineResource.getDept());
                 produceLine.setStatus(ProduceLine.Status.UN_BUILD.name());
                 produceLine.setCampaign(campaignContext.getCampaign());
@@ -75,6 +78,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             }
             for (IndustryResourceChoice materialChoice : materialList) {
                 Material material = new Material();
+                material.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 material.setName(materialChoice.getName());
                 material.setType(materialChoice.getType());
                 material.setAmount("0");
@@ -85,6 +89,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             }
             for (IndustryResourceChoice productChoice : productList) {
                 Product product = new Product();
+                product.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 product.setAmount(0);
                 product.setName(productChoice.getName());
                 product.setType(productChoice.getType());
@@ -98,6 +103,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             }
             for (IndustryResourceChoice marketChoice : marketList) {
                 Market market = new Market();
+                market.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 market.setName(marketChoice.getName());
                 market.setType(marketChoice.getType());
                 Integer devotionNeedCycle = Market.Type.valueOf(marketChoice.getType()).getDevotionNeedCycle();

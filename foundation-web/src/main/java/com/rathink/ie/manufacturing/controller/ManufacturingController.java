@@ -76,6 +76,7 @@ public class ManufacturingController extends BaseIndustryController {
             IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
             model.addAttribute("marketFeeResource", marketFeeResource);
             IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
+            model.addAttribute("marketChoiceArray", marketChoiceArray);
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
             RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
             if (marketFeeObervable.getUnFinishedNum() != 0) {

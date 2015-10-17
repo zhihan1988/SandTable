@@ -54,7 +54,7 @@ public class AutoSerialManagerImpl implements AutoSerialManager {
         return serial;
     }*/
 
-    public String nextSerial(String group) throws Exception {
+    public String nextSerial(String group) {
        if(map.get(group) != null){
            updateSerials = map.get(group);
            if (updateSerials.empty()){
@@ -67,7 +67,7 @@ public class AutoSerialManagerImpl implements AutoSerialManager {
        return updateSerials.pop().toString();
     }
 
-    private void makeSerials(String group) throws Exception{
+    private void makeSerials(String group) {
         CommonSerial commonSerial = commonManager.getAutoSerial(group);//获取xml配置对象
         //从数据库中获取初始值，如果为空，默认从1开始
         //String queryStr = "select max(serial) from core_p_auto_serial where groupName= :groupName order by serial desc LIMIT 1";

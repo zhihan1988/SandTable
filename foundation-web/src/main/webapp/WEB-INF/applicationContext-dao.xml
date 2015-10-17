@@ -25,6 +25,7 @@
         </property>
         <property name="packagesToScan">
             <list>
+                <value>com.ming800.core.p.model</value>
                 <value>com.rathink.ie.**.**.model</value>
             </list>
         </property>

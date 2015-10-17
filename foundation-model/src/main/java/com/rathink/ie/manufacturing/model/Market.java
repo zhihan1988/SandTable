@@ -35,9 +35,26 @@ public class Market extends CompanyPart {
         this.devotionNeedCycle = devotionNeedCycle == null ? null : String.valueOf(devotionNeedCycle);
     }
 
+    public enum Status {
+        NORMAL
+    }
 
     public enum Type {
-       LOCAL,AREA,DOMESTIC,ASIA,INTERNATIONAL
+        LOCAL(0),AREA(1),DOMESTIC(2),ASIA(3),INTERNATIONAL(4);
+
+        Type(Integer devotionNeedCycle) {
+            this.devotionNeedCycle = devotionNeedCycle;
+        }
+
+        private Integer devotionNeedCycle;
+
+        public Integer getDevotionNeedCycle() {
+            return devotionNeedCycle;
+        }
+
+        public void setDevotionNeedCycle(Integer devotionNeedCycle) {
+            this.devotionNeedCycle = devotionNeedCycle;
+        }
     }
 
 }
