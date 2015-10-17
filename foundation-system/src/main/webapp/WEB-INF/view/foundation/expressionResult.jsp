@@ -13,22 +13,31 @@
 </head>
 <body>
 
-<c:forEach items="${result}" var="table">
+<c:forEach items="${result}" var="table" varStatus="index">
 
+    <c:if test="${!empty ability3}">
+        <h3>${ability3.name}=${ability3.initialValue*ability3.step*index.index}</h3>
+    </c:if>
 
-<table class="am-table am-table-bordered">
-    <tbody>
-    <c:forEach items="${table}" var="y">
-        <tr>
-            <c:forEach items="${y}" var="x">
-                <td>
-                        ${x}
-                </td>
-            </c:forEach>
-        </tr>
-    </c:forEach>
-    </tbody>
-</table>
+    <table class="am-table am-table-bordered">
+        <tbody>
+        <c:forEach items="${table}" var="y" varStatus="head">
+            <tr>
+                <c:forEach items="${y}" var="x" varStatus="head2">
+                    <td>
+                        <c:if test="${head.index==0&&head2.index==0}">
+                            ${ability1.name}/${ability2.name}
+                        </c:if>
+
+                        <c:if test="${head.index!=0||head2.index!=0}">
+                            ${x}
+                        </c:if>
+                    </td>
+                </c:forEach>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
 </c:forEach>
 </body>
 </html>

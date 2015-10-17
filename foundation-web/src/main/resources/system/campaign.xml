@@ -24,5 +24,28 @@
                 </do>
             </does>
         </entity>
+
+
+        <entity name="Industry" label="行业"
+                basic="simple" others=""
+                model="com.rathink.ie.foundation.campaign.model.Industry">
+            <!--<fields>-->
+                <!--<field name="status" label="状态" inputType="select_status" key="status">-->
+                    <!--<statusType fieldName="status">-->
+                        <!--<item label="未开始" value="1"/>-->
+                        <!--<item label="进行中" value="2"/>-->
+                        <!--<item label="已结束" value="3"/>-->
+                        <!--<item label="删除" value="0"/>-->
+                    <!--</statusType>-->
+                <!--</field>-->
+            <!--</fields>-->
+            <does>
+                <do name="listIndustry" access="" label="行业列表">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="id" defaultValue="0" operation="ne" />
+                    </query>
+                </do>
+            </does>
+        </entity>
     </entities>
 </module>
