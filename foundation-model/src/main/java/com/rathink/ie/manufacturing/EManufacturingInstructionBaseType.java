@@ -18,4 +18,5 @@ public enum EManufacturingInstructionBaseType {
     MARKET_ORDER,
     //ŒÔ¡œ≤…π∫
     MATERIAL_PURCHASE,
+    LONG_TERM_LOAN, SHORT_TERM_LOAN, USURIOUS_LOAN
 }

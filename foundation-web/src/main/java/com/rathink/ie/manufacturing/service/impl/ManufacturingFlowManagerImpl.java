@@ -185,6 +185,19 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             marketOrderResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketOrderResource.getId())));
             currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.MARKET_ORDER.name(), marketOrderResource);
         }
+
+        IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LONG_TERM_LOAN.name());
+        longTermLoanResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(longTermLoanResource.getId())));
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name(), longTermLoanResource);
+
+        IndustryResource shortTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name());
+        shortTermLoanResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(shortTermLoanResource.getId())));
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name(), shortTermLoanResource);
+
+        IndustryResource usuriousLoan = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.USURIOUS_LOAN.name());
+        usuriousLoan.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(usuriousLoan.getId())));
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.USURIOUS_LOAN.name(), usuriousLoan);
+
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
     }
 
@@ -489,6 +502,65 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
+    protected void processUsuriousLoan(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+
+        List<CompanyTermInstruction> usuriousLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.USURIOUS_LOAN.name());
+        if (usuriousLoanInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction usuriousLoanInstruction : usuriousLoanInstructionList) {
+                usuriousLoanInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), usuriousLoanInstruction);
+
+                fee+= Integer.valueOf(usuriousLoanInstruction.getValue());
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.USURIOUS_LOAN.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    protected void processShortTermLoan(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+
+        List<CompanyTermInstruction> shortTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LONG_TERM_LOAN.name());
+        if (shortTermLoanInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction shortTermLoanInstruction : shortTermLoanInstructionList) {
+                shortTermLoanInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), shortTermLoanInstruction);
+
+                fee+= Integer.valueOf(shortTermLoanInstruction.getValue());
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.SHORT_TERM_LOAN.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    protected void processLongTermLoan(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+
+        List<CompanyTermInstruction> longTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LONG_TERM_LOAN.name());
+        if (longTermLoanInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction longTermLoanInstruction : longTermLoanInstructionList) {
+                longTermLoanInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), longTermLoanInstruction);
+
+                fee+= Integer.valueOf(longTermLoanInstruction.getValue());
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LONG_TERM_LOAN.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //杂费
+    protected void processOthers(CompanyTermContext companyTermContext){
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        Integer fee = 5;
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+    }
+
     protected void process() {
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -510,7 +582,12 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             processUpdateProduce(companyTermContext);
             //销售产品所得费用
 
-            //8.贷款
+            //贷款
+            processUsuriousLoan(companyTermContext);
+            processShortTermLoan(companyTermContext);
+            processLongTermLoan(companyTermContext);
+            //杂费
+            processOthers(companyTermContext);
         }
 
     }

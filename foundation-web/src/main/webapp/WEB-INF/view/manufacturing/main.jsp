@@ -77,6 +77,9 @@
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
+                    <ul>
+                        <li>现金：${companyCash}</li>
+                    </ul>
                     <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="test" checkedValue="value3"/>
                 </div>
             </div>
@@ -341,12 +344,58 @@
         <div id="panel-4" class="panel">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
-                    <ul>
-                        <li>现金：${companyCash}</li>
-                        <li>高利贷</li>
-                        <li>短期贷款</li>
-                        <li>长期贷款</li>
-                    </ul>
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>贷款</th>
+                            <th>金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${usuriousLoanResource.currentIndustryResourceChoiceSet}" var="choice">
+                            <tr>
+                                <td>高利贷</td>
+                                <td>
+                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                        <option value="${choice.id}#-1">不需要</option>
+                                        <c:forEach items="${fn:split(usuriousLoanResource.valueSet, ',')}" var="fee">
+                                            <option value="${choice.id}#${fee}">${fee}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr>
+                        </c:forEach>
+
+                        <c:forEach items="${shortTermLoanResource.currentIndustryResourceChoiceSet}" var="choice">
+                            <tr>
+                                <td>短期贷款</td>
+                                <td>
+                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                        <option value="${choice.id}#-1">不需要</option>
+                                        <c:forEach items="${fn:split(shortTermLoanResource.valueSet, ',')}" var="fee">
+                                            <option value="${choice.id}#${fee}">${fee}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${campaign.currentCampaignDate%4==0}">
+                        <c:forEach items="${longTermLoanResource.currentIndustryResourceChoiceSet}" var="choice">
+                            <tr>
+                                <td>长期贷款</td>
+                                <td>
+                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                        <option value="${choice.id}#-1">不需要</option>
+                                        <c:forEach items="${fn:split(longTermLoanResource.valueSet, ',')}" var="fee">
+                                            <option value="${choice.id}#${fee}">${fee}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </c:if>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -412,7 +461,7 @@
 
 
         //市场投放
-        $("select[id^='marketFee_']").change(function(){
+        $("select[id^='marketFee_'],select[id^='instruction_']").change(function(){
             var $choice = $(this);
             var array = $choice.val().split("#");
             var choiceId = array[0];

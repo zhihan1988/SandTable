@@ -70,6 +70,10 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("productList", productList);
         List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
         model.addAttribute("marketList", marketList);
+        model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name()));
+        model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name()));
+        model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.USURIOUS_LOAN.name()));
+
         if (currentCampaignDate % 4 == 1) {
             IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
             Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
