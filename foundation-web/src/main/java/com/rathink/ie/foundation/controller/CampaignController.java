@@ -45,6 +45,16 @@ public class CampaignController {
         Campaign campaign = (Campaign)baseManager.getObject(Campaign.class.getName(), campaignId);
         model.addAttribute("campaign", campaign);
         List companyList = campaignManager.listCompany(campaign);
+
+        XQuery companyQuery = new XQuery("listCompany_default" , request);
+        companyQuery.put("director_id",AuthorizationUtil.getMyUser().getId());
+        companyQuery.put("campaign_id", campaignId);
+        List<Object> cList  = baseManager.listObject(companyQuery);
+        if (cList!=null&&cList.size()>0){
+            model.addAttribute("companyStatus" ,false);
+        }else {
+            model.addAttribute("companyStatus" , true);
+        }
         model.addAttribute("companyList", companyList);
         model.addAttribute("myUser", AuthorizationUtil.getMyUser());
         return "/foundation/campaign/campaignView";

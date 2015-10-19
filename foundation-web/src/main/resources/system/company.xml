@@ -12,6 +12,12 @@
                         <condition name="director.id" defaultValue="1" operation="eq" />
                     </query>
                 </do>
+                <do name="listCompany" access="" label="公司列表">
+                    <query name="default" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="director.id" defaultValue="1" operation="eq" />
+                        <condition name="campaign.id" defaultValue="1" operation="eq" />
+                    </query>
+                </do>
             </does>
         </entity>
     </entities>
