@@ -9,6 +9,7 @@ import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
+import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
@@ -22,6 +23,7 @@ import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private AutoSerialManager autoSerialManager;
     @Autowired
     private ProductManager productManager;
+    @Autowired
+    private AccountManager accountManager;
+    @Autowired
+    private MaterialManager materialManager;
 
     @Override
     protected void initPartList() {
@@ -71,8 +77,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 produceLine.setCampaign(campaignContext.getCampaign());
                 produceLine.setCompany(company);
                 produceLine.setName(produceLineChoice.getName());
-                produceLine.setProduceType("1");
-                produceLine.setProduceLineType("A");
+//                produceLine.setProduceType();
+//                produceLine.setProduceLineType();
                 baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
 //                companyPartList.add(produceLine);
             }
@@ -129,8 +135,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     companyTermContext.put(ePropertyName.name(), 0);
                     companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), 0, companyTerm));
                 } else {
-                    companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 2500000);
-                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME.name(), EPropertyName.CURRENT_PERIOD_INCOME.getDept(), 2500000, companyTerm));
+                    companyTermContext.put(EPropertyName.CURRENT_PERIOD_INCOME.name(), 100);
+                    companyTermPropertyList.add(new CompanyTermProperty(EPropertyName.CURRENT_PERIOD_INCOME.name(), EPropertyName.CURRENT_PERIOD_INCOME.getDept(), 100, companyTerm));
                 }
             }
             companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
@@ -193,7 +199,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         dateRoundObserable.addObserver((o, arg) -> next(arg.toString()));
         observableMap.put(campaignDate + ":" + "DATE_ROUND", dateRoundObserable);
 
-/*
+
         if (campaign.getCurrentCampaignDate() % 4 == 1) {
             RoundEndObserable marketPayRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
             marketPayRoundObserable.addObserver(new Observer() {
@@ -201,15 +207,26 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 public void update(Observable o, Object arg) {
                     Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), arg.toString());
                     List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
+
+                    Map<String, List> choiceInstructionMap = new HashMap();
                     for (CompanyTerm companyTerm : companyTermList) {
-                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_FEE.name());
+                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingInstructionBaseType.MARKET_ORDER.name());
                         companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+                        String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
+                        if(choiceInstructionMap.containsKey(choiceId)) {
+                            choiceInstructionMap.get(choiceId).add(companyTermInstruction);
+                        } else {
+                            List<CompanyTermInstruction> companyTermInstructionList = new ArrayList<>();
+                            companyTermInstructionList.add(companyTermInstruction);
+                            choiceInstructionMap.put(choiceId, companyTermInstructionList);
+                        }
                     }
+
                 }
             });
             observableMap.put(campaignDate + ":" + "MARKET_PAY_ROUND", marketPayRoundObserable);
-
+/*
             RoundEndObserable orderRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
             orderRoundObserable.addObserver(new Observer() {
                 @Override
@@ -223,12 +240,283 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     }
                 }
             });
-            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);
+            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);*/
         }
-*/
+
+    }
+
+    //原材料采购
+    private void processMaterial(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> materialInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
+        if (materialInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction materialInstruction : materialInstructionList) {
+                Material material = (Material) baseManager.getObject(Material.class.getName(), materialInstruction.getCompanyPart().getId());
+                Integer amount = Integer.valueOf(materialInstruction.getValue());
+                material.setAmount(material.getAmount() + amount);
+                baseManager.saveOrUpdate(Material.class.getName(), material);
+
+                materialInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), materialInstruction);
+
+                fee += amount;
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MATERIAL_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //产品研发投入
+    private void processProductDevotion(CompanyTermContext companyTermContext){
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> productInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
+        if (productInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction productInstruction : productInstructionList) {
+                Product product = (Product) baseManager.getObject(Product.class.getName(), productInstruction.getCompanyPart().getId());
+                Integer developNeedCycle = product.getDevelopNeedCycle();
+                product.setDevelopNeedCycle(--developNeedCycle);
+                baseManager.saveOrUpdate(Product.class.getName(), product);
+
+                productInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), productInstruction);
+
+                fee += Product.Type.valueOf(product.getType()).getPerDevotion();
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //市场区域开发费用
+    private void processMarketAreaDevotion(CompanyTermContext companyTermContext){
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
+        if (marketInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction marketInstruction : marketInstructionList) {
+                Market market = (Market) baseManager.getObject(Market.class.getName(), marketInstruction.getCompanyPart().getId());
+                Integer devotionNeedCycle = market.getDevotionNeedCycle();
+                market.setDevotionNeedCycle(--devotionNeedCycle);
+                baseManager.saveOrUpdate(Market.class.getName(), market);
+
+                marketInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketInstruction);
+
+                fee += Market.Type.valueOf(market.getType()).getPerDevotion();
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //生产线建造
+    private void processProductLineBuild(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+
+        List<CompanyTermInstruction> produceLineInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD.name());
+        if (produceLineInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction produceLineInstruction : produceLineInstructionList) {
+                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineInstruction.getCompanyPart().getId());
+
+                String[] valueArray = produceLineInstruction.getValue().split(";");
+                String produceType = valueArray[0];
+                String produceLineType = valueArray[1];
+                produceLine.setProduceType(produceType);
+                produceLine.setProduceLineType(produceLineType);
+
+                Integer lineBuildNeedCycle = ProduceLine.Type.valueOf(produceLineType).getInstallCycle();
+                if (lineBuildNeedCycle > 0) {
+                    lineBuildNeedCycle--;
+                }
+                produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
+
+                if (lineBuildNeedCycle == 0) {//建造完成
+                    produceLine.setStatus(ProduceLine.Status.FREE.name());
+                } else {
+                    produceLine.setStatus(ProduceLine.Status.BUILDING.name());
+                }
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+                produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceLineInstruction);
+
+                fee += ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //生产线建造
+    private void processProductLineContinueBuild(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+
+        List<CompanyTermInstruction> produceLineInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD_CONTINUE.name());
+        if (produceLineInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction produceLineInstruction : produceLineInstructionList) {
+                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineInstruction.getCompanyPart().getId());
+                Integer lineBuildNeedCycle = Integer.valueOf(produceLine.getLineBuildNeedCycle());
+                if (lineBuildNeedCycle > 0) {
+                    lineBuildNeedCycle--;
+                }
+                if (lineBuildNeedCycle == 0) {//建造完成
+                    produceLine.setStatus(ProduceLine.Status.FREE.name());
+                }
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+                produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceLineInstruction);
+
+                fee += ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //开始生产
+    private void processProduce(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        Company company = companyTerm.getCompany();
+        Material R1 = materialManager.getMateral(company, Material.Type.R1.name());
+        Material R2 = materialManager.getMateral(company, Material.Type.R2.name());
+        Material R3 = materialManager.getMateral(company, Material.Type.R3.name());
+        Material R4 = materialManager.getMateral(company, Material.Type.R4.name());
+        Integer R1Amount = R1.getAmount();
+        Integer R2Amount = R2.getAmount();
+        Integer R3Amount = R3.getAmount();
+        Integer R4Amount = R4.getAmount();
+
+        List<CompanyTermInstruction> produceLineInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCE.name());
+        if (produceLineInstructionList != null) {
+            Integer fee = 0;
+            for (CompanyTermInstruction produceInstruction : produceLineInstructionList) {
+                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceInstruction.getCompanyPart().getId());
+                boolean isMaterialAmountEnough = false;
+                Product.Type productType = Product.Type.valueOf(produceLine.getProduceType());
+                switch (productType) {
+                    case P1:
+                        if (R1Amount >= 1) {
+                            isMaterialAmountEnough = true;
+                            R1Amount = R1Amount - 1;
+                            R1.setAmount(R1Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R1);
+                        }
+                        break;
+                    case P2:
+                        if (R1Amount >= 1 && R2Amount >= 1) {
+                            isMaterialAmountEnough = true;
+                            R1Amount = R1Amount - 1;
+                            R1.setAmount(R1Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R1);
+                            R2Amount = R2Amount - 1;
+                            R2.setAmount(R2Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R2);
+                        }
+                        break;
+                    case P3:
+                        if (R2Amount >= 2 && R3Amount >= 1) {
+                            isMaterialAmountEnough = true;
+                            R2Amount = R2Amount - 2;
+                            R2.setAmount(R2Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R2);
+                            R3Amount = R3Amount - 1;
+                            R3.setAmount(R3Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R3);
+                        }
+                        break;
+                    case P4:
+                        if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
+                            isMaterialAmountEnough = true;
+                            R2Amount = R2Amount - 1;
+                            R2.setAmount(R2Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R2);
+                            R3Amount = R3Amount - 1;
+                            R3.setAmount(R3Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R3);
+                            R4Amount = R4Amount - 1;
+                            R4.setAmount(R4Amount);
+                            baseManager.saveOrUpdate(Material.class.getName(), R4);
+                        }
+                        break;
+                    default:
+                        throw new NoSuchElementException(productType.name());
+                }
+                if (isMaterialAmountEnough) {
+                    fee += 1;
+                }
+
+                Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getProduceCycle();
+                produceLine.setProduceNeedCycle(produceCycle);
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+                produceInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceInstruction);
+            }
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+    //更新生产 完成入库
+    protected void processUpdateProduce(CompanyTermContext companyTermContext) {
+        Company company = companyTermContext.getCompanyTerm().getCompany();
+
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from ProduceLine where status=:status");
+        xQuery.put("status", ProduceLine.Status.PRODUCING.name());
+        List<ProduceLine> produceLineList = baseManager.listObject(xQuery);
+        if (produceLineList != null) {
+            for (ProduceLine produceLine : produceLineList) {
+                Integer produceNeedCycle = produceLine.getProduceNeedCycle();
+                --produceNeedCycle;
+                produceLine.setProduceNeedCycle(produceNeedCycle);
+                if (produceNeedCycle == 0) {
+                    produceLine.setStatus(ProduceLine.Status.FREE.name());
+
+                    String productType = Product.Type.valueOf(produceLine.getProduceType()).name();
+                    Product product = productManager.getProduct(company, productType);
+                    product.setAmount(product.getAmount() + 1);
+                    baseManager.saveOrUpdate(Product.class.getName(), product);
+
+                }
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+            }
+        }
+    }
+
+    protected void process() {
+        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+
+            //1.广告投入
+            //2.
+            processMaterial(companyTermContext);
+            //3.
+            processProductDevotion(companyTermContext);
+            //4.
+            processMarketAreaDevotion(companyTermContext);
+            //5.建造生产线
+            processProductLineBuild(companyTermContext);
+            processProductLineContinueBuild(companyTermContext);
+            //开始生产
+            processProduce(companyTermContext);
+            //更新生产完成入库
+            processUpdateProduce(companyTermContext);
+            //销售产品所得费用
+
+            //8.贷款
+        }
+
     }
 
     protected void processInstruction() {
+/*
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
@@ -283,9 +571,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 }
             }
         }
+*/
     }
 
     protected void processPart() {
+/*
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
@@ -314,6 +604,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
             }
         }
+*/
 
 
     }
@@ -336,24 +627,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     }
 
     protected void calculateAccount() {
-        Campaign campaign = campaignContext.getCampaign();
-        Integer TIME_UNIT = campaign.getIndustry().getTerm();
-        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            List<Account> accountList = new ArrayList<>();
 
-            Integer produceLineTotalCost = 0;
-            List<CompanyTermInstruction> instructionList = instructionManager.listCompanyInstruction(companyTerm.getCompany(), EManufacturingChoiceBaseType.PRODUCE_LINE.name());
-
-            Account productFeeAccount = accountManager.packageAccount(String.valueOf(produceLineTotalCost)
-                    , EManufacturingAccountEntityType.PRODUCE_LINE_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(productFeeAccount);
-
-            companyTermContext.setAccountList(accountList);
-        }
     }
 
 

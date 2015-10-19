@@ -49,41 +49,23 @@ public class Product extends CompanyPart {
         NORMAL
     }
     public enum Type {
-        P1(1, 1, 2, 0), P2(1, 1, 2, 6), P3(1, 1, 2, 6), P4(1, 1, 2, 6),;
+        P1(1, 0, 0), P2(1, 6, 4), P3(1, 6, 8), P4(1, 6, 12),;
 
-        Type(Integer cost, Integer processCost, Integer totalCost, Integer developNeedCycle) {
-            this.cost = cost;
-            this.processCost = processCost;
-            this.totalCost = totalCost;
+        Type(Integer workFee, Integer developNeedCycle, Integer perDevotion) {
+            this.workFee = workFee;
             this.developNeedCycle = developNeedCycle;
+            this.perDevotion = perDevotion;
         }
-        private Integer cost;//成本
-        private Integer processCost;;//加工费
-        private Integer totalCost;//合计
-        private Integer developNeedCycle;
+        private Integer workFee;//加工费
+        private Integer developNeedCycle;//研发周期
+        private Integer perDevotion;//单期研发投入
 
-        public Integer getCost() {
-            return cost;
-        }
-
-        public void setCost(Integer cost) {
-            this.cost = cost;
+        public Integer getWorkFee() {
+            return workFee;
         }
 
-        public Integer getProcessCost() {
-            return processCost;
-        }
-
-        public void setProcessCost(Integer processCost) {
-            this.processCost = processCost;
-        }
-
-        public Integer getTotalCost() {
-            return totalCost;
-        }
-
-        public void setTotalCost(Integer totalCost) {
-            this.totalCost = totalCost;
+        public void setWorkFee(Integer workFee) {
+            this.workFee = workFee;
         }
 
         public Integer getDevelopNeedCycle() {
@@ -92,6 +74,14 @@ public class Product extends CompanyPart {
 
         public void setDevelopNeedCycle(Integer developNeedCycle) {
             this.developNeedCycle = developNeedCycle;
+        }
+
+        public Integer getPerDevotion() {
+            return perDevotion;
+        }
+
+        public void setPerDevotion(Integer perDevotion) {
+            this.perDevotion = perDevotion;
         }
     }
 

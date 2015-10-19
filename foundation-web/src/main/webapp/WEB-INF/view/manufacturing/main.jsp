@@ -123,6 +123,7 @@
                                 </div>
                             </c:forEach>
                         </div>
+                        <button id="finishDevotion" type="button" class="am-btn am-btn-secondary">完成投放</button>
                     </div>
                 </div>
             </div>
@@ -263,7 +264,7 @@
                           </c:forEach>
                           <tr>
                               <td colspan="3">
-                                  <button id="develop" type="button" class="am-btn am-btn-secondary">研发</button>
+                                  <button id="devoteProduct" type="button" class="am-btn am-btn-secondary">研发</button>
                               </td>
                           </tr>
                           </tbody>
@@ -341,6 +342,7 @@
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <ul>
+                        <li>现金：${companyCash}</li>
                         <li>高利贷</li>
                         <li>短期贷款</li>
                         <li>长期贷款</li>
@@ -431,6 +433,12 @@
             }
         })
 
+        //完成市场投放
+        $("#finishDevotion").click(function(){
+
+        });
+
+
         //采购原料
         $("#purchase").click(function(){
             $("select[id^='materialNum_']").each(function(){
@@ -458,13 +466,13 @@
         })
 
         //研发投入
-        $("#develop").click(function(){
+        $("#devoteProduct").click(function(){
             var $developButton = $(this);
             $("input[name='developProduct']:checked").each(function(){
                 var $product = $(this);
                 var productId = $product.val();
                 //开始建造
-                $.getJSON("<c:url value="/manufacturing/develop.do"/>",
+                $.getJSON("<c:url value="/manufacturing/devoteProduct.do"/>",
                         {
                             companyTermId: companyTermId,
                             partId: productId
@@ -499,16 +507,18 @@
                         },
                         function(data){
                             //建造结果
-                            var installCycle = data.installCycle;
-                            if(installCycle == 0) {
-                                //建造完成
-                               var $operationDiv = $('#operation_' + partId);
-                                var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
-                                $operationDiv.html($button);
+                            if(data.status == 1) {
                                 $("#lineType_" + partId).replaceWith($("#lineType_" + partId).find("option:selected").text());
                                 $("#produceType_" + partId).replaceWith($("#produceType_" + partId).find("option:selected").text());
-                            } else {
-                                $('#operation_' + partId).html("建造中");
+                                var installCycle = data.installCycle;
+                                if(installCycle == 0) {
+                                    //建造完成
+                                    var $operationDiv = $('#operation_' + partId);
+                                    var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
+                                    $operationDiv.html($button);
+                                } else {
+                                    $('#operation_' + partId).html("建造中");
+                                }
                             }
                         });
             }

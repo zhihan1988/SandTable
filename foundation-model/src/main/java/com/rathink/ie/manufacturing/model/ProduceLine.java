@@ -62,29 +62,29 @@ public class ProduceLine extends CompanyPart {
     }
 
     public enum Type {
-        MANUAL(1,0,3,0,1,1),HALF_AUTOMATIC(1,1,2,1,1,2),AUTOMATIC(1,2,1,2,1,4),FLEXBILITY(1, 3, 1, 0, 1, 6),;
+        MANUAL(5,0,3,0,1,1),HALF_AUTOMATIC(4,2,2,1,1,2),AUTOMATIC(4,4,1,2,1,4),FLEXBILITY(6, 4, 1, 0, 1, 6),;
 
-        Type(Integer cost, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
-            this.cost = cost;
+        Type(Integer perBuildDevotion, Integer installCycle, Integer produceCycle, Integer transferCycle, Integer mainternanceFee, Integer sellValue) {
+            this.perBuildDevotion = perBuildDevotion;
             this.installCycle = installCycle;
             this.produceCycle = produceCycle;
             this.transferCycle = transferCycle;
             this.mainternanceFee = mainternanceFee;
             this.sellValue = sellValue;
         }
-        private Integer cost;//购买价格
+        private Integer perBuildDevotion;//每期建造成本
         private Integer installCycle;//安装周期
         private Integer produceCycle;//生产周期
         private Integer transferCycle;//转产周期
         private Integer mainternanceFee;//维护费用
         private Integer sellValue;//出售残值
 
-        public Integer getCost() {
-            return cost;
+        public Integer getPerBuildDevotion() {
+            return perBuildDevotion;
         }
 
-        public void setCost(Integer cost) {
-            this.cost = cost;
+        public void setPerBuildDevotion(Integer perBuildDevotion) {
+            this.perBuildDevotion = perBuildDevotion;
         }
 
         public Integer getInstallCycle() {

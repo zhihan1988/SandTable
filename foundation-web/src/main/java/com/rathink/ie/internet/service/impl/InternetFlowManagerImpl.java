@@ -143,6 +143,10 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
         campaignContext.getObservableMap().put(key, roundEndObserable);
     }
 
+    protected void process() {
+
+    }
+
     protected void processInstruction() {
 
         Set<IndustryResourceChoice> humanSet = campaignContext.getCurrentTypeIndustryResourceMap().get(EChoiceBaseType.HUMAN.name()).getCurrentIndustryResourceChoiceSet();

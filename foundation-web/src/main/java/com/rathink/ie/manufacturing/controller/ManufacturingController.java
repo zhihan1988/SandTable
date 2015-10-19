@@ -14,6 +14,7 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingDept;
+import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
 import com.rathink.ie.manufacturing.EManufacturingRoundType;
 import com.rathink.ie.manufacturing.model.Market;
 import com.rathink.ie.manufacturing.model.Material;
@@ -112,15 +113,17 @@ public class ManufacturingController extends BaseIndustryController {
             }*/
         }
 
+        Integer companyCash = accountManager.getCompanyCash(company);
+        model.addAttribute("companyCash", companyCash);
 
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";
     }
 
 
-    @RequestMapping("/develop")
+    @RequestMapping("/devoteProduct")
     @ResponseBody
-    public Map develop(HttpServletRequest request, Model model) throws Exception {
+    public Map devoteProduct(HttpServletRequest request, Model model) throws Exception {
         String companyTermId = request.getParameter("companyTermId");
         String partId = request.getParameter("partId");
 
@@ -129,7 +132,7 @@ public class ManufacturingController extends BaseIndustryController {
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCT.name());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(product);
         companyTermInstruction.setCompanyTerm(companyTerm);
@@ -153,27 +156,18 @@ public class ManufacturingController extends BaseIndustryController {
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), partId);
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(produceLine);
         companyTermInstruction.setValue(produceType + ";" + lineType);
         companyTermInstruction.setCompanyTerm(companyTerm);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
-        produceLine.setProduceLineType(lineType);
-        produceLine.setProduceType(produceType);
-        if (lineType.equals(ProduceLine.Type.MANUAL.name())) {
-            produceLine.setStatus(ProduceLine.Status.FREE.name());
-        } else {
-            produceLine.setStatus(ProduceLine.Status.BUILDING.name());
-        }
         Integer installCycle = ProduceLine.Type.valueOf(lineType).getInstallCycle();
-        produceLine.setProduceNeedCycle(installCycle);
-
-        baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
 
         Map result = new HashMap<>();
+        result.put("status", 1);
         result.put("installCycle", installCycle);
         return result;
     }
@@ -188,7 +182,7 @@ public class ManufacturingController extends BaseIndustryController {
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCE_LINE.name());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD_CONTINUE.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(produceLine);
         companyTermInstruction.setCompanyTerm(companyTerm);
@@ -226,45 +220,21 @@ public class ManufacturingController extends BaseIndustryController {
             case P1:
                 if (R1Amount >=1) {
                     isMaterialAmountEnough = true;
-                    R1Amount = R1Amount - 1;
-                    R1.setAmount(R1Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R1);
                 }
                 break;
             case P2:
                 if (R1Amount >= 1 && R2Amount >= 1) {
                     isMaterialAmountEnough = true;
-                    R1Amount = R1Amount - 1;
-                    R1.setAmount(R1Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R1);
-                    R2Amount = R2Amount-1;
-                    R2.setAmount(R2Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R2);
                 }
                 break;
             case P3:
                 if (R2Amount >= 2 && R3Amount >= 1) {
                     isMaterialAmountEnough = true;
-                    R2Amount = R2Amount - 2;
-                    R2.setAmount(R2Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R2);
-                    R3Amount = R3Amount-1;
-                    R3.setAmount(R3Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R3);
                 }
                 break;
             case P4:
                 if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
                     isMaterialAmountEnough = true;
-                    R2Amount = R2Amount - 1;
-                    R2.setAmount(R2Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R2);
-                    R3Amount = R3Amount-1;
-                    R3.setAmount(R3Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R3);
-                    R4Amount = R4Amount-1;
-                    R4.setAmount(R4Amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), R4);
                 }
                 break;
             default:
@@ -278,8 +248,8 @@ public class ManufacturingController extends BaseIndustryController {
         }
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.PRODUCT.name());
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(produceLine);
         companyTermInstruction.setValue(produceLine.getProduceType());
@@ -310,7 +280,7 @@ public class ManufacturingController extends BaseIndustryController {
         Material material = (Material) baseManager.getObject(Material.class.getName(), materialId);
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingChoiceBaseType.MATERIAL.name());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(material);
         companyTermInstruction.setValue(materialNum);

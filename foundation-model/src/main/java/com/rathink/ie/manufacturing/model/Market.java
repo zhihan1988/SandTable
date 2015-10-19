@@ -40,13 +40,15 @@ public class Market extends CompanyPart {
     }
 
     public enum Type {
-        LOCAL(0),AREA(1),DOMESTIC(2),ASIA(3),INTERNATIONAL(4);
+        LOCAL(0,0),AREA(1,1),DOMESTIC(2,1),ASIA(3,1), INTERNATIONAL(4, 1),;
 
-        Type(Integer devotionNeedCycle) {
+        Type(Integer devotionNeedCycle, Integer perDevotion) {
             this.devotionNeedCycle = devotionNeedCycle;
+            this.perDevotion = perDevotion;
         }
 
-        private Integer devotionNeedCycle;
+        private Integer devotionNeedCycle;//进入市场剩余的周期
+        private Integer perDevotion;//单期投入
 
         public Integer getDevotionNeedCycle() {
             return devotionNeedCycle;
@@ -54,6 +56,14 @@ public class Market extends CompanyPart {
 
         public void setDevotionNeedCycle(Integer devotionNeedCycle) {
             this.devotionNeedCycle = devotionNeedCycle;
+        }
+
+        public Integer getPerDevotion() {
+            return perDevotion;
+        }
+
+        public void setPerDevotion(Integer perDevotion) {
+            this.perDevotion = perDevotion;
         }
     }
 
