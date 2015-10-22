@@ -1,5 +1,6 @@
 package com.rathink.ie.manufacturing.controller;
 
+import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
@@ -16,12 +17,10 @@ import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingDept;
 import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
 import com.rathink.ie.manufacturing.EManufacturingRoundType;
-import com.rathink.ie.manufacturing.model.Market;
-import com.rathink.ie.manufacturing.model.Material;
-import com.rathink.ie.manufacturing.model.ProduceLine;
-import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.MarketManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
+import com.rathink.ie.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.logging.XMLFormatter;
 
 /**
  * Created by Hean on 2015/10/7.
@@ -44,6 +44,8 @@ public class ManufacturingController extends BaseIndustryController {
     private MaterialManager materialManager;
     @Autowired
     protected MarketManager marketManager;
+    @Autowired
+    protected ProductManager productManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -70,6 +72,12 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("productList", productList);
         List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
         model.addAttribute("marketList", marketList);
+//        List<MarketOrder> marketOrderList
+        XQuery marketOrderQuery = new XQuery();
+        marketOrderQuery.setHql("from MarketOrder where status =:status");
+        marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
+        List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
+        model.addAttribute("marketOrderList", marketOrderList);
         model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name()));
         model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name()));
         model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.USURIOUS_LOAN.name()));
@@ -94,6 +102,9 @@ public class ManufacturingController extends BaseIndustryController {
                 }
             }
             model.addAttribute("marketMap", marketMap);
+
+            model.addAttribute("marketOrderResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
+
 //            IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
 //            model.addAttribute("marketChoiceArray", marketChoiceArray);
            /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
@@ -295,5 +306,34 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/deliverOrder")
+    @ResponseBody
+    public Map deliverOrder(HttpServletRequest request, Model model) throws Exception {
+        Map result = new HashMap<>();
+        String companyTermId = request.getParameter("companyTermId");
+        String orderId = request.getParameter("orderId");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        MarketOrder marketOrder = (MarketOrder) baseManager.getObject(MarketOrder.class.getName(), orderId);
+        Product product = productManager.getProduct(companyTerm.getCompany(), marketOrder.getProductType());
+
+        if (marketOrder.getAmount() > product.getAmount()) {
+            result.put("status", 0);
+            result.put("message", "产品库存不足");
+
+        } else {
+            CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+            companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+            companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.ORDER_DELIVER.name());
+            companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+            companyTermInstruction.setCompanyPart(marketOrder);
+            companyTermInstruction.setCompanyTerm(companyTerm);
+            baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+            result.put("status", 1);
+        }
+
+        return result;
+    }
 
 }

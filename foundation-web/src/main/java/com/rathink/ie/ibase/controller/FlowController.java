@@ -67,7 +67,7 @@ public class FlowController {
 
     @RequestMapping("/companyNext")
     @ResponseBody
-    public synchronized void companyNext(HttpServletRequest request, Model model) throws Exception {
+    public void companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         String campaignDate = request.getParameter("campaignDate");
         String key = campaignDate + ":" + request.getParameter("roundType");

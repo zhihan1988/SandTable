@@ -95,7 +95,7 @@ public abstract class AbstractFlowManager implements FlowManager {
 
         dieOut();
 
-        end();
+//        end();
 
         initNextObserable();
     }
@@ -204,9 +204,9 @@ public abstract class AbstractFlowManager implements FlowManager {
     private void newRound() {
         Campaign campaign = campaignContext.getCampaign();
         campaign.setCurrentCampaignDate(campaign.getNextCampaignDate());
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext preCompanyTermContext = companyTermHandlerMap.get(companyId);
+        Map<String, CompanyTermContext> companyTermContextMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : companyTermContextMap.keySet()) {
+            CompanyTermContext preCompanyTermContext = companyTermContextMap.get(companyId);
             Company company = preCompanyTermContext.getCompanyTerm().getCompany();
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
             //生成新回合的companyTerm
@@ -220,7 +220,7 @@ public abstract class AbstractFlowManager implements FlowManager {
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             //更新campaignCenter
-            companyTermHandlerMap.put(companyId, companyTermContext);
+            companyTermContextMap.put(companyId, companyTermContext);
         }
 
         campaignContext.next();

@@ -19,10 +19,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.manufacturing.*;
-import com.rathink.ie.manufacturing.model.Market;
-import com.rathink.ie.manufacturing.model.Material;
-import com.rathink.ie.manufacturing.model.ProduceLine;
-import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
@@ -149,16 +146,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
-            Account humanAccount = accountManager.packageAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(humanAccount);
-            Account adAccount = accountManager.packageAccount("0", EAccountEntityType.AD_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(adAccount);
-            Account productFeeAccount = accountManager.packageAccount("0", EAccountEntityType.PRODUCT_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(productFeeAccount);
-            Account marketFeeAccount = accountManager.packageAccount("0", EAccountEntityType.MARKET_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(marketFeeAccount);
-            Account operationFeeAccount = accountManager.packageAccount("0", EAccountEntityType.OPERATION_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            accountList.add(operationFeeAccount);
             Integer currentPeriodIncome = companyTermContext.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
             Account incomeAccount = accountManager.packageAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
             accountList.add(incomeAccount);
@@ -213,7 +200,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         observableMap.put(campaignDate + ":" + "DATE_ROUND", dateRoundObserable);
 
 
-        if (campaign.getCurrentCampaignDate() % 4 == 1) {
+        /*if (campaign.getCurrentCampaignDate() % 4 == 1) {
             RoundEndObserable marketPayRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
             marketPayRoundObserable.addObserver(new Observer() {
                 @Override
@@ -239,7 +226,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 }
             });
             observableMap.put(campaignDate + ":" + "MARKET_PAY_ROUND", marketPayRoundObserable);
-/*
+
             RoundEndObserable orderRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
             orderRoundObserable.addObserver(new Observer() {
                 @Override
@@ -253,9 +240,107 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     }
                 }
             });
-            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);*/
-        }
+            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);
+        }*/
 
+    }
+
+    //选择订单
+    private void processMarketOrder(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> marketOrderInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MARKET_ORDER.name());
+        if (marketOrderInstructionList != null) {
+            for (CompanyTermInstruction marketOrderInstruction : marketOrderInstructionList) {
+                MarketOrderChoice marketOrderChoice = new MarketOrderChoice(marketOrderInstruction.getIndustryResourceChoice());
+                MarketOrder marketOrder = new MarketOrder();
+                marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
+                marketOrder.setDept(EManufacturingDept.MARKET.name());
+                marketOrder.setStatus(MarketOrder.Status.NORMAL.name());
+                marketOrder.setCampaign(companyTerm.getCampaign());
+                marketOrder.setCompany(companyTerm.getCompany());
+//                marketOrder.setName();
+                marketOrder.setUnitPrice(marketOrderChoice.getUnitPrice());
+                marketOrder.setAmount(marketOrderChoice.getAmount());
+                marketOrder.setTotalPrice(marketOrderChoice.getTotalPrice());
+                marketOrder.setNeedAccountCycle(marketOrderChoice.getAccountPeriod());
+                marketOrder.setProductType(marketOrderChoice.getProductType());
+                baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
+
+                marketOrderInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketOrderInstruction);
+            }
+        }
+    }
+
+    //交付订单
+    private void processDeliveredOrder(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> orderDeliverInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.ORDER_DELIVER.name());
+        if (orderDeliverInstructionList != null) {
+            for (CompanyTermInstruction orderDeliverInstruction : orderDeliverInstructionList) {
+                MarketOrder marketOrder = (MarketOrder) baseManager.getObject(MarketOrder.class.getName(), orderDeliverInstruction.getCompanyPart().getId());
+                marketOrder.setStatus(MarketOrder.Status.DELIVERED.name());
+                baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
+
+                Product product = productManager.getProduct(companyTerm.getCompany(), marketOrder.getProductType());
+                product.setAmount(product.getAmount() - 1);
+                baseManager.saveOrUpdate(Product.class.getName(), product);
+
+                orderDeliverInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), orderDeliverInstruction);
+            }
+        }
+    }
+
+    //处理订单账款
+    private void processOrderAccount(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        XQuery xQuery = new XQuery();
+        String hql = "from MarketOrder where status=:status";
+        xQuery.setHql(hql);
+        xQuery.put("status", MarketOrder.Status.DELIVERED.name());
+        List<MarketOrder> marketOrderList = baseManager.listObject(xQuery);
+        Integer fee = 0;
+        if (marketOrderList != null) {
+            for (MarketOrder marketOrder : marketOrderList) {
+                Integer needAccountCycle = marketOrder.getNeedAccountCycle();
+                needAccountCycle--;
+                marketOrder.setNeedAccountCycle(needAccountCycle);
+                if (needAccountCycle == 0) {
+                    marketOrder.setStatus(MarketOrder.Status.FINISH.name());
+                    fee += marketOrder.getTotalPrice();
+                }
+                baseManager.saveOrUpdate(MarketOrder.class.getName(),marketOrder);
+            }
+        }
+        if (fee != 0) {
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(),
+                    EManufacturingAccountEntityType.ORDER_FEE.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
+    }
+
+
+    //处理未交付的订单 扣费等
+    private void processUnDeliveredOrder(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        XQuery xQuery = new XQuery();
+        String hql = "from MarketOrder where status=:status";
+        xQuery.setHql(hql);
+        xQuery.put("status", MarketOrder.Status.NORMAL.name());
+        List<MarketOrder> marketOrderList = baseManager.listObject(xQuery);
+        Integer fee = 0;
+        if (marketOrderList != null) {
+            for (MarketOrder marketOrder : marketOrderList) {
+                fee += Integer.valueOf(marketOrder.getTotalPrice());
+            }
+            fee = fee * 10 / 100 + 1;
+        }
+        if (fee != 0) {
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.ORDER_DELAY_FEE.name()
+                    , EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
     }
 
     //原材料采购
@@ -275,8 +360,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee += amount;
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MATERIAL_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MATERIAL_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -297,8 +384,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee += Product.Type.valueOf(product.getType()).getPerDevotion();
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -319,8 +409,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee += Market.Type.valueOf(market.getType()).getPerDevotion();
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -358,8 +451,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee += ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -386,8 +482,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee += ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -470,8 +569,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 produceInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceInstruction);
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -514,8 +616,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee+= Integer.valueOf(usuriousLoanInstruction.getValue());
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.USURIOUS_LOAN.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.USURIOUS_LOAN.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -531,8 +635,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee+= Integer.valueOf(shortTermLoanInstruction.getValue());
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.SHORT_TERM_LOAN.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.SHORT_TERM_LOAN.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -548,8 +654,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 fee+= Integer.valueOf(longTermLoanInstruction.getValue());
             }
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LONG_TERM_LOAN.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
+            if (fee != 0) {
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LONG_TERM_LOAN.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), account);
+            }
         }
     }
 
@@ -566,7 +674,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
 
-            //1.广告投入
+            //广告投入
+
+            //订单
+            processMarketOrder(companyTermContext);
+
             //2.
             processMaterial(companyTermContext);
             //3.
@@ -588,6 +700,15 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             processLongTermLoan(companyTermContext);
             //杂费
             processOthers(companyTermContext);
+
+            //交付订单
+            processDeliveredOrder(companyTermContext);
+            //订单账期结束时
+            processOrderAccount(companyTermContext);
+            if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
+                //延迟交付
+                processUnDeliveredOrder(companyTermContext);
+            }
         }
 
     }

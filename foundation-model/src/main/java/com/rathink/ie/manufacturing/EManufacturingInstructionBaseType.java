@@ -16,6 +16,8 @@ public enum EManufacturingInstructionBaseType {
     MARKET_DEVOTION,
     //订单投入
     MARKET_ORDER,
+    //订单交付
+    ORDER_DELIVER,
     //物料采购
     MATERIAL_PURCHASE,
     LONG_TERM_LOAN, SHORT_TERM_LOAN, USURIOUS_LOAN

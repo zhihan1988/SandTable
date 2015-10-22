@@ -160,8 +160,9 @@
                     <thead>
                     <tr>
                         <th>订单</th>
+                        <th>订单编号</th>
                         <th>产品</th>
-                        <th>金额/成本/利润</th>
+                        <th>数量/单价/金额/账期/ISO/成本/利润</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -169,6 +170,7 @@
                     <c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
                             <td>${choice.name}</td>
+                            <td>${choice.value}</td>
                             <td>${choice.type}</td>
                             <td>${choice.value2}</td>
                             <td><input type="radio" name="orderChoice" value="${choice.id}#${choice.value}"/></td>
@@ -176,8 +178,36 @@
                     </c:forEach>
                     </tbody>
                 </table>
+                </div>
             </div>
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
+                    <h3>市场订单</h3>
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>订单</th>
+                            <th>产品</th>
+                            <th>数量/金额/账期</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${marketOrderList}" var="marketOrder">
+                            <tr>
+                                <td>${marketOrder.name}</td>
+                                <td>${marketOrder.productType}</td>
+                                <td>${marketOrder.amount}/${marketOrder.totalPrice}/${marketOrder.needAccountCycle}</td>
+                                <td>
+                                    <button id="deliver_${marketOrder.id}" type="button" class="am-btn am-btn-secondary">交付</button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
         </div>
         <div id="panel-3" class="panel">
           <%--  <div class="am-panel am-panel-default">
@@ -487,6 +517,44 @@
 
         });
 
+        //交付
+        $("button[id^='deliver']").click(function () {
+            var $order = $(this);
+            var orderId = $order.attr("id").split("_")[1];
+            $.getJSON("<c:url value="/manufacturing/deliverOrder.do"/>",
+                    {
+                        companyTermId: companyTermId,
+                        orderId: orderId
+                    },
+                    function(data){
+                        if(data.status == 1) {
+                            $order.replaceWith("已交付");
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+        })
+
+        $("input[name='orderChoice']").click(function(){
+            var $choice = $(this);
+            var array = $choice.val().split("#");
+            var choiceId = array[0];
+            var value = array[1];
+            if (value != -1) {
+                $.post("<c:url value="/work/makeInstruction"/>",
+                        {
+                            companyTermId: companyTermId,
+                            choiceId: choiceId,
+                            value: value
+                        });
+            } else {
+                $.post("<c:url value="/work/cancelInstruction"/>",
+                        {
+                            companyId: companyId,
+                            choiceId: choiceId
+                        });
+            }
+        })
 
         //采购原料
         $("#purchase").click(function(){
@@ -627,10 +695,10 @@
                             $endCampaignDate.hide();
                         }
                 );
+                setInterval(isNext, 5000);
             }
         });
 
-//        setInterval(isNext, 5000);
         function isNext() {
             $.post("<c:url value="/flow/isCampaignNext"/>",
                     {
