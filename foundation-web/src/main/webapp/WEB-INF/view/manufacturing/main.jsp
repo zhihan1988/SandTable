@@ -78,9 +78,9 @@
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <ul>
-                        <li>现金：${companyCash}</li>
+                        <li>现金：<span id="companyCash">${companyCash}</span></li>
                     </ul>
-                    <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="test" checkedValue="value3"/>
+                    <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="testButton" checkedValue="value3"/>
                 </div>
             </div>
         </div>
@@ -247,7 +247,7 @@
                         <c:forEach items="${materialList}" var="material">
                         <tr>
                             <td>${material.type}</td>
-                            <td>${material.amount}</td>
+                            <td><span id="materialAmount_${material.type}">${material.amount}</span></td>
                             <td>
                                 <select id="materialNum_${material.id}">
                                     <option value="${material.id}#-1">请选择数量</option>
@@ -261,11 +261,6 @@
                             </td>
                         </tr>
                         </c:forEach>
-                        <tr>
-                            <td colspan="3">
-                                <button id="purchase" type="button" class="am-btn am-btn-secondary">采购</button>
-                            </td>
-                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -286,20 +281,15 @@
                           <c:forEach items="${productList}" var="product">
                           <tr>
                               <td>${product.type}</td>
-                              <td>${product.amount}</td>
-                              <td>${product.developNeedCycle}</td>
+                              <td><span id="productAmount_${product.type}">${product.amount}</span></td>
                               <td>
+                                  ${product.developNeedCycle}
                                   <c:if test="${product.developNeedCycle > 0}">
-                                      <input type="checkbox" name="developProduct" value="${product.id}">
+                                      <button id="devoteProduct_${product.id}" type="button" class="am-btn am-btn-secondary">研发</button>
                                   </c:if>
                               </td>
                           </tr>
                           </c:forEach>
-                          <tr>
-                              <td colspan="3">
-                                  <button id="devoteProduct" type="button" class="am-btn am-btn-secondary">研发</button>
-                              </td>
-                          </tr>
                           </tbody>
                       </table>
                   </div>
@@ -463,7 +453,7 @@
 
 <script>
 
-    function test(element) {
+    function testButton(element) {
         console.log($(element).val());
     }
 
@@ -557,49 +547,41 @@
         })
 
         //采购原料
-        $("#purchase").click(function(){
-            $("select[id^='materialNum_']").each(function(){
-                var $material = $(this);
-                var value = $material.val();
-                var materialId = value.split("#")[0];
-                var num = value.split("#")[1];
-                if(num!=-1) {
-                    $.getJSON("<c:url value="/manufacturing/purchase.do"/>",
-                            {
-                                companyTermId: companyTermId,
-                                materialId: materialId,
-                                materialNum: num
-                            },
-                            function(data){
-                                if(data.status==1) {
-                                    $material.replaceWith(num);
-                                    $("#purchase").replaceWith("采购结束，原料下期入库");
-                                }
-                            });
-                } else {
-                    $material.replaceWith("0");
-                }
-            });
+        $("select[id^='materialNum_']").change(function(){
+            var $material = $(this);
+            var value = $material.val();
+            var materialId = value.split("#")[0];
+            var num = value.split("#")[1];
+            if(num!=-1) {
+                $.getJSON("<c:url value="/manufacturing/purchase.do"/>",
+                        {
+                            companyTermId: companyTermId,
+                            materialId: materialId,
+                            materialNum: num
+                        },
+                        function(data){
+                            if(data.status==1) {
+                                $material.replaceWith(num);
+                            }
+                        });
+            }
         })
 
         //研发投入
-        $("#devoteProduct").click(function(){
+        $("button[id^='devoteProduct_']").click(function(){
             var $developButton = $(this);
-            $("input[name='developProduct']:checked").each(function(){
-                var $product = $(this);
-                var productId = $product.val();
-                //开始建造
-                $.getJSON("<c:url value="/manufacturing/devoteProduct.do"/>",
-                        {
-                            companyTermId: companyTermId,
-                            partId: productId
-                        },
-                        function(data){
-                            if(data.status == 1) {
-                                $developButton.replaceWith("研发中");
-                            }
-                        });
-            });
+            var productId = $developButton.attr("id")[1];
+            //开始建造
+            $.getJSON("<c:url value="/manufacturing/devoteProduct.do"/>",
+                    {
+                        companyTermId: companyTermId,
+                        partId: productId
+                    },
+                    function(data){
+                        if(data.status == 1) {
+                            $developButton.replaceWith("研发中");
+                        }
+                    });
         });
 
 
@@ -663,7 +645,7 @@
             var $produce = $(this);
             var produceLineId = $produce.attr("id").split("_")[1];
 
-            //开始建造
+            //开始生产
             $.getJSON("<c:url value="/manufacturing/produce.do"/>",
                     {
                         companyTermId: companyTermId,
@@ -674,6 +656,7 @@
                         var status = data.status;
                         if(status == 1) {
                             $produce.replaceWith("生产中");
+                            update(data.newReport);
                         } else {
                             alert(data.message);
                         }
@@ -716,6 +699,28 @@
 
         }
     });
+
+    function update(newReport){
+        var P1Amount = newReport.p1Amount;
+        var P2Amount = newReport.p2Amount;
+        var P3Amount = newReport.p3Amount;
+        var P4Amount = newReport.p4Amount;
+        var R1Amount = newReport.r1Amount;
+        var R2Amount = newReport.r2Amount;
+        var R3Amount = newReport.r3Amount;
+        var R4Amount = newReport.r4Amount;
+        var companyCash = newReport.companyCash;
+        if(P1Amount != null){ $("#productAmount_P1").text(P1Amount);}
+        if(P2Amount != null){ $("#productAmount_P2").text(P2Amount); }
+        if(P3Amount != null){ $("#productAmount_P3").text(P3Amount); }
+        if(P4Amount != null){ $("#productAmount_P4").text(P4Amount); }
+        if(R1Amount != null){ $("#materialAmount_R1").text(R1Amount); }
+        if(R2Amount != null){ $("#materialAmount_R2").text(R2Amount); }
+        if(R3Amount != null){ $("#materialAmount_R3").text(R3Amount); }
+        if(R4Amount != null){ $("#materialAmount_R4").text(R4Amount); }
+        if(companyCash != null){ $("#companyCash").text(companyCash); }
+    }
+
 </script>
 </body>
 </html>

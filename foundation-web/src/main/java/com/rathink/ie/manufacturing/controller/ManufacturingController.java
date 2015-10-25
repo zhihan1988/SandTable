@@ -13,10 +13,7 @@ import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
-import com.rathink.ie.manufacturing.EManufacturingDept;
-import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
-import com.rathink.ie.manufacturing.EManufacturingRoundType;
+import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.MarketManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
@@ -280,6 +277,10 @@ public class ManufacturingController extends BaseIndustryController {
 
         result.put("status", 1);
         result.put("message", "生产中");
+        NewReport newReport = new NewReport();
+//        newReport.setP1Amount(20);
+//        newReport.setR1Amount(50);
+        result.put("newReport", newReport);
         return result;
     }
 
