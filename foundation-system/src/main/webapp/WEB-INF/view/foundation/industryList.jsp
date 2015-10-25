@@ -28,6 +28,9 @@
 </head>
 <body>
     <div class="am-g">
+        <div style="text-align: left;margin-bottom: 10px">
+            <a type="button" class="am-btn am-btn-default am-btn-xs" href="<c:url value="/basic/xm.do?qm=formIndustry"/>"><span class="am-icon-plus"></span>新建行业</a>
+        </div>
         <div class="am-u-sm-12 am-u-md-6">
         </div>
         <div class="am-u-sm-12">

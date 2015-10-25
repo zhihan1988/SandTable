@@ -23,7 +23,7 @@ import java.util.List;
  * Created by Hean on 15/8/14.
  */
 @Controller
-    @RequestMapping("/campaign")
+@RequestMapping("/campaign")
 public class CampaignController {
     @Autowired
     private BaseManager baseManager;
@@ -41,20 +41,21 @@ public class CampaignController {
     }
 
     @RequestMapping("/{campaignId}")
-    public String getCampaign(HttpServletRequest request, @PathVariable String campaignId,Model model) throws Exception {
-        Campaign campaign = (Campaign)baseManager.getObject(Campaign.class.getName(), campaignId);
+    public String getCampaign(HttpServletRequest request, @PathVariable String campaignId, Model model) throws Exception {
+        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         model.addAttribute("campaign", campaign);
         List companyList = campaignManager.listCompany(campaign);
 
-        XQuery companyQuery = new XQuery("listCompany_default" , request);
-        companyQuery.put("director_id",AuthorizationUtil.getMyUser().getId());
+        XQuery companyQuery = new XQuery("listCompany_default", request);
+        companyQuery.put("director_id", AuthorizationUtil.getMyUser().getId());
         companyQuery.put("campaign_id", campaignId);
-        List<Object> cList  = baseManager.listObject(companyQuery);
-        if (cList!=null&&cList.size()>0){
-            model.addAttribute("companyStatus" ,false);
-        }else {
-            model.addAttribute("companyStatus" , true);
+        List<Object> cList = baseManager.listObject(companyQuery);
+        if (cList != null && cList.size() > 0) {
+            model.addAttribute("companyStatus", false);
+        } else {
+            model.addAttribute("companyStatus", true);
         }
+        model.addAttribute("myCompany", cList != null && cList.size() > 0 ? cList.get(0) : "");
         model.addAttribute("companyList", companyList);
         model.addAttribute("myUser", AuthorizationUtil.getMyUser());
         return "/foundation/campaign/campaignView";
@@ -63,7 +64,7 @@ public class CampaignController {
 
 
     @RequestMapping({"/saveOrUpdate"})
-    public String saveOrUpdateCampaign(Campaign campaign,HttpServletRequest request){
+    public String saveOrUpdateCampaign(Campaign campaign, HttpServletRequest request) {
         campaign.setStatus("1");
         campaign.setCreateDatetime(new Date());
         campaign.setStartDatetime(DateUtil.parseAllDate(request.getParameter("startDateTime")));
@@ -71,14 +72,14 @@ public class CampaignController {
         industry.setId(request.getParameter("industryId"));
         campaign.setIndustry(industry);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
-        return "redirect:/campaign/listCampaign";
+        return "redirect:/campaign/" + campaign.getId();
     }
 
     @RequestMapping({"/form"})
-    public String formCampaign(HttpServletRequest request , Model model) throws Exception{
-        XQuery industryQuery = new XQuery("listIndustry_default",request);
+    public String formCampaign(HttpServletRequest request, Model model) throws Exception {
+        XQuery industryQuery = new XQuery("listIndustry_default", request);
         List<Object> industryList = baseManager.listObject(industryQuery);
-        model.addAttribute("industryList",industryList);
+        model.addAttribute("industryList", industryList);
         return "/foundation/campaign/campaignForm";
     }
 

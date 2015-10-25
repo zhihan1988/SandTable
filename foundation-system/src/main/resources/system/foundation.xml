@@ -23,15 +23,16 @@
                 </do>
 
                 <do name="removeCampaign" label="删除比赛纪录" access="" result="json"/>
+                <do name="viewCampaign" label="删除比赛纪录" access="" result="/foundation/campaignView"/>
 
 
             </does>
         </entity>
 
 
-        <entity name="CompanyTerm" label="参与比赛的公司"
+        <entity name="Company" label="参与比赛的公司"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.property.model.CompanyTerm">
+                model="com.rathink.ie.foundation.team.model.Company">
             <!--<fields>-->
                 <!--<field name="status" label="比赛状态" inputType="text">-->
                     <!--<statusType fieldName="status">-->
@@ -42,15 +43,21 @@
                     <!--</statusType>-->
                 <!--</field>-->
             <!--</fields>-->
-
             <does>
-                <do name="plistCompanyTerm" label="企业列表"  result="/foundation/companyList">
+                <do name="plistCompany" label="企业列表"  result="/foundation/companyList">
                     <query name="campaign" label="默认" type="auto" orderBy="id:desc">
                         <condition name="campaign.id" operation="eq"/>
                     </query>
                 </do>
 
-                <do name="removeCompanyTerm" label="删除比赛纪录" access="" result="json"/>
+                <do name="listCompany" label="企业列表"  result="/foundation/companyListInclude">
+                    <query name="campaign" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="campaign.id" operation="eq"/>
+                    </query>
+                </do>
+
+                <do name="removeCompany" label="删除比赛纪录" access="" result="json"/>
+                <do name="viewCompany" label="删除比赛纪录" access="" result="/foundation/companyView"/>
 
 
             </does>
@@ -72,15 +79,22 @@
             <!--</fields>-->
 
             <does>
-                <do name="plistIndustry" label="比赛列表"  result="/foundation/industryList">
+                <do name="plistIndustry" label="行业列表"  result="/foundation/industryList">
                     <query name="default" label="默认" type="auto" orderBy="id:desc">
                         <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
                     </query>
                 </do>
 
-                <do name="removeIndustry" label="删除比赛纪录" access="" result="json"/>
-
-
+                <do name="removeIndustry" label="删除行业" access="" result="json"/>
+                <do name="saveOrUpdateIndustry" label="保存行业" access="" result="redirect:/basic/xm.do?qm=plistIndustry_default">
+                    <page>
+                        <fields>
+                            <field name="createDatetime" label="创建时间" defaultValue="${CURRENT_DATETIME}"
+                                   inputType="default"/>
+                        </fields>
+                    </page>
+                </do>
+                <do name="formIndustry" label="新建／编辑行业" access="" result="/foundation/industryForm"/>
             </does>
         </entity>
 

@@ -17,6 +17,9 @@
     </ul>
 </div>
 
+<div class="am-margin-top">
+    <a href="<c:url value="/campaign/form"/>" class="am-btn am-btn-primary">发起</a>
+</div>
 
 <div class="am-margin-top">
     <table class="am-table">

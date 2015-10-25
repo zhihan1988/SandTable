@@ -82,9 +82,9 @@
                 </do>
             </does>
         </entity>
-        <entity name="consumer" label="消费者"
+        <entity name="Consumer" label="消费者"
                 basic="simple" others=""
-                model="com.efeiyi.ec.organization.model.Consumer">
+                model="com.rathink.ie.user.model.User">
             <fields>
                 <field name="sex" label="性别" inputType="text">
                     <statusType fieldName="sex">
@@ -95,7 +95,7 @@
             </fields>
             <does>
                 <do name="plistConsumer" access="" label="消费者列表"
-                    result="/consumer/consumerPList">
+                    result="/organization/consumerList">
                     <query name="default" label="默认" type="auto" orderBy="id:desc">
                         <condition name="id" defaultValue="0" operation="ne" inputType="default"/>
                     </query>
