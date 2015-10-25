@@ -1,6 +1,7 @@
 package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
@@ -15,13 +16,17 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.*;
+import com.rathink.ie.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ie.manufacturing.service.MarketManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
+import com.rathink.ie.manufacturing.service.impl.ManufacturingFlowManagerImpl;
+import javafx.application.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,9 +45,11 @@ public class ManufacturingController extends BaseIndustryController {
     @Autowired
     private MaterialManager materialManager;
     @Autowired
-    protected MarketManager marketManager;
+    private MarketManager marketManager;
     @Autowired
-    protected ProductManager productManager;
+    private ProductManager productManager;
+    @Autowired
+    private ManufacturingImmediatelyManager manufacturingImmediatelyManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -133,54 +140,16 @@ public class ManufacturingController extends BaseIndustryController {
     }
 
 
-    @RequestMapping("/devoteProduct")
-    @ResponseBody
-    public Map devoteProduct(HttpServletRequest request, Model model) throws Exception {
-        String companyTermId = request.getParameter("companyTermId");
-        String partId = request.getParameter("partId");
-
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Product product = (Product) baseManager.getObject(Product.class.getName(), partId);
-
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(product);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-        Map result = new HashMap<>();
-        result.put("status", 1);
-        return result;
-    }
-
-
     @RequestMapping("/buildProduceLine")
     @ResponseBody
-    public Map processInstruction(HttpServletRequest request, Model model) throws Exception {
+    public Map buildProduceLine(HttpServletRequest request, Model model) throws Exception {
         String companyTermId = request.getParameter("companyTermId");
         String partId = request.getParameter("partId");
         String produceType = request.getParameter("produceType");
         String lineType = request.getParameter("lineType");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), partId);
+        Map result = manufacturingImmediatelyManager.processProductLineBuild(companyTermId, partId, produceType, lineType);
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(produceLine);
-        companyTermInstruction.setValue(produceType + ";" + lineType);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-        Integer installCycle = ProduceLine.Type.valueOf(lineType).getInstallCycle();
-
-        Map result = new HashMap<>();
-        result.put("status", 1);
-        result.put("installCycle", installCycle);
         return result;
     }
 
@@ -189,98 +158,23 @@ public class ManufacturingController extends BaseIndustryController {
     public Map continueBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
         String companyTermId = request.getParameter("companyTermId");
         String partId = request.getParameter("partId");
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), partId);
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_BUILD_CONTINUE.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(produceLine);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-        Map result = new HashMap<>();
-        result.put("status", 1);
+        Map result = manufacturingImmediatelyManager.processProductLineContinueBuild(companyTermId, partId);
         return result;
     }
 
     @RequestMapping(value = "/produce")
     @ResponseBody
     public Map produce(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
 
         String companyTermId = request.getParameter("companyTermId");
         String produceLineId = request.getParameter("produceLineId");
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
-        Company company = companyTerm.getCompany();
 
-        Material R1 = materialManager.getMateral(company, Material.Type.R1.name());
-        Material R2 = materialManager.getMateral(company, Material.Type.R2.name());
-        Material R3 = materialManager.getMateral(company, Material.Type.R3.name());
-        Material R4 = materialManager.getMateral(company, Material.Type.R4.name());
-        Integer R1Amount = R1.getAmount();
-        Integer R2Amount = R2.getAmount();
-        Integer R3Amount = R3.getAmount();
-        Integer R4Amount = R4.getAmount();
+        Map result = manufacturingImmediatelyManager.processProduce(companyTerm, produceLine);
 
-        boolean isMaterialAmountEnough = false;
-        Product.Type productType = Product.Type.valueOf(produceLine.getProduceType());
-        switch (productType){
-            case P1:
-                if (R1Amount >=1) {
-                    isMaterialAmountEnough = true;
-                }
-                break;
-            case P2:
-                if (R1Amount >= 1 && R2Amount >= 1) {
-                    isMaterialAmountEnough = true;
-                }
-                break;
-            case P3:
-                if (R2Amount >= 2 && R3Amount >= 1) {
-                    isMaterialAmountEnough = true;
-                }
-                break;
-            case P4:
-                if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
-                    isMaterialAmountEnough = true;
-                }
-                break;
-            default:
-                throw new NoSuchElementException(productType.name());
-        }
-
-        if (!isMaterialAmountEnough) {
-            result.put("status", 0);
-            result.put("message", "原料不足");
-            return result;
-        }
-
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(produceLine);
-        companyTermInstruction.setValue(produceLine.getProduceType());
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-        produceLine.setStatus(ProduceLine.Status.PRODUCING.name());
-        Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getProduceCycle();
-        produceLine.setProduceNeedCycle(produceCycle);
-        baseManager.saveOrUpdate(CompanyPart.class.getName(), produceLine);
-
-
-
-        result.put("status", 1);
-        result.put("message", "生产中");
-        NewReport newReport = new NewReport();
-//        newReport.setP1Amount(20);
-//        newReport.setR1Amount(50);
-        result.put("newReport", newReport);
         return result;
     }
 
@@ -303,6 +197,30 @@ public class ManufacturingController extends BaseIndustryController {
         companyTermInstruction.setCompanyTerm(companyTerm);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
+        result.put("status", 1);
+        return result;
+    }
+
+
+
+    @RequestMapping("/devoteProduct")
+    @ResponseBody
+    public Map devoteProduct(HttpServletRequest request, Model model) throws Exception {
+        String companyTermId = request.getParameter("companyTermId");
+        String partId = request.getParameter("partId");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Product product = (Product) baseManager.getObject(Product.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(product);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Map result = new HashMap<>();
         result.put("status", 1);
         return result;
     }
