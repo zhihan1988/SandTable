@@ -53,7 +53,7 @@
                                             class="am-icon-trash-o">删除</span>
                                     </button>
 
-                                    <a href="<c:url value="/basic/xm.do?qm=plistCompanyTerm_campaign&conditions=campaign.id:${campaign.id}"/> " class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span
+                                    <a href="<c:url value="/basic/xm.do?qm=plistCompany_campaign&conditions=campaign.id:${campaign.id}"/> " class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span
                                             class="am-icon-trash-o">参与企业</span>
                                     </a>
                                 </div>

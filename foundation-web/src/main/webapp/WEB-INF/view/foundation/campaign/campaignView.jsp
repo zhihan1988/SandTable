@@ -9,7 +9,7 @@
 <head></head>
 <div><a href="<c:url value="/campaign/listCampaign"/>">返回行业列表</a></div>
 
-<h1>${campaign.name}</h1>
+<h1>${campaign.name}</h1> <a href="<c:url value="/internet/main?campaignId=${campaign.id}&companyId=${myCompany.id}"/>">进入</a>
 
 <hr/>
 

@@ -25,7 +25,7 @@ public class HomeController {
     @Autowired
     private BaseManager baseManager;
 
-    @RequestMapping({"/home.do"})
+    @RequestMapping({"/homeTest.do"})
     public String home() {
         return "/home";
     }

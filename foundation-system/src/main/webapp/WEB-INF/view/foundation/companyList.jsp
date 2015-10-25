@@ -55,13 +55,12 @@
                 <%--</div>--%>
               <%--</div>--%>
             <%--</td>--%>
-            <td class="am-hide-sm-only"><a
-                    href="<c:url value='/basic/xm.do?qm=viewCompany&view=index&id=${company.company.id}'/>">${company.company.name}</a>
+            <td class="am-hide-sm-only"><a>${company.name}</a>
             </td>
-            <td class="am-hide-sm-only">${company.company.director.name}</td>
-            <td class="am-hide-sm-only">${company.company.capital}</td>
-            <td class="am-hide-sm-only">${company.company.deposit}</td>
-            <td class="am-hide-sm-only">${company.company.createDatetime}</td>
+            <td class="am-hide-sm-only">${company.director.name}</td>
+            <td class="am-hide-sm-only">${company.capital}</td>
+            <td class="am-hide-sm-only">${company.deposit}</td>
+            <td class="am-hide-sm-only">${company.createDatetime}</td>
           </tr>
         </c:forEach>
         </tbody>

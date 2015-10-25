@@ -3,7 +3,7 @@
     <jnode id="efecOrderAndConsumer" url="/home.do?jnodeId=efecOrderAndConsumer" text_zh_CN="运营管理">
         <jnode url="" id="orderManager" access="admin,manager" state="closed" text_zh_CN="比赛管理">
             <jnode url="/basic/xm.do?qm=plistCampaign_default" access="admin" text_zh_CN="比赛列表">
-                <match url="/basic/xm.do?qm=plistPurchaseOrder_default&amp;viewIdentify=orderProduct&amp;viewProductModel=order"/>
+                <match url="/basic/xm.do?qm=plistCompany_campaign"/>
             </jnode>
         </jnode>
         <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="企业管理">
@@ -25,7 +25,7 @@
             </jnode>
         </jnode>
         <jnode url="" id="consumer" access="admin" state="closed" text_zh_CN="用户管理">
-            <jnode url="/basic/xm.do?qm=plistCoupon_default" access="admin,manager" text_zh_CN="用户列表">
+            <jnode url="/basic/xm.do?qm=plistConsumer_default" access="admin,manager" text_zh_CN="用户列表">
                 <match url="/basic/xm.do?qm=plistCoupon_default&amp;view=coupon"/>
                 <match url="/basic/xm.do?qm=viewCouponBatch&amp;view=coupon"/>
             </jnode>
@@ -41,6 +41,8 @@
                 <match url="/basic/xm.do?qm=plistIndustryExpression_default"/>
                 <match url="/basic/xm.do?qm=plistIndustryExpression_default"/>
                 <match url="/basic/xm.do?qm=formIndustryExpression"/>
+                <match url="/basic/xm.do?qm=viewIndustryExpression"/>
+                <match url="/basic/xm.do?qm=formIndustry"/>
             </jnode>
         </jnode>
         <jnode url="" id="tenantManager" access="admin" state="closed" text_zh_CN="参数管理">
