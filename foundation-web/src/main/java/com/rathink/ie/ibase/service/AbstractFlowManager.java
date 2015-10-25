@@ -71,17 +71,8 @@ public abstract class AbstractFlowManager implements FlowManager {
         //收集决策信息
         collectCompanyInstruction(campaignContext);
 
+        //子类实现
         process();
-
-        processInstruction();
-
-        processPart();
-
-        //计算保存新回合的属性数据
-        calculateProperty();
-        //4计算保存新回合的财务数据
-        calculateAccount();
-
 
         //回合结束进入新的回合
         newRound();
@@ -174,29 +165,6 @@ public abstract class AbstractFlowManager implements FlowManager {
     }
 
     protected abstract void process();
-    /**
-     * 处理决策
-     */
-    @Deprecated
-    protected abstract void processInstruction();
-
-    /**
-     * 处理组件周期变化
-     */
-    @Deprecated
-    protected abstract void processPart();
-
-    /**
-     * 计算属性数据
-     */
-    @Deprecated
-    protected abstract void calculateProperty();
-
-    /**
-     * 计算财务数据
-     */
-    @Deprecated
-    protected abstract void calculateAccount();
 
     /**
      * 开始新的回合

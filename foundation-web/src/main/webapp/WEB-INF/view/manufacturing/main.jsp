@@ -399,21 +399,26 @@
                                 </td>
                             </tr>
                         </c:forEach>
-                        <c:if test="${campaign.currentCampaignDate%4==0}">
                         <c:forEach items="${longTermLoanResource.currentIndustryResourceChoiceSet}" var="choice">
                             <tr>
                                 <td>长期贷款</td>
                                 <td>
-                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
-                                        <option value="${choice.id}#-1">不需要</option>
-                                        <c:forEach items="${fn:split(longTermLoanResource.valueSet, ',')}" var="fee">
-                                            <option value="${choice.id}#${fee}">${fee}</option>
-                                        </c:forEach>
-                                    </select>
+                                    <c:choose>
+                                        <c:when test="${campaign.currentCampaignDate%4==0}">
+                                            <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                                <option value="${choice.id}#-1">不需要</option>
+                                                <c:forEach items="${fn:split(longTermLoanResource.valueSet, ',')}" var="fee">
+                                                    <option value="${choice.id}#${fee}">${fee}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </c:when>
+                                        <c:otherwise>
+                                            第四季度可贷
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                         </c:forEach>
-                        </c:if>
                         </tbody>
                     </table>
                 </div>
@@ -439,7 +444,7 @@
         <li>
             <a id="button-3" href="###" class="">
                 <span class="am-icon-sign-in"></span>
-                <span class="am-navbar-label">工厂</span>
+                <span class="am-navbar-label">制造</span>
             </a>
         </li>
         <li >

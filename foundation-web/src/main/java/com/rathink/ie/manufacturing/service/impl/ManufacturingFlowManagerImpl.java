@@ -272,25 +272,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
-    //交付订单
-    private void processDeliveredOrder(CompanyTermContext companyTermContext) {
-        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-        List<CompanyTermInstruction> orderDeliverInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.ORDER_DELIVER.name());
-        if (orderDeliverInstructionList != null) {
-            for (CompanyTermInstruction orderDeliverInstruction : orderDeliverInstructionList) {
-                MarketOrder marketOrder = (MarketOrder) baseManager.getObject(MarketOrder.class.getName(), orderDeliverInstruction.getCompanyPart().getId());
-                marketOrder.setStatus(MarketOrder.Status.DELIVERED.name());
-                baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
-
-                Product product = productManager.getProduct(companyTerm.getCompany(), marketOrder.getProductType());
-                product.setAmount(product.getAmount() - 1);
-                baseManager.saveOrUpdate(Product.class.getName(), product);
-
-                orderDeliverInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), orderDeliverInstruction);
-            }
-        }
-    }
 
     //处理订单账款
     private void processOrderAccount(CompanyTermContext companyTermContext) {
@@ -348,7 +329,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         List<CompanyTermInstruction> materialInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
         if (materialInstructionList != null) {
-            Integer fee = 0;
             for (CompanyTermInstruction materialInstruction : materialInstructionList) {
                 Material material = (Material) baseManager.getObject(Material.class.getName(), materialInstruction.getCompanyPart().getId());
                 Integer amount = Integer.valueOf(materialInstruction.getValue());
@@ -358,11 +338,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 materialInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), materialInstruction);
 
-                fee += amount;
-            }
-            if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MATERIAL_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-                baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
     }
@@ -372,7 +347,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         List<CompanyTermInstruction> productInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
         if (productInstructionList != null) {
-            Integer fee = 0;
             for (CompanyTermInstruction productInstruction : productInstructionList) {
                 Product product = (Product) baseManager.getObject(Product.class.getName(), productInstruction.getCompanyPart().getId());
                 Integer developNeedCycle = product.getDevelopNeedCycle();
@@ -381,13 +355,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 productInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), productInstruction);
-
-                fee += Product.Type.valueOf(product.getType()).getPerDevotion();
-            }
-
-            if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-                baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
     }
@@ -397,7 +364,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
         if (marketInstructionList != null) {
-            Integer fee = 0;
             for (CompanyTermInstruction marketInstruction : marketInstructionList) {
                 Market market = (Market) baseManager.getObject(Market.class.getName(), marketInstruction.getCompanyPart().getId());
                 Integer devotionNeedCycle = market.getDevotionNeedCycle();
@@ -406,13 +372,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 marketInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketInstruction);
-
-                fee += Market.Type.valueOf(market.getType()).getPerDevotion();
-            }
-
-            if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-                baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
     }
@@ -538,8 +497,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             //杂费
             processOthers(companyTermContext);
 
-            //交付订单
-            processDeliveredOrder(companyTermContext);
             //订单账期结束时
             processOrderAccount(companyTermContext);
             if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
@@ -549,122 +506,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
 
     }
-
-    protected void processInstruction() {
-/*
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-
-            //生产线建造
-            List<CompanyTermInstruction> produceLineInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
-            if (produceLineInstructionList != null) {
-                for (CompanyTermInstruction produceLineInstruction : produceLineInstructionList) {
-                    ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineInstruction.getCompanyPart().getId());
-//                    Integer instructionDate = produceLineInstruction.getCompanyTerm().getCampaignDate();
-//                    ProduceLine.Type eProduceLineType = ProduceLine.Type.valueOf(produceLineInstruction.getValue());
-                    Integer lineBuildNeedCycle = Integer.valueOf(produceLine.getLineBuildNeedCycle());
-                    if (lineBuildNeedCycle > 0) {
-                        lineBuildNeedCycle--;
-                    }
-                    if (lineBuildNeedCycle == 0) {//建造完成
-                        produceLine.setStatus(ProduceLine.Status.FREE.name());
-                        baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
-                    }
-
-                    produceLineInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceLineInstruction);
-                }
-            }
-
-            //原材料采购
-            List<CompanyTermInstruction> materialInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.MATERIAL.name());
-            if (materialInstructionList != null) {
-                for (CompanyTermInstruction materialInstruction : materialInstructionList) {
-                    Material material = (Material) baseManager.getObject(Material.class.getName(), materialInstruction.getCompanyPart().getId());
-                    Integer amount = Integer.valueOf(materialInstruction.getValue());
-                    material.setAmount(material.getAmount() + amount);
-                    baseManager.saveOrUpdate(Material.class.getName(), material);
-
-                    materialInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), materialInstruction);
-                }
-            }
-
-            //产品研发
-            List<CompanyTermInstruction> productInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.PRODUCT.name());
-            if (productInstructionList != null) {
-                for (CompanyTermInstruction productInstruction : productInstructionList) {
-                    Product product = (Product) baseManager.getObject(Product.class.getName(), productInstruction.getCompanyPart().getId());
-                    Integer developNeedCycle = product.getDevelopNeedCycle();
-                    product.setDevelopNeedCycle(--developNeedCycle);
-                    baseManager.saveOrUpdate(Product.class.getName(), product);
-
-                    productInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                    baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), productInstruction);
-                }
-            }
-        }
-*/
-    }
-
-    protected void processPart() {
-/*
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            Company company = companyTerm.getCompany();
-
-            XQuery produceLineQuery = new XQuery();
-            produceLineQuery.setHql("from ProduceLine where company.id = :companyId and status = :status");
-            produceLineQuery.put("companyId", company.getId());
-            produceLineQuery.put("status",ProduceLine.Status.PRODUCING.name());
-            List<ProduceLine> produceLineList = baseManager.listObject(produceLineQuery);
-            for (ProduceLine produceLine : produceLineList) {
-                Integer produceNeedCycle = produceLine.getProduceNeedCycle();
-                produceNeedCycle = produceNeedCycle - 1;
-                produceLine.setProduceNeedCycle(produceNeedCycle);
-
-                if (produceNeedCycle == 0) {//生产完成
-                    Product product = productManager.getProduct(company, produceLine.getProduceType());
-                    Integer productAmount = product.getAmount();
-                    product.setAmount(++productAmount);
-                    baseManager.saveOrUpdate(Product.class.getName(), product);
-
-                    produceLine.setStatus(ProduceLine.Status.FREE.name());
-                }
-
-                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
-            }
-        }
-*/
-
-
-    }
-
-
-    protected void calculateProperty() {
-
-        /*Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
-            for (EManufacturingPropertyName ePropertyName : EManufacturingPropertyName.values()) {
-                String key = ePropertyName.name();
-                Integer value = companyTermContext.get(key);
-                companyTermPropertyList.add(new CompanyTermProperty(ePropertyName.name(), ePropertyName.getDept(), value, companyTerm));
-            }
-            companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
-        }*/
-    }
-
-    protected void calculateAccount() {
-
-    }
-
 
 
 }

@@ -144,7 +144,9 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
     }
 
     protected void process() {
-
+        processInstruction();
+        calculateProperty();
+        calculateAccount();
     }
 
     protected void processInstruction() {
@@ -190,10 +192,6 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
 
     }
 
-    @Override
-    protected void processPart() {
-
-    }
 
     /*private void calculateCompetitionMap(CampaignContext campaignContext) {
         Map<String, Integer> competitionMap = new HashMap<>();

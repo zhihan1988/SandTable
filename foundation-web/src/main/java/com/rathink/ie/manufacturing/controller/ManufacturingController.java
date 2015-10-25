@@ -4,6 +4,7 @@ import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CampaignCenter;
@@ -197,7 +198,15 @@ public class ManufacturingController extends BaseIndustryController {
         companyTermInstruction.setCompanyTerm(companyTerm);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
+        String fee = materialNum;
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
         result.put("status", 1);
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
         return result;
     }
 
@@ -206,6 +215,7 @@ public class ManufacturingController extends BaseIndustryController {
     @RequestMapping("/devoteProduct")
     @ResponseBody
     public Map devoteProduct(HttpServletRequest request, Model model) throws Exception {
+        Map result = new HashMap<>();
         String companyTermId = request.getParameter("companyTermId");
         String partId = request.getParameter("partId");
 
@@ -220,37 +230,54 @@ public class ManufacturingController extends BaseIndustryController {
         companyTermInstruction.setCompanyTerm(companyTerm);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
+        Integer fee = Product.Type.valueOf(product.getType()).getPerDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
+        return result;
+    }
+
+    @RequestMapping("/devoteMarketArea")
+    @ResponseBody
+    public Map devoteMarketArea(HttpServletRequest request, Model model) throws Exception {
         Map result = new HashMap<>();
-        result.put("status", 1);
+        String companyTermId = request.getParameter("companyTermId");
+        String partId = request.getParameter("partId");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Market market = (Market) baseManager.getObject(Market.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
+        companyTermInstruction.setDept(EManufacturingDept.MARKET.name());
+        companyTermInstruction.setCompanyPart(market);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
         return result;
     }
 
     @RequestMapping("/deliverOrder")
     @ResponseBody
     public Map deliverOrder(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
+
         String companyTermId = request.getParameter("companyTermId");
         String orderId = request.getParameter("orderId");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        MarketOrder marketOrder = (MarketOrder) baseManager.getObject(MarketOrder.class.getName(), orderId);
-        Product product = productManager.getProduct(companyTerm.getCompany(), marketOrder.getProductType());
-
-        if (marketOrder.getAmount() > product.getAmount()) {
-            result.put("status", 0);
-            result.put("message", "产品库存不足");
-
-        } else {
-            CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-            companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-            companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.ORDER_DELIVER.name());
-            companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-            companyTermInstruction.setCompanyPart(marketOrder);
-            companyTermInstruction.setCompanyTerm(companyTerm);
-            baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-            result.put("status", 1);
-        }
+        Map result = manufacturingImmediatelyManager.processDeliveredOrder(companyTermId, orderId);
 
         return result;
     }

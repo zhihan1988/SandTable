@@ -14,6 +14,7 @@ import com.rathink.ie.manufacturing.EManufacturingAccountEntityType;
 import com.rathink.ie.manufacturing.EManufacturingDept;
 import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
 import com.rathink.ie.manufacturing.NewReport;
+import com.rathink.ie.manufacturing.model.MarketOrder;
 import com.rathink.ie.manufacturing.model.Material;
 import com.rathink.ie.manufacturing.model.ProduceLine;
 import com.rathink.ie.manufacturing.model.Product;
@@ -269,6 +270,57 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         result.put("newReport", newReport);
         result.put("newReport", newReport);
 
+        return result;
+    }
+
+    //交付订单
+    public Map processDeliveredOrder(String companyTermId, String orderId) {
+        Map result = new HashMap<>();
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        MarketOrder marketOrder = (MarketOrder) baseManager.getObject(MarketOrder.class.getName(), orderId);
+        Product product = productManager.getProduct(companyTerm.getCompany(), marketOrder.getProductType());
+
+        if (marketOrder.getAmount() > product.getAmount()) {
+            result.put("status", 0);
+            result.put("message", "产品库存不足");
+            return result;
+        }
+
+        CompanyTermInstruction orderDeliverInstruction = new CompanyTermInstruction();
+        orderDeliverInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+        orderDeliverInstruction.setBaseType(EManufacturingInstructionBaseType.ORDER_DELIVER.name());
+        orderDeliverInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        orderDeliverInstruction.setCompanyPart(marketOrder);
+        orderDeliverInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), orderDeliverInstruction);
+
+        marketOrder.setStatus(MarketOrder.Status.DELIVERED.name());
+        baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
+
+        product.setAmount(product.getAmount() - 1);
+        baseManager.saveOrUpdate(Product.class.getName(), product);
+
+        NewReport newReport = new NewReport();
+        Product.Type productType = Product.Type.valueOf(product.getType());
+        switch (productType) {
+            case P1:
+                newReport.setP1Amount(product.getAmount());
+                break;
+            case P2:
+                newReport.setP2Amount(product.getAmount());
+                break;
+            case P3:
+                newReport.setP3Amount(product.getAmount());
+                break;
+            case P4:
+                newReport.setP4Amount(product.getAmount());
+                break;
+            default:
+                throw new NoSuchElementException(productType+"");
+        }
+        result.put("status", 1);
+        result.put("newReport", newReport);
         return result;
     }
 }

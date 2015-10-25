@@ -4,21 +4,21 @@ package com.rathink.ie.manufacturing;
  * Created by Hean on 2015/10/7.
  */
 public enum EManufacturingInstructionBaseType {
-    //Éú²úÏßÐÞ½¨
+    //ç”Ÿäº§çº¿ä¿®å»º
     PRODUCE_LINE_BUILD,
-    //Éú²úÏß¼ÌÐøÐÞ½¨
+    //ç”Ÿäº§çº¿ç»§ç»­ä¿®å»º
     PRODUCE_LINE_BUILD_CONTINUE,
-    //Éú²ú
+    //ç”Ÿäº§
     PRODUCE,
-    //²úÆ·ÑÐ·¢Í¶Èë
+    //äº§å“ç ”å‘æŠ•å…¥
     PRODUCT_DEVOTION,
-    //ÊÐ³¡ÇøÓò¿ª·¢Í¶Èë
+    //å¸‚åœºåŒºåŸŸå¼€å‘æŠ•å…¥
     MARKET_DEVOTION,
-    //¶©µ¥Í¶Èë
+    //è®¢å•æŠ•å…¥
     MARKET_ORDER,
-    //¶©µ¥½»¸¶
+    //è®¢å•äº¤ä»˜
     ORDER_DELIVER,
-    //ÎïÁÏ²É¹º
+    //ç‰©æ–™é‡‡è´­
     MATERIAL_PURCHASE,
     LONG_TERM_LOAN, SHORT_TERM_LOAN, USURIOUS_LOAN
 }

@@ -10,11 +10,15 @@ import java.util.Map;
  */
 public interface ManufacturingImmediatelyManager {
 
+    //建造生产线
     Map processProductLineBuild(String companyTermId, String partId, String produceType, String lineType);
 
-
+    //继续建造生产线
     Map processProductLineContinueBuild(String companyTermId, String partId);
 
     //开始生产
     Map processProduce(CompanyTerm companyTerm, ProduceLine produceLine);
+
+    //交付订单
+    Map processDeliveredOrder(String companyTermId, String orderId);
 }
