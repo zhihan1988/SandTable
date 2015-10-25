@@ -1,7 +1,7 @@
 package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
-import com.ming800.core.util.ApplicationContextUtil;
+import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
@@ -10,7 +10,6 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CampaignCenter;
 import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
@@ -21,20 +20,16 @@ import com.rathink.ie.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ie.manufacturing.service.MarketManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
-import com.rathink.ie.manufacturing.service.impl.ManufacturingFlowManagerImpl;
-import javafx.application.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.logging.XMLFormatter;
 
 /**
  * Created by Hean on 2015/10/7.
@@ -51,6 +46,8 @@ public class ManufacturingController extends BaseIndustryController {
     private ProductManager productManager;
     @Autowired
     private ManufacturingImmediatelyManager manufacturingImmediatelyManager;
+    @Autowired
+    private AutoSerialManager autoSerialManager;
 
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
@@ -140,6 +137,46 @@ public class ManufacturingController extends BaseIndustryController {
         return "/manufacturing/main";
     }
 
+
+    @RequestMapping("/chooseOrder")
+    @ResponseBody
+    public Map chooseOrder(HttpServletRequest request, Model model) throws Exception {
+
+        String companyTermId = request.getParameter("companyTermId");
+        String choiceId = request.getParameter("choiceId");
+        String value = request.getParameter("value");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
+
+        MarketOrderChoice marketOrderChoice = new MarketOrderChoice(industryResourceChoice);
+        MarketOrder marketOrder = new MarketOrder();
+        marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
+        marketOrder.setDept(EManufacturingDept.MARKET.name());
+        marketOrder.setStatus(MarketOrder.Status.NORMAL.name());
+        marketOrder.setCampaign(companyTerm.getCampaign());
+        marketOrder.setCompany(companyTerm.getCompany());
+//                marketOrder.setName();
+        marketOrder.setUnitPrice(marketOrderChoice.getUnitPrice());
+        marketOrder.setAmount(marketOrderChoice.getAmount());
+        marketOrder.setTotalPrice(marketOrderChoice.getTotalPrice());
+        marketOrder.setNeedAccountCycle(marketOrderChoice.getAccountPeriod());
+        marketOrder.setProductType(marketOrderChoice.getProductType());
+        baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(marketOrder);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        companyTermInstruction.setValue(value);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        return result;
+    }
 
     @RequestMapping("/buildProduceLine")
     @ResponseBody
@@ -237,6 +274,7 @@ public class ManufacturingController extends BaseIndustryController {
         NewReport newReport = new NewReport();
         Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
         newReport.setCompanyCash(companyCash);
+        result.put("status", 1);
         result.put("newReport", newReport);
         return result;
     }
@@ -279,6 +317,19 @@ public class ManufacturingController extends BaseIndustryController {
 
         Map result = manufacturingImmediatelyManager.processDeliveredOrder(companyTermId, orderId);
 
+        return result;
+    }
+
+    @RequestMapping("/loan")
+    @ResponseBody
+    public Map loan(HttpServletRequest request, Model model) throws Exception {
+
+        String companyTermId = request.getParameter("companyTermId");
+        String choiceId = request.getParameter("choiceId");
+        String value = request.getParameter("value");
+        String type = request.getParameter("type");
+
+        Map result = manufacturingImmediatelyManager.loan(companyTermId, choiceId, value, type);
         return result;
     }
 

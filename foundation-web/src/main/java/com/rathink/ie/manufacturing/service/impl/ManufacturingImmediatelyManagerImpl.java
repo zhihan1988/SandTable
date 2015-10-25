@@ -9,15 +9,10 @@ import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
-import com.rathink.ie.manufacturing.EManufacturingAccountEntityType;
-import com.rathink.ie.manufacturing.EManufacturingDept;
-import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
-import com.rathink.ie.manufacturing.NewReport;
-import com.rathink.ie.manufacturing.model.MarketOrder;
-import com.rathink.ie.manufacturing.model.Material;
-import com.rathink.ie.manufacturing.model.ProduceLine;
-import com.rathink.ie.manufacturing.model.Product;
+import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
@@ -321,6 +316,47 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         }
         result.put("status", 1);
         result.put("newReport", newReport);
+        return result;
+    }
+
+
+    public Map loan(String companyTermId, String choiceId, String fee, String type) {
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setIndustryResourceChoice(industryResourceChoice);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        companyTermInstruction.setValue(fee);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Loan loan = new Loan();
+        loan.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
+        loan.setDept(EManufacturingDept.FINANCE.name());
+        loan.setStatus(Loan.Status.NORMAL.name());
+        loan.setCampaign(companyTerm.getCampaign());
+        loan.setCompany(companyTerm.getCompany());
+//                usuriousLoan.setName();
+        loan.setMoney(Integer.valueOf(fee));
+        Loan.Type loanType = Loan.Type.valueOf(type);
+        loan.setNeedRepayCycle(loanType.getCycle());
+        baseManager.saveOrUpdate(Loan.class.getName(), loan);
+
+        String loanAccountName = EManufacturingAccountEntityType.valueOf(loanType.name()).name();
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.COMPANY_CASH.name(), loanAccountName, companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
+
         return result;
     }
 }

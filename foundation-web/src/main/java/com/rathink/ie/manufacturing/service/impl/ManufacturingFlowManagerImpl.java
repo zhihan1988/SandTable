@@ -245,33 +245,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
     }
 
-    //选择订单
-    private void processMarketOrder(CompanyTermContext companyTermContext) {
-        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-        List<CompanyTermInstruction> marketOrderInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.MARKET_ORDER.name());
-        if (marketOrderInstructionList != null) {
-            for (CompanyTermInstruction marketOrderInstruction : marketOrderInstructionList) {
-                MarketOrderChoice marketOrderChoice = new MarketOrderChoice(marketOrderInstruction.getIndustryResourceChoice());
-                MarketOrder marketOrder = new MarketOrder();
-                marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
-                marketOrder.setDept(EManufacturingDept.MARKET.name());
-                marketOrder.setStatus(MarketOrder.Status.NORMAL.name());
-                marketOrder.setCampaign(companyTerm.getCampaign());
-                marketOrder.setCompany(companyTerm.getCompany());
-//                marketOrder.setName();
-                marketOrder.setUnitPrice(marketOrderChoice.getUnitPrice());
-                marketOrder.setAmount(marketOrderChoice.getAmount());
-                marketOrder.setTotalPrice(marketOrderChoice.getTotalPrice());
-                marketOrder.setNeedAccountCycle(marketOrderChoice.getAccountPeriod());
-                marketOrder.setProductType(marketOrderChoice.getProductType());
-                baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
-
-                marketOrderInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketOrderInstruction);
-            }
-        }
-    }
-
 
     //处理订单账款
     private void processOrderAccount(CompanyTermContext companyTermContext) {
@@ -404,8 +377,39 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
-    protected void processUsuriousLoan(CompanyTermContext companyTermContext) {
+    protected void processLoan(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        Integer campaignDate = companyTerm.getCampaignDate();
+
+        XQuery xQuery = new XQuery();
+        String hql = "from Loan where status=:status";
+        xQuery.setHql(hql);
+        xQuery.put("status", Loan.Status.NORMAL.name());
+        List<Loan> loanList = baseManager.listObject(xQuery);
+        if (loanList != null) {
+            for (Loan loan : loanList) {
+                Integer needRepayCycle = loan.getNeedRepayCycle();
+                needRepayCycle--;
+                loan.setNeedRepayCycle(needRepayCycle);
+
+                Loan.Type loanType = Loan.Type.valueOf(loan.getType());
+                Integer fee = 0;
+                if (campaignDate % 4 == 0) {//年底付息
+                    fee += loan.getMoney() * loanType.getYearRate() / 100;
+                }
+                if (needRepayCycle == 0) {//到期还款
+                    loan.setStatus(Loan.Status.FINISH.name());
+                    fee += loan.getMoney();
+                }
+                if (fee != 0) {
+                    //需要保证Loan.Type.name跟EManufacturingAccountEntityType中的贷款的名字一直
+                    Account account = accountManager.packageAccount(String.valueOf(fee), loanType.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                    baseManager.saveOrUpdate(Account.class.getName(), account);
+                }
+                baseManager.saveOrUpdate(Loan.class.getName(), loan);
+            }
+        }
+
 
         List<CompanyTermInstruction> usuriousLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.USURIOUS_LOAN.name());
         if (usuriousLoanInstructionList != null) {
@@ -474,35 +478,24 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
 
-            //广告投入
-
-            //订单
-            processMarketOrder(companyTermContext);
-
-            //2.
+            //原材料入库
             processMaterial(companyTermContext);
-            //3.
+            //产品投入周期
             processProductDevotion(companyTermContext);
-            //4.
+            //市场投入周期
             processMarketAreaDevotion(companyTermContext);
-
             //更新生产完成入库
             processUpdateProduce(companyTermContext);
             //销售产品所得费用
-
-            //贷款
-            processUsuriousLoan(companyTermContext);
-            processShortTermLoan(companyTermContext);
-            processLongTermLoan(companyTermContext);
-            //杂费
-            processOthers(companyTermContext);
-
-            //订单账期结束时
             processOrderAccount(companyTermContext);
             if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
                 //延迟交付
                 processUnDeliveredOrder(companyTermContext);
             }
+            //杂费
+            processOthers(companyTermContext);
+            //贷款
+            processLoan(companyTermContext);
         }
 
     }

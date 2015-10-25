@@ -21,4 +21,7 @@ public interface ManufacturingImmediatelyManager {
 
     //交付订单
     Map processDeliveredOrder(String companyTermId, String orderId);
+
+    //贷款
+    Map loan(String companyTermId, String choiceId, String fee, String type);
 }

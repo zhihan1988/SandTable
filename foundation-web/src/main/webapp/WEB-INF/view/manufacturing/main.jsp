@@ -85,6 +85,7 @@
             </div>
         </div>
         <div id="panel-2" class="panel">
+            <c:if test="${campaign.currentCampaignDate%4==1}">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                 <h3>投放广告</h3>
@@ -180,6 +181,7 @@
                 </table>
                 </div>
             </div>
+            </c:if>
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <h3>市场订单</h3>
@@ -376,7 +378,7 @@
                             <tr>
                                 <td>高利贷</td>
                                 <td>
-                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <select id="usuriousLoan_${choice.id}" name="usuriousLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                         <option value="${choice.id}#-1">不需要</option>
                                         <c:forEach items="${fn:split(usuriousLoanResource.valueSet, ',')}" var="fee">
                                             <option value="${choice.id}#${fee}">${fee}</option>
@@ -390,7 +392,7 @@
                             <tr>
                                 <td>短期贷款</td>
                                 <td>
-                                    <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                    <select id="shortTermLoan_${choice.id}" name="shortTermLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                         <option value="${choice.id}#-1">不需要</option>
                                         <c:forEach items="${fn:split(shortTermLoanResource.valueSet, ',')}" var="fee">
                                             <option value="${choice.id}#${fee}">${fee}</option>
@@ -405,7 +407,7 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${campaign.currentCampaignDate%4==0}">
-                                            <select id="instruction_${choice.id}" name="operationChoiceFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
+                                            <select id="longTermLoan_${choice.id}" name="longTermLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                                 <option value="${choice.id}#-1">不需要</option>
                                                 <c:forEach items="${fn:split(longTermLoanResource.valueSet, ',')}" var="fee">
                                                     <option value="${choice.id}#${fee}">${fee}</option>
@@ -524,6 +526,7 @@
                     function(data){
                         if(data.status == 1) {
                             $order.replaceWith("已交付");
+                            update(data.newReport);
                         } else {
                             alert(data.message);
                         }
@@ -536,17 +539,13 @@
             var choiceId = array[0];
             var value = array[1];
             if (value != -1) {
-                $.post("<c:url value="/work/makeInstruction"/>",
+                $.post("<c:url value="/manufacturing/chooseOrder"/>",
                         {
                             companyTermId: companyTermId,
                             choiceId: choiceId,
                             value: value
-                        });
-            } else {
-                $.post("<c:url value="/work/cancelInstruction"/>",
-                        {
-                            companyId: companyId,
-                            choiceId: choiceId
+                        },function(){
+
                         });
             }
         })
@@ -567,6 +566,7 @@
                         function(data){
                             if(data.status==1) {
                                 $material.replaceWith(num);
+                                update(data.newReport);
                             }
                         });
             }
@@ -575,7 +575,7 @@
         //研发投入
         $("button[id^='devoteProduct_']").click(function(){
             var $developButton = $(this);
-            var productId = $developButton.attr("id")[1];
+            var productId = $developButton.attr("id").split("_")[1];
             //开始建造
             $.getJSON("<c:url value="/manufacturing/devoteProduct.do"/>",
                     {
@@ -585,6 +585,7 @@
                     function(data){
                         if(data.status == 1) {
                             $developButton.replaceWith("研发中");
+                            update(data.newReport);
                         }
                     });
         });
@@ -612,6 +613,7 @@
                         function(data){
                             //建造结果
                             if(data.status == 1) {
+                                update(data.newReport);
                                 $("#lineType_" + partId).replaceWith($("#lineType_" + partId).find("option:selected").text());
                                 $("#produceType_" + partId).replaceWith($("#produceType_" + partId).find("option:selected").text());
                                 var installCycle = data.installCycle;
@@ -632,7 +634,7 @@
         $("button[id^='continueBuild_']").click(function(){
             var $build = $(this);
             var partId = $build.attr("id").split("_")[1];
-            //开始建造
+            //继续建造
             $.getJSON("<c:url value="/manufacturing/continueBuildProduceLine.do"/>",
                     {
                         companyTermId: companyTermId,
@@ -641,6 +643,7 @@
                     function(data){
                         if(data.status == 1) {
                             $build.replaceWith("建造中");
+                            update(data.newReport);
                         }
                     });
         });
@@ -660,7 +663,7 @@
                         //建造结果
                         var status = data.status;
                         if(status == 1) {
-                            $produce.replaceWith("生产中");
+                            $produce.parent().text("生产中");
                             update(data.newReport);
                         } else {
                             alert(data.message);
@@ -668,6 +671,41 @@
                     });
         });
 
+        $("select[id^='usuriousLoan_']").change(function(){
+            var $choice = $(this);
+            var type = "USURIOUS_LOAN";
+            loan($choice, type);
+        });
+        $("select[id^='shortTermLoan_']").change(function(){
+            var $choice = $(this);
+            var type = "SHORT_TERM_LOAN";
+            loan($choice, type);
+        });
+        $("select[id^='longTermLoan_']").change(function(){
+            var $choice = $(this);
+            var type = "LONG_TERM_LOAN";
+            loan($choice, type);
+        });
+
+        function loan($choice, type){
+            var array = $choice.val().split("#");
+            var choiceId = array[0];
+            var value = array[1];
+            $.getJSON("<c:url value="/manufacturing/loan.do"/>",
+                    {
+                        companyTermId: companyTermId,
+                        choiceId: choiceId,
+                        value: value,
+                        type: type
+                    },
+                    function(data){
+                        if(data.status == 1) {
+                            $choice.parent().text("已贷款");
+                            update(data.newReport);
+                        }
+                    }
+            );
+        }
 
         $("#endCampaignDate").click(function () {
             if(confirm("是否结束当前回合的操作？")) {
