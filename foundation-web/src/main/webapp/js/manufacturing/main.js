@@ -261,17 +261,18 @@ $(function () {
     });
 
     function isNext() {
-        $.post(base + "/flow/isCampaignNext",
+        $.getJSON(base + "/flow/isCampaignNext",
         {
             campaignId:campaignId,
             campaignDate: campaignDate,
             roundType: roundType
         },
             function (data) {
-                if (data == 0) {
+                var isNext = data.isNext;
+                if (isNext == true) {
                     location.reload();
                 } else {
-                    $("#unFinishedNum").text(data);
+                    $("#unFinishedNum").text(data.unFinishedNum);
                 }
             });
 

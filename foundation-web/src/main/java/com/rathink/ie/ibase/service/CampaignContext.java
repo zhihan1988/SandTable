@@ -1,5 +1,6 @@
 package com.rathink.ie.ibase.service;
 
+import com.rathink.ie.base.controller.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
@@ -20,8 +21,8 @@ public class CampaignContext {
     private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
     //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
     private Map<String, String> expressionMap = new HashMap<>();
-    private Map<String, Observable> observableMap = new HashMap<>();//key campaignDate:roundType
     private Map<String, List<CompanyPart>> companyPartMap = new HashMap<>();
+    private CyclePublisher cyclePublisher;
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -92,16 +93,20 @@ public class CampaignContext {
         this.expressionMap = expressionMap;
     }
 
-    public Map<String, Observable> getObservableMap() {
-        return observableMap;
-    }
-
     public Map<String, List<CompanyPart>> getCompanyPartMap() {
         return companyPartMap;
     }
 
     public void setCompanyPartMap(Map<String, List<CompanyPart>> companyPartMap) {
         this.companyPartMap = companyPartMap;
+    }
+
+    public CyclePublisher getCyclePublisher() {
+        return cyclePublisher;
+    }
+
+    public void setCyclePublisher(CyclePublisher cyclePublisher) {
+        this.cyclePublisher = cyclePublisher;
     }
 }
 

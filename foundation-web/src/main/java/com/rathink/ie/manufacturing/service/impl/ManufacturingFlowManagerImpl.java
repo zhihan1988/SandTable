@@ -2,6 +2,8 @@ package com.rathink.ie.manufacturing.service.impl;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
+import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.base.controller.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.team.model.Company;
@@ -190,59 +192,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
     @Override
     public void initNextObserable() {
-        Campaign campaign = campaignContext.getCampaign();
-        Integer campaignDate = campaign.getCurrentCampaignDate();
-        Set<String> companyIdSet = campaignContext.getCompanyTermContextMap().keySet();
-        Map<String, Observable> observableMap = campaignContext.getObservableMap();
-
-        RoundEndObserable dateRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
-        dateRoundObserable.addObserver((o, arg) -> next(arg.toString()));
-        observableMap.put(campaignDate + ":" + "DATE_ROUND", dateRoundObserable);
-
-
-        /*if (campaign.getCurrentCampaignDate() % 4 == 1) {
-            RoundEndObserable marketPayRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
-            marketPayRoundObserable.addObserver(new Observer() {
-                @Override
-                public void update(Observable o, Object arg) {
-                    Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), arg.toString());
-                    List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
-
-                    Map<String, List> choiceInstructionMap = new HashMap();
-                    for (CompanyTerm companyTerm : companyTermList) {
-                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingInstructionBaseType.MARKET_ORDER.name());
-                        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-                        String choiceId = companyTermInstruction.getIndustryResourceChoice().getId();
-                        if(choiceInstructionMap.containsKey(choiceId)) {
-                            choiceInstructionMap.get(choiceId).add(companyTermInstruction);
-                        } else {
-                            List<CompanyTermInstruction> companyTermInstructionList = new ArrayList<>();
-                            companyTermInstructionList.add(companyTermInstruction);
-                            choiceInstructionMap.put(choiceId, companyTermInstructionList);
-                        }
-                    }
-
-                }
-            });
-            observableMap.put(campaignDate + ":" + "MARKET_PAY_ROUND", marketPayRoundObserable);
-
-            RoundEndObserable orderRoundObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
-            orderRoundObserable.addObserver(new Observer() {
-                @Override
-                public void update(Observable o, Object arg) {
-                    Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), arg.toString());
-                    List<CompanyTerm> companyTermList = companyTermManager.listCompanyTerm(campaign.getId(), campaign.getCurrentCampaignDate());
-                    for (CompanyTerm companyTerm : companyTermList) {
-                        CompanyTermInstruction companyTermInstruction = instructionManager.getUniqueInstructionByBaseType(companyTerm, EManufacturingChoiceBaseType.MARKET_ORDER.name());
-                        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-                    }
-                }
-            });
-            observableMap.put(campaignDate + ":" + "ORDER_ROUND", orderRoundObserable);
-        }*/
-
+        CyclePublisher cyclePublisher = (CyclePublisher) ApplicationContextUtil.getBean("cyclePublisher");
+        cyclePublisher.setCampaignContext(campaignContext);
+        campaignContext.setCyclePublisher(cyclePublisher);
     }
 
 

@@ -87,8 +87,6 @@ public abstract class AbstractFlowManager implements FlowManager {
         dieOut();
 
 //        end();
-
-        initNextObserable();
     }
 
 
@@ -253,6 +251,8 @@ public abstract class AbstractFlowManager implements FlowManager {
                     company.setResult(result);
                 }
             }
+
+            //清空campaignContext数据
         }
     }
 

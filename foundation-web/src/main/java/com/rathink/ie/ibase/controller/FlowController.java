@@ -2,6 +2,7 @@ package com.rathink.ie.ibase.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.base.controller.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.service.RoundEndObserable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -69,21 +71,28 @@ public class FlowController {
     @ResponseBody
     public void companyNext(HttpServletRequest request, Model model) throws Exception {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        String campaignDate = request.getParameter("campaignDate");
-        String key = campaignDate + ":" + request.getParameter("roundType");
-        RoundEndObserable roundEndObserable = (RoundEndObserable) campaignContext.getObservableMap().get(key);
-        roundEndObserable.finish(request.getParameter("companyId"));
+        campaignContext.getCyclePublisher().finish(request.getParameter("companyId"));
         return;
     }
 
     @RequestMapping("/isCampaignNext")
     @ResponseBody
-    public Integer isNext(HttpServletRequest request, Model model) throws Exception {
+    public Map isNext(HttpServletRequest request, Model model) throws Exception {
+        Map result = new HashMap<>();
+
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
-        String campaignDate = request.getParameter("campaignDate");
-        String key = campaignDate + ":" + request.getParameter("roundType");
-        RoundEndObserable roundEndObserable = (RoundEndObserable) campaignContext.getObservableMap().get(key);
-        return roundEndObserable.getUnFinishedNum();
+        String clientCampaignDate = request.getParameter("campaignDate");
+        Integer serverCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        if (Integer.parseInt(clientCampaignDate) == serverCampaignDate) {
+            result.put("isNext", false);
+            CyclePublisher cyclePublisher = campaignContext.getCyclePublisher();
+            result.put("unFinishedNum", cyclePublisher.getUnFinishedNum());
+        } else {
+            //刷新页面 进入下一回合
+            result.put("isNext", true);
+        }
+
+        return result;
     }
 
     @RequestMapping("/random")
