@@ -3,9 +3,7 @@ package com.rathink.ie.manufacturing.service.impl;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.base.controller.CyclePublisher;
-import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.RoundEndObserable;
+import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -188,13 +186,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.USURIOUS_LOAN.name(), usuriousLoan);
 
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
-    }
-
-    @Override
-    public void initNextObserable() {
-        CyclePublisher cyclePublisher = (CyclePublisher) ApplicationContextUtil.getBean("cyclePublisher");
-        cyclePublisher.setCampaignContext(campaignContext);
-        campaignContext.setCyclePublisher(cyclePublisher);
     }
 
 

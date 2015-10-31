@@ -1,4 +1,4 @@
-package com.rathink.ie.base.controller;
+package com.rathink.ie.base.component;
 
 import com.rathink.ie.ibase.service.CampaignContext;
 import org.springframework.beans.BeansException;

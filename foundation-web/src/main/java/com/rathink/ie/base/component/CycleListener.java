@@ -1,4 +1,4 @@
-package com.rathink.ie.base.controller;
+package com.rathink.ie.base.component;
 
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;

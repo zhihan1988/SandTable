@@ -3,6 +3,7 @@ package com.rathink.ie.ibase.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
@@ -61,7 +62,7 @@ public abstract class AbstractFlowManager implements FlowManager {
 
         randomChoice();
 
-        initNextObserable();
+        initCyclePublisher();
     }
 
     public void next(String campaignId) {
@@ -256,8 +257,11 @@ public abstract class AbstractFlowManager implements FlowManager {
         }
     }
 
-    public abstract void initNextObserable();
-
+    public void initCyclePublisher() {
+        CyclePublisher cyclePublisher = (CyclePublisher) ApplicationContextUtil.getBean("cyclePublisher");
+        cyclePublisher.setCampaignContext(campaignContext);
+        campaignContext.setCyclePublisher(cyclePublisher);
+    }
 
     @Override
     public void reset(String campaignId) {

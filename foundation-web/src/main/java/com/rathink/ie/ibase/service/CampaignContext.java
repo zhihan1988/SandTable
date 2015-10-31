@@ -1,14 +1,12 @@
 package com.rathink.ie.ibase.service;
 
-import com.rathink.ie.base.controller.CyclePublisher;
+import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Hean on 2015/9/10.

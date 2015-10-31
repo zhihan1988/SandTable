@@ -1,5 +1,7 @@
 package com.rathink.ie.internet.service.impl;
 
+import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.util.RandomUtil;
@@ -131,16 +133,6 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
         currentTypeIndustryResourceMap.put(EChoiceBaseType.OPERATION.name(), operationResource);
 
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
-    }
-
-    @Override
-    public void initNextObserable() {
-        Campaign campaign = campaignContext.getCampaign();
-        Set<String> companyIdSet = campaignContext.getCompanyTermContextMap().keySet();
-        RoundEndObserable roundEndObserable = new RoundEndObserable(campaign.getId(), companyIdSet);
-        roundEndObserable.addObserver((o, arg) -> {next(arg.toString());});
-        String key = campaign.getCurrentCampaignDate() + ":DATE_ROUND";
-        campaignContext.getObservableMap().put(key, roundEndObserable);
     }
 
     protected void process() {
