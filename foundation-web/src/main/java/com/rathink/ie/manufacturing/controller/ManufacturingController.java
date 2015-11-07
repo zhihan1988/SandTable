@@ -141,17 +141,30 @@ public class ManufacturingController extends BaseIndustryController {
         return "/manufacturing/main";
     }
 
-
     @RequestMapping("/finishDevotion")
     @ResponseBody
     public Map finishDevotion(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
+        String companyTermId = request.getParameter("companyTermId");
 
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
 
         DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
         devoteCycle.finishDevote(companyId);
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        List<CompanyTermInstruction> marketFeeInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.MARKET_FEE.name());
+        if (marketFeeInstructionList != null) {
+            Integer totalMoney = 0;
+            for (CompanyTermInstruction marketFeeInstruction : marketFeeInstructionList) {
+                marketFeeInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketFeeInstruction);
+                totalMoney += Integer.valueOf(marketFeeInstruction.getValue());
+            }
+            Account account = accountManager.packageAccount(String.valueOf(totalMoney), EManufacturingAccountEntityType.MARKET_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account);
+        }
 
         Map map = new HashMap<>();
         map.put("status", 1);
@@ -229,10 +242,6 @@ public class ManufacturingController extends BaseIndustryController {
 
         Map result = new HashMap<>();
         result.put("status", 1);
-        NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
-        newReport.setCompanyCash(companyCash);
-        result.put("newReport", newReport);
         return result;
     }
 

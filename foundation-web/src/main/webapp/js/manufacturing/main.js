@@ -51,7 +51,8 @@ $(function () {
         $.getJSON(base + "/manufacturing/finishDevotion.do",
             {
                 campaignId: campaignId,
-                companyId: companyId
+                companyId: companyId,
+                companyTermId: companyTermId
             }, function(data){
                 if(data.status == 1) {
                     $finishDevotionButton.replaceWith("等待竞标结果");
@@ -173,8 +174,6 @@ $(function () {
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
                         $("#confirmOrder").text("选单完成").attr("disabled",true).addClass("am-disabled");
-
-                        update(data.newReport);
                         //
                     } else {
                         alert(data.message);
