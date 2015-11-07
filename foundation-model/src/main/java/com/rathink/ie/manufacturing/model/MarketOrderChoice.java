@@ -10,13 +10,13 @@ public class MarketOrderChoice {
     private String name;
     private String marketArea;
     private String productType;
-    private Integer amount;//����
-    private Integer unitPrice;//����
-    private Integer totalPrice;//���
-    private Integer accountPeriod;//����
+    private Integer amount;//数量
+    private Integer unitPrice;//单价
+    private Integer totalPrice;//总价格
+    private Integer accountPeriod;//账期
     private Integer ISO;
-    private Integer cost;//�ɱ�
-    private Integer profit;//����
+    private Integer cost;//成本
+    private Integer profit;//利润
     private String ownerCompany;
 
     private IndustryResourceChoice industryResourceChoice;

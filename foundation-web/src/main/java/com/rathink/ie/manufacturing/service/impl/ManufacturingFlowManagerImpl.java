@@ -199,9 +199,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 xQuery.put("type", market);
                 PageEntity pageEntity = new PageEntity();
                 pageEntity.setIndex(1);
-                pageEntity.setpCount(companyNum);
+                pageEntity.setSize(companyNum);
                 xQuery.setPageEntity(pageEntity);
-                List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listObject(xQuery);
+                List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listPageInfo(xQuery).getList();
                 if (industryResourceChoiceList != null) {
                     List<MarketOrderChoice> marketOrderChoiceList = new LinkedList<>();
                     for (IndustryResourceChoice industryResourceChoice : industryResourceChoiceList) {

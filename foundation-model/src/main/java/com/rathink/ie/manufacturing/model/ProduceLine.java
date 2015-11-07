@@ -16,10 +16,10 @@ import javax.persistence.Table;
 public class ProduceLine extends CompanyPart {
 
 
-    private String produceLineType;//²úÆ·ÏßÀàĞÍ
-    private String produceType;//Éú²úÀàĞÍ
-    private String lineBuildNeedCycle;//¾àÀëÉú²úÏß½¨ÉèÍê³ÉËùĞèµÄÖÜÆÚ
-    private String produceNeedCycle;//¾àÀëÉú²úÍêÄ³²úÆ·ËùĞèµÄÖÜÆÚ
+    private String produceLineType;//äº§å“çº¿ç±»å‹
+    private String produceType;//ç”Ÿäº§ç±»å‹
+    private String lineBuildNeedCycle;//è·ç¦»ç”Ÿäº§çº¿å»ºè®¾å®Œæˆæ‰€éœ€çš„å‘¨æœŸ
+    private String produceNeedCycle;//è·ç¦»ç”Ÿäº§å®ŒæŸäº§å“æ‰€éœ€çš„å‘¨æœŸ
 
     @Column(name = "value")
     public String getProduceLineType() {
@@ -72,12 +72,12 @@ public class ProduceLine extends CompanyPart {
             this.mainternanceFee = mainternanceFee;
             this.sellValue = sellValue;
         }
-        private Integer perBuildDevotion;//Ã¿ÆÚ½¨Ôì³É±¾
-        private Integer installCycle;//°²×°ÖÜÆÚ
-        private Integer produceCycle;//Éú²úÖÜÆÚ
-        private Integer transferCycle;//×ª²úÖÜÆÚ
-        private Integer mainternanceFee;//Î¬»¤·ÑÓÃ
-        private Integer sellValue;//³öÊÛ²ĞÖµ
+        private Integer perBuildDevotion;//æ¯æœŸå»ºé€ æˆæœ¬
+        private Integer installCycle;//å®‰è£…å‘¨æœŸ
+        private Integer produceCycle;//ç”Ÿäº§å‘¨æœŸ
+        private Integer transferCycle;//è½¬äº§å‘¨æœŸ
+        private Integer mainternanceFee;//ç»´æŠ¤è´¹ç”¨
+        private Integer sellValue;//å‡ºå”®æ®‹å€¼
 
         public Integer getPerBuildDevotion() {
             return perBuildDevotion;

@@ -158,7 +158,7 @@ public class ManufacturingController extends BaseIndustryController {
         if (marketFeeInstructionList != null) {
             Integer totalMoney = 0;
             for (CompanyTermInstruction marketFeeInstruction : marketFeeInstructionList) {
-                marketFeeInstruction.setStatus(EInstructionStatus.PROCESSED.name());
+                marketFeeInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
                 baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketFeeInstruction);
                 totalMoney += Integer.valueOf(marketFeeInstruction.getValue());
             }

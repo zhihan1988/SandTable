@@ -1,9 +1,12 @@
 package com.rathink.ie.ibase.work.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+@JsonIgnoreProperties(value={"hibernateLazyInitializer"})
 @Entity
 @Table(name = "industry_resource_choice")
 public class IndustryResourceChoice {
@@ -81,6 +84,7 @@ public class IndustryResourceChoice {
         this.type = type;
     }
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "industry_resource_id")
     public IndustryResource getIndustryResource() {

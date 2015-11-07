@@ -49,16 +49,16 @@ public class DevoteCycle {
      */
     public synchronized void finishDevote(String companyId) {
         finishDevoteCompanySet.add(companyId);
-        if (status == 1 && campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
+        if (campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
             status = 2;
 
             //按市场类型分别获得所有的投标决策并按金额高低排序
             BaseManager baseManager = (BaseManager) ApplicationContextUtil.getBean("baseManagerImpl");
             for (String market : marketList) {
                 XQuery xQuery = new XQuery();
-                String hql = "from CompanyTermInstruction where industryResourceChoice.type=:type and companyTerm.campaignDate = :campaignDate";
+                String hql = "from CompanyTermInstruction where baseType=:baseType and industryResourceChoice.type=:type and companyTerm.campaignDate = :campaignDate";
                 xQuery.setHql(hql);
-//                xQuery.put("baseType", EManufacturingChoiceBaseType.MARKET.name());
+                xQuery.put("baseType", EManufacturingChoiceBaseType.MARKET_FEE.name());
                 xQuery.put("type", market);
                 xQuery.put("campaignDate", campaignContext.getCampaign().getCurrentCampaignDate());
                 List<CompanyTermInstruction> instructionList = baseManager.listObject(xQuery);

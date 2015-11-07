@@ -126,6 +126,8 @@ $(function () {
                         clearInterval(intervalFlag);
                         alert("选单环节结束");
 
+                        $("#marketOrderChoicePanel").hide();
+
                         //加载目前所有的订单
                         $.getJSON(base + "/manufacturing/listCurrentMarketOrder.do",
                             {
