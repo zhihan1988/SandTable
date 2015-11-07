@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,12 +30,6 @@ public class CyclePublisher implements ApplicationContextAware {
         this.campaignContext = campaignContext;
     }
 
-    public void nextCycle() {
-        CycleEvent cycleEvent = new CycleEvent(ctx, campaignContext);
-        ctx.publishEvent(cycleEvent);
-    }
-
-
     public Integer getUnFinishedNum() {
         int finishedCount = 0;
         Integer companyCount = campaignContext.getCompanyTermContextMap().size();
@@ -50,7 +45,8 @@ public class CyclePublisher implements ApplicationContextAware {
     public synchronized void finish(String companyId) {
         companyFinishedMap.put(companyId, true);
         if (getUnFinishedNum() == 0) {
-            nextCycle();
+            CycleEvent cycleEvent = new CycleEvent(ctx, campaignContext);
+            ctx.publishEvent(cycleEvent);
             companyFinishedMap.clear();
         }
     }

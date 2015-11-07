@@ -2,8 +2,10 @@ package com.rathink.ie.manufacturing.service.impl;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
+import com.ming800.core.taglib.PageEntity;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.base.component.CyclePublisher;
+import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -167,10 +169,42 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             marketFeeResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketFeeResource.getId())));
             currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.MARKET_FEE.name(), marketFeeResource);
 
-            //订单
-            IndustryResource marketOrderResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET_ORDER.name());
-            marketOrderResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketOrderResource.getId())));
-            currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.MARKET_ORDER.name(), marketOrderResource);
+            Market.Type[] marketTypeArray;
+            String[] productTypeArray;
+            if (currentCampaignDate == 1) {
+                marketTypeArray = new Market.Type[]{Market.Type.LOCAL};
+                productTypeArray = new String[]{"P1"};
+            } else if (currentCampaignDate == 5) {
+                marketTypeArray = new Market.Type[]{Market.Type.LOCAL, Market.Type.AREA};
+                productTypeArray = new String[]{"P1", "P2"};
+            } else {
+                marketTypeArray = Market.Type.values();
+                productTypeArray = new String[]{"P1", "P2", "P3", "P4"};
+            }
+            List<String> marketList = new ArrayList<>();
+            for (Market.Type m : marketTypeArray) {
+                for (String p : productTypeArray) {
+                    marketList.add(m.name() + "_" + p);
+                }
+            }
+
+            Integer companyNum = campaignContext.getCompanyTermContextMap().size();
+            Map<String, List<IndustryResourceChoice>> marketOrderChoiceMap = new HashMap<>();
+
+            for (String market : marketList) {
+                XQuery xQuery = new XQuery();
+                String hql = "from IndustryResourceChoice where type = :type";
+                xQuery.setHql(hql);
+                xQuery.put("type", market);
+                PageEntity pageEntity = new PageEntity();
+                pageEntity.setIndex(1);
+                pageEntity.setpCount(companyNum);
+                xQuery.setPageEntity(pageEntity);
+                List<IndustryResourceChoice> marketOrderChoiceList = baseManager.listObject(xQuery);
+                marketOrderChoiceMap.put(market, marketOrderChoiceList);
+            }
+            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
+            campaignContext.setDevoteCycle(devoteCycle);
         }
 
         IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LONG_TERM_LOAN.name());

@@ -1,6 +1,7 @@
 package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.base.component.CyclePublisher;
+import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
@@ -21,6 +22,7 @@ public class CampaignContext {
     private Map<String, String> expressionMap = new HashMap<>();
     private Map<String, List<CompanyPart>> companyPartMap = new HashMap<>();
     private CyclePublisher cyclePublisher;
+    private DevoteCycle devoteCycle;
 
     public void next() {
         currentCompanyTermInstructionSet.clear();
@@ -105,6 +107,14 @@ public class CampaignContext {
 
     public void setCyclePublisher(CyclePublisher cyclePublisher) {
         this.cyclePublisher = cyclePublisher;
+    }
+
+    public DevoteCycle getDevoteCycle() {
+        return devoteCycle;
+    }
+
+    public void setDevoteCycle(DevoteCycle devoteCycle) {
+        this.devoteCycle = devoteCycle;
     }
 }
 

@@ -2,6 +2,9 @@ package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
+import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.base.component.CheckOut;
+import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
@@ -49,6 +52,7 @@ public class ManufacturingController extends BaseIndustryController {
     @Autowired
     private AutoSerialManager autoSerialManager;
 
+    @CheckOut
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
@@ -138,6 +142,25 @@ public class ManufacturingController extends BaseIndustryController {
     }
 
 
+    @RequestMapping("/getPermission")
+    @ResponseBody
+    public Map getPermission(HttpServletRequest request, Model model) throws Exception {
+
+        String campaignId = request.getParameter("campaignId");
+//        String companyId = request.getParameter("companyId");
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
+        String currentCompanyId = devoteCycle.getCurrentCompany();
+        String currentMarket = devoteCycle.getCurrentMarket();
+
+        Map map = new HashMap<>();
+        map.put("status", 1);
+        map.put("companyId", currentCompanyId);
+        map.put("currentMarket", currentMarket);
+        return map;
+    }
+
     @RequestMapping("/chooseOrder")
     @ResponseBody
     public Map chooseOrder(HttpServletRequest request, Model model) throws Exception {
@@ -172,6 +195,11 @@ public class ManufacturingController extends BaseIndustryController {
         companyTermInstruction.setCompanyTerm(companyTerm);
         companyTermInstruction.setValue(value);
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(companyTerm.getCampaign().getId());
+        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
+        devoteCycle.chooseOrder(choiceId);
 
         Map result = new HashMap<>();
         result.put("status", 1);
