@@ -9,13 +9,14 @@ public class MarketOrderChoice {
 
     private String name;
     private String productType;
-    private Integer amount;//ÊýÁ¿
-    private Integer unitPrice;//µ¥¼Û
-    private Integer totalPrice;//½ð¶î
-    private Integer accountPeriod;//ÕËÆÚ
+    private Integer amount;//ï¿½ï¿½ï¿½ï¿½
+    private Integer unitPrice;//ï¿½ï¿½ï¿½ï¿½
+    private Integer totalPrice;//ï¿½ï¿½ï¿½
+    private Integer accountPeriod;//ï¿½ï¿½ï¿½ï¿½
     private Integer ISO;
-    private Integer cost;//³É±¾
-    private Integer profit;//ÀûÈó
+    private Integer cost;//ï¿½É±ï¿½
+    private Integer profit;//ï¿½ï¿½ï¿½ï¿½
+    private String ownerCompany;
 
     private IndustryResourceChoice industryResourceChoice;
     private MarketOrderChoice() {}
@@ -72,4 +73,15 @@ public class MarketOrderChoice {
         return profit;
     }
 
+    public String getOwnerCompany() {
+        return ownerCompany;
+    }
+
+    public void setOwnerCompany(String ownerCompany) {
+        this.ownerCompany = ownerCompany;
+    }
+
+    public IndustryResourceChoice getIndustryResourceChoice() {
+        return industryResourceChoice;
+    }
 }

@@ -189,19 +189,26 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             }
 
             Integer companyNum = campaignContext.getCompanyTermContextMap().size();
-            Map<String, List<IndustryResourceChoice>> marketOrderChoiceMap = new HashMap<>();
+            Map<String, List<MarketOrderChoice>> marketOrderChoiceMap = new HashMap<>();
 
             for (String market : marketList) {
                 XQuery xQuery = new XQuery();
-                String hql = "from IndustryResourceChoice where type = :type";
+                String hql = "from IndustryResourceChoice where industryResource.name = :baseType and type = :type";
                 xQuery.setHql(hql);
+                xQuery.put("baseType", EManufacturingChoiceBaseType.MARKET_ORDER.name());
                 xQuery.put("type", market);
                 PageEntity pageEntity = new PageEntity();
                 pageEntity.setIndex(1);
                 pageEntity.setpCount(companyNum);
                 xQuery.setPageEntity(pageEntity);
-                List<IndustryResourceChoice> marketOrderChoiceList = baseManager.listObject(xQuery);
-                marketOrderChoiceMap.put(market, marketOrderChoiceList);
+                List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listObject(xQuery);
+                if (industryResourceChoiceList != null) {
+                    List<MarketOrderChoice> marketOrderChoiceList = new LinkedList<>();
+                    for (IndustryResourceChoice industryResourceChoice : industryResourceChoiceList) {
+                        marketOrderChoiceList.add(new MarketOrderChoice(industryResourceChoice));
+                    }
+                    marketOrderChoiceMap.put(market, marketOrderChoiceList);
+                }
             }
             DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
             campaignContext.setDevoteCycle(devoteCycle);

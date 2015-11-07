@@ -44,10 +44,72 @@ $(function () {
         }
     })
 
+    var intervalFlag;
     //完成市场投放
     $("#finishDevotion").click(function(){
-
+        var $finishDevotionButton = $(this);
+        $.getJSON(base + "/manufacturing/finishDevotion.do",
+            {
+                campaignId: campaignId,
+                companyId: companyId
+            }, function(data){
+                if(data.status == 1) {
+                    $finishDevotionButton.replaceWith("等待竞标结果");
+                    intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
+                } else {
+                    alert(data.message);
+                }
+            }
+        );
     });
+
+    function refreshDevoteCycleStatus(){
+
+        $.getJSON(base + "/manufacturing/refreshDevoteCycleStatus.do",
+            {
+                campaignId: campaignId
+            }, function(data){
+                if(data.status==1){
+                    if(data.cycleStatus==1) {
+                        //投标进行中
+                    } else if(data.cycleStatus==2) {
+                        //投标完成进入选单阶段
+
+                        var market = data.market;
+                        var company = data.company;
+                        var marketOrderChoiceList = data.marketOrderChoiceList;
+
+                        var tbody = $("<tbody></tbody>");
+                        for(var i in marketOrderChoiceList){
+                            var marketOrderChoice = marketOrderChoiceList[i];
+                            var tr = $("<tr></tr>");
+                            tr.appendTo(tbody);
+
+                            tr.append($("<td>" + marketOrderChoice.name + "</td>"));
+                            tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value + "</td>"));
+                            tr.append($("<td>" + marketOrderChoice.productType + "</td>"));
+                            tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value2 + "</td>"));
+                            if(marketOrderChoice.company == null){
+                                var $choiceRadio = $('<input type="radio" name="orderChoice"/>')
+                                    .val(marketOrderChoice.industryResourceChoice.id+'_'+marketOrderChoice.industryResourceChoice.value);
+                                $("<td></td>").append($choiceRadio).appendTo(tr);
+                            } else {
+                                tr.append($("<td>" + marketOrderChoice.company + "</td>"));
+                            }
+                        }
+                        $("#marketOrderTbody").replaceWith(tbody);
+
+                        $("#marketOrderChoicePanel").show();
+                    } else if(data.cycleStatus==3) {
+                        //结束
+                        clearInterval(intervalFlag);
+                    }
+                } else {
+                    alert(data.message);
+                }
+            }
+        );
+    }
 
     //交付
     $("button[id^='deliver']").click(function () {
@@ -57,15 +119,15 @@ $(function () {
         {
             companyTermId: companyTermId,
             orderId: orderId
-        },
-            function(data){
+        }, function(data){
                 if(data.status == 1) {
                     $order.replaceWith("已交付");
                     update(data.newReport);
                 } else {
                     alert(data.message);
                 }
-            });
+           }
+        );
     })
 
     $("input[name='orderChoice']").click(function(){

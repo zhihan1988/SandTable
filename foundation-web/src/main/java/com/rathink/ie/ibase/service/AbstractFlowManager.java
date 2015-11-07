@@ -290,7 +290,6 @@ public abstract class AbstractFlowManager implements FlowManager {
                 if (accountList != null) {
                     accountList.forEach(session::delete);
                 }
-                session.delete(companyTerm);
 
                 //删除所有决策信息
                 XQuery instructionQuery = new XQuery();
@@ -300,6 +299,8 @@ public abstract class AbstractFlowManager implements FlowManager {
                 if (companyTermInstructionList != null) {
                     companyTermInstructionList.forEach(session::delete);
                 }
+
+                session.delete(companyTerm);
             }
         }
 

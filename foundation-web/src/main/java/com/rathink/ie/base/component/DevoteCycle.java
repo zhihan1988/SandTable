@@ -9,6 +9,7 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ie.manufacturing.model.MarketOrder;
+import com.rathink.ie.manufacturing.model.MarketOrderChoice;
 
 import java.util.*;
 
@@ -24,16 +25,18 @@ public class DevoteCycle {
 
     private List<String> marketList;
     private Queue<String> marketQueue;//由市场区域以及产品类型组成的队列
-    private Map<String, List<IndustryResourceChoice>> marketOrderChoiceMap;
-    private Map<String,Queue<String>>     companyIdQueueMap = new HashMap<>();
+    private Map<String, List<MarketOrderChoice>> marketOrderChoiceMap;
     private Integer currentLeftOperationNum;
     private String currentMarket;
+    private Map<String,Queue<String>> companyIdQueueMap = new HashMap<>();
 
-    public DevoteCycle(CampaignContext campaignContext, List<String> marketList, Map<String, List<IndustryResourceChoice>> marketOrderChoiceMap) {
+    public DevoteCycle(CampaignContext campaignContext, List<String> marketList, Map<String, List<MarketOrderChoice>> marketOrderChoiceMap) {
         this.campaignContext = campaignContext;
         this.marketList = marketList;
         this.marketQueue = new LinkedList<>(marketList);
         this.marketOrderChoiceMap = marketOrderChoiceMap;
+        this.currentMarket = marketQueue.peek();
+        this.currentLeftOperationNum = marketOrderChoiceMap.get(currentMarket).size();
     }
 
     /**
@@ -42,11 +45,11 @@ public class DevoteCycle {
      */
     public synchronized void finishDevote(String companyId) {
         finishDevoteCompanySet.add(companyId);
-        if (campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
+        if (status == 1 && campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
             status = 2;
 
             //按市场类型分别获得所有的投标决策并按金额高低排序
-            BaseManager baseManager = (BaseManager) ApplicationContextUtil.getBean("baseManager");
+            BaseManager baseManager = (BaseManager) ApplicationContextUtil.getBean("baseManagerImpl");
             for (String market : marketList) {
                 XQuery xQuery = new XQuery();
                 String hql = "from CompanyTermInstruction where industryResourceChoice.type=:type and companyTerm.campaignDate = :campaignDate";
@@ -78,12 +81,11 @@ public class DevoteCycle {
      * @return
      */
     public synchronized String chooseOrder(String orderId) {
-        Iterator<IndustryResourceChoice> marketOrderIterator = marketOrderChoiceMap.get(marketQueue.peek()).iterator();
+        Iterator<MarketOrderChoice> marketOrderIterator = marketOrderChoiceMap.get(marketQueue.peek()).iterator();
         while (marketOrderIterator.hasNext()) {
-            IndustryResourceChoice marketOrderChoice = marketOrderIterator.next();
-            if (marketOrderChoice.getId().equals(orderId)) {
-                marketOrderIterator.remove();
-
+            MarketOrderChoice marketOrderChoice = marketOrderIterator.next();
+            if (marketOrderChoice.getIndustryResourceChoice().getId().equals(orderId)) {
+                marketOrderChoice.setOwnerCompany(getCurrentCompany());
                 currentLeftOperationNum--;
 
                 Queue queue = companyIdQueueMap.get(currentMarket);
@@ -95,7 +97,9 @@ public class DevoteCycle {
         if (currentLeftOperationNum == 0) {
             currentMarket = marketQueue.poll();
         }
-
+        if (currentMarket == null) {
+            status = 3;
+        }
         return currentMarket;
     }
 
@@ -112,8 +116,10 @@ public class DevoteCycle {
             marketQueue.poll();
 
         }
-
-        return marketQueue.peek();
+        if (currentMarket == null) {
+            status = 3;
+        }
+        return currentMarket;
     }
 
     /**
@@ -130,5 +136,13 @@ public class DevoteCycle {
      */
     public String getCurrentCompany() {
         return companyIdQueueMap.get(currentMarket).peek();
+    }
+
+    public List<MarketOrderChoice> getCurrentMarketOrdeChoiceList() {
+        return marketOrderChoiceMap.get(currentMarket);
+    }
+
+    public Integer getCurrentStatus() {
+        return status;
     }
 }

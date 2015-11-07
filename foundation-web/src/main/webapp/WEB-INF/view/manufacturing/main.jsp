@@ -132,7 +132,7 @@
                     </div>
                 </div>
             </div>
-            <div class="am-panel am-panel-default">
+            <%--<div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                 <h3>公司投放列表</h3>
                 <table class="am-table">
@@ -154,8 +154,8 @@
                     </tbody>
                 </table>
             </div>
-            </div>
-            <div class="am-panel am-panel-default">
+            </div>--%>
+            <div class="am-panel am-panel-default" id="marketOrderChoicePanel" style="display: none">
                 <div class="am-panel-bd">
                 <h3>市场订单</h3>
                 <table class="am-table">
@@ -168,7 +168,7 @@
                         <th></th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="marketOrderTbody">
                     <c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
                             <td>${choice.name}</td>
@@ -183,34 +183,6 @@
                 </div>
             </div>
             </c:if>
-            <div class="am-panel am-panel-default">
-                <div class="am-panel-bd">
-                    <h3>市场订单</h3>
-                    <table class="am-table">
-                        <thead>
-                        <tr>
-                            <th>订单</th>
-                            <th>产品</th>
-                            <th>数量/金额/账期</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${marketOrderList}" var="marketOrder">
-                            <tr>
-                                <td>${marketOrder.name}</td>
-                                <td>${marketOrder.productType}</td>
-                                <td>${marketOrder.amount}/${marketOrder.totalPrice}/${marketOrder.needAccountCycle}</td>
-                                <td>
-                                    <button id="deliver_${marketOrder.id}" type="button" class="am-btn am-btn-secondary">交付</button>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
         <div id="panel-3" class="panel">
           <%--  <div class="am-panel am-panel-default">

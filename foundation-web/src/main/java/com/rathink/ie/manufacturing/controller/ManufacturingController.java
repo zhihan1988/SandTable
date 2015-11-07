@@ -142,6 +142,44 @@ public class ManufacturingController extends BaseIndustryController {
     }
 
 
+    @RequestMapping("/finishDevotion")
+    @ResponseBody
+    public Map finishDevotion(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
+
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+
+        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
+        devoteCycle.finishDevote(companyId);
+
+        Map map = new HashMap<>();
+        map.put("status", 1);
+        map.put("cycleStatus", devoteCycle.getCurrentStatus());
+        return map;
+    }
+
+    @RequestMapping("/refreshDevoteCycleStatus")
+    @ResponseBody
+    public Map refreshDevoteCycleStatus(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+
+        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
+
+        Map map = new HashMap<>();
+        map.put("status", 1);
+        map.put("cycleStatus", devoteCycle.getCurrentStatus());
+        if (devoteCycle.getCurrentStatus() == 2) {
+            map.put("market", devoteCycle.getCurrentMarket());
+            map.put("company", devoteCycle.getCurrentCompany());
+            map.put("marketOrderChoiceList", devoteCycle.getCurrentMarketOrdeChoiceList());
+        }
+
+        return map;
+    }
+
+
     @RequestMapping("/getPermission")
     @ResponseBody
     public Map getPermission(HttpServletRequest request, Model model) throws Exception {
