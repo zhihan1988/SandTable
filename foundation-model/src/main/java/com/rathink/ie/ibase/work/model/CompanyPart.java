@@ -1,5 +1,7 @@
 package com.rathink.ie.ibase.work.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,6 +11,7 @@ import javax.persistence.*;
 /**
  * Created by Hean on 2015/10/8.
  */
+@JsonIgnoreProperties(value={"hibernateLazyInitializer"})
 @Entity
 @Table(name = "company_part")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -77,6 +80,7 @@ public class CompanyPart {
         this.dept = dept;
     }
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id")
     public Campaign getCampaign() {
@@ -87,6 +91,7 @@ public class CompanyPart {
         this.campaign = campaign;
     }
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     public Company getCompany() {

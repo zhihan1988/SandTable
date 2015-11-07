@@ -15,10 +15,10 @@ import javax.persistence.Table;
 @DiscriminatorValue(value = "MARKET_ORDER")
 public class MarketOrder extends CompanyPart {
 
-    private String amount;//ÊıÁ¿
-    private String unitPrice;//µ¥¼Û
-    private String totalPrice;//½ğ¶î
-    private String needAccountCycle;//Ê£ÓàÕËÆÚ
+    private String amount;//æ•°é‡
+    private String unitPrice;//å•ä»·
+    private String totalPrice;//é‡‘é¢
+    private String needAccountCycle;//å‰©ä½™è´¦æœŸ
     private String productType;//P1,P2,P3,P4
 
     @Column(name = "value")
@@ -68,9 +68,9 @@ public class MarketOrder extends CompanyPart {
 
     public enum Status {
         NORMAL,
-        //ÒÑ½»¸¶
+        //å·²äº¤ä»˜
         DELIVERED,
-        //ÕË¿îÒÑµ½£¬¶©µ¥½áÊø
+        //è´¦æ¬¾å·²åˆ°ï¼Œè®¢å•ç»“æŸ
         FINISH
     }
 

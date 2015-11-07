@@ -56,6 +56,8 @@ $(function () {
                 if(data.status == 1) {
                     $finishDevotionButton.replaceWith("等待竞标结果");
                     intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
+
+                    update(data.newReport);
                 } else {
                     alert(data.message);
                 }
@@ -122,6 +124,30 @@ $(function () {
                         //结束
                         clearInterval(intervalFlag);
                         alert("选单环节结束");
+
+                        //加载目前所有的订单
+                        $.getJSON(base + "/manufacturing/listCurrentMarketOrder.do",
+                            {
+                                companyId: companyId
+                            } ,function(data){
+                                if(data.status==1) {
+                                    var tbody = $("#marketOrderListTbody");
+                                    for(var i in data.marketOrderList) {
+                                        var marketOrder = data.marketOrderList[i];
+                                        var tr = $("<tr></tr>");
+                                        tr.appendTo(tbody);
+
+                                        tr.append($("<td>" + marketOrder.name + "</td>"));
+                                        tr.append($("<td>" + marketOrder.productType + "</td>"));
+                                        tr.append($("<td>" + marketOrder.amount+"/" + marketOrder.totalPrice+"/" + marketOrder.needAccountCycle + "</td>"));
+                                        var $button = $('<button type="button" class="am-btn am-btn-secondary">交付</button>')
+                                            .attr("id","deliver_" + marketOrder.id);
+                                        $("<td></td>").append($button).appendTo(tr);
+                                        tbody.append(tr);
+                                    }
+                                }
+                            }
+                        );
                     }
                 } else {
                     alert(data.message);
@@ -130,28 +156,8 @@ $(function () {
         );
     }
 
-    //交付
-    $("button[id^='deliver']").click(function () {
-        var $order = $(this);
-        var orderId = $order.attr("id").split("_")[1];
-        $.getJSON(base + "/manufacturing/deliverOrder.do",
-        {
-            companyTermId: companyTermId,
-            orderId: orderId
-        }, function(data){
-                if(data.status == 1) {
-                    $order.replaceWith("已交付");
-                    update(data.newReport);
-                } else {
-                    alert(data.message);
-                }
-           }
-        );
-    })
-
     //确认订单
     $("#confirmOrder").click(function(){
-        var $confirmOrderButton = $(this);
         var $choice = $("input[name='orderChoice']:checked");
         var array = $choice.val().split("#");
         var choiceId = array[0];
@@ -167,6 +173,9 @@ $(function () {
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
                         $("#confirmOrder").text("选单完成").attr("disabled",true).addClass("am-disabled");
+
+                        update(data.newReport);
+                        //
                     } else {
                         alert(data.message);
                     }
@@ -274,6 +283,25 @@ $(function () {
     });
 
 
+    //交付
+    $("#marketOrderListTable").delegate("button[id^='deliver_']","click",function(){
+        var $order = $(this);
+        var orderId = $order.attr("id").split("_")[1];
+        $.getJSON(base + "/manufacturing/deliverOrder.do",
+            {
+                companyTermId: companyTermId,
+                orderId: orderId
+            }, function(data){
+                if(data.status == 1) {
+                    $order.replaceWith("已交付");
+                    update(data.newReport);
+                } else {
+                    alert(data.message);
+                }
+            }
+        );
+    })
+
     $("td[id^='operation_']").delegate("button[id^='produce_']","click",function(){
         var $produce = $(this);
         var produceLineId = $produce.attr("id").split("_")[1];
@@ -342,9 +370,9 @@ $(function () {
                 campaignDate: campaignDate,
                 roundType: roundType
             },
-                function (data) {
-                    $endCampaignDate.hide();
-                }
+            function (data) {
+                $endCampaignDate.hide();
+            }
         );
             setInterval(isNext, 5000);
         }

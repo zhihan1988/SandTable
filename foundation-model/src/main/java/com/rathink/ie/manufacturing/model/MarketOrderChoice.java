@@ -8,6 +8,7 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 public class MarketOrderChoice {
 
     private String name;
+    private String marketArea;
     private String productType;
     private Integer amount;//����
     private Integer unitPrice;//����
@@ -23,8 +24,8 @@ public class MarketOrderChoice {
 
     public MarketOrderChoice(IndustryResourceChoice industryResourceChoice) {
         this.industryResourceChoice = industryResourceChoice;
-
-        productType = industryResourceChoice.getType();
+        marketArea = industryResourceChoice.getType().split("_")[0];
+        productType = industryResourceChoice.getType().split("_")[1];
         name = industryResourceChoice.getName();
 
         String[] array = industryResourceChoice.getValue2().split(",");
@@ -35,6 +36,10 @@ public class MarketOrderChoice {
         ISO = Integer.valueOf(array[4]);
         cost = Integer.valueOf(array[5]);
         profit = Integer.valueOf(array[6]);
+    }
+
+    public String getMarketArea() {
+        return marketArea;
     }
 
     public String getProductType() {

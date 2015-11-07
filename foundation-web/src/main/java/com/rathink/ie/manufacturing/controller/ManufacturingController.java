@@ -156,6 +156,12 @@ public class ManufacturingController extends BaseIndustryController {
         Map map = new HashMap<>();
         map.put("status", 1);
         map.put("cycleStatus", devoteCycle.getCurrentStatus());
+
+        NewReport newReport = new NewReport();
+        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
+        Integer companyCash = accountManager.getCompanyCash(company);
+        newReport.setCompanyCash(companyCash);
+        map.put("newReport", newReport);
         return map;
     }
 
@@ -193,6 +199,7 @@ public class ManufacturingController extends BaseIndustryController {
 
         MarketOrderChoice marketOrderChoice = new MarketOrderChoice(industryResourceChoice);
         MarketOrder marketOrder = new MarketOrder();
+        marketOrder.setName(marketOrderChoice.getName());
         marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
         marketOrder.setDept(EManufacturingDept.MARKET.name());
         marketOrder.setStatus(MarketOrder.Status.NORMAL.name());
@@ -222,8 +229,31 @@ public class ManufacturingController extends BaseIndustryController {
 
         Map result = new HashMap<>();
         result.put("status", 1);
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
         return result;
     }
+
+
+    @RequestMapping("/listCurrentMarketOrder")
+    @ResponseBody
+    public Map listCurrentMarketOrder(HttpServletRequest request, Model model) throws Exception {
+        String companyId = request.getParameter("companyId");
+        XQuery marketOrderQuery = new XQuery();
+        marketOrderQuery.setHql("from MarketOrder where status =:status and company.id = :companyId");
+        marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
+        marketOrderQuery.put("companyId", companyId);
+        List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        result.put("marketOrderList", marketOrderList);
+
+        return result;
+    }
+
 
     @RequestMapping("/buildProduceLine")
     @ResponseBody

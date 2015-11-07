@@ -175,6 +175,34 @@
                 </div>
             </div>
             </c:if>
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
+                    <h3>未交付订单</h3>
+                    <table class="am-table" id="marketOrderListTable">
+                        <thead>
+                        <tr>
+                            <th>订单</th>
+                            <th>产品</th>
+                            <th>数量/金额/账期</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="marketOrderListTbody">
+                        <c:forEach items="${marketOrderList}" var="marketOrder">
+                            <tr>
+                                <td>${marketOrder.name}</td>
+                                <td>${marketOrder.productType}</td>
+                                <td>${marketOrder.amount}/${marketOrder.totalPrice}/${marketOrder.needAccountCycle}</td>
+                                <td>
+                                    <button id="deliver_${marketOrder.id}" type="button" class="am-btn am-btn-secondary">交付</button>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
         <div id="panel-3" class="panel">
           <%--  <div class="am-panel am-panel-default">
