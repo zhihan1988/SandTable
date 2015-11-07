@@ -73,13 +73,13 @@ $(function () {
                     if(data.cycleStatus==1) {
                         //投标进行中
                     } else if(data.cycleStatus==2) {
-                        //投标完成进入选单阶段
 
-                        var market = data.market;
+                        //投标完成进入选单阶段
                         var company = data.company;
+                        var market = data.market;
                         var marketOrderChoiceList = data.marketOrderChoiceList;
 
-                        var tbody = $("<tbody></tbody>");
+                        var tbody = $("<tbody id='marketOrderTbody'></tbody>");
                         for(var i in marketOrderChoiceList){
                             var marketOrderChoice = marketOrderChoiceList[i];
                             var tr = $("<tr></tr>");
@@ -89,20 +89,37 @@ $(function () {
                             tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value + "</td>"));
                             tr.append($("<td>" + marketOrderChoice.productType + "</td>"));
                             tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value2 + "</td>"));
-                            if(marketOrderChoice.company == null){
-                                var $choiceRadio = $('<input type="radio" name="orderChoice"/>')
-                                    .val(marketOrderChoice.industryResourceChoice.id+'_'+marketOrderChoice.industryResourceChoice.value);
-                                $("<td></td>").append($choiceRadio).appendTo(tr);
+
+                            if( marketOrderChoice.ownerCompany == null){
+                                if(company == companyId){
+                                    var $choiceRadio = $('<input type="radio" name="orderChoice"/>')
+                                        .val(marketOrderChoice.industryResourceChoice.id+'#'+marketOrderChoice.industryResourceChoice.value);
+                                    $("<td></td>").append($choiceRadio).appendTo(tr);
+                                } else {
+                                    tr.append($("<td></td>"));
+                                }
                             } else {
-                                tr.append($("<td>" + marketOrderChoice.company + "</td>"));
+                                tr.append($("<td>" + marketOrderChoice.ownerCompany + "</td>"));
                             }
                         }
+
                         $("#marketOrderTbody").replaceWith(tbody);
 
+
+                        $("#devotePanel").hide();
                         $("#marketOrderChoicePanel").show();
+
+                        if(company == companyId){
+                            clearInterval(intervalFlag);
+                            $("#marketOrderChoicePanel_message").html(market+":请选单");
+                        } else {
+                            $("#marketOrderChoicePanel_message").html(market+":"+company+"正在选单，请等待");
+                        }
+
                     } else if(data.cycleStatus==3) {
                         //结束
                         clearInterval(intervalFlag);
+                        alert("选单环节结束");
                     }
                 } else {
                     alert(data.message);
@@ -130,20 +147,29 @@ $(function () {
         );
     })
 
-    $("input[name='orderChoice']").click(function(){
-        var $choice = $(this);
+    //确认订单
+    $("#confirmOrder").click(function(){
+        var $confirmOrderButton = $(this);
+        var $choice = $("input[name='orderChoice']:checked");
         var array = $choice.val().split("#");
         var choiceId = array[0];
         var value = array[1];
         if (value != -1) {
-            $.post(base + "/manufacturing/chooseOrder",
-            {
-                companyTermId: companyTermId,
-                choiceId: choiceId,
-                value: value
-            },function(){
 
-            });
+            $.getJSON(base + "/manufacturing/chooseOrder.do",
+                {
+                    companyTermId: companyTermId,
+                    choiceId: choiceId,
+                    value: value
+                }, function(data){
+                    if(data.status == 1) {
+                        intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
+                        $confirmOrderButton.replaceWith("选单完成");
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            );
         }
     })
 

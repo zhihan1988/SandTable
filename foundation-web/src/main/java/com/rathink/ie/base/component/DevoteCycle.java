@@ -61,7 +61,7 @@ public class DevoteCycle {
                 instructionList.sort(new Comparator<CompanyTermInstruction>() {
                     @Override
                     public int compare(CompanyTermInstruction o1, CompanyTermInstruction o2) {
-                        return Integer.valueOf(o1.getValue()) - Integer.valueOf(o2.getValue());
+                        return Integer.valueOf(o2.getValue()) - Integer.valueOf(o1.getValue());
                     }
                 });
                 Queue<String> companyIdQueue = new LinkedList<>();
@@ -95,7 +95,8 @@ public class DevoteCycle {
         }
 
         if (currentLeftOperationNum == 0) {
-            currentMarket = marketQueue.poll();
+            marketQueue.poll();
+            currentMarket = marketQueue.peek();
         }
         if (currentMarket == null) {
             status = 3;

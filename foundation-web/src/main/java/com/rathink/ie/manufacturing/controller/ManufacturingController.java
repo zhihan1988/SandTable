@@ -227,7 +227,7 @@ public class ManufacturingController extends BaseIndustryController {
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_ORDER.name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setCompanyPart(marketOrder);
         companyTermInstruction.setCompanyTerm(companyTerm);

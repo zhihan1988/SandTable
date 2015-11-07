@@ -87,7 +87,7 @@
         </div>
         <div id="panel-2" class="panel">
             <c:if test="${campaign.currentCampaignDate%4==1}">
-            <div class="am-panel am-panel-default">
+            <div class="am-panel am-panel-default" id="devotePanel">
                 <div class="am-panel-bd">
                 <h3>投放广告</h3>
                     <div class="am-tabs" data-am-tabs>
@@ -157,7 +157,7 @@
             </div>--%>
             <div class="am-panel am-panel-default" id="marketOrderChoicePanel" style="display: none">
                 <div class="am-panel-bd">
-                <h3>市场订单</h3>
+                <h3><span id="marketOrderChoicePanel_message">正在选单</span></h3>
                 <table class="am-table">
                     <thead>
                     <tr>
@@ -169,7 +169,7 @@
                     </tr>
                     </thead>
                     <tbody id="marketOrderTbody">
-                    <c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
+                    <%--<c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
                         <tr>
                             <td>${choice.name}</td>
                             <td>${choice.value}</td>
@@ -177,9 +177,10 @@
                             <td>${choice.value2}</td>
                             <td><input type="radio" name="orderChoice" value="${choice.id}#${choice.value}"/></td>
                         </tr>
-                    </c:forEach>
+                    </c:forEach>--%>
                     </tbody>
                 </table>
+                <button id="confirmOrder" type="button" class="am-btn am-btn-secondary">确认订单</button>
                 </div>
             </div>
             </c:if>
