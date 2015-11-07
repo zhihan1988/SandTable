@@ -10,6 +10,8 @@ import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ie.manufacturing.model.MarketOrder;
 import com.rathink.ie.manufacturing.model.MarketOrderChoice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -17,6 +19,8 @@ import java.util.*;
  * Created by Hean on 2015/10/31.
  */
 public class DevoteCycle {
+    private static Logger logger = LoggerFactory.getLogger(DevoteCycle.class);
+
     private CampaignContext campaignContext;
 
     private Integer status = 1;//1.正在投票  2.投票完成，正在选择订单  3选择订单完成
@@ -95,12 +99,18 @@ public class DevoteCycle {
         }
 
         if (currentLeftOperationNum == 0) {
+            //进入下一回合
             marketQueue.poll();
             currentMarket = marketQueue.peek();
+
+            currentLeftOperationNum = currentMarket == null ? 0 : marketOrderChoiceMap.get(currentMarket).size();
         }
         if (currentMarket == null) {
+            //不存在下一回合  选单环节 结束
             status = 3;
         }
+
+        logger.info("currentLeftOperationNum:{};currentMarket:{};status:{}", currentLeftOperationNum, currentMarket, status);
         return currentMarket;
     }
 

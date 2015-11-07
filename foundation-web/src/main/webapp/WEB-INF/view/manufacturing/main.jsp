@@ -169,18 +169,9 @@
                     </tr>
                     </thead>
                     <tbody id="marketOrderTbody">
-                    <%--<c:forEach items="${marketOrderResource.currentIndustryResourceChoiceSet}" var="choice">
-                        <tr>
-                            <td>${choice.name}</td>
-                            <td>${choice.value}</td>
-                            <td>${choice.type}</td>
-                            <td>${choice.value2}</td>
-                            <td><input type="radio" name="orderChoice" value="${choice.id}#${choice.value}"/></td>
-                        </tr>
-                    </c:forEach>--%>
                     </tbody>
                 </table>
-                <button id="confirmOrder" type="button" class="am-btn am-btn-secondary">确认订单</button>
+                <button id="confirmOrder" type="button" class="am-btn am-btn-secondary am-disabled" disabled="disabled">等待选单</button>
                 </div>
             </div>
             </c:if>

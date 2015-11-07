@@ -112,8 +112,10 @@ $(function () {
                         if(company == companyId){
                             clearInterval(intervalFlag);
                             $("#marketOrderChoicePanel_message").html(market+":请选单");
+                            $("#confirmOrder").text("确认订单").attr("disabled",false).removeClass("am-disabled");
                         } else {
                             $("#marketOrderChoicePanel_message").html(market+":"+company+"正在选单，请等待");
+                            $("#confirmOrder").text("等待选单").attr("disabled", true).addClass("am-disabled");
                         }
 
                     } else if(data.cycleStatus==3) {
@@ -164,7 +166,7 @@ $(function () {
                 }, function(data){
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
-                        $confirmOrderButton.replaceWith("选单完成");
+                        $("#confirmOrder").text("选单完成").attr("disabled",true).addClass("am-disabled");
                     } else {
                         alert(data.message);
                     }

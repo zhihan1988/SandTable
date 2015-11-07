@@ -180,25 +180,6 @@ public class ManufacturingController extends BaseIndustryController {
     }
 
 
-    @RequestMapping("/getPermission")
-    @ResponseBody
-    public Map getPermission(HttpServletRequest request, Model model) throws Exception {
-
-        String campaignId = request.getParameter("campaignId");
-//        String companyId = request.getParameter("companyId");
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-
-        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
-        String currentCompanyId = devoteCycle.getCurrentCompany();
-        String currentMarket = devoteCycle.getCurrentMarket();
-
-        Map map = new HashMap<>();
-        map.put("status", 1);
-        map.put("companyId", currentCompanyId);
-        map.put("currentMarket", currentMarket);
-        return map;
-    }
-
     @RequestMapping("/chooseOrder")
     @ResponseBody
     public Map chooseOrder(HttpServletRequest request, Model model) throws Exception {
