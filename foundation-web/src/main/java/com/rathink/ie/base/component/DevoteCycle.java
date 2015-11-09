@@ -33,6 +33,7 @@ public class DevoteCycle {
     private Integer currentLeftOperationNum;
     private String currentMarket;
     private Map<String,Queue<String>> companyIdQueueMap = new HashMap<>();
+    Map<String, List<String>> companyOrderMap = new HashMap<>();//市场公司竞标排名 local_P1:company1,3000;company2,2000
 
     public DevoteCycle(CampaignContext campaignContext, List<String> marketList, Map<String, List<MarketOrderChoice>> marketOrderChoiceMap) {
         this.campaignContext = campaignContext;
@@ -49,7 +50,7 @@ public class DevoteCycle {
      */
     public synchronized void finishDevote(String companyId) {
         finishDevoteCompanySet.add(companyId);
-        if (campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
+        if (status == 1 && campaignContext.getCompanyTermContextMap().size() == finishDevoteCompanySet.size()) {//全部投标完成时
             status = 2;
 
             //按市场类型分别获得所有的投标决策并按金额高低排序
@@ -68,13 +69,21 @@ public class DevoteCycle {
                         return Integer.valueOf(o2.getValue()) - Integer.valueOf(o1.getValue());
                     }
                 });
-                Queue<String> companyIdQueue = new LinkedList<>();
-                if (instructionList != null) {
+                if (instructionList != null && instructionList.size() > 0) {
+                    Queue<String> companyIdQueue = new LinkedList<>();
+                    List<String> companyFeeList = new ArrayList<>();
                     for (CompanyTermInstruction companyTermInstruction : instructionList) {
                         companyIdQueue.offer(companyTermInstruction.getCompanyTerm().getCompany().getId());
+
+                        companyFeeList.add(companyTermInstruction.getCompanyTerm().getCompany().getName()
+                                + "(" + companyTermInstruction.getValue() + ")");
                     }
+                    companyIdQueueMap.put(market, companyIdQueue);
+                    companyOrderMap.put(market, companyFeeList);
+                } else {
+                    marketQueue.remove(market);
                 }
-                companyIdQueueMap.put(market, companyIdQueue);
+
             }
         }
     }
@@ -155,5 +164,9 @@ public class DevoteCycle {
 
     public Integer getCurrentStatus() {
         return status;
+    }
+
+    public List<String> getCompanyOrderMapByMarket() {
+        return companyOrderMap.get(currentMarket);
     }
 }

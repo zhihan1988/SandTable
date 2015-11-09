@@ -193,6 +193,7 @@ public class ManufacturingController extends BaseIndustryController {
             map.put("market", devoteCycle.getCurrentMarket());
             map.put("company", devoteCycle.getCurrentCompany());
             map.put("marketOrderChoiceList", devoteCycle.getCurrentMarketOrdeChoiceList());
+            map.put("companyOrderList", devoteCycle.getCompanyOrderMapByMarket());
         }
 
         return map;

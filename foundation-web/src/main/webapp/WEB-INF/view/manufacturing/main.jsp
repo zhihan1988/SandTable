@@ -132,29 +132,6 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="am-panel am-panel-default">
-                <div class="am-panel-bd">
-                <h3>公司投放列表</h3>
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>排名</th>
-                        <th>公司</th>
-                        <th>投入</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${marketFeeInstructionList}" var="marketFeeInstruction" varStatus="status">
-                        <tr>
-                            <td>${status.index+1}</td>
-                            <td>${marketFeeInstruction.company.name}</td>
-                            <td>${marketFeeInstruction.value}</td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-            </div>--%>
             <div class="am-panel am-panel-default" id="marketOrderChoicePanel" style="display: none">
                 <div class="am-panel-bd">
                 <h3><span id="marketOrderChoicePanel_message">正在选单</span></h3>
@@ -162,7 +139,7 @@
                     <thead>
                     <tr>
                         <th>订单</th>
-                        <th>订单编号</th>
+                        <%--<th>订单编号</th>--%>
                         <th>产品</th>
                         <th>数量/单价/金额/账期/ISO/成本/利润</th>
                         <th></th>
@@ -172,6 +149,21 @@
                     </tbody>
                 </table>
                 <button id="confirmOrder" type="button" class="am-btn am-btn-secondary am-disabled" disabled="disabled">等待选单</button>
+                </div>
+            </div>
+            <div class="am-panel am-panel-default" id="companyOrderPanel" style="display: none">
+                <div class="am-panel-bd">
+                    <h3>公司排名</h3>
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>公司(投入)</th>
+                        </tr>
+                        </thead>
+                        <tbody id="companyOrderTbody">
+                        </tbody>
+                    </table>
                 </div>
             </div>
             </c:if>

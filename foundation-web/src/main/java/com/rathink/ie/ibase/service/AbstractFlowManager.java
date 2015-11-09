@@ -116,6 +116,7 @@ public abstract class AbstractFlowManager implements FlowManager {
             //生成新回合的companyTermHandler
             CompanyTermContext companyTermContext = new InternetCompanyTermContext();
             companyTermContext.setCampaignContext(campaignContext);
+            companyTermContext.setCompany(company);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermHandlerMap.put(company.getId(), companyTermContext);
         }
@@ -184,6 +185,7 @@ public abstract class AbstractFlowManager implements FlowManager {
             //生成新回合的companyTermHandler
             CompanyTermContext companyTermContext = new InternetCompanyTermContext();
             companyTermContext.setCampaignContext(campaignContext);
+            companyTermContext.setCompany(company);
             companyTermContext.setCompanyTerm(companyTerm);
             companyTermContext.setPreCompanyTermContext(preCompanyTermContext);
             //更新campaignCenter

@@ -81,6 +81,18 @@ $(function () {
                         var company = data.company;
                         var market = data.market;
                         var marketOrderChoiceList = data.marketOrderChoiceList;
+                        var companyOrderList = data.companyOrderList;
+
+                        var companyOrderTbody = $("<tbody id='companyOrderTbody'></tbody>");
+                        for(var i in companyOrderList){
+                            var index = Number(i) + 1;
+                            var companyOrder = companyOrderList[i];
+                            var tr = $("<tr></tr>");
+                            tr.appendTo(companyOrderTbody);
+                            tr.append($("<td>" + index + "</td>"));
+                            tr.append($("<td>" + companyOrder + "</td>"));
+                        }
+                        $("#companyOrderTbody").replaceWith(companyOrderTbody);
 
                         var tbody = $("<tbody id='marketOrderTbody'></tbody>");
                         for(var i in marketOrderChoiceList){
@@ -89,7 +101,7 @@ $(function () {
                             tr.appendTo(tbody);
 
                             tr.append($("<td>" + marketOrderChoice.name + "</td>"));
-                            tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value + "</td>"));
+                            //tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value + "</td>"));
                             tr.append($("<td>" + marketOrderChoice.productType + "</td>"));
                             tr.append($("<td>" + marketOrderChoice.industryResourceChoice.value2 + "</td>"));
 
@@ -111,6 +123,7 @@ $(function () {
 
                         $("#devotePanel").hide();
                         $("#marketOrderChoicePanel").show();
+                        $("#companyOrderPanel").show();
 
                         if(company == companyId){
                             clearInterval(intervalFlag);
@@ -127,6 +140,7 @@ $(function () {
                         alert("选单环节结束");
 
                         $("#marketOrderChoicePanel").hide();
+                        $("#companyOrderPanel").hide();
 
                         //加载目前所有的订单
                         $.getJSON(base + "/manufacturing/listCurrentMarketOrder.do",

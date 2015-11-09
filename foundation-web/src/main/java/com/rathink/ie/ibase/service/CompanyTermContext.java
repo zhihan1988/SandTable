@@ -1,5 +1,6 @@
 package com.rathink.ie.ibase.service;
 
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -12,6 +13,7 @@ import java.util.*;
  */
 public abstract class CompanyTermContext {
     protected CampaignContext campaignContext;
+    protected Company company;
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
     protected Map<String,List<CompanyTermInstruction>> typeCompanyInstructionMap = new LinkedHashMap<>();
@@ -51,6 +53,14 @@ public abstract class CompanyTermContext {
 
     public void setAccountList(List<Account> accountList) {
         this.accountList = accountList;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public CompanyTerm getCompanyTerm() {

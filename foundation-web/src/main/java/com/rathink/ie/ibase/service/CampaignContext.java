@@ -47,6 +47,10 @@ public class CampaignContext {
         this.companyTermContextMap = companyTermContextMap;
     }
 
+    public CompanyTermContext getCompanyTermContext(String companyId) {
+        return companyTermContextMap.get(companyId);
+    }
+
     /**
      * 当前比赛进度的全部决策
      *
@@ -116,5 +120,7 @@ public class CampaignContext {
     public void setDevoteCycle(DevoteCycle devoteCycle) {
         this.devoteCycle = devoteCycle;
     }
+
+
 }
 
