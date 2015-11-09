@@ -303,6 +303,37 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/devoteMarket")
+    @ResponseBody
+    public Map devoteMarket(HttpServletRequest request, Model model) throws Exception {
+        Map result = new HashMap<>();
+        String companyTermId = request.getParameter("companyTermId");
+        String partId = request.getParameter("partId");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Market market = (Market) baseManager.getObject(Market.class.getName(), partId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
+        companyTermInstruction.setDept(EManufacturingDept.MARKET.name());
+        companyTermInstruction.setCompanyPart(market);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee)
+                , EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("status", 1);
+        result.put("newReport", newReport);
+        return result;
+    }
+
     @RequestMapping("/purchase")
     @ResponseBody
     public Map purchase(HttpServletRequest request, Model model) throws Exception {
@@ -355,7 +386,7 @@ public class ManufacturingController extends BaseIndustryController {
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
         Integer fee = Product.Type.valueOf(product.getType()).getPerDevotion();
-        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
 
         NewReport newReport = new NewReport();

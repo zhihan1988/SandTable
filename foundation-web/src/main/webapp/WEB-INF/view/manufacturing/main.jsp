@@ -194,32 +194,36 @@
                     </table>
                 </div>
             </div>
-
+            <c:if test="${campaign.currentCampaignDate%4==0}">
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-bd">
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>市场</th>
+                            <th>剩余开发周期</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${marketList}" var="market">
+                            <tr>
+                                <td>${market.name}</td>
+                                <td>
+                                    ${market.devotionNeedCycle}
+                                    <c:if test="${market.devotionNeedCycle > 0}">
+                                        <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary">开发</button>
+                                    </c:if>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </c:if>
         </div>
         <div id="panel-3" class="panel">
-          <%--  <div class="am-panel am-panel-default">
-                <div class="am-panel-bd repertory">
-                <ul class="am-avg-sm-2">
-                    <li style="border-right: 1px solid #DDDDDD">
-                        <b style="margin-left: 30px;">原料</b>
-                        <ul>
-                            <c:forEach items="${materialList}" var="material">
-                            <li>${material.type} : ${material.amount}</li>
-                            </c:forEach>
-                        </ul>
-                    </li>
-                    <li>
-                        <b style="margin-left: 30px;">产品</b>
-                        <ul>
-                            <c:forEach items="${productList}" var="product">
-                                <li>${product.type} : ${product.amount}</li>
-                            </c:forEach>
-                        </ul>
-                    </li>
-                </ul>
-                </div>
-            </div>--%>
-
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <table class="am-table">

@@ -199,6 +199,24 @@ $(function () {
         }
     })
 
+    //市场投入
+    $("button[id^='devoteMarket_']").click(function(){
+        var $marketButton = $(this);
+        var marketId = $marketButton.attr("id").split("_")[1];
+        //开始建造
+        $.getJSON(base + "/manufacturing/devoteMarket.do",
+            {
+                companyTermId: companyTermId,
+                partId: marketId
+            },
+            function(data){
+                if(data.status == 1) {
+                    $marketButton.replaceWith("开发中");
+                    update(data.newReport);
+                }
+            });
+    });
+
     //采购原料
     $("select[id^='materialNum_']").change(function(){
         var $material = $(this);
