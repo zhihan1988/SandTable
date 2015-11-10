@@ -6,6 +6,7 @@ import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.base.component.CheckOut;
 import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.campaign.model.Industry;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
@@ -78,7 +79,7 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("productList", productList);
         List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
         model.addAttribute("marketList", marketList);
-//        List<MarketOrder> marketOrderList
+
         XQuery marketOrderQuery = new XQuery();
         marketOrderQuery.setHql("from MarketOrder where status =:status");
         marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
@@ -111,31 +112,16 @@ public class ManufacturingController extends BaseIndustryController {
 
             model.addAttribute("marketOrderResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
 
-//            IndustryResourceChoice[][] marketChoiceArray = marketManager.getMarketChoiceArray(marketList, productList, marketFeeResource.getCurrentIndustryResourceChoiceSet());
-//            model.addAttribute("marketChoiceArray", marketChoiceArray);
-           /* Map<String, Observable> observableMap = campaignContext.getObservableMap();
-            RoundEndObserable marketFeeObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.MARKET_PAY_ROUND.name());
-            if (marketFeeObervable.getUnFinishedNum() != 0) {
-                //进入投标环节
-                model.addAttribute("marketFeeResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name()));
-                model.addAttribute("roundType", EManufacturingRoundType.MARKET_PAY_ROUND.name());
-                return "/manufacturing/marketPay";
-            }
-            RoundEndObserable marketOrderObervable = (RoundEndObserable)observableMap.get(currentCampaignDate + ":" + EManufacturingRoundType.ORDER_ROUND.name());
-            if (marketOrderObervable.getUnFinishedNum() != 0) {
-                //进入抢单环节
-                List<CompanyTermInstruction> marketFeeInstructionList = instructionManager.listCompanyInstruction(companyTerm.getCampaign()
-                        , companyTerm.getCampaignDate(), EManufacturingChoiceBaseType.MARKET_FEE.name());
-                marketFeeInstructionList.sort((o1, o2) -> Integer.valueOf(o1.getValue()) - Integer.valueOf(o2.getValue()));
-                model.addAttribute("marketFeeInstructionList", marketFeeInstructionList);
-                model.addAttribute("marketOrderResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
-                model.addAttribute("roundType", EManufacturingRoundType.ORDER_ROUND.name());
-                return "/manufacturing/order";
-            }*/
         }
 
         Integer companyCash = accountManager.getCompanyCash(company);
         model.addAttribute("companyCash", companyCash);
+        Integer longTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LONG_TERM_LOAN.name());
+        model.addAttribute("longTermLoan", longTermLoan);
+        Integer shortTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.SHORT_TERM_LOAN.name());
+        model.addAttribute("shortTermLoan", shortTermLoan);
+        Integer usuriousLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.USURIOUS_LOAN.name());
+        model.addAttribute("usuriousLoan", usuriousLoan);
 
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";

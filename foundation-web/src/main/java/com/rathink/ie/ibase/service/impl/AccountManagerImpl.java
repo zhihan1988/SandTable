@@ -73,6 +73,26 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
+    public Integer sumLoan(Company company, String type) {
+        Integer companyCash = 0;
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from AccountEntry where account.company.id = :companyId and type = :type");
+        xQuery.put("companyId", company.getId());
+        xQuery.put("type", type);
+        List<AccountEntry> accountEntryList = baseManager.listObject(xQuery);
+        if (accountEntryList != null) {
+            for (AccountEntry accountEntry : accountEntryList) {
+                if (accountEntry.getDirection().equals("-1")) {
+                    companyCash += Integer.valueOf(accountEntry.getValue());
+                } else if (accountEntry.getDirection().equals("1")){
+                    companyCash -= Integer.valueOf(accountEntry.getValue());
+                }
+            }
+        }
+        return companyCash;
+    }
+
+    @Override
     public Integer countAccountEntryFee(Company company, Integer campaignDate, String type, String direction) {
         Integer companyCash = 0;
         XQuery xQuery = new XQuery();

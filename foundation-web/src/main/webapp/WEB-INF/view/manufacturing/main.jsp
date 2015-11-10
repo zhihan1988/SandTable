@@ -79,7 +79,11 @@
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
                     <ul>
-                        <li>现金：<span id="companyCash">${companyCash}</span></li>
+                        <li>公司现金：<span id="companyCash">${companyCash}</span></li>
+                        <li>长期贷款：<span id="longTermLoan">${longTermLoan}</span></li>
+                        <li>短期贷款：<span id="shortTermLoan">${shortTermLoan}</span></li>
+                        <%--<li>应收账款：<span id="companyCash">${companyCash}</span></li>--%>
+                        <li>高利贷款：<span id="usuriousLoan">${usuriousLoan}</span></li>
                     </ul>
                     <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="testButton" checkedValue="value3"/>
                 </div>

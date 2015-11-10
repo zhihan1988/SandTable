@@ -440,6 +440,10 @@ function update(newReport){
     var R3Amount = newReport.r3Amount;
     var R4Amount = newReport.r4Amount;
     var companyCash = newReport.companyCash;
+    var longTermLoan = newReport.longTermLoan;
+    var shortTermLoan = newReport.shortTermLoan;
+    var usuriousLoan = newReport.usuriousLoan;
+
     if(P1Amount != null){ $("#productAmount_P1").text(P1Amount);}
     if(P2Amount != null){ $("#productAmount_P2").text(P2Amount); }
     if(P3Amount != null){ $("#productAmount_P3").text(P3Amount); }
@@ -449,6 +453,9 @@ function update(newReport){
     if(R3Amount != null){ $("#materialAmount_R3").text(R3Amount); }
     if(R4Amount != null){ $("#materialAmount_R4").text(R4Amount); }
     if(companyCash != null){ $("#companyCash").text(companyCash); }
+    if(longTermLoan !=null){ $("#longTermLoan").text(longTermLoan)}
+    if(shortTermLoan !=null){ $("#shortTermLoan").text(shortTermLoan)}
+    if(usuriousLoan !=null){ $("#usuriousLoan").text(usuriousLoan)}
 }
 
 function getBaseUrl() {

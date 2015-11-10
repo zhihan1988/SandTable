@@ -13,6 +13,9 @@ public class NewReport {
     private Integer P2Amount;
     private Integer P3Amount;
     private Integer P4Amount;
+    private Integer longTermLoan;
+    private Integer shortTermLoan;
+    private Integer usuriousLoan;
 
     public Integer getCompanyCash() {
         return companyCash;
@@ -84,6 +87,30 @@ public class NewReport {
 
     public void setP4Amount(Integer p4Amount) {
         P4Amount = p4Amount;
+    }
+
+    public Integer getLongTermLoan() {
+        return longTermLoan;
+    }
+
+    public void setLongTermLoan(Integer longTermLoan) {
+        this.longTermLoan = longTermLoan;
+    }
+
+    public Integer getShortTermLoan() {
+        return shortTermLoan;
+    }
+
+    public void setShortTermLoan(Integer shortTermLoan) {
+        this.shortTermLoan = shortTermLoan;
+    }
+
+    public Integer getUsuriousLoan() {
+        return usuriousLoan;
+    }
+
+    public void setUsuriousLoan(Integer usuriousLoan) {
+        this.usuriousLoan = usuriousLoan;
     }
 }
 

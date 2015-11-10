@@ -344,6 +344,7 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         loan.setMoney(Integer.valueOf(fee));
         Loan.Type loanType = Loan.Type.valueOf(type);
         loan.setNeedRepayCycle(loanType.getCycle());
+        loan.setType(loanType.name());
         baseManager.saveOrUpdate(Loan.class.getName(), loan);
 
         String loanAccountName = EManufacturingAccountEntityType.valueOf(loanType.name()).name();
@@ -355,6 +356,20 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         NewReport newReport = new NewReport();
         Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
         newReport.setCompanyCash(companyCash);
+        Integer totalLoan = accountManager.sumLoan(companyTerm.getCompany(), loanType.name());
+        switch (loanType) {
+            case LONG_TERM_LOAN:
+                newReport.setLongTermLoan(totalLoan);
+                break;
+            case SHORT_TERM_LOAN:
+                newReport.setShortTermLoan(totalLoan);
+                break;
+            case USURIOUS_LOAN:
+                newReport.setUsuriousLoan(totalLoan);
+                break;
+            default:
+                throw new NoSuchElementException(loanType.name());
+        }
         result.put("newReport", newReport);
 
         return result;
