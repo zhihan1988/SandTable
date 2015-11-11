@@ -257,12 +257,29 @@ $(function () {
             });
     });
 
+    $("select[id^='lineType_']").change(function(){
+        var $lineType = $(this);
+        var lineId = $lineType.attr("id").split("_")[1];
+        if($lineType.val()=='FLEXBILITY'){
+            $("#produceType_"+lineId).find("option[value='-1']").attr("selected",true);
+            $("#produceType_"+lineId).hide();
+        } else {
+            $("#produceType_"+lineId).show();
+        }
+    })
+
+
 
     $("button[id^='build_']").click(function(){
         var $build = $(this);
         var partId = $build.attr("id").split("_")[1];
         var lineType = $("#lineType_" + partId).val();
         var produceType = $("#produceType_" + partId).val();
+
+        if(lineType == 'FLEXBILITY'){
+            produceType = '';
+        }
+
         if(lineType == -1) {
             alert("请选择生产线类型");
         } else if(produceType == -1) {
@@ -339,22 +356,38 @@ $(function () {
         var $produce = $(this);
         var produceLineId = $produce.attr("id").split("_")[1];
 
-        //开始生产
-        $.getJSON(base + "/manufacturing/produce.do",
-        {
-            companyTermId: companyTermId,
-            produceLineId: produceLineId
-        },
-            function(data){
-                //建造结果
-                var status = data.status;
-                if(status == 1) {
-                    $produce.parent().text("生产中");
-                    update(data.newReport);
-                } else {
-                    alert(data.message);
-                }
-            });
+        var produceType;
+
+        var lineType = $("#lineType_"+produceLineId).val();
+        if(lineType=="FLEXBILITY"){
+            produceType = $("#produceType_" + produceLineId).val();
+        } else {
+            produceType = $("#produceType_" + produceLineId).text();
+        }
+
+        if(produceType==-1) {//预防柔性生产线没有选择产品类型的情况
+            alert("请选择生产类型");
+        } else {
+            //开始生产
+            $.getJSON(base + "/manufacturing/produce.do",
+                {
+                    companyTermId: companyTermId,
+                    produceLineId: produceLineId,
+                    produceType: produceType
+                },
+                function(data){
+                    //建造结果
+                    var status = data.status;
+                    if(status == 1) {
+                        $produce.parent().text("生产中");
+                        update(data.newReport);
+                    } else {
+                        alert(data.message);
+                    }
+                });
+        }
+
+
     });
 
     $("select[id^='usuriousLoan_']").change(function(){

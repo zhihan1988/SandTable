@@ -280,13 +280,24 @@ public class ManufacturingController extends BaseIndustryController {
 
         String companyTermId = request.getParameter("companyTermId");
         String produceLineId = request.getParameter("produceLineId");
+        String produceType = request.getParameter("produceType");
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
-
-        Map result = manufacturingImmediatelyManager.processProduce(companyTerm, produceLine);
-
-        return result;
+        if (ProduceLine.Type.FLEXBILITY.name().equals(produceLine.getProduceLineType())) {
+            produceLine.setProduceType(produceType);
+            baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+        }
+        Product product = productManager.getProduct(companyTerm.getCompany(), produceLine.getProduceType());
+        if (product.getDevelopNeedCycle() > 0) {
+            Map result = new HashMap<>();
+            result.put("status", "-1");
+            result.put("message", "该产品未被研发");
+            return result;
+        } else {
+            Map result = manufacturingImmediatelyManager.processProduce(companyTerm, produceLine);
+            return result;
+        }
     }
 
     @RequestMapping("/devoteMarket")

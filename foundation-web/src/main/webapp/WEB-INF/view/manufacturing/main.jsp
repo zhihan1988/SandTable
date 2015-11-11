@@ -85,7 +85,16 @@
                         <%--<li>应收账款：<span id="companyCash">${companyCash}</span></li>--%>
                         <li>高利贷款：<span id="usuriousLoan">${usuriousLoan}</span></li>
                     </ul>
-                    <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="testButton" checkedValue="value3"/>
+
+                    <div style="display: none;">
+                        <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="testButton" checkedValue="value3"/>
+                        <button id="button_test_change1">changeTextToSelect</button>
+                        <button id="button_test_change2">changeSelectToText</button>
+                        <div id="div_show">
+                            <span id="test_change">P1</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -318,17 +327,20 @@
                                 </select>
                             </td>
                             <td id="td_produceType_${line.id}">
-                                <span <c:if test="${line.status=='UN_BUILD'}">style="display: none"</c:if>>
-                                   <ming800:status type = "normal" name="produceType" dataType="ProduceLine.produceType" checkedValue="${line.produceType}"/>
-                                </span>
-                                <select id="produceType_${line.id}" name="produceType" <c:if test="${line.status!='UN_BUILD'}">style="display: none;" </c:if>>
-                                    <option value="-1">无</option>
-                                    <c:forEach items="${productList}" var="product">
-                                        <c:if test="${product.developNeedCycle == 0}">
-                                            <option value="${product.type}">${product.type}</option>
-                                        </c:if>
-                                    </c:forEach>
-                                </select>
+                                <c:choose>
+                                    <c:when test="${(line.status=='UN_BUILD' && line.produceLineType!='FLEXBILITY') || (line.status=='FREE' && line.produceLineType=='FLEXBILITY') }">
+                                        <select id="produceType_${line.id}">
+                                            <option value="-1">无</option>
+                                            <option value="P1">P1</option>
+                                            <option value="P2">P2</option>
+                                            <option value="P3">P3</option>
+                                            <option value="P4">P4</option>
+                                        </select>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span id="produceType_${line.id}">${line.produceType}</span>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                         <tr>
@@ -461,6 +473,39 @@
         console.log($(element).val());
     }
 
+    function changeProductTypeTextToSelect(id, value){
+        var $select = $("<select></select>").attr("id", id);
+        for(var i=1;i<=4;i++) {
+            var v = "P"+i;
+            var op = $("<option></option>").text(v).val(v);
+            if(v==value){
+                op.attr("selected", "selected");
+            }
+            op.appendTo($select);
+        }
+        return $select;
+    }
+
+    function changeProductTypeSelectToText(id, value){
+        var $text = $("<span></span>").attr("id", id).text(value);
+        return $text;
+    }
+
+    $(function(){
+        $("#button_test_change1").click(function(){
+            var $testChange = $("#test_change");
+            var id = $testChange.attr("id");
+            var value = $testChange.text();
+            $testChange.replaceWith(changeProductTypeTextToSelect(id, value));
+        });
+
+        $("#button_test_change2").click(function(){
+            var $testChange = $("#test_change");
+            var id = $testChange.attr("id");
+            var value = $testChange.val();
+            $testChange.replaceWith(changeProductTypeSelectToText(id, value));
+        });
+    })
 </script>
 </body>
 </html>

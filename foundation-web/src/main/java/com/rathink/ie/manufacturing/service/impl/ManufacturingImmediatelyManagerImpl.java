@@ -118,6 +118,7 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         Integer lineBuildNeedCycle = Integer.valueOf(produceLine.getLineBuildNeedCycle());
         if (lineBuildNeedCycle > 0) {
             lineBuildNeedCycle--;
+            produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
         }
         if (lineBuildNeedCycle == 0) {//建造完成
             produceLine.setStatus(ProduceLine.Status.FREE.name());
