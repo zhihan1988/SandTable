@@ -7,7 +7,7 @@
 <!doctype html>
 <html class="no-js">
 <head></head>
-<div><a href="<c:url value="/campaign/listCampaign"/>">返回行业列表</a></div>
+<div><a href="<c:url value="/campaign/listCampaign"/>">返回竞赛列表</a></div>
 
 <h1>${campaign.name}</h1> <a href="<c:url value="/internet/main?campaignId=${campaign.id}&companyId=${myCompany.id}"/>">进入</a>
 
@@ -17,7 +17,7 @@
     <table class="am-table">
         <thead>
         <tr>
-            <th>名称</th>
+            <th>公司名称</th>
             <th>口号</th>
         </thead>
         <tbody>

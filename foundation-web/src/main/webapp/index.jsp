@@ -19,13 +19,13 @@
     </style>
 </head>
 <body>
-<div class="header">
-    <div class="am-g">
-        <h1>商世界</h1>
-        <p>模拟现代商业的游戏</p>
-    </div>
-    <hr />
-</div>
+<ul class="am-nav am-nav-pills">
+    <li><h1 style="font-size: 27px;">商世界</h1></li>
+    <li ><a href="<c:url value="/home.do"/> ">首页</a></li>
+    <li><a href="<c:url value="/industry.do"/>">行业</a></li>
+    <li  style="float: right;"><a style="padding-left: 2px; padding-right: 2px" href="<c:url value="/index.jsp"/>">登录</a></li>
+    <li style="float: right;"><a style="padding-left: 2px; padding-right: 2px" href="<c:url value="/pc/register"/>">注册</a></li>
+</ul>
 <div class="am-g">
     <div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
         <form method="post" class="am-form" action="<c:url value="/j_spring_security_check"/>">

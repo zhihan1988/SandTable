@@ -9,35 +9,35 @@
 <head></head>
 <body>
 
+<div style="margin-bottom: 10px"><a href="<c:url value="/home.do"/>">返回主页</a></div>
+
 <div>
     <ul class="am-nav am-nav-pills">
-        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">行业列表</a></li>
+        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">竞赛列表</a></li>
         <li><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
         <li><a href="#">我的资本</a></li>
+        <li ><a style="padding-left: 0px;padding-right: 0px" href="<c:url value="/j_spring_security_logout"/>">注销</a></li>
     </ul>
 </div>
 
 <div class="am-margin-top">
-    <a href="<c:url value="/campaign/form"/>" class="am-btn am-btn-primary">发起</a>
+    <a href="<c:url value="/campaign/form"/>" >发起一轮竞赛</a>
 </div>
 
 <div class="am-margin-top">
     <table class="am-table">
         <thead>
         <tr>
-            <th>名称</th>
-            <th>行业</th>
-            <th>模式</th>
-            <th>状态</th>
-            <th>开始时间</th>
+            <th >名称</th>
+            <th >模式/状态</th>
+            <th >开始时间</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${campaignList}" var="campaign" varStatus="vs">
             <tr>
-                <td><a href="<c:url value="/campaign/${campaign.id}"/>">${campaign.name}</a></td>
-                <td>${campaign.industry.name}</td>
-                <td>
+                <td class="am-u-sm-3"><a href="<c:url value="/campaign/${campaign.id}"/>">${campaign.name}</a><br/>${campaign.industry.name}</td>
+                <td class="am-u-sm-4">
                 <c:choose>
                     <c:when test="${campaign.mode == 'private'}">
                         私有
@@ -45,10 +45,9 @@
                     <c:otherwise>
                       公开
                     </c:otherwise>
-                </c:choose>
+                </c:choose><br/>${campaign.statusLabel}
                 </td>
-                <td>${campaign.statusLabel}</td>
-                <td><fmt:formatDate value="${campaign.startDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                <td class="am-u-sm-5"><fmt:formatDate value="${campaign.startDatetime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
         </c:forEach>
         </tbody>
