@@ -37,7 +37,7 @@ public class HomeController {
         List<Object> objectList = baseManager.listObject(hql);
         model.addAttribute("campaignList",objectList);
 
-        String hql2 = "select obj from "+ Campaign.class.getName() + " obj where obj.industry.id='ig5zbnb4bceiltpt'";
+        String hql2 = "select obj from "+ Campaign.class.getName() + " obj where obj.industry.id='2'";
         List<Object> objectList2 = baseManager.listObject(hql2);
         model.addAttribute("campaignList2",objectList2);
         return "/industry";

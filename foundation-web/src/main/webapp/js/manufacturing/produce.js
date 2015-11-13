@@ -138,41 +138,27 @@ $(function () {
     $("#produceLinesDiv").delegate("button[id^='produce_']","click",function(){
         var $produce = $(this);
         var produceLineId = $produce.attr("id").split("_")[1];
+        var produceType = $("#produceType_" + produceLineId).val();
 
-        var produceType;
-
-        var lineType = $("#lineType_"+produceLineId).val();
-        if(lineType=="FLEXBILITY"){
-            produceType = $("#produceType_" + produceLineId).val();
-            alert(produceType);
-        } else {
-            produceType = $("#produceType_" + produceLineId).text();
-        }
-
-        if(produceType==-1) {//预防柔性生产线没有选择产品类型的情况
-            alert("请选择生产类型");
-        } else {
-            //开始生产
-            $.getJSON(base + "/manufacturing/produce.do",
-                {
-                    companyTermId: companyTermId,
-                    produceLineId: produceLineId,
-                    produceType: produceType
-                },
-                function(data){
-                    //建造结果
-                    var status = data.status;
-                    if(status == 1) {
-                        $produce.parent().text("生产中");
-                        update(data.newReport);
-                        refreshProduceLine(data.line);
-                        updateProduceLineButton(data.line);
-                    } else {
-                        alert(data.message);
-                    }
-                });
-        }
-
+        //开始生产
+        $.getJSON(base + "/manufacturing/produce.do",
+            {
+                companyTermId: companyTermId,
+                produceLineId: produceLineId,
+                produceType: produceType
+            },
+            function(data){
+                //建造结果
+                var status = data.status;
+                if(status == 1) {
+                    $produce.parent().text("生产中");
+                    update(data.newReport);
+                    refreshProduceLine(data.line);
+                    updateProduceLineButton(data.line);
+                } else {
+                    alert(data.message);
+                }
+            });
 
     })
 
@@ -188,11 +174,26 @@ function refreshProduceLine(line) {
     var lineStatus = line.status;
 
     var lineDiv = $("<div></div>").attr("id","line_"+lineId);
-    var lineInnerDiv1 = $("<div>"+line.name+"("+lineStatus+")"+"</div>");
+
+    var lineStatusSpan = $("<span class='line-important'></span>");
+    if (lineStatus == 'UN_BUILD') {
+        lineStatusSpan.text("（未建造）");
+    } else if (lineStatus == 'BUILDING') {
+        lineStatusSpan.text("（建造中）");
+    } else if (lineStatus == 'FREE') {
+        lineStatusSpan.text("（空闲）");
+    } else if (lineStatus == 'PRODUCING') {
+        lineStatusSpan.text("（生产中）");
+    } else {
+        lineStatusSpan.text("（状态异常）");
+    }
+
+    var lineInnerDiv1 = $("<div class='line-innerDiv1'></div>")
+        .append(line.name).append(lineStatusSpan);
 
     //生产线类型
     var produceLineType = line.produceLineType;
-    var lineInnerDiv2 = $("<div></div>");
+    var lineInnerDiv2 = $("<div class='line-innerDiv2'></div>");
     if(produceLineType==null||produceLineType=='') {
         var $select = $("<select></select>").attr("id", "lineType_"+lineId);
         $("<option></option>").text("手工").val("MANUAL").appendTo($select);
@@ -202,44 +203,45 @@ function refreshProduceLine(line) {
 
         lineInnerDiv2.append("生产线类型：").append($select);
     } else {
-        var produceLineTypeLabel;
+        var produceLineTypeSpan = $("<span class='line-important'></span>");
         if(produceLineType == "MANUAL") {
-            produceLineTypeLabel = "手工";
+            produceLineTypeSpan.text("手工");
         } else if (produceLineType == "HALF_AUTOMATIC") {
-            produceLineTypeLabel = "半自动";
+            produceLineTypeSpan.text("半自动");
         } else if (produceLineType == "AUTOMATIC") {
-            produceLineTypeLabel = "自动";
+            produceLineTypeSpan.text("自动");
         } else if (produceLineType == "FLEXBILITY") {
-            produceLineTypeLabel = "柔性";
+            produceLineTypeSpan.text("柔性");
         } else {
-            produceLineTypeLabel = "无";
+            produceLineTypeSpan.text("无");
         }
-        lineInnerDiv2.append("生产线类型：" + produceLineTypeLabel);
+        lineInnerDiv2.append("生产线类型：").append(produceLineTypeSpan);
+        var produceLineTypeHiddenInput = $("<input type='hidden'/>").attr("id", "lineType_" + lineId).val(produceLineType);
+        lineInnerDiv2.append(produceLineTypeHiddenInput);
     }
     if(line.status == 'BUILDING'){
-        lineInnerDiv2.append(" 剩余建设周期:"+line.lineBuildNeedCycle);
+        lineInnerDiv2.append(" 剩余建设周期:").append("<span class='line-important'>"+line.lineBuildNeedCycle+"</span>");
     }
 
     //生产产品类型
     var produceType = line.produceType;
-    var lineInnerDiv3 = $("<div></div>");
-    if(produceType == null || produceType == '') {
+    var lineInnerDiv3 = $("<div class='line-innerDiv3'></div>");
 
-        if((lineStatus=='UN_BUILD'&&produceLineType!='FLEXBILITY') || (lineStatus=='FREE'&&produceLineType=='FLEXBILITY')){
-            var $select = $("<select></select>").attr("id", "produceType_"+lineId);
-            $("<option></option>").text("P1").val("P1").appendTo($select);
-            $("<option></option>").text("P2").val("P2").appendTo($select);
-            $("<option></option>").text("P3").val("P3").appendTo($select);
-            $("<option></option>").text("P4").val("P4").appendTo($select);
-            lineInnerDiv3.append("生产类型：").append($select);
-        } else {
-            lineInnerDiv3.append("生产类型：" + line.produceType);
-        }
+    if((lineStatus=='UN_BUILD'&&produceLineType!='FLEXBILITY') || (lineStatus=='FREE'&&produceLineType=='FLEXBILITY')){
+        var $select = $("<select></select>").attr("id", "produceType_"+lineId);
+        $("<option></option>").text("P1").val("P1").appendTo($select);
+        $("<option></option>").text("P2").val("P2").appendTo($select);
+        $("<option></option>").text("P3").val("P3").appendTo($select);
+        $("<option></option>").text("P4").val("P4").appendTo($select);
+        lineInnerDiv3.append("生产类型：").append($select);
     } else {
-        lineInnerDiv3.append("生产类型：" + line.produceType);
+        var lineProduceTypeSpan = $("<span class='line-important'>"+line.produceType+"</span>");
+        var lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val(produceType);
+        lineInnerDiv3.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
     }
+
     if(line.status == 'PRODUCING') {
-        lineInnerDiv2.append(" 剩余生产周期:"+line.produceNeedCycle);
+        lineInnerDiv2.append(" 剩余生产周期:").append("<span class='line-important'>"+line.produceNeedCycle+"</span>");
     }
 
     lineDiv.append(lineInnerDiv1).append(lineInnerDiv2).append(lineInnerDiv3);
@@ -257,6 +259,7 @@ function initProduceLineButton(line) {
         $("<button class='am-btn am-btn-secondary'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'FREE'){
         $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
+        $("<span class='button-padding'></span>").appendTo(lineButtonDiv);
         $("<button class='am-btn am-btn-secondary'>改造</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'PRODUCING'){
 

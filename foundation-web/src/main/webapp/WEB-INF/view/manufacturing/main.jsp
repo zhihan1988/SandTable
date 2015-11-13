@@ -45,6 +45,22 @@
         .am-nav-tabs>li>a {
             padding:.4em 0.5em
         }
+
+        .line-innerDiv1 {
+            padding: 10px 0;
+        }
+        .line-innerDiv2 {
+            padding: 10px 0;
+        }
+        .line-innerDiv3 {
+            padding: 10px 0;
+        }
+        .button-padding {
+            margin: 5px;
+        }
+        .line-important {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -299,13 +315,16 @@
                       </table>
                   </div>
               </div>
-
-            <div class="am-panel am-panel-default">
-                <div class="am-panel-bd" id="produceLinesDiv">
-                    <c:forEach items="${produceLineList}" var="line">
+            <%--生产线--%>
+            <div class="am-panel am-panel-default" id="produceLinesDiv">
+                <c:forEach items="${produceLineList}" var="line" varStatus="status">
+                    <c:if test="${status.index==0}"><h3 style="margin: 10px 20px">厂房A</h3></c:if>
+                    <c:if test="${status.index==4}"><h3 style="margin:0;padding: 10px 20px;border-top: 1px solid #DDDDDD">厂房B</h3></c:if>
+                    <c:if test="${status.index==7}"><h3 style="margin:0;padding: 10px 20px;border-top: 1px solid #DDDDDD">厂房C</h3></c:if>
+                    <div class="am-panel-bd" >
                         <div id="line_${line.id}"></div>
-                    </c:forEach>
-                </div>
+                    </div>
+                </c:forEach>
             </div>
         </div>
         <div id="panel-4" class="panel">
