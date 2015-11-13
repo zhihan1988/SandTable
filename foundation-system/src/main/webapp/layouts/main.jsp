@@ -9,7 +9,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--<%@ taglib prefix="page" uri="http://www.opensymphony.com/sitemesh/page" %>--%>
-<%String path = request.getContextPath();%>
 <html class="no-js">
 <head>
     <title>首页</title>

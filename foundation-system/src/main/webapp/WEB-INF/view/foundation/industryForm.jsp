@@ -25,6 +25,12 @@
       <input type="text" name="name" value="${object.name}" id="doc-ipt-3" >
     </div>
   </div>
+  <div class="am-form-group">
+    <label for="doc-ipt-6" class="am-u-sm-2 am-form-label">行业类型</label>
+    <div class="am-u-sm-10">
+      <input type="text" name="name" value="${object.type}" id="doc-ipt-6" >
+    </div>
+  </div>
 
   <div class="am-form-group">
     <label for="doc-ipt-4" class="am-u-sm-2 am-form-label">周期</label>

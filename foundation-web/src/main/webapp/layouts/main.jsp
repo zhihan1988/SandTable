@@ -8,7 +8,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--<%@ taglib prefix="page" uri="http://www.opensymphony.com/sitemesh/page" %>--%>
-<%String path = request.getContextPath();%>
 <html class="no-js">
 <head>
     <title>首页</title>
@@ -38,48 +37,12 @@
 </head>
 <body>
 
-<%--<header class="am-topbar am-topbar-inverse">--%>
-    <%--<h1 class="am-topbar-brand">--%>
-        <%--<a href="#">商世界</a>--%>
-    <%--</h1>--%>
-
-    <%--<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>--%>
-
-    <%--<div class="am-collapse am-topbar-collapse" id="doc-topbar-collapse">--%>
-        <%--<ul class="am-nav am-nav-pills am-topbar-nav">--%>
-            <%--<li class="am-active"><a href="<c:url value="/home.do"/> ">首页</a></li>--%>
-            <%--<li><a >行业</a></li>--%>
-            <%--<li><a href="#">关于</a></li>--%>
-
-        <%--</ul>--%>
-
-
-
-        <%--<div class="am-topbar-right">--%>
-            <%--<a href="<c:url value="/pc/register"/>" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">新用户注册</a>--%>
-        <%--</div>--%>
-        <%--<div class="am-topbar-right">--%>
-            <%--<a href="<c:url value="/"/> " class="am-btn am-btn-primary am-topbar-btn am-btn-sm">老用户登录</a>--%>
-        <%--</div>--%>
-    <%--</div>--%>
-<%--</header>--%>
-<ul class="am-nav am-nav-pills">
-    <li class="am-active"><a href="<c:url value="/home.do"/> ">首页</a></li>
-    <li><a href="<c:url value="/industry.do"/>">行业</a></li>
-    <li style="float: right"><a href="<c:url value="/pc/register"/>">注册</a></li>
-    <li style="float: right;"><a href="<c:url value="/"/>">登录</a></li>
-</ul>
-
 <div class="am-cf admin-main">
-
-
-<div class="admin-content" style="height: auto;">
-<sitemesh:write property='body'/>
-</div>
+    <div class="admin-content" style="height: auto;padding:10px" >
+        <sitemesh:write property='body'/>
+    </div>
 
 </div>
-
-
 
 
 </body>
