@@ -8,6 +8,7 @@
 <html class="no-js">
 <head>
     <script src="<c:url value='/js/manufacturing/main.js'/>"></script>
+    <script src="<c:url value='/js/manufacturing/produce.js'/>"></script>
     <style type="text/css">
         .panel {
             display: none;
@@ -300,72 +301,11 @@
               </div>
 
             <div class="am-panel am-panel-default">
-                <div class="am-panel-bd">
-                <h3>工厂1</h3>
-                <table class="am-table">
-                    <thead>
-                    <tr>
-                        <th>生产线</th>
-                        <th>类型</th>
-                        <th>产品型号</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="am-panel-bd" id="produceLinesDiv">
                     <c:forEach items="${produceLineList}" var="line">
-                        <tr>
-                            <td>${line.name}</td>
-                            <td id="td_lineType_${line.id}">
-                                <span <c:if test="${line.status=='UN_BUILD'}">style="display: none"</c:if>>
-                                   <ming800:status type = "normal" name="lineType" dataType="ProduceLine.produceLineType" checkedValue="${line.produceLineType}"/>
-                                </span>
-                                <select id="lineType_${line.id}" name="lineType" <c:if test="${line.status!='UN_BUILD'}">style="display: none"</c:if>>
-                                    <option value="-1">无</option>
-                                    <option value="MANUAL" <c:if test="${line.produceLineType=='MANUAL'}">selected="selected"</c:if>>手工</option>
-                                    <option value="HALF_AUTOMATIC" <c:if test="${line.produceLineType=='HALF_AUTOMATIC'}">selected="selected"</c:if>>半自动</option>
-                                    <option value="AUTOMATIC" <c:if test="${line.produceLineType=='AUTOMATIC'}">selected="selected"</c:if>>自动</option>
-                                    <option value="FLEXBILITY" <c:if test="${line.produceLineType=='FLEXBILITY'}">selected="selected"</c:if>>柔性</option>
-                                </select>
-                            </td>
-                            <td id="td_produceType_${line.id}">
-                                <c:choose>
-                                    <c:when test="${(line.status=='UN_BUILD' && line.produceLineType!='FLEXBILITY') || (line.status=='FREE' && line.produceLineType=='FLEXBILITY') }">
-                                        <select id="produceType_${line.id}">
-                                            <option value="-1">无</option>
-                                            <option value="P1">P1</option>
-                                            <option value="P2">P2</option>
-                                            <option value="P3">P3</option>
-                                            <option value="P4">P4</option>
-                                        </select>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span id="produceType_${line.id}">${line.produceType}</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="operation_${line.id}" colspan="3" style="border-top: 0">
-                                <c:choose>
-                                    <c:when test="${line.status == 'UN_BUILD'}">
-                                        <button id="build_${line.id}" type="button" class="am-btn am-btn-secondary">投资新生产线</button>
-                                    </c:when>
-                                    <c:when test="${line.status == 'BUILDING'}">
-                                        <button id="continueBuild_${line.id}" type="button" class="am-btn am-btn-secondary">再投生产线</button>
-                                    </c:when>
-                                    <c:when test="${line.status == 'FREE'}">
-                                        <button id="produce_${line.id}" type="button" class="am-btn am-btn-secondary">生产</button>
-                                        <button id="rebuild_${line.id}" type="button" class="am-btn am-btn-secondary">改造</button>
-                                    </c:when>
-                                    <c:when test="${line.status == 'PRODUCING'}">
-                                        生产中
-                                    </c:when>
-                                </c:choose>
-                            </td>
-                        </tr>
+                        <div id="line_${line.id}"></div>
                     </c:forEach>
-                    </tbody>
-                </table>
-            </div>
+                </div>
             </div>
         </div>
         <div id="panel-4" class="panel">

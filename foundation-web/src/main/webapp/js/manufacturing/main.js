@@ -21,7 +21,6 @@ $(function () {
         $("#panel-"+id.split("-")[1]).trigger("click");
     });
 
-
     //市场投放
     $("select[id^='marketFee_'],select[id^='instruction_']").change(function(){
         var $choice = $(this);
@@ -217,122 +216,6 @@ $(function () {
             });
     });
 
-    //采购原料
-    $("select[id^='materialNum_']").change(function(){
-        var $material = $(this);
-        var value = $material.val();
-        var materialId = value.split("#")[0];
-        var num = value.split("#")[1];
-        if(num!=-1) {
-            $.getJSON(base + "/manufacturing/purchase.do",
-            {
-                companyTermId: companyTermId,
-                materialId: materialId,
-                materialNum: num
-            },
-                function(data){
-                    if(data.status==1) {
-                        $material.replaceWith(num);
-                        update(data.newReport);
-                    }
-                });
-        }
-    })
-
-    //研发投入
-    $("button[id^='devoteProduct_']").click(function(){
-        var $developButton = $(this);
-        var productId = $developButton.attr("id").split("_")[1];
-        //开始建造
-        $.getJSON(base + "/manufacturing/devoteProduct.do",
-        {
-            companyTermId: companyTermId,
-            partId: productId
-        },
-            function(data){
-                if(data.status == 1) {
-                    $developButton.replaceWith("研发中");
-                    update(data.newReport);
-                }
-            });
-    });
-
-    $("select[id^='lineType_']").change(function(){
-        var $lineType = $(this);
-        var lineId = $lineType.attr("id").split("_")[1];
-        if($lineType.val()=='FLEXBILITY'){
-            $("#produceType_"+lineId).find("option[value='-1']").attr("selected",true);
-            $("#produceType_"+lineId).hide();
-        } else {
-            $("#produceType_"+lineId).show();
-        }
-    })
-
-
-
-    $("button[id^='build_']").click(function(){
-        var $build = $(this);
-        var partId = $build.attr("id").split("_")[1];
-        var lineType = $("#lineType_" + partId).val();
-        var produceType = $("#produceType_" + partId).val();
-
-        if(lineType == 'FLEXBILITY'){
-            produceType = '';
-        }
-
-        if(lineType == -1) {
-            alert("请选择生产线类型");
-        } else if(produceType == -1) {
-            alert("请选择生产的产品类型");
-        } else {
-
-            //开始建造
-            $.getJSON(base + "/manufacturing/buildProduceLine.do",
-            {
-                companyTermId: companyTermId,
-                partId: partId,
-                lineType: lineType,
-                produceType: produceType
-            },
-                function(data){
-                    //建造结果
-                    if(data.status == 1) {
-                        update(data.newReport);
-                        $("#lineType_" + partId).replaceWith($("#lineType_" + partId).find("option:selected").text());
-                        $("#produceType_" + partId).replaceWith($("#produceType_" + partId).find("option:selected").text());
-                        var installCycle = data.installCycle;
-                        if(installCycle == 0) {
-                            //建造完成
-                            var $operationDiv = $('#operation_' + partId);
-                            var $button = $('<button type="button">生产</button>').attr('id','produce_'+partId).addClass('am-btn am-btn-secondary');
-                            $operationDiv.html($button);
-                        } else {
-                            $('#operation_' + partId).html("建造中");
-                        }
-                    }
-                });
-        }
-    });
-
-
-    $("button[id^='continueBuild_']").click(function(){
-        var $build = $(this);
-        var partId = $build.attr("id").split("_")[1];
-        //继续建造
-        $.getJSON(base + "/manufacturing/continueBuildProduceLine.do",
-        {
-            companyTermId: companyTermId,
-            partId: partId
-        },
-            function(data){
-                if(data.status == 1) {
-                    $build.replaceWith("建造中");
-                    update(data.newReport);
-                }
-            });
-    });
-
-
     //交付
     $("#marketOrderListTable").delegate("button[id^='deliver_']","click",function(){
         var $order = $(this);
@@ -350,44 +233,6 @@ $(function () {
                 }
             }
         );
-    })
-
-    $("td[id^='operation_']").delegate("button[id^='produce_']","click",function(){
-        var $produce = $(this);
-        var produceLineId = $produce.attr("id").split("_")[1];
-
-        var produceType;
-
-        var lineType = $("#lineType_"+produceLineId).val();
-        if(lineType=="FLEXBILITY"){
-            produceType = $("#produceType_" + produceLineId).val();
-        } else {
-            produceType = $("#produceType_" + produceLineId).text();
-        }
-
-        if(produceType==-1) {//预防柔性生产线没有选择产品类型的情况
-            alert("请选择生产类型");
-        } else {
-            //开始生产
-            $.getJSON(base + "/manufacturing/produce.do",
-                {
-                    companyTermId: companyTermId,
-                    produceLineId: produceLineId,
-                    produceType: produceType
-                },
-                function(data){
-                    //建造结果
-                    var status = data.status;
-                    if(status == 1) {
-                        $produce.parent().text("生产中");
-                        update(data.newReport);
-                    } else {
-                        alert(data.message);
-                    }
-                });
-        }
-
-
     });
 
     $("select[id^='usuriousLoan_']").change(function(){
@@ -451,14 +296,15 @@ $(function () {
             campaignDate: campaignDate,
             roundType: roundType
         },
-            function (data) {
-                var isNext = data.isNext;
-                if (isNext == true) {
-                    location.reload();
-                } else {
-                    $("#unFinishedNum").text(data.unFinishedNum);
-                }
-            });
+        function (data) {
+            var isNext = data.isNext;
+            if (isNext == true) {
+                location.reload();
+            } else {
+                $("#unFinishedNum").text(data.unFinishedNum);
+            }
+        }
+        );
 
     }
 })

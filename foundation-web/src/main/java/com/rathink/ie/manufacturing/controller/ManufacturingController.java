@@ -250,6 +250,17 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/currentLineState")
+    @ResponseBody
+    public Map currentLineState(HttpServletRequest request, Model model) throws Exception {
+        String lineId = request.getParameter("lineId");
+        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), lineId);
+        Map map = new HashMap<>();
+        map.put("status", 1);
+        map.put("line", produceLine);
+        return map;
+    }
+
 
     @RequestMapping("/buildProduceLine")
     @ResponseBody

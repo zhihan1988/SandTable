@@ -92,6 +92,7 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         Map result = new HashMap<>();
         result.put("status", 1);
         result.put("installCycle", installCycle);
+        result.put("line",produceLine);
         NewReport newReport = new NewReport();
         Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
         newReport.setCompanyCash(companyCash);
@@ -133,6 +134,7 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
 
         Map result = new HashMap<>();
         result.put("status", 1);
+        result.put("line", produceLine);
         NewReport newReport = new NewReport();
         Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
         newReport.setCompanyCash(companyCash);
@@ -255,7 +257,7 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         baseManager.saveOrUpdate(Account.class.getName(), account);
 
         result.put("status", 1);
-        result.put("message", "生产中");
+        result.put("line", produceLine);
         NewReport newReport = new NewReport();
         newReport.setR1Amount(R1Amount);
         newReport.setR2Amount(R2Amount);
