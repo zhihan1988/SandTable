@@ -47,6 +47,10 @@
             padding:.4em 0.5em
         }
 
+        .line-panel {
+            border-bottom: 1px solid #DDDDDD;
+            padding: 20px;
+        }
         .line-innerDiv1 {
             padding: 10px 0;
         }
@@ -119,8 +123,9 @@
         <div id="panel-2" class="panel">
             <c:if test="${campaign.currentCampaignDate%4==1}">
             <div class="am-panel am-panel-default" id="devotePanel">
+                <div class="am-panel-hd">广告投放</div>
                 <div class="am-panel-bd">
-                <h3>投放广告</h3>
+
                     <div class="am-tabs" data-am-tabs>
                         <ul class="am-tabs-nav am-nav am-nav-tabs">
                             <li class="am-active"><a href="#tab1">本地</a></li>
@@ -164,6 +169,7 @@
                 </div>
             </div>
             <div class="am-panel am-panel-default" id="marketOrderChoicePanel" style="display: none">
+                <div class="am-panel-hd">选单</div>
                 <div class="am-panel-bd">
                 <h3><span id="marketOrderChoicePanel_message">正在选单</span></h3>
                 <table class="am-table">
@@ -183,8 +189,8 @@
                 </div>
             </div>
             <div class="am-panel am-panel-default" id="companyOrderPanel" style="display: none">
+                <div class="am-panel-hd">公司排名</div>
                 <div class="am-panel-bd">
-                    <h3>公司排名</h3>
                     <table class="am-table">
                         <thead>
                         <tr>
@@ -199,8 +205,8 @@
             </div>
             </c:if>
             <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">未交付订单</div>
                 <div class="am-panel-bd">
-                    <h3>未交付订单</h3>
                     <table class="am-table" id="marketOrderListTable">
                         <thead>
                         <tr>
@@ -227,6 +233,7 @@
             </div>
             <c:if test="${campaign.currentCampaignDate%4==0}">
             <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">市场开拓</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
                         <thead>
@@ -256,6 +263,7 @@
         </div>
         <div id="panel-3" class="panel">
             <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">原料库</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
                         <thead>
@@ -289,6 +297,7 @@
             </div>
 
               <div class="am-panel am-panel-default">
+                  <div class="am-panel-hd">产品库</div>
                   <div class="am-panel-bd">
                       <table class="am-table">
                           <thead>
@@ -319,10 +328,10 @@
             <%--生产线--%>
             <div class="am-panel am-panel-default" id="produceLinesDiv">
                 <c:forEach items="${produceLineList}" var="line" varStatus="status">
-                    <c:if test="${status.index==0}"><h3 style="margin: 10px 20px">厂房A</h3></c:if>
-                    <c:if test="${status.index==4}"><h3 style="margin:0;padding: 10px 20px;border-top: 1px solid #DDDDDD">厂房B</h3></c:if>
-                    <c:if test="${status.index==7}"><h3 style="margin:0;padding: 10px 20px;border-top: 1px solid #DDDDDD">厂房C</h3></c:if>
-                    <div class="am-panel-bd" >
+                    <c:if test="${status.index==0}"><div class="am-panel-hd" style="border-top: 0">厂房A</div></c:if>
+                    <c:if test="${status.index==4}"><div class="am-panel-hd">厂房B</div></c:if>
+                    <c:if test="${status.index==7}"><div class="am-panel-hd">厂房C</div></c:if>
+                    <div class="am-panel-bd line-panel">
                         <div id="line_${line.id}"></div>
                     </div>
                 </c:forEach>
@@ -330,6 +339,7 @@
         </div>
         <div id="panel-4" class="panel">
             <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">贷款</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
                         <thead>

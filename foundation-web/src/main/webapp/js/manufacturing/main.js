@@ -1,4 +1,14 @@
 $(function () {
+    //$.AMUI.progress.start();
+  /*  var m = 0.1;
+    setInterval(function (){
+        m = m + 0.1;
+        if(m < 1) {
+            $.AMUI.progress.set(m);
+        } else {
+            $.AMUI.progress.done();
+        }
+    }, 1000);*/
 
     var base = getBaseUrl();
 
