@@ -70,12 +70,23 @@ $(function () {
     $("#produceLinesDiv").delegate("select[id^='lineType_']","change",function(){
         var $lineType = $(this);
         var lineId = $lineType.attr("id").split("_")[1];
-        if($lineType.val()=='FLEXBILITY'){
-            $("#produceType_"+lineId).find("option[value='-1']").attr("selected",true);
-            $("#produceType_"+lineId).hide();
+        var lineType = $lineType.val();
+        var $produceTypeDiv = $("#produceTypeDiv_"+lineId);
+        $produceTypeDiv.html("");
+
+        if(lineType=='FLEXBILITY'||lineType=='MANUAL'){
+            var lineProduceTypeSpan = $("<span class='line-important'>所有许可产品</span>");
+            var lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val("");
+            $produceTypeDiv.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
         } else {
-            $("#produceType_"+lineId).show();
+            var $select = $("<select></select>").attr("id", "produceType_"+lineId);
+            $("<option></option>").text("P1").val("P1").appendTo($select);
+            $("<option></option>").text("P2").val("P2").appendTo($select);
+            $("<option></option>").text("P3").val("P3").appendTo($select);
+            $("<option></option>").text("P4").val("P4").appendTo($select);
+            $produceTypeDiv.append("生产类型：").append($select);
         }
+
     })
 
     //投资新生产线
@@ -225,9 +236,11 @@ function refreshProduceLine(line) {
 
     //生产产品类型
     var produceType = line.produceType;
-    var lineInnerDiv3 = $("<div class='line-innerDiv3'></div>");
+    var lineInnerDiv3 = $("<div class='line-innerDiv3'></div>").attr("id", "produceTypeDiv_"+lineId);
 
-    if((lineStatus=='UN_BUILD'&&produceLineType!='FLEXBILITY') || (lineStatus=='FREE'&&produceLineType=='FLEXBILITY')){
+    if((lineStatus=='UN_BUILD'&&(produceLineType=='HALF_AUTOMATIC'||produceLineType=='AUTOMATIC'))
+        || (lineStatus=='FREE'&&(produceLineType=='MANUAL'||produceLineType=='FLEXBILITY'))){
+
         var $select = $("<select></select>").attr("id", "produceType_"+lineId);
         $("<option></option>").text("P1").val("P1").appendTo($select);
         $("<option></option>").text("P2").val("P2").appendTo($select);
@@ -235,8 +248,18 @@ function refreshProduceLine(line) {
         $("<option></option>").text("P4").val("P4").appendTo($select);
         lineInnerDiv3.append("生产类型：").append($select);
     } else {
-        var lineProduceTypeSpan = $("<span class='line-important'>"+line.produceType+"</span>");
-        var lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val(produceType);
+
+        //生产产品类型
+        var lineProduceTypeSpan;
+        var lineProduceTypeHiddenInput;
+        if(produceType == null) {
+            lineProduceTypeSpan = $("<span class='line-important'>所有许可产品</span>");
+            lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val("");
+        } else {
+            lineProduceTypeSpan = $("<span class='line-important'>" + produceType + "</span>");
+            lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val(produceType);
+        }
+
         lineInnerDiv3.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
     }
 
@@ -260,7 +283,7 @@ function initProduceLineButton(line) {
     } else if (lineStatus == 'FREE'){
         $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
         $("<span class='button-padding'></span>").appendTo(lineButtonDiv);
-        $("<button class='am-btn am-btn-secondary'>改造</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary'>转产</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'PRODUCING'){
 
     } else {

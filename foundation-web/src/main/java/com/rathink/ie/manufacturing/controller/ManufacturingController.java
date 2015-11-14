@@ -295,7 +295,8 @@ public class ManufacturingController extends BaseIndustryController {
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
-        if (ProduceLine.Type.FLEXBILITY.name().equals(produceLine.getProduceLineType())) {
+        if (ProduceLine.Type.FLEXBILITY.name().equals(produceLine.getProduceLineType())
+                || ProduceLine.Type.MANUAL.name().equals(produceLine.getProduceLineType())) {
             produceLine.setProduceType(produceType);//processProduce 方法顺利执行的话 会被保存
         }
         Product product = productManager.getProduct(companyTerm.getCompany(), produceLine.getProduceType());
