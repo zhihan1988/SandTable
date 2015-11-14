@@ -8,6 +8,7 @@
 <html class="no-js">
 <head>
     <script src="<c:url value='/js/manufacturing/main.js'/>"></script>
+    <script src="<c:url value='/js/manufacturing/market.js'/>"></script>
     <script src="<c:url value='/js/manufacturing/produce.js'/>"></script>
     <style type="text/css">
         .panel {
