@@ -79,8 +79,9 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("marketList", marketList);
 
         XQuery marketOrderQuery = new XQuery();
-        marketOrderQuery.setHql("from MarketOrder where status =:status");
+        marketOrderQuery.setHql("from MarketOrder where status =:status and company.id = :companyId");
         marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
+        marketOrderQuery.put("companyId", company.getId());
         List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
         model.addAttribute("marketOrderList", marketOrderList);
         model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name()));
