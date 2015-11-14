@@ -74,7 +74,7 @@ $(function () {
         var $produceTypeDiv = $("#produceTypeDiv_"+lineId);
         $produceTypeDiv.html("");
 
-        if(lineType=='FLEXBILITY'||lineType=='MANUAL'){
+        if(lineType=='MANUAL' || lineType=='FLEXBILITY'){
             var lineProduceTypeSpan = $("<span class='line-important'>所有许可产品</span>");
             var lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val("");
             $produceTypeDiv.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
@@ -171,7 +171,62 @@ $(function () {
                 }
             });
 
-    })
+    });
+
+    $("#produceLinesDiv").delegate("button[id^='rebuild_']","click",function(){
+        var $button = $(this);
+        var lineId = $button.attr("id").split("_")[1];
+        var $produceTypeDiv = $("#produceTypeDiv_"+lineId);
+        $produceTypeDiv.html("");
+        var $select = $("<select></select>").attr("id", "produceType_"+lineId);
+        $("<option></option>").text("P1").val("P1").appendTo($select);
+        $("<option></option>").text("P2").val("P2").appendTo($select);
+        $("<option></option>").text("P3").val("P3").appendTo($select);
+        $("<option></option>").text("P4").val("P4").appendTo($select);
+        $produceTypeDiv.append("生产类型：").append($select);
+
+        var $lineButtonDiv = $("#lineButtonDiv_" + lineId);
+        $lineButtonDiv.html("");
+        $("<button class='am-btn am-btn-secondary'>确认</button>").attr("id","confirmRebuild_"+lineId).appendTo($lineButtonDiv);
+        $("<span class='button-padding'></span>").appendTo($lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary'>取消</button>").attr("id","cancelRebuild_"+lineId).appendTo($lineButtonDiv);
+    });
+
+    $("#produceLinesDiv").delegate("button[id^='confirmRebuild_']","click",function(){
+        var lineId = $(this).attr("id").split("_")[1];
+        var produceType = $("#produceType_" + lineId).val();
+        $.getJSON(getBaseUrl() + "/manufacturing/reBuildProduceLine.do",
+            {
+                companyTermId:companyTermId,
+                lineId:lineId,
+                produceType:produceType
+            },
+            function (data) {
+                if(data.status==1){
+                    var line = data.line;
+
+                    refreshProduceLine(line);
+                    initProduceLineButton(line);
+                }
+            }
+        );
+    });
+    $("#produceLinesDiv").delegate("button[id^='cancelRebuild_']","click",function(){
+        var lineId = $(this).attr("id").split("_")[1];
+        $.getJSON(getBaseUrl() + "/manufacturing/currentLineState.do",
+            {
+                lineId:lineId
+            },
+            function (data) {
+                if(data.status==1){
+                    var line = data.line;
+
+                    refreshProduceLine(line);
+                    initProduceLineButton(line);
+                }
+            }
+        );
+    });
 
 })
 
@@ -195,6 +250,8 @@ function refreshProduceLine(line) {
         lineStatusSpan.text("（空闲）");
     } else if (lineStatus == 'PRODUCING') {
         lineStatusSpan.text("（生产中）");
+    } else if(lineStatus == 'REBUILDING') {
+        lineStatusSpan.text("（转产中）");
     } else {
         lineStatusSpan.text("（状态异常）");
     }
@@ -230,7 +287,7 @@ function refreshProduceLine(line) {
         var produceLineTypeHiddenInput = $("<input type='hidden'/>").attr("id", "lineType_" + lineId).val(produceLineType);
         lineInnerDiv2.append(produceLineTypeHiddenInput);
     }
-    if(line.status == 'BUILDING'){
+    if(line.status == 'BUILDING' || line.status == 'REBUILDING'){
         lineInnerDiv2.append(" 剩余建设周期:").append("<span class='line-important'>"+line.lineBuildNeedCycle+"</span>");
     }
 
@@ -274,19 +331,22 @@ function refreshProduceLine(line) {
 function initProduceLineButton(line) {
     var lineId = line.id;
     var lineStatus = line.status;
+    var lineType = line.produceLineType;
     //button
-    var lineButtonDiv = $("<div></div>");
+    var lineButtonDiv = $("<div></div>").attr("id","lineButtonDiv_"+lineId);
     if(lineStatus=='UN_BUILD'){
         $("<button class='am-btn am-btn-secondary'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
         $("<button class='am-btn am-btn-secondary'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'FREE'){
         $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
-        $("<span class='button-padding'></span>").appendTo(lineButtonDiv);
-        $("<button class='am-btn am-btn-secondary'>转产</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
+        if(lineType=='HALF_AUTOMATIC' || lineType=='AUTOMATIC'){
+            $("<span class='button-padding'></span>").appendTo(lineButtonDiv);
+            $("<button class='am-btn am-btn-secondary'>转产</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
+        }
     } else if (lineStatus == 'PRODUCING'){
 
-    } else {
+    } else if(lineStatus == 'REBUILDING'){
 
     }
     $("#line_" + lineId).append(lineButtonDiv)
@@ -297,7 +357,7 @@ function updateProduceLineButton(line) {
     var lineId = line.id;
     var lineStatus = line.status;
     //button
-    var lineButtonDiv = $("<div></div>");
+    var lineButtonDiv = $("<div></div>").attr("id","lineButtonDiv_"+lineId);
     if(lineStatus=='UN_BUILD'){
         $("<button class='am-btn am-btn-secondary'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
@@ -305,7 +365,7 @@ function updateProduceLineButton(line) {
         $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'PRODUCING'){
 
-    } else {
+    } else if(lineStatus == 'REBUILDING'){
 
     }
     $("#line_" + lineId).append(lineButtonDiv)

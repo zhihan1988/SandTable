@@ -2,11 +2,9 @@ package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
-import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.base.component.CheckOut;
 import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.campaign.model.Industry;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
@@ -282,6 +280,41 @@ public class ManufacturingController extends BaseIndustryController {
         String partId = request.getParameter("partId");
 
         Map result = manufacturingImmediatelyManager.processProductLineContinueBuild(companyTermId, partId);
+        return result;
+    }
+
+    @RequestMapping("/reBuildProduceLine")
+    @ResponseBody
+    public Map reBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
+        String companyTermId = request.getParameter("companyTermId");
+        String lineId = request.getParameter("lineId");
+        String produceType = request.getParameter("produceType");
+
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), lineId);
+
+        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
+        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
+        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_REBUILD.name());
+        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
+        companyTermInstruction.setCompanyPart(produceLine);
+        companyTermInstruction.setCompanyTerm(companyTerm);
+        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+
+        Integer transferCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getTransferCycle();
+        produceLine.setStatus(ProduceLine.Status.REBUILDING.name());
+        produceLine.setLineBuildNeedCycle(transferCycle);
+        produceLine.setProduceType(produceType);
+        baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        result.put("line",produceLine);
+        NewReport newReport = new NewReport();
+        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        newReport.setCompanyCash(companyCash);
+        result.put("newReport", newReport);
+
         return result;
     }
 

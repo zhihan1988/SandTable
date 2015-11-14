@@ -58,7 +58,7 @@ public class ProduceLine extends CompanyPart {
     }
 
     public enum Status {
-        UN_BUILD,BUILDING,FREE,PRODUCING
+        UN_BUILD,BUILDING,FREE,PRODUCING, REBUILDING
     }
 
     public enum Type {

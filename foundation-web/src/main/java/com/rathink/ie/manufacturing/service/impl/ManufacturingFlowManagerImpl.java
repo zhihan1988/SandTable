@@ -361,6 +361,27 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
+    protected void processRebuild(CompanyTermContext companyTermContext) {
+        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+        List<CompanyTermInstruction> marketInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.PRODUCE_LINE_REBUILD.name());
+        if (marketInstructionList != null) {
+            for (CompanyTermInstruction marketInstruction : marketInstructionList) {
+                ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), marketInstruction.getCompanyPart().getId());
+
+                Integer lineBuildNeedCycle = produceLine.getLineBuildNeedCycle();
+                --lineBuildNeedCycle;
+                produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
+                if (lineBuildNeedCycle == 0) {
+                    produceLine.setStatus(ProduceLine.Status.FREE.name());
+                }
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+
+                marketInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
+                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketInstruction);
+            }
+        }
+    }
+
     protected void processLoan(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         Integer campaignDate = companyTerm.getCampaignDate();
@@ -466,6 +487,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             processMaterial(companyTermContext);
             //产品投入周期
             processProductDevotion(companyTermContext);
+            //转产
+            processRebuild(companyTermContext);
             //市场投入周期
             processMarketAreaDevotion(companyTermContext);
             //更新生产完成入库

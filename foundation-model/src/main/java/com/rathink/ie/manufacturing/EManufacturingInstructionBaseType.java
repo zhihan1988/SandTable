@@ -8,6 +8,8 @@ public enum EManufacturingInstructionBaseType {
     PRODUCE_LINE_BUILD,
     //生产线继续修建
     PRODUCE_LINE_BUILD_CONTINUE,
+    //生产线转产
+    PRODUCE_LINE_REBUILD,
     //生产
     PRODUCE,
     //产品研发投入
