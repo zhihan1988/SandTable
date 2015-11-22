@@ -70,13 +70,19 @@
         .line-important {
             font-weight: bold;
         }
+        .am-panel-hd {
+            font-weight: bold;
+        }
+        .am-table th{
+            font-weight: normal;
+        }
     </style>
 </head>
 <body>
 <header data-am-widget="header" class="am-header am-header-default">
     <div class="am-header-left am-header-nav">
         <a href="<c:url value="/campaign/${campaign.id}"/>" class="">
-            行业
+            返回行业
         </a>
         <a href="#" class="">
             <%--<i class="am-header-icon am-icon-phone"></i>--%>
@@ -267,7 +273,7 @@
         </div>
         <div id="panel-3" class="panel">
             <div class="am-panel am-panel-default">
-                <div class="am-panel-hd">原料库</div>
+                <div class="am-panel-hd am-panel-hd-module">原料库</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
                         <thead>
@@ -301,7 +307,7 @@
             </div>
 
               <div class="am-panel am-panel-default">
-                  <div class="am-panel-hd">产品库</div>
+                  <div class="am-panel-hd am-panel-hd-module">产品库</div>
                   <div class="am-panel-bd">
                       <table class="am-table">
                           <thead>
@@ -332,9 +338,9 @@
             <%--生产线--%>
             <div class="am-panel am-panel-default" id="produceLinesDiv">
                 <c:forEach items="${produceLineList}" var="line" varStatus="status">
-                    <c:if test="${status.index==0}"><div class="am-panel-hd" style="border-top: 0">厂房A</div></c:if>
-                    <c:if test="${status.index==4}"><div class="am-panel-hd">厂房B</div></c:if>
-                    <c:if test="${status.index==7}"><div class="am-panel-hd">厂房C</div></c:if>
+                    <c:if test="${status.index==0}"><div class="am-panel-hd am-panel-hd-module" style="border-top: 0">厂房A</div></c:if>
+                    <c:if test="${status.index==4}"><div class="am-panel-hd am-panel-hd-module">厂房B</div></c:if>
+                    <c:if test="${status.index==7}"><div class="am-panel-hd am-panel-hd-module">厂房C</div></c:if>
                     <div class="am-panel-bd line-panel">
                         <div id="line_${line.id}"></div>
                     </div>
