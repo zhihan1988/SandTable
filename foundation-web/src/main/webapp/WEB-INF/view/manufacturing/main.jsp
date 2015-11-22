@@ -79,9 +79,10 @@
         </a>
     </div>
 
-    <div class="am-header-title">
-        <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
-        <span>进行中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}
+    <div class="am-header-title" style="margin: 0 20%;font-size: 1.5rem;">
+       <%-- <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
+        <span>进行中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}--%>
+           ${campaign.formattedCampaignDate}(${campaign.name})
     </div>
 
     <div class="am-header-right am-header-nav">
@@ -92,10 +93,6 @@
     </div>
 </header>
 <div style="margin: 10px;">
-    <div style="text-align:center">
-        <h3>${campaign.name} -- ${campaign.formattedCampaignDate}</h3>
-    </div>
-
     <div>
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">

@@ -261,6 +261,7 @@ public abstract class AbstractFlowManager implements FlowManager {
 
     public void initCyclePublisher() {
         CyclePublisher cyclePublisher = (CyclePublisher) ApplicationContextUtil.getBean("cyclePublisher");
+        cyclePublisher.startTime();//开始计时
         cyclePublisher.setCampaignContext(campaignContext);
         campaignContext.setCyclePublisher(cyclePublisher);
     }

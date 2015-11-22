@@ -86,6 +86,7 @@ public class FlowController {
             result.put("isNext", false);
             CyclePublisher cyclePublisher = campaignContext.getCyclePublisher();
             result.put("unFinishedNum", cyclePublisher.getUnFinishedNum());
+            result.put("schedule", cyclePublisher.getSchedule());
         } else {
             //刷新页面 进入下一回合
             result.put("isNext", true);

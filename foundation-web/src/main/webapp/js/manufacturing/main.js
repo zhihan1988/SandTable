@@ -1,14 +1,6 @@
 $(function () {
-    //$.AMUI.progress.start();
-  /*  var m = 0.1;
-    setInterval(function (){
-        m = m + 0.1;
-        if(m < 1) {
-            $.AMUI.progress.set(m);
-        } else {
-            $.AMUI.progress.done();
-        }
-    }, 1000);*/
+    var $progress = $.AMUI.progress;
+    $progress.configure({ showSpinner: false });
 
     var base = getBaseUrl();
 
@@ -36,6 +28,28 @@ $(function () {
         $("#button-2").trigger("click");
     }
 
+    setInterval(isNext, 1000);
+    function isNext() {
+        $.getJSON(base + "/flow/isCampaignNext",
+            {
+                campaignId:campaignId,
+                campaignDate: campaignDate,
+                roundType: roundType
+            },
+            function (data) {
+                var isNext = data.isNext;
+                if (isNext == true) {
+                    location.reload();
+                } else {
+                    $("#unFinishedNum").text(data.unFinishedNum);
+                    $.AMUI.progress.set(data.schedule);
+                }
+            }
+        );
+
+    }
+
+
     $("#endCampaignDate").click(function () {
         if(confirm("是否结束当前回合的操作？")) {
             var $endCampaignDate = $(this);
@@ -50,29 +64,8 @@ $(function () {
                 $endCampaignDate.hide();
             }
         );
-            setInterval(isNext, 5000);
         }
     });
-
-    function isNext() {
-        $.getJSON(base + "/flow/isCampaignNext",
-        {
-            campaignId:campaignId,
-            campaignDate: campaignDate,
-            roundType: roundType
-        },
-        function (data) {
-            var isNext = data.isNext;
-            if (isNext == true) {
-                location.reload();
-            } else {
-                $("#unFinishedNum").text(data.unFinishedNum);
-            }
-        }
-        );
-
-    }
-
 
     //------------------------财务部分-----------------------
 
