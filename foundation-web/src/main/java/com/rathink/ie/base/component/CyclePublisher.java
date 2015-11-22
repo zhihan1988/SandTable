@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CyclePublisher implements ApplicationContextAware {
     private CampaignContext campaignContext;
     private Map<String, Boolean> companyFinishedMap = new ConcurrentHashMap<>();
-    private final Float CYCLE_TIME = 60000F;//每一回合的操作时长1min
+    private final Float CYCLE_TIME = 300000F;//每一回合的操作时长1min
     private Float leftTime = CYCLE_TIME;//剩余时长
     private Timer timer;
 

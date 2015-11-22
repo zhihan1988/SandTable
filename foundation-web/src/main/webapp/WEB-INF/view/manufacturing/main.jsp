@@ -11,6 +11,10 @@
     <script src="<c:url value='/js/manufacturing/market.js'/>"></script>
     <script src="<c:url value='/js/manufacturing/produce.js'/>"></script>
     <style type="text/css">
+        .navbar-button-selected{
+            /*background: orange;*/
+            background: orangered;
+        }
         .panel {
             display: none;
         }
@@ -429,7 +433,7 @@
 <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default " id="">
     <ul class="am-navbar-nav am-cf am-avg-sm-4">
         <li >
-            <a id="button-1" href="#" class="">
+            <a id="button-1" href="#" class="navbar-button-selected">
                 <span class="am-icon-home"></span>
                 <span class="am-navbar-label">主页</span>
             </a>

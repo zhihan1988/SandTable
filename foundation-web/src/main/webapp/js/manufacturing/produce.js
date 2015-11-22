@@ -71,7 +71,7 @@ $(function () {
         var $lineType = $(this);
         var lineId = $lineType.attr("id").split("_")[1];
         var lineType = $lineType.val();
-        var $produceTypeDiv = $("#produceTypeDiv_"+lineId);
+        var $produceTypeDiv = $("#produceTypeSpan_"+lineId);
         $produceTypeDiv.html("");
 
         if(lineType=='MANUAL' || lineType=='FLEXBILITY'){
@@ -105,7 +105,6 @@ $(function () {
         } else if(produceType == -1) {
             alert("请选择生产的产品类型");
         } else {
-
             //开始建造
             $.getJSON(base + "/manufacturing/buildProduceLine.do",
                 {
@@ -176,7 +175,7 @@ $(function () {
     $("#produceLinesDiv").delegate("button[id^='rebuild_']","click",function(){
         var $button = $(this);
         var lineId = $button.attr("id").split("_")[1];
-        var $produceTypeDiv = $("#produceTypeDiv_"+lineId);
+        var $produceTypeDiv = $("#produceTypeSpan_"+lineId);
         $produceTypeDiv.html("");
         var $select = $("<select></select>").attr("id", "produceType_"+lineId);
         $("<option></option>").text("P1").val("P1").appendTo($select);
@@ -243,25 +242,34 @@ function refreshProduceLine(line) {
 
     var lineStatusSpan = $("<span class='line-important'></span>");
     if (lineStatus == 'UN_BUILD') {
-        lineStatusSpan.text("（未建造）");
+        lineStatusSpan.text("未建造");
     } else if (lineStatus == 'BUILDING') {
-        lineStatusSpan.text("（建造中）");
+        lineStatusSpan.text("建造中");
     } else if (lineStatus == 'FREE') {
-        lineStatusSpan.text("（空闲）");
+        lineStatusSpan.text("空闲");
     } else if (lineStatus == 'PRODUCING') {
-        lineStatusSpan.text("（生产中）");
+        lineStatusSpan.text("生产中");
     } else if(lineStatus == 'REBUILDING') {
-        lineStatusSpan.text("（转产中）");
+        lineStatusSpan.text("转产中");
     } else {
-        lineStatusSpan.text("（状态异常）");
+        lineStatusSpan.text("状态异常");
+    }
+    if(line.status == 'BUILDING' || line.status == 'REBUILDING'){
+        lineStatusSpan.append(" 剩余建设周期:").append("<span class='line-important'>"+line.lineBuildNeedCycle+"</span>");
     }
 
-    var lineInnerDiv1 = $("<div class='line-innerDiv1'></div>")
-        .append(line.name).append(lineStatusSpan);
+    if(line.status == 'PRODUCING') {
+        lineStatusSpan.append(" 剩余生产周期:").append("<span class='line-important'>"+line.produceNeedCycle+"</span>");
+    }
 
+
+    var lineInnerDiv1 = $("<div class='line-innerDiv1'></div>")
+        .append(line.name).append("：").append(lineStatusSpan);
+
+    var lineInnerDiv2 = $("<div class='line-innerDiv2'></div>");
     //生产线类型
     var produceLineType = line.produceLineType;
-    var lineInnerDiv2 = $("<div class='line-innerDiv2'></div>");
+    var lineInnerSpan2 = $("<span class='line-innerSpan2'></span>");
     if(produceLineType==null||produceLineType=='') {
         var $select = $("<select></select>").attr("id", "lineType_"+lineId);
         $("<option></option>").text("手工").val("MANUAL").appendTo($select);
@@ -269,7 +277,7 @@ function refreshProduceLine(line) {
         $("<option></option>").text("自动").val("AUTOMATIC").appendTo($select);
         $("<option></option>").text("柔性").val("FLEXBILITY").appendTo($select);
 
-        lineInnerDiv2.append("生产线类型：").append($select);
+        lineInnerSpan2.append("生产线类型：").append($select);
     } else {
         var produceLineTypeSpan = $("<span class='line-important'></span>");
         if(produceLineType == "MANUAL") {
@@ -283,17 +291,14 @@ function refreshProduceLine(line) {
         } else {
             produceLineTypeSpan.text("无");
         }
-        lineInnerDiv2.append("生产线类型：").append(produceLineTypeSpan);
+        lineInnerSpan2.append("生产线类型：").append(produceLineTypeSpan);
         var produceLineTypeHiddenInput = $("<input type='hidden'/>").attr("id", "lineType_" + lineId).val(produceLineType);
-        lineInnerDiv2.append(produceLineTypeHiddenInput);
-    }
-    if(line.status == 'BUILDING' || line.status == 'REBUILDING'){
-        lineInnerDiv2.append(" 剩余建设周期:").append("<span class='line-important'>"+line.lineBuildNeedCycle+"</span>");
+        lineInnerSpan2.append(produceLineTypeHiddenInput);
     }
 
     //生产产品类型
     var produceType = line.produceType;
-    var lineInnerDiv3 = $("<div class='line-innerDiv3'></div>").attr("id", "produceTypeDiv_"+lineId);
+    var lineInnerSpan3 = $("<span class='line-innerSpan3'></span>").attr("id", "produceTypeSpan_"+lineId);
 
     if((lineStatus=='UN_BUILD'&&(produceLineType=='HALF_AUTOMATIC'||produceLineType=='AUTOMATIC'))
         || (lineStatus=='FREE'&&(produceLineType=='MANUAL'||produceLineType=='FLEXBILITY'))){
@@ -303,13 +308,12 @@ function refreshProduceLine(line) {
         $("<option></option>").text("P2").val("P2").appendTo($select);
         $("<option></option>").text("P3").val("P3").appendTo($select);
         $("<option></option>").text("P4").val("P4").appendTo($select);
-        lineInnerDiv3.append("生产类型：").append($select);
+        lineInnerSpan3.append("生产类型：").append($select);
     } else {
-
         //生产产品类型
         var lineProduceTypeSpan;
         var lineProduceTypeHiddenInput;
-        if(produceType == null) {
+        if(produceType == null || produceType == '') {
             lineProduceTypeSpan = $("<span class='line-important'>所有许可产品</span>");
             lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val("");
         } else {
@@ -317,14 +321,11 @@ function refreshProduceLine(line) {
             lineProduceTypeHiddenInput = $("<input type='hidden'/>").attr("id", "produceType_" + lineId).val(produceType);
         }
 
-        lineInnerDiv3.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
+        lineInnerSpan3.append("生产类型：").append(lineProduceTypeSpan).append(lineProduceTypeHiddenInput);
     }
 
-    if(line.status == 'PRODUCING') {
-        lineInnerDiv2.append(" 剩余生产周期:").append("<span class='line-important'>"+line.produceNeedCycle+"</span>");
-    }
-
-    lineDiv.append(lineInnerDiv1).append(lineInnerDiv2).append(lineInnerDiv3);
+    lineInnerDiv2.append(lineInnerSpan2).append("<span style='margin: 10px;'></span>").append(lineInnerSpan3);
+    lineDiv.append(lineInnerDiv1).append(lineInnerDiv2);
     $("#line_" + lineId).replaceWith(lineDiv);
 }
 

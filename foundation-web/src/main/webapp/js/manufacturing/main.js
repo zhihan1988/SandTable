@@ -12,9 +12,13 @@ $(function () {
 
     $("#panel-1").show();
     $("a[id^='button-']").click(function(){
-        var id = $(this).attr("id");
+        var $button = $(this);
+        var id = $button.attr("id");
         $("div[id^='panel']").hide();
         $("#panel-"+id.split("-")[1]).show();
+
+        $("a[id^='button-']").removeClass("navbar-button-selected");
+        $button.addClass("navbar-button-selected");
     })
 
 
@@ -28,7 +32,7 @@ $(function () {
         $("#button-2").trigger("click");
     }
 
-    //setInterval(isNext, 1000);
+    setInterval(isNext, 1000);
     function isNext() {
         $.getJSON(base + "/flow/isCampaignNext",
             {
