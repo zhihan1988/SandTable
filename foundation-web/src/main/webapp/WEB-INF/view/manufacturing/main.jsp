@@ -88,7 +88,7 @@
     <div class="am-header-right am-header-nav">
         <%--<i class="am-icon-stop"></i>--%>
         <a href="#left-link" id="endCampaignDate" class="">
-            结束回合
+            结束操作
         </a>
     </div>
 </header>
@@ -165,6 +165,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="am-panel am-panel-default" id="companyOrderPanel" style="display: none">
+                <div class="am-panel-hd">公司排名</div>
+                <div class="am-panel-bd">
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>公司(投入)</th>
+                        </tr>
+                        </thead>
+                        <tbody id="companyOrderTbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="am-panel am-panel-default" id="marketOrderChoicePanel" style="display: none">
                 <div class="am-panel-hd">选单</div>
                 <div class="am-panel-bd">
@@ -185,21 +202,7 @@
                 <button id="confirmOrder" type="button" class="am-btn am-btn-secondary am-disabled" disabled="disabled">等待选单</button>
                 </div>
             </div>
-            <div class="am-panel am-panel-default" id="companyOrderPanel" style="display: none">
-                <div class="am-panel-hd">公司排名</div>
-                <div class="am-panel-bd">
-                    <table class="am-table">
-                        <thead>
-                        <tr>
-                            <th>排名</th>
-                            <th>公司(投入)</th>
-                        </tr>
-                        </thead>
-                        <tbody id="companyOrderTbody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
             </c:if>
             <div class="am-panel am-panel-default">
                 <div class="am-panel-hd">未交付订单</div>
@@ -391,6 +394,28 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">待贷款记录</div>
+                <div class="am-panel-bd">
+                    <table class="am-table">
+                        <thead>
+                        <tr>
+                            <th>金额</th>
+                            <th>剩余还款周期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${loanList}" var="loan">
+                            <tr>
+                                <td>${loan.money}</td>
+                                <td>${loan.needRepayCycle}</td>
                             </tr>
                         </c:forEach>
                         </tbody>

@@ -40,10 +40,7 @@ import java.util.*;
 @RequestMapping("/manufacturing")
 public class ManufacturingController extends BaseIndustryController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
-    @Autowired
-    private MaterialManager materialManager;
-    @Autowired
-    private MarketManager marketManager;
+
     @Autowired
     private ProductManager productManager;
     @Autowired
@@ -61,7 +58,6 @@ public class ManufacturingController extends BaseIndustryController {
         CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         Company company = companyTerm.getCompany();
-        CompanyTerm preCompanyTerm = companyTermContext.getPreCompanyTermContext().getCompanyTerm();
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
 
@@ -77,6 +73,12 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("productList", productList);
         List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
         model.addAttribute("marketList", marketList);
+        XQuery loanQuery = new XQuery();
+        loanQuery.setHql("from Loan where company.id = :companyId and status = :status");
+        loanQuery.put("companyId", companyId);
+        loanQuery.put("status", Loan.Status.NORMAL.name());
+        List<Loan> loanList = baseManager.listObject(loanQuery);
+        model.addAttribute("loanList", loanList);
 
         XQuery marketOrderQuery = new XQuery();
         marketOrderQuery.setHql("from MarketOrder where status =:status and company.id = :companyId");
