@@ -22,9 +22,9 @@ $(function () {
     })
 
 
-    $("div[id^='enter-']").click(function () {
+    $("a[id^='enter-']").click(function () {
         var id = $(this).attr("id");
-        $("#panel-"+id.split("-")[1]).trigger("click");
+        $("#button-"+id.split("-")[1]).trigger("click");
     });
 
     //竞单环节

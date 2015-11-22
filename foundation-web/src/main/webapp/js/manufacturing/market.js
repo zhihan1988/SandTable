@@ -123,7 +123,7 @@ $(function () {
                     } else if(data.cycleStatus==3) {
                         //结束
                         clearInterval(intervalFlag);
-                        alert("选单环节结束");
+                        //alert("选单环节结束");
 
                         $("#marketOrderChoicePanel").hide();
                         $("#companyOrderPanel").hide();

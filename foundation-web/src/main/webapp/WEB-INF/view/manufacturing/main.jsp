@@ -90,9 +90,20 @@
     </div>
 
     <div class="am-header-title" style="margin: 0 20%;font-size: 1.5rem;">
-       <%-- <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>
-        <span>进行中：</span><span id="unFinishedNum">${companyNum}</span>/${companyNum}--%>
+       <%-- <i class="am-icon-circle-o-notch am-icon-spin" style="font-size: 20px;"></i>--%>
            ${campaign.formattedCampaignDate}(${campaign.name})
+
+           <%--<div style="height: 50px;line-height: 30px;position: relative;">
+            <span style="position: absolute;top: 0; left: 0;">
+                ${campaign.formattedCampaignDate}(${campaign.name})
+            </span>
+            <span style="position: absolute;bottom: 0;left: 0">
+                操作进度：<span id="unFinishedNum">${companyNum}</span>/${companyNum}
+            </span>
+            <span style="position: absolute;top: 10px; right: 0;">
+                $:<span id="companyCash">${companyCash}</span>
+            </span>
+           </div>--%>
     </div>
 
     <div class="am-header-right am-header-nav">
@@ -107,28 +118,42 @@
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
-                    <ul>
-                        <li>公司现金：<span id="companyCash">${companyCash}</span></li>
-                        <li>长期贷款：<span id="longTermLoan">${longTermLoan}</span></li>
-                        <li>短期贷款：<span id="shortTermLoan">${shortTermLoan}</span></li>
-                        <%--<li>应收账款：<span id="companyCash">${companyCash}</span></li>--%>
-                        <li>高利贷款：<span id="usuriousLoan">${usuriousLoan}</span></li>
-                    </ul>
-
-                    <div style="display: none;">
-                        <ming800:radioSet valueSet="key1:value1,key2:value2,key3:value3,key4:value4,key5:value5" name="test" onclick="testButton" checkedValue="value3"/>
-                        <button id="button_test_change1">changeTextToSelect</button>
-                        <button id="button_test_change2">changeSelectToText</button>
-                        <div id="div_show">
-                            <span id="test_change">P1</span>
-                        </div>
+                    公司现金:<span id="companyCash">${companyCash}</span>M
+                </div>
+                <div class="am-panel-bd">
+                    <div>
+                        竞标
+                        订单交付
+                        <a id="enter-2" href="#">进入市场</a>
+                    </div>
+                   <div>
+                       采购
+                       生成
+                       <a id="enter-3" href="#">进入厂房</a>
+                   </div>
+                    <div>
+                        贷款
+                        <a id="enter-4" href="#">进入财务</a>
                     </div>
 
+                   <%-- <c:choose>
+                        <c:when test="${currentSeason == 1}">
+                            竞标 生产
+                            订单交付
+                        </c:when>
+                        <c:when test="${currentSeason == 4}">
+                            投资市场
+                            <a id="enter-2" href="#">进入市场</a>
+                        </c:when>
+                        <c:otherwise>
+                            贷款
+                        </c:otherwise>
+                    </c:choose>--%>
                 </div>
             </div>
         </div>
         <div id="panel-2" class="panel">
-            <c:if test="${campaign.currentCampaignDate%4==1}">
+            <c:if test="${currentSeason == 1}">
             <div class="am-panel am-panel-default" id="devotePanel">
                 <div class="am-panel-hd">广告投放</div>
                 <div class="am-panel-bd">
@@ -241,7 +266,7 @@
                     </table>
                 </div>
             </div>
-            <c:if test="${campaign.currentCampaignDate%4==0}">
+            <c:if test="${currentSeason == 4}">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-hd">市场开拓</div>
                 <div class="am-panel-bd">
@@ -354,14 +379,16 @@
                     <table class="am-table">
                         <thead>
                         <tr>
-                            <th>贷款</th>
-                            <th>金额</th>
+                            <th>贷款类型</th>
+                            <th>已贷总额</th>
+                            <th>本期贷款</th>
                         </tr>
                         </thead>
                         <tbody>
                         <c:forEach items="${usuriousLoanResource.currentIndustryResourceChoiceSet}" var="choice">
                             <tr>
                                 <td>高利贷</td>
+                                <td><span id="usuriousLoan">${usuriousLoan}</span></td>
                                 <td>
                                     <select id="usuriousLoan_${choice.id}" name="usuriousLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                         <option value="${choice.id}#-1">不需要</option>
@@ -376,6 +403,7 @@
                         <c:forEach items="${shortTermLoanResource.currentIndustryResourceChoiceSet}" var="choice">
                             <tr>
                                 <td>短期贷款</td>
+                                <td><span id="shortTermLoan">${shortTermLoan}</span></td>
                                 <td>
                                     <select id="shortTermLoan_${choice.id}" name="shortTermLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                         <option value="${choice.id}#-1">不需要</option>
@@ -389,9 +417,10 @@
                         <c:forEach items="${longTermLoanResource.currentIndustryResourceChoiceSet}" var="choice">
                             <tr>
                                 <td>长期贷款</td>
+                                <td><span id="longTermLoan">${longTermLoan}</span></td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${campaign.currentCampaignDate%4==0}">
+                                        <c:when test="${currentSeason == 4}">
                                             <select id="longTermLoan_${choice.id}" name="longTermLoanFee" data-am-selected="{btnWidth: '100px', btnSize: 'sm', btnStyle: 'secondary'}">
                                                 <option value="${choice.id}#-1">不需要</option>
                                                 <c:forEach items="${fn:split(longTermLoanResource.valueSet, ',')}" var="fee">
@@ -453,7 +482,7 @@
         <li>
             <a id="button-3" href="###" class="">
                 <span class="am-icon-sign-in"></span>
-                <span class="am-navbar-label">制造</span>
+                <span class="am-navbar-label">厂房</span>
             </a>
         </li>
         <li >
@@ -469,45 +498,6 @@
 <input type="hidden" id="companyId" name="companyId" value="${company.id}"/>
 <input type="hidden" id="companyTermId" name="companyTermId" value="${companyTerm.id}"/>
 <input type="hidden" id="roundType" name="roundType" value="${roundType}"/>
-<script>
 
-    function testButton(element) {
-        console.log($(element).val());
-    }
-
-    function changeProductTypeTextToSelect(id, value){
-        var $select = $("<select></select>").attr("id", id);
-        for(var i=1;i<=4;i++) {
-            var v = "P"+i;
-            var op = $("<option></option>").text(v).val(v);
-            if(v==value){
-                op.attr("selected", "selected");
-            }
-            op.appendTo($select);
-        }
-        return $select;
-    }
-
-    function changeProductTypeSelectToText(id, value){
-        var $text = $("<span></span>").attr("id", id).text(value);
-        return $text;
-    }
-
-    $(function(){
-        $("#button_test_change1").click(function(){
-            var $testChange = $("#test_change");
-            var id = $testChange.attr("id");
-            var value = $testChange.text();
-            $testChange.replaceWith(changeProductTypeTextToSelect(id, value));
-        });
-
-        $("#button_test_change2").click(function(){
-            var $testChange = $("#test_change");
-            var id = $testChange.attr("id");
-            var value = $testChange.val();
-            $testChange.replaceWith(changeProductTypeSelectToText(id, value));
-        });
-    })
-</script>
 </body>
 </html>

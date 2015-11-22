@@ -19,8 +19,6 @@ import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.*;
 import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.ManufacturingImmediatelyManager;
-import com.rathink.ie.manufacturing.service.MarketManager;
-import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +59,9 @@ public class ManufacturingController extends BaseIndustryController {
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
 
+        Integer currentCampaignDateRemainder = currentCampaignDate % 4;
+        Integer currentSeason = currentCampaignDateRemainder == 0 ? 4 : currentCampaignDateRemainder;//当前季度
+        model.addAttribute("currentSeason", currentSeason);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
         model.addAttribute("companyTerm", companyTerm);
@@ -90,7 +91,7 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name()));
         model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.USURIOUS_LOAN.name()));
 
-        if (currentCampaignDate % 4 == 1) {
+        if (currentSeason == 1) {
             IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
             Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
             for (IndustryResourceChoice marketChoice : marketFeeResource.getCurrentIndustryResourceChoiceSet()) {
