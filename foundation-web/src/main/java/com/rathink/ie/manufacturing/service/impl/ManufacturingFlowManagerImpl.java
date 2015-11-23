@@ -387,9 +387,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         Integer campaignDate = companyTerm.getCampaignDate();
 
         XQuery xQuery = new XQuery();
-        String hql = "from Loan where status=:status";
+        String hql = "from Loan where status=:status and company.id = :companyId";
         xQuery.setHql(hql);
         xQuery.put("status", Loan.Status.NORMAL.name());
+        xQuery.put("companyId", companyTerm.getCompany().getId());
         List<Loan> loanList = baseManager.listObject(xQuery);
         if (loanList != null) {
             for (Loan loan : loanList) {
@@ -399,8 +400,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
                 Loan.Type loanType = Loan.Type.valueOf(loan.getType());
                 Integer fee = 0;
+                Integer rateFee = 0;
                 if (campaignDate % 4 == 0) {//年底付息
-                    fee += loan.getMoney() * loanType.getYearRate() / 100;
+                    rateFee += loan.getMoney() * loanType.getYearRate() / 100;
                 }
                 if (needRepayCycle == 0) {//到期还款
                     loan.setStatus(Loan.Status.FINISH.name());
@@ -409,6 +411,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 if (fee != 0) {
                     //需要保证Loan.Type.name跟EManufacturingAccountEntityType中的贷款的名字一直
                     Account account = accountManager.packageAccount(String.valueOf(fee), loanType.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                    baseManager.saveOrUpdate(Account.class.getName(), account);
+                }
+                if (rateFee != 0) {
+                    Account account = accountManager.packageAccount(String.valueOf(rateFee), EManufacturingAccountEntityType.LOAN_INTEREST.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
                     baseManager.saveOrUpdate(Account.class.getName(), account);
                 }
                 baseManager.saveOrUpdate(Loan.class.getName(), loan);
