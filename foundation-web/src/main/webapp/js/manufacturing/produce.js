@@ -240,7 +240,7 @@ function refreshProduceLine(line) {
 
     var lineDiv = $("<div></div>").attr("id","line_"+lineId);
 
-    var lineStatusSpan = $("<span class='line-important'></span>");
+    var lineStatusSpan = $("<span></span>");
     if (lineStatus == 'UN_BUILD') {
         lineStatusSpan.text("未建造");
     } else if (lineStatus == 'BUILDING') {
@@ -263,7 +263,7 @@ function refreshProduceLine(line) {
     }
 
 
-    var lineInnerDiv1 = $("<div class='line-innerDiv1'></div>")
+    var lineInnerDiv1 = $("<div class='line-innerDiv1 line-important'></div>")
         .append(line.name).append("：").append(lineStatusSpan);
 
     var lineInnerDiv2 = $("<div class='line-innerDiv2'></div>");
@@ -336,14 +336,14 @@ function initProduceLineButton(line) {
     //button
     var lineButtonDiv = $("<div></div>").attr("id","lineButtonDiv_"+lineId);
     if(lineStatus=='UN_BUILD'){
-        $("<button class='am-btn am-btn-secondary'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary am-btn-once'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
-        $("<button class='am-btn am-btn-secondary'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary am-btn-once'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'FREE'){
-        $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary am-btn-once'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
         if(lineType=='HALF_AUTOMATIC' || lineType=='AUTOMATIC'){
             $("<span class='button-padding'></span>").appendTo(lineButtonDiv);
-            $("<button class='am-btn am-btn-secondary'>转产</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
+            $("<button class='am-btn am-btn-secondary am-btn-once'>转产</button>").attr("id","rebuild_"+line.id).appendTo(lineButtonDiv);
         }
     } else if (lineStatus == 'PRODUCING'){
 
@@ -360,10 +360,10 @@ function updateProduceLineButton(line) {
     //button
     var lineButtonDiv = $("<div></div>").attr("id","lineButtonDiv_"+lineId);
     if(lineStatus=='UN_BUILD'){
-        $("<button class='am-btn am-btn-secondary'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary am-btn-once'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
     } else if (lineStatus == 'FREE'){
-        $("<button class='am-btn am-btn-secondary'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
+        $("<button class='am-btn am-btn-secondary am-btn-once'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'PRODUCING'){
 
     } else if(lineStatus == 'REBUILDING'){

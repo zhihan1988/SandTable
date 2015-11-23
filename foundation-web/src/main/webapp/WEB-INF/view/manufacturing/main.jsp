@@ -121,20 +121,20 @@
                     公司现金:<span id="companyCash">${companyCash}</span>M
                 </div>
                 <div class="am-panel-bd">
-                    <div>
+                    <%--<div>
                         竞标
                         订单交付
                         <a id="enter-2" href="#">进入市场</a>
                     </div>
                    <div>
                        采购
-                       生成
-                       <a id="enter-3" href="#">进入厂房</a>
+                       生产
+                       <a id="enter-3" href="#">进入生产</a>
                    </div>
                     <div>
                         贷款
                         <a id="enter-4" href="#">进入财务</a>
-                    </div>
+                    </div>--%>
 
                    <%-- <c:choose>
                         <c:when test="${currentSeason == 1}">
@@ -196,7 +196,7 @@
                                 </div>
                             </c:forEach>
                         </div>
-                        <button id="finishDevotion" type="button" class="am-btn am-btn-secondary">完成投放</button>
+                        <button id="finishDevotion" type="button" class="am-btn am-btn-secondary am-btn-once">完成投放</button>
                     </div>
                 </div>
             </div>
@@ -234,7 +234,7 @@
                     <tbody id="marketOrderTbody">
                     </tbody>
                 </table>
-                <button id="confirmOrder" type="button" class="am-btn am-btn-secondary am-disabled" disabled="disabled">等待选单</button>
+                <button id="confirmOrder" type="button" class="am-btn am-btn-secondary am-disabled am-btn-once" disabled="disabled">等待选单</button>
                 </div>
             </div>
 
@@ -258,7 +258,7 @@
                                 <td>${marketOrder.productType}</td>
                                 <td>${marketOrder.amount}/${marketOrder.totalPrice}/${marketOrder.needAccountCycle}</td>
                                 <td>
-                                    <button id="deliver_${marketOrder.id}" type="button" class="am-btn am-btn-secondary">交付</button>
+                                    <button id="deliver_${marketOrder.id}" type="button" class="am-btn am-btn-secondary am-btn-once">交付</button>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -285,7 +285,7 @@
                                 <td>
                                     ${market.devotionNeedCycle}
                                     <c:if test="${market.devotionNeedCycle > 0}">
-                                        <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary">开发</button>
+                                        <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary am-btn-once">开发</button>
                                     </c:if>
                                 </td>
                             </tr>
@@ -351,7 +351,7 @@
                               <td>
                                   ${product.developNeedCycle}
                                   <c:if test="${product.developNeedCycle > 0}">
-                                      <button id="devoteProduct_${product.id}" type="button" class="am-btn am-btn-secondary">研发</button>
+                                      <button id="devoteProduct_${product.id}" type="button" class="am-btn am-btn-secondary am-btn-once">研发</button>
                                   </c:if>
                               </td>
                           </tr>
@@ -446,6 +446,7 @@
                     <table class="am-table">
                         <thead>
                         <tr>
+                            <th>贷款类型</th>
                             <th>金额</th>
                             <th>剩余还款周期</th>
                         </tr>
@@ -453,6 +454,13 @@
                         <tbody>
                         <c:forEach items="${loanList}" var="loan">
                             <tr>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
+                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
+                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
+                                    </c:choose>
+                                </td>
                                 <td>${loan.money}</td>
                                 <td>${loan.needRepayCycle}</td>
                             </tr>
@@ -482,7 +490,7 @@
         <li>
             <a id="button-3" href="###" class="">
                 <span class="am-icon-sign-in"></span>
-                <span class="am-navbar-label">厂房</span>
+                <span class="am-navbar-label">生产</span>
             </a>
         </li>
         <li >

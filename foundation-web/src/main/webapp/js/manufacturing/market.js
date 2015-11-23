@@ -34,6 +34,7 @@ $(function () {
     //完成市场投放
     $("#finishDevotion").click(function(){
         var $finishDevotionButton = $(this);
+        $finishDevotionButton.attr("disabled",true).addClass("am-disabled");
         $.getJSON(base + "/manufacturing/finishDevotion.do",
             {
                 campaignId: campaignId,
@@ -143,7 +144,7 @@ $(function () {
                                         tr.append($("<td>" + marketOrder.name + "</td>"));
                                         tr.append($("<td>" + marketOrder.productType + "</td>"));
                                         tr.append($("<td>" + marketOrder.amount+"/" + marketOrder.totalPrice+"/" + marketOrder.needAccountCycle + "</td>"));
-                                        var $button = $('<button type="button" class="am-btn am-btn-secondary">交付</button>')
+                                        var $button = $('<button type="button" class="am-btn am-btn-secondary am-btn-once">交付</button>')
                                             .attr("id","deliver_" + marketOrder.id);
                                         $("<td></td>").append($button).appendTo(tr);
                                         tbody.append(tr);
@@ -175,7 +176,7 @@ $(function () {
                 }, function(data){
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
-                        $("#confirmOrder").text("选单完成").attr("disabled",true).addClass("am-disabled");
+                        $("#confirmOrder").text("选单完成");
                         //
                     } else {
                         alert(data.message);
