@@ -116,7 +116,7 @@
     <div class="am-header-right am-header-nav">
         <%--<i class="am-icon-stop"></i>--%>
         <a href="#left-link" id="endCampaignDate" class="">
-            结束操作
+            结束本期
         </a>
     </div>
 </header>
@@ -124,27 +124,36 @@
     <div>
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
+
                 <div class="am-panel-bd">
+                    <h3>财务</h3>
                     <ul class="homePage_ul">
-                        <li>公司现金：<span id="homePage_companyCash">${companyCash}</span></li>
-                        <li>高利贷：<span id="homePage_usuriousLoan">${usuriousLoan}</span></li>
-                        <li>短期贷款：<span id="homePage_shortTermLoan">${shortTermLoan}</span></li>
-                        <li>长期贷款：<span id="homePage_longTermLoan">${longTermLoan}</span></li>
+                        <li>公司现金：<span id="homePage_companyCash">${companyCash}</span>M</li>
+                        <li>高利贷：<span id="homePage_usuriousLoan">${usuriousLoan}</span>M</li>
+                        <li>短期贷款：<span id="homePage_shortTermLoan">${shortTermLoan}</span>M</li>
+                        <li>长期贷款：<span id="homePage_longTermLoan">${longTermLoan}</span>M</li>
                     </ul>
                 </div>
+
+              <%--  <div class="am-panel-bd">
+                    <h3>市场</h3>
+                    竞标环节  进入
+                    订单数量：0
+                </div>
+--%>
                 <div class="am-panel-bd">
+                    <h3>生产</h3>
                     R1:<span id="homePage_materialAmount_R1">${R1.amount}</span>
                     R2:<span id="homePage_materialAmount_R2">${R2.amount}</span>
                     R3:<span id="homePage_materialAmount_R3">${R3.amount}</span>
                     R4:<span id="homePage_materialAmount_R4">${R4.amount}</span>
-                </div>
-
-                <div class="am-panel-bd">
+                    <br/>
                     P1:<span id="homePage_materialAmount_P1">${P1.amount}</span>
                     P2:<span id="homePage_materialAmount_P2">${P2.amount}</span>
                     P3:<span id="homePage_materialAmount_P3">${P3.amount}</span>
                     P4:<span id="homePage_materialAmount_P4">${P4.amount}</span>
                 </div>
+
                     <%--<div>
                         竞标
                         订单交付
