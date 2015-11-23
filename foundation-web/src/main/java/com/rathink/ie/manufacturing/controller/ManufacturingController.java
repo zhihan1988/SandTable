@@ -70,7 +70,13 @@ public class ManufacturingController extends BaseIndustryController {
         model.addAttribute("produceLineList", produceLineList);
         List<Material> materialList = baseManager.listObject("from Material where company.id =" + companyId);
         model.addAttribute("materialList", materialList);
+        for (Material material : materialList) {
+            model.addAttribute(material.getType(), material);
+        }
         List<Product> productList = baseManager.listObject("from Product where company.id =" + companyId);
+        for (Product product : productList) {
+            model.addAttribute(product.getType(), product);
+        }
         model.addAttribute("productList", productList);
         List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
         model.addAttribute("marketList", marketList);

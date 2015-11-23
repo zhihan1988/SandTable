@@ -76,6 +76,13 @@
         .am-table th{
             font-weight: normal;
         }
+        .homePage_ul {
+            margin: 0;
+            padding: 0;
+        }
+        .homePage_ul li{
+            list-style-type:none;
+        }
     </style>
 </head>
 <body>
@@ -118,9 +125,26 @@
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
                 <div class="am-panel-bd">
-                    公司现金:<span id="companyCash">${companyCash}</span>M
+                    <ul class="homePage_ul">
+                        <li>公司现金：<span id="homePage_companyCash">${companyCash}</span></li>
+                        <li>高利贷：<span id="homePage_usuriousLoan">${usuriousLoan}</span></li>
+                        <li>短期贷款：<span id="homePage_shortTermLoan">${shortTermLoan}</span></li>
+                        <li>长期贷款：<span id="homePage_longTermLoan">${longTermLoan}</span></li>
+                    </ul>
                 </div>
                 <div class="am-panel-bd">
+                    R1:<span id="homePage_materialAmount_R1">${R1.amount}</span>
+                    R2:<span id="homePage_materialAmount_R2">${R2.amount}</span>
+                    R3:<span id="homePage_materialAmount_R3">${R3.amount}</span>
+                    R4:<span id="homePage_materialAmount_R4">${R4.amount}</span>
+                </div>
+
+                <div class="am-panel-bd">
+                    P1:<span id="homePage_materialAmount_P1">${P1.amount}</span>
+                    P2:<span id="homePage_materialAmount_P2">${P2.amount}</span>
+                    P3:<span id="homePage_materialAmount_P3">${P3.amount}</span>
+                    P4:<span id="homePage_materialAmount_P4">${P4.amount}</span>
+                </div>
                     <%--<div>
                         竞标
                         订单交付
@@ -149,7 +173,7 @@
                             贷款
                         </c:otherwise>
                     </c:choose>--%>
-                </div>
+
             </div>
         </div>
         <div id="panel-2" class="panel">
@@ -374,6 +398,12 @@
         </div>
         <div id="panel-4" class="panel">
             <div class="am-panel am-panel-default">
+                <div class="am-panel-hd">公司现金</div>
+                <div class="am-panel-bd">
+                    <span id="companyCash">${companyCash}</span>M
+                </div>
+            </div>
+            <div class="am-panel am-panel-default">
                 <div class="am-panel-hd">贷款</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
@@ -441,7 +471,7 @@
             </div>
 
             <div class="am-panel am-panel-default">
-                <div class="am-panel-hd">待贷款记录</div>
+                <div class="am-panel-hd">待还款记录</div>
                 <div class="am-panel-bd">
                     <table class="am-table">
                         <thead>

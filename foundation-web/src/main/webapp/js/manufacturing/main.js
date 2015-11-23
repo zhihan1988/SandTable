@@ -131,18 +131,54 @@ function update(newReport){
     var shortTermLoan = newReport.shortTermLoan;
     var usuriousLoan = newReport.usuriousLoan;
 
-    if(P1Amount != null){ $("#productAmount_P1").text(P1Amount);}
-    if(P2Amount != null){ $("#productAmount_P2").text(P2Amount); }
-    if(P3Amount != null){ $("#productAmount_P3").text(P3Amount); }
-    if(P4Amount != null){ $("#productAmount_P4").text(P4Amount); }
-    if(R1Amount != null){ $("#materialAmount_R1").text(R1Amount); }
-    if(R2Amount != null){ $("#materialAmount_R2").text(R2Amount); }
-    if(R3Amount != null){ $("#materialAmount_R3").text(R3Amount); }
-    if(R4Amount != null){ $("#materialAmount_R4").text(R4Amount); }
-    if(companyCash != null){ $("#companyCash").text(companyCash); }
-    if(longTermLoan !=null){ $("#longTermLoan").text(longTermLoan)}
-    if(shortTermLoan !=null){ $("#shortTermLoan").text(shortTermLoan)}
-    if(usuriousLoan !=null){ $("#usuriousLoan").text(usuriousLoan)}
+    if(P1Amount != null){
+        $("#productAmount_P1").text(P1Amount);
+        $("#homePage_productAmount_P1").text(P1Amount);
+    }
+    if(P2Amount != null){
+        $("#productAmount_P2").text(P2Amount);
+        $("#homePage_productAmount_P2").text(P1Amount);
+    }
+    if(P3Amount != null){
+        $("#productAmount_P3").text(P3Amount);
+        $("#homePage_productAmount_P3").text(P3Amount);
+    }
+    if(P4Amount != null){
+        $("#productAmount_P4").text(P4Amount);
+        $("#homePage_productAmount_P4").text(P4Amount);
+    }
+    if(R1Amount != null){
+        $("#materialAmount_R1").text(R1Amount);
+        $("#homePage_materialAmount_R1").text(R1Amount);
+    }
+    if(R2Amount != null){
+        $("#materialAmount_R2").text(R2Amount);
+        $("#homePage_materialAmount_R2").text(R2Amount);
+    }
+    if(R3Amount != null){
+        $("#materialAmount_R3").text(R3Amount);
+        $("#homePage_materialAmount_R3").text(R3Amount);
+    }
+    if(R4Amount != null){
+        $("#materialAmount_R4").text(R4Amount);
+        $("#homePage_materialAmount_R4").text(R4Amount);
+    }
+    if(companyCash != null){
+        $("#companyCash").text(companyCash);
+        $("#homePage_companyCash").text(companyCash);
+    }
+    if(longTermLoan !=null){
+        $("#longTermLoan").text(longTermLoan);
+        $("#homePage_longTermLoan").text(longTermLoan);
+    }
+    if(shortTermLoan !=null){
+        $("#shortTermLoan").text(shortTermLoan);
+        $("#homePage_shortTermLoan").text(shortTermLoan);
+    }
+    if(usuriousLoan !=null){
+        $("#usuriousLoan").text(usuriousLoan);
+        $("#homePage_usuriousLoan").text(usuriousLoan);
+    }
 }
 
 function getBaseUrl() {
