@@ -7,9 +7,9 @@
 <!doctype html>
 <html class="no-js">
 <head></head>
-<div><a href="<c:url value="/campaign/listCampaign"/>">返回竞赛列表</a></div>
+<body>
 
-<h1>${campaign.name}</h1> <a href="<c:url value="/internet/main?campaignId=${campaign.id}&companyId=${myCompany.id}"/>">进入</a>
+<h1>${campaign.name}</h1>
 
 <hr/>
 

@@ -41,7 +41,7 @@
 <div class="am-cf admin-main">
     <div class="admin-content" style="height: auto;padding:10px">
         <ul class="am-nav am-nav-pills am-nav-justify">
-            <li><a style="float: left;" onclick="history.go(-1)"><i class="am-icon-angle-left am-icon-sm"></i></a></li>
+            <li><a style="float: left;" href="<c:url value="/campaign/listCampaign"/>"><i class="am-icon-angle-left am-icon-sm"></i></a></li>
             <li><a>竞赛</a></li>
             <li><a style="float: right  ;  padding-left: 4px;
     padding-right: 4px;;" href="<c:url value="/personal/company/list"/>">我的</a><a style="float: right;    padding-left: 4px;
