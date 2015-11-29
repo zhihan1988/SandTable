@@ -471,16 +471,10 @@
                             <th>剩余还款周期</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="loanListTbody">
                         <c:forEach items="${loanList}" var="loan">
                             <tr>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
-                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
-                                        <c:when test="${loan.type=='USURIOUS_LOAN'}"></c:when>
-                                    </c:choose>
-                                </td>
+                                <td>${loan.loanTypeLable}</td>
                                 <td>${loan.money}</td>
                                 <td>${loan.needRepayCycle}</td>
                             </tr>

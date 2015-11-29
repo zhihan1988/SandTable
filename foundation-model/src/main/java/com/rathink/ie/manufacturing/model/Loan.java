@@ -2,10 +2,7 @@ package com.rathink.ie.manufacturing.model;
 
 import com.rathink.ie.ibase.work.model.CompanyPart;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by Hean on 2015/10/10.
@@ -53,15 +50,22 @@ public class Loan extends CompanyPart {
     }
 
     public enum Type{
-        USURIOUS_LOAN(20, 4),
-        SHORT_TERM_LOAN(5, 4),
-        LONG_TERM_LOAN(10,20);
-        Type(Integer yearRate, Integer cycle) {
+        USURIOUS_LOAN("高利贷", 20, 4),
+        SHORT_TERM_LOAN("短期贷款", 5, 4),
+        LONG_TERM_LOAN("长期贷款", 10,20);
+
+        Type(String label, Integer yearRate, Integer cycle) {
+            this.label = label;
             this.yearRate = yearRate;
             this.cycle = cycle;
         }
+        private String label;
         private Integer yearRate;//年利率
         private Integer cycle;//还款所需周期
+
+        public String getLabel() {
+            return label;
+        }
 
         public Integer getYearRate() {
             return yearRate;
@@ -70,5 +74,10 @@ public class Loan extends CompanyPart {
         public Integer getCycle() {
             return cycle;
         }
+    }
+
+    @Transient
+    public String getLoanTypeLable() {
+        return Type.valueOf(type).getLabel();
     }
 }

@@ -502,4 +502,22 @@ public class ManufacturingController extends BaseIndustryController {
         return result;
     }
 
+    @RequestMapping("/loanList")
+    @ResponseBody
+    public Map loanList(HttpServletRequest request, Model model) throws Exception {
+
+        String companyId = request.getParameter("companyId");
+
+        XQuery loanQuery = new XQuery();
+        loanQuery.setHql("from Loan where company.id = :companyId and status = :status");
+        loanQuery.put("companyId", companyId);
+        loanQuery.put("status", Loan.Status.NORMAL.name());
+        List<Loan> loanList = baseManager.listObject(loanQuery);
+
+        Map result = new HashMap<>();
+        result.put("status", 1);
+        result.put("loanList", loanList);
+        return result;
+    }
+
 }

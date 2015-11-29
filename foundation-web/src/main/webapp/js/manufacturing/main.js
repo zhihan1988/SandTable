@@ -109,12 +109,37 @@ $(function () {
                 if(data.status == 1) {
                     $choice.parent().text("已贷款");
                     update(data.newReport);
+                    refreshLoan();
                 }
             }
         );
     }
 
+    function refreshLoan(){
+        $.getJSON(base + "/manufacturing/loanList.do",
+            {
+                companyId: companyId
+            },
+            function(data){
+                if(data.status == 1) {
+                    var tbody = $("#loanListTbody");
+                    tbody.html("");
+                    for(var i in data.loanList) {
+                        var loan = data.loanList[i];
+                        var tr = $("<tr></tr>");
+                        tr.appendTo(tbody);
+                        tr.append($("<td>" + loan.loanTypeLable + "</td>"));
+                        tr.append($("<td>" + loan.money + "</td>"));
+                        tr.append($("<td>" + loan.needRepayCycle + "</td>"));
+                        tbody.append(tr);
+                    }
+                }
+            }
+        );
+    }
 })
+
+
 
 function update(newReport){
     var P1Amount = newReport.p1Amount;
