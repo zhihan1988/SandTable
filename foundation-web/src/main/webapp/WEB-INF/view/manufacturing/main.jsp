@@ -212,6 +212,10 @@
                             <c:forEach items="${marketMap}" var="market" varStatus="status">
                                 <div class="am-tab-panel am-fade am-in am-active" id="tab${status.index+1}">
                                     <table class="am-table">
+                                        <tr>
+                                            <th>产品类型</th>
+                                            <th>投放金额(M)</th>
+                                        </tr>
                                         <c:forEach items="${market.value}" var="productChoiceMap">
                                             <tr>
                                                 <td>${productChoiceMap.key}</td>
@@ -260,7 +264,7 @@
                         <th>订单</th>
                         <%--<th>订单编号</th>--%>
                         <th>产品</th>
-                        <th>数量/单价/金额/账期/ISO/成本/利润</th>
+                        <th>数量/单价(M)/金额(M)/利润(M)/账期</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -280,7 +284,7 @@
                         <tr>
                             <th>订单</th>
                             <th>产品</th>
-                            <th>数量/金额/账期</th>
+                            <th>数量/金额(M)/账期</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -419,8 +423,8 @@
                         <thead>
                         <tr>
                             <th>贷款类型</th>
-                            <th>已贷总额</th>
-                            <th>本期贷款</th>
+                            <th>已贷总额(M)</th>
+                            <th>本期贷款(M)</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -486,7 +490,7 @@
                         <thead>
                         <tr>
                             <th>贷款类型</th>
-                            <th>金额</th>
+                            <th>金额(M)</th>
                             <th>剩余还款周期</th>
                         </tr>
                         </thead>
