@@ -17,6 +17,11 @@
                         <condition name="director.id" defaultValue="1" operation="eq" />
                         <condition name="campaign.id" defaultValue="1" operation="eq" />
                     </query>
+
+                    <query name="myCompany" label="默认" type="auto" orderBy="id:desc">
+                        <condition name="director.id" defaultValue="1" operation="eq" />
+                        <!--<condition name="campaign.id" defaultValue="1" operation="eq" />-->
+                    </query>
                 </do>
             </does>
         </entity>

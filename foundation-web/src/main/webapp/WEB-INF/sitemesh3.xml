@@ -1,4 +1,6 @@
 <sitemesh>
+    <mapping path="/personal/*" decorator="/layouts/personal.jsp"/>
+    <mapping path="/campaign/*" decorator="/layouts/campaign.jsp"/>
     <mapping path="/*" decorator="/layouts/platform.jsp"/>
     <mapping path="/*/main.do" exclue="true" decorator="/layouts/main.jsp"/>
     <mapping path="/imgView.jsp*" exclue="true" />

@@ -7,6 +7,7 @@ import com.ming800.core.util.DateUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.campaign.model.Industry;
 import com.rathink.ie.foundation.service.CampaignManager;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.user.util.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,6 +41,18 @@ public class CampaignController {
         return "/foundation/campaign/campaignList";
     }
 
+
+    //制造业
+//    @RequestMapping("/listCampaign")
+//    public String listMnueCampaign(HttpServletRequest request, Model model) throws Exception {
+//        XQuery xQuery = new XQuery("plistCampaign_default", request);
+//        xQuery.addRequestParamToModel(model, request);
+//        List campaignList = baseManager.listPageInfo(xQuery).getList();
+//        model.addAttribute("campaignList", campaignList);
+////        model.addAttribute("pageMsg", "3");
+//        return "/foundation/campaign/campaignList";
+//    }
+
     @RequestMapping("/{campaignId}")
     public String getCampaign(HttpServletRequest request, @PathVariable String campaignId, Model model) throws Exception {
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
@@ -55,7 +68,7 @@ public class CampaignController {
         } else {
             model.addAttribute("companyStatus", true);
         }
-        model.addAttribute("myCompany", cList != null && cList.size() > 0 ? cList.get(0) : "");
+        model.addAttribute("myCompany", cList != null && cList.size() > 0 ? cList.get(0) : new Company());
         model.addAttribute("companyList", companyList);
         model.addAttribute("myUser", AuthorizationUtil.getMyUser());
         return "/foundation/campaign/campaignView";

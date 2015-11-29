@@ -33,6 +33,9 @@ public class JmenuController extends BaseController {
     public String getManageJmenuHeader(HttpServletRequest request, Model model) {
 
         String match = request.getParameter("match"); //用来得到menuId，筛选jmenu
+        if (match.lastIndexOf("?") == match.length() - 1) {
+            match = match.substring(0, match.length() - 1);
+        }
 //        System.out.println("======================================");
 //        System.out.println(match);
 //        System.out.println("======================================");
@@ -54,7 +57,9 @@ public class JmenuController extends BaseController {
                     break;
                 }
             }
+            model.addAttribute("currentJnode", new Jnode());
         } else {
+            model.addAttribute("currentJnode", new Jnode());
             model.addAttribute("jnode", jmenu.getChildren().get(0));
         }
         return resultPage;

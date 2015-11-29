@@ -23,6 +23,7 @@ public class User implements Serializable,UserDetails {
     private User sourceUser;
     private Integer sourceLevel;
     private String sourceCode;
+    private String myCode;
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")
@@ -165,5 +166,14 @@ public class User implements Serializable,UserDetails {
         // 所有的用户默认拥有ROLE_USER权限
         authList.add(grantedAuthority);
         return authList;
+    }
+
+    @Column(name = "my_code")
+    public String getMyCode() {
+        return myCode;
+    }
+
+    public void setMyCode(String myCode) {
+        this.myCode = myCode;
     }
 }

@@ -15,16 +15,19 @@ import com.ming800.core.util.VerificationCodeGenerator;
 import com.rathink.ie.user.model.User;
 import com.rathink.ie.user.service.SmsCheckManager;
 import com.rathink.ie.user.service.UserManager;
+import com.sun.javafx.sg.prism.NGShape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Source;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -82,33 +85,41 @@ public class SigninController extends BaseController {
      */
     @RequestMapping(value = "/pc/saveEnrollUser.do")
     public ModelAndView saveEnrollUser(HttpServletRequest request, User bigUser, ModelMap modelMap) throws Exception {
-//        bigUser.setRole(roleManager.getRole("consumer"));
         bigUser.setPassword(StringUtil.encodePassword(bigUser.getPassword(), "SHA"));
-        /*bigUser.setRoleType(OrganizationConst.ROLE_THE_TYPE_AGENT);*/
-//        if (bigUser.getStatus() == null) {
-//            bigUser.setStatus("1");
-//        }
-//        bigUser.setEnabled(true);           //注册的时候 默认false  激活后才可以登录
-//        bigUser.setAccountExpired(false);
-//        bigUser.setAccountLocked(false);
-//        bigUser.setCredentialsExpired(false);
-
-        /*bigUser.setRoleType("user");             //system,    admin,    user*/
-//        bigUser.setCreateDatetime(new Date());
-
+        String invitatoryCode = request.getParameter("invitatoryCode");
+        String sourceUserHQL = "select obj from User obj where obj.myCode=:sourceCode";
+        LinkedHashMap<String, Object> param = new LinkedHashMap<>();
+        param.put("sourceCode", invitatoryCode);
+        User sourceUser = (User) baseManager.getUniqueObjectByConditions(sourceUserHQL, param);
+        bigUser.setSourceUser(sourceUser);
+        bigUser.setMyCode(generateMyCode());
         baseManager.saveOrUpdate(User.class.getName(), bigUser);
         modelMap.put("user", bigUser);
         modelMap.put("message", "注册成功");
         request.getSession().setAttribute("username", bigUser.getUsername());
-        //注册时给新用户初始化一个购物车
-//        User user = new User();
-//        user.setId(bigUser.getId());
-//        Cart cart = new Cart();
-//        cart.setUser(user);
-//        cart.setCreateDatetime(new Date());
-//        baseManager.saveOrUpdate(Cart.class.getName(), cart);
-        return new ModelAndView("redirect:/");
+        //注册成功页面
+//        modelMap.put("sourceCode",bigUser.getMyCode());
+        return new ModelAndView("redirect:/registeSuccess/"+bigUser.getMyCode());
+//        return new ModelAndView("redirect:/");
     }
+
+    @RequestMapping({"/registeSuccess/{myCode}"})
+    public String registeSuccess(HttpServletRequest request,@PathVariable String myCode,Model model){
+        model.addAttribute("myCode",myCode);
+        return "/registeSuccess";
+    }
+
+    private static String generateMyCode() {
+        String currentTime = Long.toHexString(System.currentTimeMillis()); //当前时间戳转换成16进制
+        //后三位
+        currentTime = currentTime.substring(currentTime.length() - 3, currentTime.length());
+        Double num = Math.random() * 100000000;
+        String numStr = Integer.toHexString(num.intValue());
+        //前三位
+        numStr = numStr.substring(0, 3);
+        return currentTime + numStr;
+    }
+
 
     /*
     认证手机验证码
@@ -141,11 +152,11 @@ public class SigninController extends BaseController {
         request.getSession().setAttribute(cellPhoneNumber, verificationCode);
         String massage = this.smsCheckManager.send(cellPhoneNumber, verificationCode, "1", PConst.TIANYI);
         if (massage != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
+        } else {
+            return false;
         }
+    }
 
 
     /**
@@ -157,111 +168,27 @@ public class SigninController extends BaseController {
         if (source != null) {
             model.addAttribute("source", source);
         }
-        return "/register" ;
-    }
-
-//    @RequestMapping("/sso.do")
-//    public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        MyUser bigUser = AuthorizationUtil.getMyUser();
-//        Cart cart = null;
-//        try {
-//            XQuery xQuery = new XQuery("listCart_default", request);
-//            List<Object> list = baseManager.listObject(xQuery);
-//            if (list != null && list.size() > 0) {
-//                cart = (Cart) list.get(0);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (cart == null) {
-//            User user = new User();
-//            user.setId(bigUser.getId());
-//            cart = new Cart();
-//            cart.setUser(user);
-//            cart.setCreateDatetime(new Date());
-//            baseManager.saveOrUpdate(Cart.class.getName(), cart);
-//        }
-//
-//        response.sendRedirect(request.getContextPath() + "/");
-//    }
-
-//    @RequestMapping({"/login"})
-//    public String login(HttpServletRequest request ,Model model){
-//        String error = request.getParameter("error");
-//        if (error!=null){
-//            model.addAttribute("error","true");
-//        }
-//        return "/login";
-//    }
-
-    @RequestMapping({"/register"})
-    public String register(HttpServletRequest request ,Model model){
-//        String error = request.getParameter("error");
-//        if (error!=null){
-//            model.addAttribute("error","true");
-//        }
         return "/register";
     }
 
-//    @RequestMapping({"/forgetPwd"})
-//    public String forgetPwd(HttpServletRequest request ){
-//
-//        return "/forgetPassword";
-//
-//    }
+
+
+    @RequestMapping({"/register"})
+    public String register(HttpServletRequest request, Model model) {
+        return "/register";
+    }
+
     @RequestMapping({"/setPwd"})
-    public String setPwd(HttpServletRequest request,Model model ) throws Exception {
-       String username=request.getParameter("username");
-        LinkedHashMap<String , Object> queryParamMap = new LinkedHashMap<>();
-        queryParamMap.put("username",username);
-        String hql="from User s where s.username=:username";
+    public String setPwd(HttpServletRequest request, Model model) throws Exception {
+        String username = request.getParameter("username");
+        LinkedHashMap<String, Object> queryParamMap = new LinkedHashMap<>();
+        queryParamMap.put("username", username);
+        String hql = "from User s where s.username=:username";
         User biguser = (User) baseManager.getUniqueObjectByConditions(hql, queryParamMap);
-         model.addAttribute("user",biguser);
+        model.addAttribute("user", biguser);
         return "/setPassword";
 
     }
 
-
-//    @RequestMapping({"/wx/register"})
-//    public String wxRegister() {
-//        return "/wxRegister";
-//    }
-//
-//    @RequestMapping({"/wx/userInfo"})
-//    public String wxPay(HttpServletRequest request) throws Exception {
-//        String redirect_uri = "http://www2.efeiyi.com/wx/bind";
-//        String url = "https://open.weixin.qq.com/connect/oauth2/authorize?" +
-//                "appid=" + WxPayConfig.APPID +
-//                "&redirect_uri=" +
-//                URLEncoder.encode(redirect_uri, "UTF-8") +
-//                "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
-//
-//        return "redirect:" + url;
-//    }
-//
-//    @RequestMapping({"/wx/bind"})
-//    public String getWxOpenId(HttpServletRequest request, Model model) throws Exception {
-//        String result = "";
-//        //1、网页授权后获取传递的code，用于获取openId
-//        String code = request.getParameter("code");
-//        if (request.getSession().getAttribute(code) != null) {
-//            result = request.getSession().getAttribute(code).toString();
-//        } else {
-//
-//            System.out.println("1、 page code value：" + code);
-//            String urlForOpenId = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + WxPayConfig.APPID + "&secret=" + WxPayConfig.APPSECRET + "&code=" + code + "&grant_type=authorization_code";
-//            result = HttpUtil.getHttpResponse(urlForOpenId, null);
-//            request.getSession().setAttribute(code, result);
-//        }
-//        System.out.println("2、get openid result：" + result);
-//        JSONObject jsonObject = JSONObject.fromObject(result);
-//        if (jsonObject.containsKey("errcode")) {
-//            throw new RuntimeException("get openId error：" + result);
-//        }
-//        String unionid = jsonObject.getString("unionid");
-//        model.addAttribute("unionid", unionid);
-//        return "/wxRedirect";
-//    }
 }
 
