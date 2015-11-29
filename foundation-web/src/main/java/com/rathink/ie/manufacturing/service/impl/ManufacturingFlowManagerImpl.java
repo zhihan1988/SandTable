@@ -234,9 +234,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private void processOrderAccount(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         XQuery xQuery = new XQuery();
-        String hql = "from MarketOrder where status=:status";
-        xQuery.setHql(hql);
+        xQuery.setHql("from MarketOrder where status=:status and company.id=:companyId");
         xQuery.put("status", MarketOrder.Status.DELIVERED.name());
+        xQuery.put("companyId", companyTerm.getCompany().getId());
         List<MarketOrder> marketOrderList = baseManager.listObject(xQuery);
         Integer fee = 0;
         if (marketOrderList != null) {
@@ -263,9 +263,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     private void processUnDeliveredOrder(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         XQuery xQuery = new XQuery();
-        String hql = "from MarketOrder where status=:status";
-        xQuery.setHql(hql);
+        xQuery.setHql("from MarketOrder where status=:status and company.id=:companyId");
         xQuery.put("status", MarketOrder.Status.NORMAL.name());
+        xQuery.put("companyId", companyTerm.getCompany().getId());
         List<MarketOrder> marketOrderList = baseManager.listObject(xQuery);
         Integer fee = 0;
         if (marketOrderList != null) {
@@ -339,8 +339,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
         XQuery xQuery = new XQuery();
-        xQuery.setHql("from ProduceLine where status=:status");
+        xQuery.setHql("from ProduceLine where status=:status and company.id=:companyId");
         xQuery.put("status", ProduceLine.Status.PRODUCING.name());
+        xQuery.put("companyId", company.getId());
         List<ProduceLine> produceLineList = baseManager.listObject(xQuery);
         if (produceLineList != null) {
             for (ProduceLine produceLine : produceLineList) {
