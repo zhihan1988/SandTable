@@ -125,6 +125,14 @@
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
 
+                <c:if test="${currentSeason==1}">
+                    <div class="am-panel-bd">
+                        <h3>市场</h3>
+                        <a id="homePage_intoMarket" class="am-btn am-btn-warning" href="#">进入市场竞标</a>
+
+                    </div>
+                </c:if>
+
                 <div class="am-panel-bd">
                     <h3>财务</h3>
                     <ul class="homePage_ul">
@@ -135,53 +143,22 @@
                     </ul>
                 </div>
 
-              <%--  <div class="am-panel-bd">
-                    <h3>市场</h3>
-                    竞标环节  进入
-                    订单数量：0
-                </div>
---%>
                 <div class="am-panel-bd">
                     <h3>生产</h3>
+
+                    原料库存<br/>
                     R1:<span id="homePage_materialAmount_R1">${R1.amount}</span>
                     R2:<span id="homePage_materialAmount_R2">${R2.amount}</span>
                     R3:<span id="homePage_materialAmount_R3">${R3.amount}</span>
                     R4:<span id="homePage_materialAmount_R4">${R4.amount}</span>
                     <br/>
+                    <br/>
+                    产品库存<br/>
                     P1:<span id="homePage_materialAmount_P1">${P1.amount}</span>
                     P2:<span id="homePage_materialAmount_P2">${P2.amount}</span>
                     P3:<span id="homePage_materialAmount_P3">${P3.amount}</span>
                     P4:<span id="homePage_materialAmount_P4">${P4.amount}</span>
                 </div>
-
-                    <%--<div>
-                        竞标
-                        订单交付
-                        <a id="enter-2" href="#">进入市场</a>
-                    </div>
-                   <div>
-                       采购
-                       生产
-                       <a id="enter-3" href="#">进入生产</a>
-                   </div>
-                    <div>
-                        贷款
-                        <a id="enter-4" href="#">进入财务</a>
-                    </div>--%>
-
-                   <%-- <c:choose>
-                        <c:when test="${currentSeason == 1}">
-                            竞标 生产
-                            订单交付
-                        </c:when>
-                        <c:when test="${currentSeason == 4}">
-                            投资市场
-                            <a id="enter-2" href="#">进入市场</a>
-                        </c:when>
-                        <c:otherwise>
-                            贷款
-                        </c:otherwise>
-                    </c:choose>--%>
 
             </div>
         </div>

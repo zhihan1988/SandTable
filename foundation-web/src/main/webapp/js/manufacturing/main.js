@@ -27,10 +27,9 @@ $(function () {
         $("#button-"+id.split("-")[1]).trigger("click");
     });
 
-    //竞单环节
-    if(campaignDate%4==1) {
+    $("#homePage_intoMarket").click(function(){
         $("#button-2").trigger("click");
-    }
+    });
 
     setInterval(isNext, 1000);
     function isNext() {

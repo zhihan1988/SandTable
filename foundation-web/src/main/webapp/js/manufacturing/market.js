@@ -42,7 +42,7 @@ $(function () {
                 companyTermId: companyTermId
             }, function(data){
                 if(data.status == 1) {
-                    $finishDevotionButton.replaceWith("等待竞标结果");
+                    $finishDevotionButton.text("等待竞标结果").attr("disabled", true).addClass("am-disabled");;
                     intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
 
                     update(data.newReport);
@@ -177,7 +177,10 @@ $(function () {
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
                         $("#confirmOrder").text("选单完成");
-                        //
+                        $("#homePage_intoMarket").replaceWith("竞标环节结束");
+
+                        //回到首页
+                        $("#button-1").trigger("click");
                     } else {
                         alert(data.message);
                     }
