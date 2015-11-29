@@ -72,9 +72,9 @@ $(function () {
     });
 
     //按钮点击过一次后变为无效状态  防止重复点击
-    $(".am-btn-once").click(function(){
+    $(document).delegate("button[class*='am-btn-once']","click",function(){
         $(this).attr("disabled",true).addClass("am-disabled");
-    })
+    });
 
     //------------------------财务部分-----------------------
 
