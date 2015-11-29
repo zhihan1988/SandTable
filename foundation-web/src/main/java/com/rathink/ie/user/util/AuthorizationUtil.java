@@ -12,7 +12,12 @@ public class AuthorizationUtil {
     public static User getMyUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-        return (User)authentication.getPrincipal();
+        try {
+
+            return (User) authentication.getPrincipal();
+        } catch (Exception e){
+            return new User();
+        }
     }
 
 }

@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmenu id="nav">
-    <jnode id="nav" url="/test/jmenutest?menuId=organmgmt" text_zh_CN="系统管理">
-        <jnode url="/product/test/nav/1" id="organization" access="admin,manager" state="closed"
-               text_zh_CN="navItem1"/>
-        <jnode url="/product/test/nav/2" id="organization" access="admin,manager" state="closed"
-               text_zh_CN="navItem2"/>
-        <jnode url="/product/test/nav/3" id="organization" access="admin,manager" state="closed"
-               text_zh_CN="navItem3"/>
-        <jnode url="/product/test/nav/4" id="organization" access="admin,manager" state="closed"
-               text_zh_CN="navItem4"/>
+    <jnode id="nav" url="" text_zh_CN="网站导航">
+        <jnode url="/home.do" id="organization" access="admin,manager" state="1"
+               text_zh_CN="首页">
+            <match url="/"/>
+        </jnode>
+        <jnode url="/industry.do" id="productCategory" access="admin,manager" state="2"
+               text_zh_CN="行业"/>
+        <jnode url="/pc/register" id="organization" access="admin,manager" state="3"
+               text_zh_CN="注册"/>
+        <jnode url="/index.jsp" id="organization" access="admin,manager" state="4"
+               text_zh_CN="登录"/>
+        <!--<jnode url="#" id="organization" access="admin,manager" state="closed"-->
+        <!--text_zh_CN="资讯"/>-->
+    </jnode>
+
+
+    <jnode id="personalNav" url="" text_zh_CN="个人中心">
+        <jnode url="/personal/company/list" id="organization" access="admin,manager" state="1"
+               text_zh_CN="我的企业">
+        </jnode>
+        <jnode url="/personal/myCode" id="organization" access="admin,manager" state="3"
+               text_zh_CN="我的邀请码"/>
+        <jnode url="/j_spring_security_logout" id="organization" access="admin,manager" state="4"
+               text_zh_CN="注销"/>
+        <!--<jnode url="#" id="organization" access="admin,manager" state="closed"-->
+        <!--text_zh_CN="资讯"/>-->
     </jnode>
 </jmenu>

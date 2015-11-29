@@ -13,8 +13,8 @@ public class Industry {
     private String name;
     private String type;
     private Date createDatetime;
-    private Integer term;
-    private Integer totalTerm;
+    private Integer term; //每季度时长
+    private Integer totalTerm;//季度数量
 
     @Id
     @GenericGenerator(name = "id", strategy = "com.ming800.core.p.model.M8idGenerator")

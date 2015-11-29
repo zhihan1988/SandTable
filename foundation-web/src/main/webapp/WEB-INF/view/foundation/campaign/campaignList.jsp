@@ -9,17 +9,6 @@
 <head></head>
 <body>
 
-<div style="margin-bottom: 10px"><a href="<c:url value="/home.do"/>">返回主页</a></div>
-
-<div>
-    <ul class="am-nav am-nav-pills">
-        <li class="am-active"><a href="<c:url value="/campaign/listCampaign"/>">竞赛列表</a></li>
-        <li><a href="<c:url value="/company/listCompany"/>">我的公司</a></li>
-        <li><a href="#">我的资本</a></li>
-        <li ><a style="padding-left: 0px;padding-right: 0px" href="<c:url value="/j_spring_security_logout"/>">注销</a></li>
-    </ul>
-</div>
-
 <div class="am-margin-top">
     <a href="<c:url value="/campaign/form"/>" >发起一轮竞赛</a>
 </div>

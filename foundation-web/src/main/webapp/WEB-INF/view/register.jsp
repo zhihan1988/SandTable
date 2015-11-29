@@ -12,13 +12,6 @@
     <title>注册</title>
 </head>
 <body>
-<ul class="am-nav am-nav-pills">
-    <li><h1 style="font-size: 27px;">商世界</h1></li>
-    <li ><a href="<c:url value="/home.do"/> ">首页</a></li>
-    <li><a href="<c:url value="/industry.do"/>">行业</a></li>
-    <li style="float: right;"><a style="padding-left: 2px; padding-right: 2px" href="<c:url value="/index.jsp"/>">登录</a></li>
-    <li  style="float: right;"><a style="padding-left: 2px; padding-right: 2px" href="<c:url value="/pc/register"/>">注册</a></li>
-</ul>
 <form class="am-form" name="user" action="<c:url value="/pc/saveEnrollUser.do"/>" data-am-validator>
     <fieldset>
         <legend>注册用户</legend>
@@ -28,6 +21,10 @@
             <input type="text" class="" name="username" id="username" placeholder="输入手机号" required>
 
             <p id="tishi" style="display: none;color: red;">用户名已存在</p>
+        </div>
+        <div class="am-form-group">
+            <label for="username">邀请码</label>
+            <input type="text" class="" name="invitatoryCode" id="invitatoryCode" placeholder="输入邀请码" required>
         </div>
 
         <div class="am-form-group">
