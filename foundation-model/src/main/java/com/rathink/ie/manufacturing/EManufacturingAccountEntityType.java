@@ -5,10 +5,23 @@ package com.rathink.ie.manufacturing;
  */
 public enum EManufacturingAccountEntityType {
 
-    LONG_TERM_LOAN("长期贷款"), SHORT_TERM_LOAN("短期贷款"), USURIOUS_LOAN("高利贷款"), LOAN_RECEIVABLE("应收贷款"), LOAN_INTEREST("利息"),
     COMPANY_CASH("公司现金"), OTHER("其它"),
-    ORDER_FEE("订单费"),ORDER_DELAY_FEE("订单延误费"),
-    MATERIAL_FEE("原料费用"),PRODUCT_DEVOTION_FEE("产品研发投入"),PRODUCT_LINE_FEE("生产线费用"),PRODUCE("生产费用"),MARKET_FEE("广告投入"),MARKET_DEVOTION_FEE("开拓市场投入");
+
+    ORDER_FEE("订单利润"),ORDER_DELAY_FEE("订单延误费"),
+
+    //费用
+    PRODUCT_DEVOTION_FEE("产品研发费用"),PRODUCT_LINE_FEE("生产线研发费"), PRODUCE_FEE("生产费"),MARKET_FEE("广告费"),MARKET_DEVOTION_FEE("市场开拓费"),
+
+    //贷款
+    LOAN_LONG_TERM("长期贷款"), LOAN_SHORT_TERM("短期贷款"), LOAN_USURIOUS("高利贷款"),
+
+    //
+    RECEIVABLE("应收账款"), INTEREST("利息"),
+
+    //流动资产
+    FLOATING_CAPITAL_MATERIAL("原料"),
+    FLOATING_CAPITAL_PRODUCT("产品");
+
 
     EManufacturingAccountEntityType(String label) {
         this.label = label;

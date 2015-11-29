@@ -74,22 +74,26 @@ $(function () {
     $(document).delegate("button[class*='am-btn-once']","click",function(){
         $(this).attr("disabled",true).addClass("am-disabled");
     });
+    //恢复
+    function enableButton($amBtnOnceButton) {
+        $amBtnOnceButton.attr("disabled",false).removeClass("am-disabled");
+    }
 
     //------------------------财务部分-----------------------
 
     $("select[id^='usuriousLoan_']").change(function(){
         var $choice = $(this);
-        var type = "USURIOUS_LOAN";
+        var type = "LOAN_USURIOUS";
         loan($choice, type);
     });
     $("select[id^='shortTermLoan_']").change(function(){
         var $choice = $(this);
-        var type = "SHORT_TERM_LOAN";
+        var type = "LOAN_SHORT_TERM";
         loan($choice, type);
     });
     $("select[id^='longTermLoan_']").change(function(){
         var $choice = $(this);
-        var type = "LONG_TERM_LOAN";
+        var type = "LOAN_LONG_TERM";
         loan($choice, type);
     });
 
@@ -110,6 +114,9 @@ $(function () {
                     $choice.parent().text("已贷款");
                     update(data.newReport);
                     refreshLoan();
+                } else {
+                    alert(data.message);
+                    enableButton($choice);
                 }
             }
         );

@@ -50,9 +50,9 @@ public class Loan extends CompanyPart {
     }
 
     public enum Type{
-        USURIOUS_LOAN("高利贷", 20, 4),
-        SHORT_TERM_LOAN("短期贷款", 5, 4),
-        LONG_TERM_LOAN("长期贷款", 10,20);
+        LOAN_USURIOUS("高利贷", 20, 4),
+        LOAN_SHORT_TERM("短期贷款", 5, 4),
+        LOAN_LONG_TERM("长期贷款", 10,20);
 
         Type(String label, Integer yearRate, Integer cycle) {
             this.label = label;

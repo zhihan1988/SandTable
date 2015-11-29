@@ -3,8 +3,6 @@ package com.rathink.ie.manufacturing.service.impl;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.ming800.core.taglib.PageEntity;
-import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
@@ -13,7 +11,6 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
 import com.rathink.ie.ibase.service.AccountManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
-import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
@@ -63,11 +60,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         IndustryResource marketResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET.name());
         List<IndustryResourceChoice> marketList = industryResourceChoiceManager.listIndustryResourceChoice(marketResource.getId());
 
-        Map<String, List<CompanyPart>> companyPartMap = campaignContext.getCompanyPartMap();
+//        Map<String, List<CompanyPart>> companyPartMap = campaignContext.getCompanyPartMap();
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             Company company = companyTermContext.getCompanyTerm().getCompany();
 
-            List<CompanyPart> companyPartList = new ArrayList<>();
+//            List<CompanyPart> companyPartList = new ArrayList<>();
             for (IndustryResourceChoice produceLineChoice : produceLineList) {
                 ProduceLine produceLine = new ProduceLine();
                 produceLine.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
@@ -119,7 +116,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 baseManager.saveOrUpdate(Market.class.getName(), market);
             }
 
-            companyPartMap.put(company.getId(), companyPartList);
+//            companyPartMap.put(company.getId(), companyPartList);
         }
 
     }
@@ -214,17 +211,17 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
             campaignContext.setDevoteCycle(devoteCycle);
         }
 
-        IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LONG_TERM_LOAN.name());
+        IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_LONG_TERM.name());
         longTermLoanResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(longTermLoanResource.getId())));
-        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name(), longTermLoanResource);
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name(), longTermLoanResource);
 
-        IndustryResource shortTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name());
+        IndustryResource shortTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name());
         shortTermLoanResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(shortTermLoanResource.getId())));
-        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name(), shortTermLoanResource);
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name(), shortTermLoanResource);
 
-        IndustryResource usuriousLoan = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.USURIOUS_LOAN.name());
+        IndustryResource usuriousLoan = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_USURIOUS.name());
         usuriousLoan.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(usuriousLoan.getId())));
-        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.USURIOUS_LOAN.name(), usuriousLoan);
+        currentTypeIndustryResourceMap.put(EManufacturingChoiceBaseType.LOAN_USURIOUS.name(), usuriousLoan);
 
         campaignContext.setCurrentTypeIndustryResourceMap(currentTypeIndustryResourceMap);
     }
@@ -238,7 +235,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         xQuery.put("status", MarketOrder.Status.DELIVERED.name());
         xQuery.put("companyId", companyTerm.getCompany().getId());
         List<MarketOrder> marketOrderList = baseManager.listObject(xQuery);
-        Integer fee = 0;
         if (marketOrderList != null) {
             for (MarketOrder marketOrder : marketOrderList) {
                 Integer needAccountCycle = marketOrder.getNeedAccountCycle();
@@ -246,15 +242,20 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 marketOrder.setNeedAccountCycle(needAccountCycle);
                 if (needAccountCycle == 0) {
                     marketOrder.setStatus(MarketOrder.Status.FINISH.name());
-                    fee += marketOrder.getTotalPrice();
+                    Integer fee = marketOrder.getTotalPrice();
+                    Integer profit = marketOrder.getProfit();
+                    Integer productFee = fee - profit;//产品费用（成本费+加工费）
+
+                    Account account = accountManager.packageAccount(String.valueOf(profit), EManufacturingAccountEntityType.COMPANY_CASH.name(),
+                            EManufacturingAccountEntityType.ORDER_FEE.name(), companyTerm);
+                    baseManager.saveOrUpdate(Account.class.getName(), account);
+                    Account account2 = accountManager.packageAccount(String.valueOf(productFee), EManufacturingAccountEntityType.COMPANY_CASH.name(),
+                            EManufacturingAccountEntityType.FLOATING_CAPITAL_PRODUCT.name(), companyTerm);
+                    baseManager.saveOrUpdate(Account.class.getName(), account2);
                 }
                 baseManager.saveOrUpdate(MarketOrder.class.getName(),marketOrder);
+
             }
-        }
-        if (fee != 0) {
-            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(),
-                    EManufacturingAccountEntityType.ORDER_FEE.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
         }
     }
 
@@ -415,7 +416,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     baseManager.saveOrUpdate(Account.class.getName(), account);
                 }
                 if (rateFee != 0) {
-                    Account account = accountManager.packageAccount(String.valueOf(rateFee), EManufacturingAccountEntityType.LOAN_INTEREST.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                    Account account = accountManager.packageAccount(String.valueOf(rateFee), EManufacturingAccountEntityType.INTEREST.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
                     baseManager.saveOrUpdate(Account.class.getName(), account);
                 }
                 baseManager.saveOrUpdate(Loan.class.getName(), loan);
@@ -423,7 +424,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
 
 
-        List<CompanyTermInstruction> usuriousLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.USURIOUS_LOAN.name());
+        List<CompanyTermInstruction> usuriousLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LOAN_USURIOUS.name());
         if (usuriousLoanInstructionList != null) {
             Integer fee = 0;
             for (CompanyTermInstruction usuriousLoanInstruction : usuriousLoanInstructionList) {
@@ -433,7 +434,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 fee+= Integer.valueOf(usuriousLoanInstruction.getValue());
             }
             if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.USURIOUS_LOAN.name(), companyTerm);
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LOAN_USURIOUS.name(), companyTerm);
                 baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
@@ -442,7 +443,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     protected void processShortTermLoan(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
 
-        List<CompanyTermInstruction> shortTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LONG_TERM_LOAN.name());
+        List<CompanyTermInstruction> shortTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LOAN_LONG_TERM.name());
         if (shortTermLoanInstructionList != null) {
             Integer fee = 0;
             for (CompanyTermInstruction shortTermLoanInstruction : shortTermLoanInstructionList) {
@@ -452,7 +453,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 fee+= Integer.valueOf(shortTermLoanInstruction.getValue());
             }
             if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.SHORT_TERM_LOAN.name(), companyTerm);
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LOAN_SHORT_TERM.name(), companyTerm);
                 baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
@@ -461,7 +462,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     protected void processLongTermLoan(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
 
-        List<CompanyTermInstruction> longTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LONG_TERM_LOAN.name());
+        List<CompanyTermInstruction> longTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LOAN_LONG_TERM.name());
         if (longTermLoanInstructionList != null) {
             Integer fee = 0;
             for (CompanyTermInstruction longTermLoanInstruction : longTermLoanInstructionList) {
@@ -471,7 +472,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 fee+= Integer.valueOf(longTermLoanInstruction.getValue());
             }
             if (fee != 0) {
-                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LONG_TERM_LOAN.name(), companyTerm);
+                Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.COMPANY_CASH.name(), EManufacturingAccountEntityType.LOAN_LONG_TERM.name(), companyTerm);
                 baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
@@ -483,6 +484,10 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         Integer fee = 5;
         Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
+        if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
+            Account account2 = accountManager.packageAccount(String.valueOf(10), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+            baseManager.saveOrUpdate(Account.class.getName(), account2);
+        }
     }
 
     protected void process() {

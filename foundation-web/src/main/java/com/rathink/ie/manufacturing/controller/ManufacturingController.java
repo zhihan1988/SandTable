@@ -93,9 +93,9 @@ public class ManufacturingController extends BaseIndustryController {
         marketOrderQuery.put("companyId", company.getId());
         List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
         model.addAttribute("marketOrderList", marketOrderList);
-        model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LONG_TERM_LOAN.name()));
-        model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.SHORT_TERM_LOAN.name()));
-        model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.USURIOUS_LOAN.name()));
+        model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
+        model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
+        model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
 
         if (currentSeason == 1) {
             IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
@@ -124,11 +124,11 @@ public class ManufacturingController extends BaseIndustryController {
 
         Integer companyCash = accountManager.getCompanyCash(company);
         model.addAttribute("companyCash", companyCash);
-        Integer longTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LONG_TERM_LOAN.name());
+        Integer longTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_LONG_TERM.name());
         model.addAttribute("longTermLoan", longTermLoan);
-        Integer shortTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.SHORT_TERM_LOAN.name());
+        Integer shortTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_SHORT_TERM.name());
         model.addAttribute("shortTermLoan", shortTermLoan);
-        Integer usuriousLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.USURIOUS_LOAN.name());
+        Integer usuriousLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_USURIOUS.name());
         model.addAttribute("usuriousLoan", usuriousLoan);
 
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
@@ -217,6 +217,7 @@ public class ManufacturingController extends BaseIndustryController {
         marketOrder.setUnitPrice(marketOrderChoice.getUnitPrice());
         marketOrder.setAmount(marketOrderChoice.getAmount());
         marketOrder.setTotalPrice(marketOrderChoice.getTotalPrice());
+        marketOrder.setProfit(marketOrderChoice.getProfit());
         marketOrder.setNeedAccountCycle(marketOrderChoice.getAccountPeriod());
         marketOrder.setProductType(marketOrderChoice.getProductType());
         baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
@@ -405,7 +406,7 @@ public class ManufacturingController extends BaseIndustryController {
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
         String fee = materialNum;
-        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.FLOATING_CAPITAL_MATERIAL.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
 
         result.put("status", 1);
@@ -498,9 +499,22 @@ public class ManufacturingController extends BaseIndustryController {
         String value = request.getParameter("value");
         String type = request.getParameter("type");
 
-        Map result = manufacturingImmediatelyManager.loan(companyTermId, choiceId, value, type);
-        return result;
+        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        Company company = companyTerm.getCompany();
+
+        Integer maxEnableLoanMoney = manufacturingImmediatelyManager.getMaxLoanMoney(company, type);
+        if (Integer.valueOf(value) > maxEnableLoanMoney) {
+            Map map = new HashMap<>();
+            map.put("status", "-1");
+            map.put("message", "贷款失败，最大可贷金额：" + maxEnableLoanMoney + "M");
+            return map;
+        } else {
+            Map result = manufacturingImmediatelyManager.loan(companyTermId, choiceId, value, type);
+            return result;
+        }
     }
+
+
 
     @RequestMapping("/loanList")
     @ResponseBody

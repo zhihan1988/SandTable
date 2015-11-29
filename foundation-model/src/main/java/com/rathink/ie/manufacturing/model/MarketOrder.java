@@ -18,6 +18,7 @@ public class MarketOrder extends CompanyPart {
     private String amount;//数量
     private String unitPrice;//单价
     private String totalPrice;//金额
+    private String profit;//利润
     private String needAccountCycle;//剩余账期
     private String productType;//P1,P2,P3,P4
 
@@ -49,6 +50,15 @@ public class MarketOrder extends CompanyPart {
     }
 
     @Column(name = "value4")
+    public Integer getProfit() {
+        return profit == null ? 0 : Integer.valueOf(profit);
+    }
+
+    public void setProfit(Integer profit) {
+        this.profit = profit == 0 ? null : String.valueOf(profit);
+    }
+
+    @Column(name = "value5")
     public Integer getNeedAccountCycle() {
         return needAccountCycle == null ? 0 : Integer.valueOf(needAccountCycle);
     }
@@ -57,7 +67,7 @@ public class MarketOrder extends CompanyPart {
         this.needAccountCycle = needAccountCycle == 0 ? null : String.valueOf(needAccountCycle);
     }
 
-    @Column(name = "value5")
+    @Column(name = "value6")
     public String getProductType() {
         return productType;
     }

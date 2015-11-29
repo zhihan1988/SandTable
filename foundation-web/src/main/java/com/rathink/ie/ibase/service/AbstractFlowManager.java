@@ -212,8 +212,8 @@ public abstract class AbstractFlowManager implements FlowManager {
             baseManager.saveOrUpdate(CompanyTerm.class.getName(), companyTerm);
             Company company = companyTerm.getCompany();
             baseManager.saveOrUpdate(Company.class.getName(), company);
-            List<CompanyPart> companyPartList = campaignContext.getCompanyPartMap().get(companyId);
-            companyPartList.forEach(companyPart -> baseManager.saveOrUpdate(CompanyPart.class.getName(), companyPart));
+          /*  List<CompanyPart> companyPartList = campaignContext.getCompanyPartMap().get(companyId);
+            companyPartList.forEach(companyPart -> baseManager.saveOrUpdate(CompanyPart.class.getName(), companyPart));*/
         }
     }
 

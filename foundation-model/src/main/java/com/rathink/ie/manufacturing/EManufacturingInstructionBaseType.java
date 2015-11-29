@@ -22,5 +22,5 @@ public enum EManufacturingInstructionBaseType {
     ORDER_DELIVER,
     //物料采购
     MATERIAL_PURCHASE,
-    LONG_TERM_LOAN, SHORT_TERM_LOAN, USURIOUS_LOAN
+    LOAN_LONG_TERM, LOAN_SHORT_TERM, LOAN_USURIOUS
 }

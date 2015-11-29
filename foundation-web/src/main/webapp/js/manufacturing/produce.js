@@ -167,6 +167,7 @@ $(function () {
                     updateProduceLineButton(data.line);
                 } else {
                     alert(data.message);
+                    enableButton($produce);
                 }
             });
 

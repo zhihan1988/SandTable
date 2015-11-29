@@ -31,6 +31,7 @@ public class CompanyPart {
 //    private String value3;
 //    private String value4;
 //    private String value5;
+//    private String value6;
 
 
     @Id

@@ -6,7 +6,6 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.AccountManager;
-import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -253,8 +251,10 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), produceInstruction);
 
         String fee = "1";
-        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.PRODUCE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.PRODUCE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
         baseManager.saveOrUpdate(Account.class.getName(), account);
+        Account account2 = accountManager.packageAccount(fee, EManufacturingAccountEntityType.FLOATING_CAPITAL_PRODUCT.name(), EManufacturingAccountEntityType.FLOATING_CAPITAL_MATERIAL.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), account2);
 
         result.put("status", 1);
         result.put("line", produceLine);
@@ -322,15 +322,37 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         return result;
     }
 
+    public Integer getMaxLoanMoney(Company company, String loanType) {
+        Integer ratio = 0;
+        EManufacturingAccountEntityType type = EManufacturingAccountEntityType.valueOf(loanType);
+        switch (type) {
+            case LOAN_LONG_TERM:
+            case LOAN_SHORT_TERM:
+                ratio = 2;
+                break;
+            case LOAN_USURIOUS:
+                ratio = 3;
+                break;
+            default:
+                throw new NoSuchElementException();
+        }
+
+        Integer companyCash = accountManager.getCompanyCash(company);
+        Integer loan = accountManager.getLoan(company);
+        Integer floatingCapital = accountManager.getFloatingCapital(company);
+
+        return (companyCash + floatingCapital - loan) * ratio;
+    }
 
     public Map loan(String companyTermId, String choiceId, String fee, String type) {
+        Loan.Type loanType = Loan.Type.valueOf(type);
 
         CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
         IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
 
         CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
         companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
+        companyTermInstruction.setBaseType(EManufacturingAccountEntityType.valueOf(loanType.name()).name());
         companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
         companyTermInstruction.setIndustryResourceChoice(industryResourceChoice);
         companyTermInstruction.setCompanyTerm(companyTerm);
@@ -345,7 +367,6 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         loan.setCompany(companyTerm.getCompany());
 //                usuriousLoan.setName();
         loan.setMoney(Integer.valueOf(fee));
-        Loan.Type loanType = Loan.Type.valueOf(type);
         loan.setNeedRepayCycle(loanType.getCycle());
         loan.setType(loanType.name());
         baseManager.saveOrUpdate(Loan.class.getName(), loan);
@@ -361,13 +382,13 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         newReport.setCompanyCash(companyCash);
         Integer totalLoan = accountManager.sumLoan(companyTerm.getCompany(), loanType.name());
         switch (loanType) {
-            case LONG_TERM_LOAN:
+            case LOAN_LONG_TERM:
                 newReport.setLongTermLoan(totalLoan);
                 break;
-            case SHORT_TERM_LOAN:
+            case LOAN_SHORT_TERM:
                 newReport.setShortTermLoan(totalLoan);
                 break;
-            case USURIOUS_LOAN:
+            case LOAN_USURIOUS:
                 newReport.setUsuriousLoan(totalLoan);
                 break;
             default:

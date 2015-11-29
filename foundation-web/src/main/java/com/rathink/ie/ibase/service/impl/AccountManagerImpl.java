@@ -58,7 +58,7 @@ public class AccountManagerImpl implements AccountManager {
         XQuery xQuery = new XQuery();
         xQuery.setHql("from AccountEntry where account.company.id = :companyId and type = :type");
         xQuery.put("companyId", company.getId());
-        xQuery.put("type", EAccountEntityType.COMPANY_CASH.name());
+        xQuery.put("type", "COMPANY_CASH");
         List<AccountEntry> accountEntryList = baseManager.listObject(xQuery);
         if (accountEntryList != null) {
             for (AccountEntry accountEntry : accountEntryList) {
@@ -70,6 +70,44 @@ public class AccountManagerImpl implements AccountManager {
             }
         }
         return companyCash;
+    }
+
+    public Integer getLoan(Company company) {
+        Integer fee = 0;
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from AccountEntry where account.company.id = :companyId and type like :type");
+        xQuery.put("companyId", company.getId());
+        xQuery.put("type", "LOAN_%");
+        List<AccountEntry> accountEntryList = baseManager.listObject(xQuery);
+        if (accountEntryList != null) {
+            for (AccountEntry accountEntry : accountEntryList) {
+                if (accountEntry.getDirection().equals("-1")) {
+                    fee += Integer.valueOf(accountEntry.getValue());
+                } else if (accountEntry.getDirection().equals("1")){
+                    fee -= Integer.valueOf(accountEntry.getValue());
+                }
+            }
+        }
+        return fee;
+    }
+
+    public Integer getFloatingCapital(Company company) {
+        Integer fee = 0;
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from AccountEntry where account.company.id = :companyId and type like :type");
+        xQuery.put("companyId", company.getId());
+        xQuery.put("type", "FLOATING_CAPITAL_%");
+        List<AccountEntry> accountEntryList = baseManager.listObject(xQuery);
+        if (accountEntryList != null) {
+            for (AccountEntry accountEntry : accountEntryList) {
+                if (accountEntry.getDirection().equals("1")) {
+                    fee += Integer.valueOf(accountEntry.getValue());
+                } else if (accountEntry.getDirection().equals("-1")){
+                    fee -= Integer.valueOf(accountEntry.getValue());
+                }
+            }
+        }
+        return fee;
     }
 
     @Override
