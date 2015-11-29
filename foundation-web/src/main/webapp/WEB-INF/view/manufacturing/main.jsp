@@ -125,14 +125,6 @@
         <div id="panel-1" class="panel">
             <div class="am-panel am-panel-default">
 
-                <c:if test="${currentSeason==1}">
-                    <div class="am-panel-bd">
-                        <h3>市场</h3>
-                        <a id="homePage_intoMarket" class="am-btn am-btn-warning" href="#">进入市场竞标</a>
-
-                    </div>
-                </c:if>
-
                 <div class="am-panel-bd">
                     <h3>财务</h3>
                     <ul class="homePage_ul">
@@ -141,6 +133,13 @@
                         <li>短期贷款：<span id="homePage_shortTermLoan">${shortTermLoan}</span>M</li>
                         <li>长期贷款：<span id="homePage_longTermLoan">${longTermLoan}</span>M</li>
                     </ul>
+                </div>
+
+                <div class="am-panel-bd">
+                    <h3>市场</h3>
+                    <c:if test="${currentSeason==1}">
+                    <a id="homePage_intoMarket" class="am-btn am-btn-warning" href="#">进入市场竞标</a>
+                    </c:if>
                 </div>
 
                 <div class="am-panel-bd">
@@ -280,7 +279,7 @@
                     </table>
                 </div>
             </div>
-            <c:if test="${currentSeason == 4}">
+
             <div class="am-panel am-panel-default">
                 <div class="am-panel-hd">市场开拓</div>
                 <div class="am-panel-bd">
@@ -288,18 +287,24 @@
                         <thead>
                         <tr>
                             <th>市场</th>
-                            <th>剩余开发周期</th>
-                            <th></th>
+                            <th colspan="2">剩余开发周期</th>
                         </tr>
                         </thead>
                         <tbody>
                         <c:forEach items="${marketList}" var="market">
                             <tr>
                                 <td>${market.name}</td>
+                                <td>${market.devotionNeedCycle}</td>
                                 <td>
-                                    ${market.devotionNeedCycle}
                                     <c:if test="${market.devotionNeedCycle > 0}">
-                                        <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary am-btn-once">开发</button>
+                                        <c:choose>
+                                            <c:when test="${currentSeason == 4}">
+                                                <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary am-btn-once">开发</button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                第四季度可开发
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:if>
                                 </td>
                             </tr>
@@ -308,7 +313,7 @@
                     </table>
                 </div>
             </div>
-            </c:if>
+
         </div>
         <div id="panel-3" class="panel">
             <div class="am-panel am-panel-default">
