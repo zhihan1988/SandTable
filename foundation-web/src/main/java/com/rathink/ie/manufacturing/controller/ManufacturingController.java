@@ -54,6 +54,10 @@ public class ManufacturingController extends BaseIndustryController {
         CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
         Campaign campaign = campaignContext.getCampaign();
         CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
+        if (companyTermContext == null) {
+            return "/end";
+        }
+
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
         Company company = companyTerm.getCompany();
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
