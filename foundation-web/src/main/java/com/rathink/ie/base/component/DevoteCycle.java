@@ -40,8 +40,6 @@ public class DevoteCycle {
         this.marketList = marketList;
         this.marketQueue = new LinkedList<>(marketList);
         this.marketOrderChoiceMap = marketOrderChoiceMap;
-        this.currentMarket = marketQueue.peek();
-        this.currentLeftOperationNum = marketOrderChoiceMap.get(currentMarket).size();
     }
 
     /**
@@ -85,6 +83,10 @@ public class DevoteCycle {
                 }
 
             }
+
+            //
+            currentMarket = marketQueue.peek();
+            this.currentLeftOperationNum = marketOrderChoiceMap.get(currentMarket).size();
         }
     }
 
