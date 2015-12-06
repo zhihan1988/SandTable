@@ -138,8 +138,12 @@
                 <div class="am-panel-bd">
                     <h3>市场</h3>
                     <c:if test="${currentSeason==1}">
-                    <a id="homePage_intoMarket" class="am-btn am-btn-warning" href="#">进入市场竞标</a>
+                        <a id="homePage_intoMarket" class="am-btn am-btn-warning" href="#">进入市场竞标</a>
+                        <br/>
+                        <br/>
                     </c:if>
+
+                    未交付订单数量: <span id="unDeliveredOrderSize">${fn:length(marketOrderList)}</span>
                 </div>
 
                 <div class="am-panel-bd">

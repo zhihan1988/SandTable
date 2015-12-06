@@ -126,6 +126,11 @@ $(function () {
                         clearInterval(intervalFlag);
                         //alert("选单环节结束");
 
+                        //回到首页
+                        $("#homePage_intoMarket").replaceWith("竞标环节结束");
+                        $("#button-1").trigger("click");
+
+
                         $("#marketOrderChoicePanel").hide();
                         $("#companyOrderPanel").hide();
 
@@ -152,6 +157,7 @@ $(function () {
                                 }
                             }
                         );
+
                     }
                 } else {
                     alert(data.message);
@@ -177,10 +183,13 @@ $(function () {
                     if(data.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
                         $("#confirmOrder").text("选单完成");
-                        $("#homePage_intoMarket").replaceWith("竞标环节结束");
 
-                        //回到首页
-                        $("#button-1").trigger("click");
+                        //增加首页未交付订单的数量
+                        var $unDeliveredOrderSize = $("#unDeliveredOrderSize");
+                        var unDeliveredOrderSize = $unDeliveredOrderSize.text();
+                        unDeliveredOrderSize++;
+                        $unDeliveredOrderSize.text(unDeliveredOrderSize);
+
                     } else {
                         alert(data.message);
                     }
@@ -219,6 +228,12 @@ $(function () {
                 if(data.status == 1) {
                     $order.replaceWith("已交付");
                     update(data.newReport);
+
+                    //减少首页未交付订单的数量
+                    var $unDeliveredOrderSize = $("#unDeliveredOrderSize");
+                    var unDeliveredOrderSize = $unDeliveredOrderSize.text();
+                    unDeliveredOrderSize--;
+                    $unDeliveredOrderSize.text(unDeliveredOrderSize);
                 } else {
                     alert(data.message);
                 }
