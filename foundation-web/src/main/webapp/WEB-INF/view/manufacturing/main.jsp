@@ -83,6 +83,9 @@
         .homePage_ul li{
             list-style-type:none;
         }
+        #marketOrderChoicePanel_message{
+            color: orangered;
+        }
     </style>
 </head>
 <body>
