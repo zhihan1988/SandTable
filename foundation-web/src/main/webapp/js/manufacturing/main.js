@@ -1,6 +1,9 @@
 $(function () {
+
+    /*
+    //进度条
     var $progress = $.AMUI.progress;
-    $progress.configure({ showSpinner: false });
+    $progress.configure({ showSpinner: false });*/
 
     var base = getBaseUrl();
 
@@ -45,7 +48,7 @@ $(function () {
                     location.reload();
                 } else {
                     $("#unFinishedNum").text(data.unFinishedNum);
-                    $.AMUI.progress.set(data.schedule);
+                    //$.AMUI.progress.set(data.schedule);
                 }
             }
         );
