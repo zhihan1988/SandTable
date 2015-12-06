@@ -303,16 +303,17 @@
                                 <td>${market.name}</td>
                                 <td>${market.devotionNeedCycle}</td>
                                 <td>
-                                    <c:if test="${market.devotionNeedCycle > 0}">
-                                        <c:choose>
-                                            <c:when test="${currentSeason == 4}">
-                                                <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary am-btn-once">开发</button>
-                                            </c:when>
-                                            <c:otherwise>
-                                                第四季度可开发
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${market.devotionNeedCycle <= 0}">
+                                            已开发完成
+                                        </c:when>
+                                        <c:when test="${currentSeason == 4}">
+                                            <button id="devoteMarket_${market.id}" type="button" class="am-btn am-btn-secondary am-btn-once">开发</button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            第四季度可开发
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                         </c:forEach>
