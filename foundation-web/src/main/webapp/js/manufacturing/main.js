@@ -74,10 +74,6 @@ $(function () {
     $(document).delegate("button[class*='am-btn-once']","click",function(){
         $(this).attr("disabled",true).addClass("am-disabled");
     });
-    //恢复
-    function enableButton($amBtnOnceButton) {
-        $amBtnOnceButton.attr("disabled",false).removeClass("am-disabled");
-    }
 
     //------------------------财务部分-----------------------
 
@@ -116,7 +112,7 @@ $(function () {
                     refreshLoan();
                 } else {
                     alert(data.message);
-                    enableButton($choice);
+                    $choice.attr("disabled",false).removeClass("am-disabled");
                 }
             }
         );

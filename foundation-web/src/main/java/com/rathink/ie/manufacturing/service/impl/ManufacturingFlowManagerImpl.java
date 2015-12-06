@@ -440,7 +440,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
         }
     }
 
-    protected void processShortTermLoan(CompanyTermContext companyTermContext) {
+   /* protected void processShortTermLoan(CompanyTermContext companyTermContext) {
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
 
         List<CompanyTermInstruction> shortTermLoanInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingInstructionBaseType.LOAN_LONG_TERM.name());
@@ -476,17 +476,53 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 baseManager.saveOrUpdate(Account.class.getName(), account);
             }
         }
-    }
+    }*/
 
     //杂费
     protected void processOthers(CompanyTermContext companyTermContext){
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-        Integer fee = 5;
-        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+        Company company = companyTerm.getCompany();
+
+        //行政管理费
+        Integer administrationFee = 1;
+        Account administrationAccount = accountManager.packageAccount(String.valueOf(administrationFee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+        baseManager.saveOrUpdate(Account.class.getName(), administrationAccount);
+        logger.info("{}_行政管理费：{}", companyTerm.getId(), administrationFee);
+
         if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
-            Account account2 = accountManager.packageAccount(String.valueOf(10), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account2);
+
+            XQuery xQuery = new XQuery();
+            xQuery.setHql("from ProduceLine where status!=:status and company.id=:companyId");
+            xQuery.put("status", ProduceLine.Status.UN_BUILD.name());
+            xQuery.put("companyId", company.getId());
+            List<ProduceLine> produceLineList = baseManager.listObject(xQuery);
+            if (produceLineList != null && produceLineList.size() > 0) {
+
+                //生产线维护费
+                Integer produceLineMaintenanceFee = produceLineList.size() * 1;
+                Account maintenanceAccount = accountManager.packageAccount(String.valueOf(produceLineMaintenanceFee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), maintenanceAccount);
+                logger.info("{}_生产线维护费：{}" , companyTerm.getId(), produceLineMaintenanceFee);
+
+                //厂房租赁费
+                Integer lineFactoryRent = 0;
+                Set<String> lineNameSet = new HashSet<>();
+                for (ProduceLine produceLine : produceLineList) {
+                    lineNameSet.add(produceLine.getName());
+                }
+                if (lineNameSet.contains("生产线1") || lineNameSet.contains("生产线2") || lineNameSet.contains("生产线3") || lineNameSet.contains("生产线4")) {
+                    lineFactoryRent += 4;
+                } else if (lineNameSet.contains("生产线5") || lineNameSet.contains("生产线6") || lineNameSet.contains("生产线7")) {
+                    lineFactoryRent += 3;
+                } else if (lineNameSet.contains("生产线8")) {
+                    lineFactoryRent += 2;
+                }
+                Account lineFactoryRentAccount = accountManager.packageAccount(String.valueOf(lineFactoryRent), EManufacturingAccountEntityType.LINE_FACTORY_RENT_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
+                baseManager.saveOrUpdate(Account.class.getName(), lineFactoryRentAccount);
+                logger.info("{}_厂房租赁费：{}" , companyTerm.getId(), produceLineMaintenanceFee);
+            }
+
+
         }
     }
 
