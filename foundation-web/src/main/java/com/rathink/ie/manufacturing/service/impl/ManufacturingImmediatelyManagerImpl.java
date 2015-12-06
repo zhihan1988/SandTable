@@ -341,7 +341,8 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         Integer loan = accountManager.getLoan(company);
         Integer floatingCapital = accountManager.getFloatingCapital(company);
 
-        return (companyCash + floatingCapital - loan) * ratio;
+        Integer maxLoanMoney = (companyCash + floatingCapital - loan) * ratio;
+        return maxLoanMoney < 0 ? 0 : maxLoanMoney;
     }
 
     public Map loan(String companyTermId, String choiceId, String fee, String type) {
