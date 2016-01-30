@@ -1,7 +1,6 @@
 package com.rathink.ie.base.component;
 
-import com.rathink.ie.ibase.service.CampaignContext;
-import org.jgroups.protocols.pbcast.STABLE;
+import com.rathink.ie.ibase.component.CampContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Scope("prototype")
 public class CyclePublisher implements ApplicationContextAware {
-    private CampaignContext campaignContext;
+    private CampContext campaignContext;
     private Map<String, Boolean> companyFinishedMap = new ConcurrentHashMap<>();
     private final Float CYCLE_TIME = 120000F;//每一回合的操作时长1min
     private Float leftTime = CYCLE_TIME;//剩余时长
@@ -33,7 +32,7 @@ public class CyclePublisher implements ApplicationContextAware {
         this.ctx = applicationContext;
     }
 
-    public void setCampaignContext(CampaignContext campaignContext) {
+    public void setCampaignContext(CampContext campaignContext) {
         this.campaignContext = campaignContext;
     }
 

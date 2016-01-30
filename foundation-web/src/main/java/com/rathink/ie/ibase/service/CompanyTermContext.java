@@ -2,6 +2,7 @@ package com.rathink.ie.ibase.service;
 
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
@@ -11,8 +12,8 @@ import java.util.*;
 /**
  * Created by Hean on 2015/9/4.
  */
-public abstract class CompanyTermContext {
-    protected CampaignContext campaignContext;
+public abstract class CompanyTermContext<T extends CampContext,S extends CompanyTermContext> {
+    protected T campaignContext;
     protected Company company;
     protected CompanyTerm companyTerm;
     protected Map<String, Integer> propertyValueMap = new LinkedHashMap<>();
@@ -20,30 +21,24 @@ public abstract class CompanyTermContext {
     protected List<CompanyTermInstruction> companyTermInstructionList = new ArrayList<>();
     protected List<Account> accountList = new ArrayList<>();
     protected List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
-    protected CompanyTermContext preCompanyTermContext;
+    protected S preCompanyTermContext;
 
     public Boolean contains(String key) {
         return propertyValueMap.containsKey(key);
     }
 
-    public Integer get(String key) {
-        if (!propertyValueMap.containsKey(key)) {
-            put(key, calculate(key));
-        }
-        return propertyValueMap.get(key);
-    }
 
-    abstract public Integer calculate(String key);
+
 
     public void put(String key, Integer value) {
         propertyValueMap.put(key, value);
     }
 
-    public CampaignContext getCampaignContext() {
+    public T getCampaignContext() {
         return campaignContext;
     }
 
-    public void setCampaignContext(CampaignContext campaignContext) {
+    public void setCampaignContext(T campaignContext) {
         this.campaignContext = campaignContext;
     }
 
@@ -108,11 +103,11 @@ public abstract class CompanyTermContext {
         }
     }
 
-    public CompanyTermContext getPreCompanyTermContext() {
+    public S getPreCompanyTermContext() {
         return preCompanyTermContext;
     }
 
-    public void setPreCompanyTermContext(CompanyTermContext preCompanyTermContext) {
+    public void setPreCompanyTermContext(S preCompanyTermContext) {
         this.preCompanyTermContext = preCompanyTermContext;
     }
 }

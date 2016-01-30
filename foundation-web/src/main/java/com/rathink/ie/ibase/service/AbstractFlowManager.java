@@ -9,6 +9,8 @@ import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.ibase.account.model.Account;
+import com.rathink.ie.ibase.component.BaseCampaignContext;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.work.model.CompanyPart;
@@ -22,16 +24,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 /**
  * Created by Hean on 2015/10/6.
  */
 @Service
-public abstract class AbstractFlowManager implements FlowManager {
+public abstract class AbstractFlowManager<T extends BaseCampaignContext> implements FlowManager<CampContext> {
     private static Logger logger = LoggerFactory.getLogger(AbstractFlowManager.class);
-    protected CampaignContext campaignContext;
+    protected T campaignContext;
 
     @Autowired
     protected BaseManager baseManager;
@@ -50,9 +51,27 @@ public abstract class AbstractFlowManager implements FlowManager {
     @Autowired
     protected CompanyPartManager companyPartManager;
 
+
+    //上下文变量
+    protected String campaignId;
+    protected Campaign campaign;
+
+
+
+    protected void init(String campaignId){
+
+        this.campaignId = campaignId;
+        campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
+        campaignContext = (T) CampaignCenter.getCampaignHandler(campaignId);
+    }
+
+    protected T getContext() {
+        return (T) campaignContext;
+    }
+
     @Override
     public void begin(String campaignId) {
-        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        init(campaignId);
 
         initCampaignContext();
 
@@ -66,11 +85,7 @@ public abstract class AbstractFlowManager implements FlowManager {
     }
 
     public void next(String campaignId) {
-        campaignContext = CampaignCenter.getCampaignHandler(campaignId);
-
-        //回合结束前
-        //收集决策信息
-        collectCompanyInstruction(campaignContext);
+        init(campaignId);
 
         //子类实现
         process();
@@ -91,17 +106,15 @@ public abstract class AbstractFlowManager implements FlowManager {
     }
 
 
-    public void initCampaignContext(){
+    private void initCampaignContext(){
         final Integer INIT_CAMPAIGN_DATE = 0;
 
         //1.比赛开始
-        Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignContext.getCampaign().getId());
         campaign.setCurrentCampaignDate(INIT_CAMPAIGN_DATE);
         campaign.setStatus(Campaign.Status.RUN.getValue());
-        campaignContext.setCampaign(campaign);
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         //2.初始化各公司
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        Map<String, CompanyTermContext> companyTermContextMap = campaignContext.getCompanyTermContextMap();
         List<Company> companyList = campaignManager.listCompany(campaign);
         for (Company company : companyList) {
             company.setStatus(ECompanyStatus.NORMAL.name());
@@ -118,27 +131,24 @@ public abstract class AbstractFlowManager implements FlowManager {
             companyTermContext.setCampaignContext(campaignContext);
             companyTermContext.setCompany(company);
             companyTermContext.setCompanyTerm(companyTerm);
-            companyTermHandlerMap.put(company.getId(), companyTermContext);
+            companyTermContextMap.put(company.getId(), companyTermContext);
         }
 
         initPartList();
         initPropertyList();
         initAccountList();
 
-        for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {
+        for (CompanyTermContext companyTermContext : companyTermContextMap.values()) {
             List<CompanyTermProperty> companyTermPropertyList = companyTermContext.getCompanyTermPropertyList();
             companyTermPropertyList.forEach(companyTermProperty -> baseManager.saveOrUpdate(CompanyTermProperty.class.getName(), companyTermProperty));
             List<Account> accountList = companyTermContext.getAccountList();
             accountList.forEach(account -> baseManager.saveOrUpdate(Account.class.getName(), account));
         }
 
-        XQuery xQuery = new XQuery();
-        xQuery.setHql("from IndustryExpression");
-        List<IndustryExpression> industryExpressionList = baseManager.listObject(xQuery);
-        for (IndustryExpression industryExpression : industryExpressionList) {
-            campaignContext.getExpressionMap().put(industryExpression.getName(),industryExpression.getExpression());
-        }
+        this.initSelfCampaignContext();
     }
+
+    protected abstract void initSelfCampaignContext();
 
     protected abstract void initPartList();
     /**
@@ -151,18 +161,6 @@ public abstract class AbstractFlowManager implements FlowManager {
     protected abstract void initAccountList();
 
 
-    private void collectCompanyInstruction(CampaignContext campaignContext) {
-        List<CompanyTermInstruction> allCompanyTermInstructionList = new ArrayList<>();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
-        for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
-            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-            List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm);
-            companyTermContext.putCompanyInstructionList(companyTermInstructionList);
-            allCompanyTermInstructionList.addAll(companyTermInstructionList);
-        }
-        campaignContext.addAllCurrentInstruction(allCompanyTermInstructionList);
-    }
 
     protected abstract void process();
 
@@ -170,7 +168,6 @@ public abstract class AbstractFlowManager implements FlowManager {
      * 开始新的回合
      */
     private void newRound() {
-        Campaign campaign = campaignContext.getCampaign();
         campaign.setCurrentCampaignDate(campaign.getNextCampaignDate());
         Map<String, CompanyTermContext> companyTermContextMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermContextMap.keySet()) {
@@ -191,12 +188,11 @@ public abstract class AbstractFlowManager implements FlowManager {
             //更新campaignCenter
             companyTermContextMap.put(companyId, companyTermContext);
         }
-
-        campaignContext.next();
+        campaignContext.setCampaign(campaign);
+//        campaignContext.next();
     }
 
     private void saveCampaignContext () {
-        Campaign campaign = campaignContext.getCampaign();
         baseManager.saveOrUpdate(Campaign.class.getName(), campaign);
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
@@ -242,9 +238,10 @@ public abstract class AbstractFlowManager implements FlowManager {
      * 比赛进度到达最后一轮时 结束比赛
      */
     public void end() {
-        Integer endDate = campaignContext.getCampaign().getIndustry().getTotalTerm() + 1;
-        if (campaignContext.getCampaign().getCurrentCampaignDate().equals(endDate)) {
-            for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+        Integer endDate = campaign.getIndustry().getTotalTerm() + 1;
+        if (campaign.getCurrentCampaignDate().equals(endDate)) {
+            Map<String, CompanyTermContext> companyTermContextMap = campaignContext.getCompanyTermContextMap();
+            for (CompanyTermContext companyTermContext : companyTermContextMap.values()) {
                 Company company = companyTermContext.getCompanyTerm().getCompany();
                 if (company.getCurrentCampaignDate().equals(endDate)) {
                     company.setStatus(ECompanyStatus.FINISH.name());

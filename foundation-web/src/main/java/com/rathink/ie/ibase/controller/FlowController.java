@@ -6,8 +6,8 @@ import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.service.FlowManager;
 import com.rathink.ie.internet.service.RobotManager;
@@ -69,7 +69,7 @@ public class FlowController {
     @RequestMapping("/companyNext")
     @ResponseBody
     public void companyNext(HttpServletRequest request, Model model) throws Exception {
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        CampContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         campaignContext.getCyclePublisher().finish(request.getParameter("companyId"));
         return;
     }
@@ -79,7 +79,7 @@ public class FlowController {
     public Map isNext(HttpServletRequest request, Model model) throws Exception {
         Map result = new HashMap<>();
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
+        CampContext campaignContext = CampaignCenter.getCampaignHandler(request.getParameter("campaignId"));
         String clientCampaignDate = request.getParameter("campaignDate");
         Integer serverCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         if (Integer.parseInt(clientCampaignDate) == serverCampaignDate) {
@@ -99,7 +99,7 @@ public class FlowController {
     @ResponseBody
     public String random(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        CampContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
         Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
         Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (CompanyTermContext companyTermContext : companyTermHandlerMap.values()) {

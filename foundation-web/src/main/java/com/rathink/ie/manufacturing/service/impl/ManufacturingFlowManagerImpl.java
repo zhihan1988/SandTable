@@ -18,6 +18,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.component.ManufacturingCampContext;
 import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.MaterialManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
@@ -32,7 +33,7 @@ import java.util.*;
  * Created by Hean on 2015/8/24.
  */
 @Service(value = "manufacturingFlowManagerImpl")
-public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
+public class ManufacturingFlowManagerImpl extends AbstractFlowManager<ManufacturingCampContext> {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingFlowManagerImpl.class);
     @Autowired
     private AutoSerialManager autoSerialManager;
@@ -43,10 +44,23 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     @Autowired
     private MaterialManager materialManager;
 
+//    private ManufacturingCampaignContext campaignContext = getContext();
+
+    protected void init(String campaignId) {
+        super.init(campaignId);
+        campaignContext = getContext();
+//        campaignContext.testIfManufacturingCampContext();
+    }
+
+    @Override
+    protected void initSelfCampaignContext() {
+
+    }
+
     @Override
     protected void initPartList() {
 
-        String industryId = campaignContext.getCampaign().getIndustry().getId();
+        String industryId = campaign.getIndustry().getId();
         //产品线
         IndustryResource produceLineResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.PRODUCE_LINE.name());
         List<IndustryResourceChoice> produceLineList = industryResourceChoiceManager.listIndustryResourceChoice(produceLineResource.getId());
@@ -70,7 +84,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 produceLine.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 produceLine.setDept(produceLineResource.getDept());
                 produceLine.setStatus(ProduceLine.Status.UN_BUILD.name());
-                produceLine.setCampaign(campaignContext.getCampaign());
+                produceLine.setCampaign(campaign);
                 produceLine.setCompany(company);
                 produceLine.setName(produceLineChoice.getName());
 //                produceLine.setProduceType();
@@ -84,7 +98,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 material.setName(materialChoice.getName());
                 material.setType(materialChoice.getType());
                 material.setAmount("0");
-                material.setCampaign(campaignContext.getCampaign());
+                material.setCampaign(campaign);
                 material.setCompany(company);
                 material.setStatus(Material.Status.NORMAL.name());
                 baseManager.saveOrUpdate(Material.class.getName(), material);
@@ -98,7 +112,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 product.setAmount(0);
                 Integer developNeedCycle = Product.Type.valueOf(productChoice.getType()).getDevelopNeedCycle();
                 product.setDevelopNeedCycle(developNeedCycle);
-                product.setCampaign(campaignContext.getCampaign());
+                product.setCampaign(campaign);
                 product.setCompany(company);
                 product.setStatus(Product.Status.NORMAL.name());
                 baseManager.saveOrUpdate(Product.class.getName(), product);
@@ -111,7 +125,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                 Integer devotionNeedCycle = Market.Type.valueOf(marketChoice.getType()).getDevotionNeedCycle();
                 market.setDevotionNeedCycle(devotionNeedCycle);
                 market.setCompany(company);
-                market.setCampaign(campaignContext.getCampaign());
+                market.setCampaign(campaign);
                 market.setStatus(Market.Status.NORMAL.name());
                 baseManager.saveOrUpdate(Market.class.getName(), market);
             }
@@ -140,12 +154,13 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
 
     }
 
+
     @Override
     protected void initAccountList() {
         for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
-            Integer currentPeriodIncome = companyTermContext.get(EPropertyName.CURRENT_PERIOD_INCOME.name());
+            Integer currentPeriodIncome = 100;
             Account incomeAccount = accountManager.packageAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), companyTerm);
             accountList.add(incomeAccount);
             companyTermContext.setAccountList(accountList);
@@ -157,9 +172,9 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     protected void randomChoice() {
 
         Map<String, IndustryResource> currentTypeIndustryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
-        String industryId = campaignContext.getCampaign().getIndustry().getId();
+        String industryId = campaign.getIndustry().getId();
 
-        Integer currentCampaignDate = campaignContext.getCampaign().getCurrentCampaignDate();
+        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
         if (currentCampaignDate % 4 == 1) {
             //市场投放
             IndustryResource marketFeeResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.MARKET_FEE.name());
@@ -207,8 +222,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
                     marketOrderChoiceMap.put(market, marketOrderChoiceList);
                 }
             }
-            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
-            campaignContext.setDevoteCycle(devoteCycle);
+//            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
+//            campaignContext.setDevoteCycle(devoteCycle);
         }
 
         IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_LONG_TERM.name());
@@ -527,7 +542,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager {
     }
 
     protected void process() {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        Map<String, ManufacturingCompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
             CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
 

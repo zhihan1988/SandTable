@@ -1,22 +1,24 @@
-package com.rathink.ie.ibase.service;
+package com.rathink.ie.internet.component;
 
 import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.ibase.component.BaseCampaignContext;
+import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
+import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 
 import java.util.*;
 
 /**
  * Created by Hean on 2015/9/10.
  */
-public class CampaignContext {
+public class InternetCampContext extends BaseCampaignContext<InternetCompanyTermContext> {
     private Campaign campaign;
     private Set<CompanyTermInstruction> currentCompanyTermInstructionSet = new HashSet<>();
-    private Map<String, CompanyTermContext> companyTermContextMap;
-    private Map<String, IndustryResource> currentTypeIndustryResourceMap = new HashMap<>();//key:资源类型  value:资源
+
     private Map<String, List<CompanyTermInstruction>> currentChoiceInstructionMap = new HashMap<>();
     //    private Map<String, List<CompanyTermInstruction>> currentResourceInstructionMap = new HashMap<>();
     private Map<String, String> expressionMap = new HashMap<>();
@@ -37,18 +39,6 @@ public class CampaignContext {
 
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
-    }
-
-    public Map<String, CompanyTermContext> getCompanyTermContextMap() {
-        return companyTermContextMap;
-    }
-
-    public void setCompanyTermContextMap(Map<String, CompanyTermContext> companyTermContextMap) {
-        this.companyTermContextMap = companyTermContextMap;
-    }
-
-    public CompanyTermContext getCompanyTermContext(String companyId) {
-        return companyTermContextMap.get(companyId);
     }
 
     /**
@@ -73,13 +63,7 @@ public class CampaignContext {
         }
     }
 
-    public Map<String, IndustryResource> getCurrentTypeIndustryResourceMap() {
-        return currentTypeIndustryResourceMap;
-    }
 
-    public void setCurrentTypeIndustryResourceMap(Map<String, IndustryResource> currentTypeIndustryResourceMap) {
-        this.currentTypeIndustryResourceMap = currentTypeIndustryResourceMap;
-    }
 
     public Set<CompanyTermInstruction> getCurrentCompanyTermInstructionSet() {
         return currentCompanyTermInstructionSet;

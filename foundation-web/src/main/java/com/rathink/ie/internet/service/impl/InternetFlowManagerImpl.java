@@ -1,9 +1,7 @@
 package com.rathink.ie.internet.service.impl;
 
-import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.base.component.CyclePublisher;
+import com.ming800.core.does.model.XQuery;
 import com.rathink.ie.foundation.campaign.model.Campaign;
-import com.rathink.ie.foundation.service.RoundEndObserable;
 import com.rathink.ie.foundation.util.RandomUtil;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -11,12 +9,14 @@ import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.AbstractFlowManager;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
+import com.rathink.ie.ibase.work.model.IndustryExpression;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
+import com.rathink.ie.internet.component.InternetCampContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,9 +28,19 @@ import java.util.stream.Collectors;
  * Created by Hean on 2015/8/24.
  */
 @Service(value = "internetFlowManagerImpl")
-public class InternetFlowManagerImpl extends AbstractFlowManager {
+public class InternetFlowManagerImpl extends AbstractFlowManager<InternetCampContext> {
     private static Logger logger = LoggerFactory.getLogger(InternetFlowManagerImpl.class);
 
+
+    @Override
+    protected void initSelfCampaignContext(){
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from IndustryExpression");
+        List<IndustryExpression> industryExpressionList = baseManager.listObject(xQuery);
+        for (IndustryExpression industryExpression : industryExpressionList) {
+            campaignContext.getExpressionMap().put(industryExpression.getName(),industryExpression.getExpression());
+        }
+    }
 
     @Override
     protected void initPartList() {
@@ -59,7 +69,7 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
 
     @Override
     protected void initAccountList() {
-        for (CompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
+        for (InternetCompanyTermContext companyTermContext : campaignContext.getCompanyTermContextMap().values()) {
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
             Account humanAccount = accountManager.packageAccount("0", EAccountEntityType.HR_FEE.name(), EAccountEntityType.COMPANY_CASH.name(), companyTerm);
@@ -136,6 +146,9 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
     }
 
     protected void process() {
+        //回合结束前
+        //收集决策信息
+        collectCompanyInstruction();
         processInstruction();
         calculateProperty();
         calculateAccount();
@@ -146,7 +159,7 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
         Set<IndustryResourceChoice> humanSet = campaignContext.getCurrentTypeIndustryResourceMap().get(EChoiceBaseType.HUMAN.name()).getCurrentIndustryResourceChoiceSet();
         if (humanSet == null || humanSet.size() == 0) return;
         //竞标
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        Map<String, InternetCompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (IndustryResourceChoice human : humanSet) {
             List<CompanyTermInstruction> companyTermInstructionList = campaignContext.getCurrentChoiceInstructionMap().get(human.getId());
             if (companyTermInstructionList != null && companyTermInstructionList.size() > 0) {
@@ -204,9 +217,9 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
     }*/
 
     protected void calculateProperty() {
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        Map<String, InternetCompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            InternetCompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<CompanyTermProperty> companyTermPropertyList = new ArrayList<>();
             for (EPropertyName ePropertyName : EPropertyName.values()) {
@@ -222,9 +235,9 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
         Campaign campaign = campaignContext.getCampaign();
         Integer TIME_UNIT = campaign.getIndustry().getTerm();
         Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Map<String, CompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        Map<String, InternetCompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
         for (String companyId : companyTermHandlerMap.keySet()) {
-            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            InternetCompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
             CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
             List<Account> accountList = new ArrayList<>();
 
@@ -266,5 +279,20 @@ public class InternetFlowManagerImpl extends AbstractFlowManager {
             companyTermContext.setAccountList(accountList);
         }
     }
+
+
+    private void collectCompanyInstruction() {
+        List<CompanyTermInstruction> allCompanyTermInstructionList = new ArrayList<>();
+        Map<String, InternetCompanyTermContext> companyTermHandlerMap = campaignContext.getCompanyTermContextMap();
+        for (String companyId : companyTermHandlerMap.keySet()) {
+            CompanyTermContext companyTermContext = companyTermHandlerMap.get(companyId);
+            CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
+            List<CompanyTermInstruction> companyTermInstructionList = instructionManager.listCompanyInstruction(companyTerm);
+            companyTermContext.putCompanyInstructionList(companyTermInstructionList);
+            allCompanyTermInstructionList.addAll(companyTermInstructionList);
+        }
+        campaignContext.addAllCurrentInstruction(allCompanyTermInstructionList);
+    }
+
 
 }

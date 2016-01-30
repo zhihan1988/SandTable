@@ -2,15 +2,20 @@ package com.rathink.ie.foundation.service.impl;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
+import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
+import com.rathink.ie.ibase.component.BaseCampaignContext;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.service.*;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.service.InstructionManager;
 import com.rathink.ie.ibase.service.PropertyManager;
+import com.rathink.ie.internet.component.InternetCampContext;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
+import com.rathink.ie.manufacturing.component.ManufacturingCampContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +50,26 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
 
     @Override
     public void initCampaignHandler(Campaign campaign) {
-        CampaignContext campaignContext = new CampaignContext();
+        FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
+        flowManager.reset(campaign.getId());
+
+        BaseCampaignContext campaignContext = null;
+        String industryType = campaign.getIndustry().getType();
+        if ("internet".equals(industryType)) {
+            campaignContext = new InternetCampContext();
+        } else if ("manufacturing".equals(industryType)) {
+            campaignContext = new ManufacturingCampContext();
+        } else {
+            throw new RuntimeException("初始化失败，行业类型异常：" + campaign.getId());
+        }
+        campaignContext.setCampaign(campaign);
+        campaignContext.setCampaignId(campaign.getId());
+        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
+
+        flowManager.begin(campaign.getId());
+
+
+       /* CampaignContext campaignContext = new CampaignContext();
         campaignContext.setCampaign(campaign);
 
         Map<String, CompanyTermContext> companyTermHandlerMap = new HashMap<>();
@@ -62,13 +86,13 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         campaignContext.setCompanyTermContextMap(companyTermHandlerMap);
     /*    List<CompanyChoice> companyChoiceList = choiceManager.listCompanyChoice(campaign.getId(), campaign.getCurrentCampaignDate());
         campaignHandler.setCurrentCompanyChoiceList(companyChoiceList);*/
-        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
+//        CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
     }
 
     @Override
-    public CompanyTermContext initCompanyTermHandler(CompanyTerm companyTerm, CampaignContext campaignContext) {
+    public CompanyTermContext initCompanyTermHandler(CompanyTerm companyTerm, CampContext campaignContext) {
 
-        CompanyTermContext companyTermContext = new InternetCompanyTermContext();
+      /*  CompanyTermContext companyTermContext = new InternetCompanyTermContext();
         //1
         companyTermContext.setCampaignContext(campaignContext);
         //2
@@ -80,6 +104,7 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
         List<CompanyTermProperty> companyTermPropertyList = propertyManager.listCompanyTermProperty(companyTerm);
         companyTermContext.setCompanyTermPropertyList(companyTermPropertyList);
 
-        return companyTermContext;
+        return companyTermContext;*/
+        return null;
     }
 }

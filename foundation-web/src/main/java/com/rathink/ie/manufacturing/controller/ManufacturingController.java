@@ -10,13 +10,13 @@ import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.service.CampaignCenter;
-import com.rathink.ie.ibase.service.CampaignContext;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.component.ManufacturingCampContext;
 import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ie.manufacturing.service.ProductManager;
@@ -29,7 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/10/7.
@@ -51,7 +54,7 @@ public class ManufacturingController extends BaseIndustryController {
     public String main(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
         Campaign campaign = campaignContext.getCampaign();
         CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
         if (companyTermContext == null) {
@@ -146,7 +149,7 @@ public class ManufacturingController extends BaseIndustryController {
         String companyId = request.getParameter("companyId");
         String companyTermId = request.getParameter("companyTermId");
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
 
         DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
         devoteCycle.finishDevote(companyId);
@@ -181,7 +184,7 @@ public class ManufacturingController extends BaseIndustryController {
     public Map refreshDevoteCycleStatus(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
         DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
 
         Map map = new HashMap<>();
@@ -236,7 +239,7 @@ public class ManufacturingController extends BaseIndustryController {
         baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
 
 
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(companyTerm.getCampaign().getId());
+        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(companyTerm.getCampaign().getId());
         DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
         devoteCycle.chooseOrder(choiceId);
 

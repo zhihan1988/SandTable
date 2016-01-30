@@ -10,6 +10,7 @@ import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.Edept;
 import com.rathink.ie.ibase.service.InstructionManager;
+import com.rathink.ie.internet.component.InternetCampContext;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,18 @@ import java.util.List;
  * Created by Hean on 2015/9/4.
  */
 @Component
-public class InternetCompanyTermContext extends CompanyTermContext {
+public class InternetCompanyTermContext extends CompanyTermContext<InternetCampContext, InternetCompanyTermContext> {
     private static Logger logger = LoggerFactory.getLogger(InternetCompanyTermContext.class);
 
     final Double PERCENT = 100d;
-    @Override
+
+    public Integer get(String key) {
+        if (!propertyValueMap.containsKey(key)) {
+            put(key, calculate(key));
+        }
+        return propertyValueMap.get(key);
+    }
+
     public Integer calculate(String key) {
         EPropertyName ePropertyName = EPropertyName.valueOf(key);
         Integer value = 0;

@@ -3,12 +3,9 @@ package com.rathink.ie.base.component;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.ibase.service.CampaignContext;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
-import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
-import com.rathink.ie.manufacturing.model.MarketOrder;
 import com.rathink.ie.manufacturing.model.MarketOrderChoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +18,7 @@ import java.util.*;
 public class DevoteCycle {
     private static Logger logger = LoggerFactory.getLogger(DevoteCycle.class);
 
-    private CampaignContext campaignContext;
+    private CampContext campaignContext;
 
     private Integer status = 1;//1.正在投票  2.投票完成，正在选择订单  3选择订单完成
 
@@ -35,7 +32,7 @@ public class DevoteCycle {
     private Map<String,Queue<String>> companyIdQueueMap = new HashMap<>();
     Map<String, List<String>> companyOrderMap = new HashMap<>();//市场公司竞标排名 local_P1:company1,3000;company2,2000
 
-    public DevoteCycle(CampaignContext campaignContext, List<String> marketList, Map<String, List<MarketOrderChoice>> marketOrderChoiceMap) {
+    public DevoteCycle(CampContext campaignContext, List<String> marketList, Map<String, List<MarketOrderChoice>> marketOrderChoiceMap) {
         this.campaignContext = campaignContext;
         this.marketList = marketList;
         this.marketQueue = new LinkedList<>(marketList);

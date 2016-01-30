@@ -5,6 +5,7 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.team.model.ECompanyStatus;
+import com.rathink.ie.ibase.component.CampContext;
 import com.rathink.ie.ibase.controller.BaseIndustryController;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
@@ -15,6 +16,7 @@ import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EChoiceBaseType;
 import com.rathink.ie.internet.EPropertyName;
 import com.rathink.ie.internet.ERoundType;
+import com.rathink.ie.internet.component.InternetCampContext;
 import com.rathink.ie.internet.service.InternetWorkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +61,7 @@ public class InternetController extends BaseIndustryController{
     public String main(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
-        CampaignContext campaignContext = CampaignCenter.getCampaignHandler(campaignId);
+        InternetCampContext campaignContext = (InternetCampContext) CampaignCenter.getCampaignHandler(campaignId);
         Campaign campaign = campaignContext.getCampaign();
         CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
         CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
