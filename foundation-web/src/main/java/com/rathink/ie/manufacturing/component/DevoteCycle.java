@@ -1,4 +1,4 @@
-package com.rathink.ie.base.component;
+package com.rathink.ie.manufacturing.component;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;

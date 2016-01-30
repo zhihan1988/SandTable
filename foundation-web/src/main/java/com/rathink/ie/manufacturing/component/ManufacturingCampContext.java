@@ -1,9 +1,6 @@
 package com.rathink.ie.manufacturing.component;
 
-import com.rathink.ie.base.component.CyclePublisher;
-import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.ibase.component.BaseCampaignContext;
-import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.manufacturing.service.impl.ManufacturingCompanyTermContext;
 

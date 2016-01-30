@@ -3,7 +3,6 @@ package com.rathink.ie.manufacturing.service.impl;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.ming800.core.taglib.PageEntity;
-import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;
 import com.rathink.ie.ibase.property.model.CompanyTerm;
@@ -17,7 +16,11 @@ import com.rathink.ie.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.EInstructionStatus;
 import com.rathink.ie.internet.EPropertyName;
-import com.rathink.ie.manufacturing.*;
+import com.rathink.ie.manufacturing.EManufacturingAccountEntityType;
+import com.rathink.ie.manufacturing.EManufacturingChoiceBaseType;
+import com.rathink.ie.manufacturing.EManufacturingInstructionBaseType;
+import com.rathink.ie.manufacturing.EManufacturingSerialGroup;
+import com.rathink.ie.manufacturing.component.DevoteCycle;
 import com.rathink.ie.manufacturing.component.ManufacturingCampContext;
 import com.rathink.ie.manufacturing.model.*;
 import com.rathink.ie.manufacturing.service.MaterialManager;
@@ -43,14 +46,6 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
     private AccountManager accountManager;
     @Autowired
     private MaterialManager materialManager;
-
-//    private ManufacturingCampaignContext campaignContext = getContext();
-
-    protected void init(String campaignId) {
-        super.init(campaignId);
-        campaignContext = getContext();
-//        campaignContext.testIfManufacturingCampContext();
-    }
 
     @Override
     protected void initSelfCampaignContext() {
@@ -222,8 +217,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
                     marketOrderChoiceMap.put(market, marketOrderChoiceList);
                 }
             }
-//            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
-//            campaignContext.setDevoteCycle(devoteCycle);
+            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
+            campaignContext.setDevoteCycle(devoteCycle);
         }
 
         IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_LONG_TERM.name());

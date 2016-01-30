@@ -15,7 +15,6 @@ import com.rathink.ie.ibase.property.model.CompanyTerm;
 import com.rathink.ie.ibase.property.model.CompanyTermProperty;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.work.model.IndustryExpression;
 import com.rathink.ie.internet.EAccountEntityType;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
 import org.hibernate.Session;
@@ -24,7 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hean on 2015/10/6.
@@ -65,9 +67,9 @@ public abstract class AbstractFlowManager<T extends BaseCampaignContext> impleme
         campaignContext = (T) CampaignCenter.getCampaignHandler(campaignId);
     }
 
-    protected T getContext() {
+   /* protected T getContext() {
         return (T) campaignContext;
-    }
+    }*/
 
     @Override
     public void begin(String campaignId) {

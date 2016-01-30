@@ -1,14 +1,12 @@
 package com.rathink.ie.internet.component;
 
 import com.rathink.ie.base.component.CyclePublisher;
-import com.rathink.ie.base.component.DevoteCycle;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.component.BaseCampaignContext;
-import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;
 import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.work.model.IndustryResource;
 import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
+import com.rathink.ie.manufacturing.component.DevoteCycle;
 
 import java.util.*;
 
