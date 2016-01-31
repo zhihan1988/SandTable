@@ -63,7 +63,6 @@ public class CampaignCenterManagerImpl implements CampaignCenterManager {
             throw new RuntimeException("初始化失败，行业类型异常：" + campaign.getId());
         }
         campaignContext.setCampaign(campaign);
-        campaignContext.setCampaignId(campaign.getId());
         CampaignCenter.putCampaignTermHandler(campaign.getId(), campaignContext);
 
         flowManager.begin(campaign.getId());

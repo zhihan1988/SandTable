@@ -3,7 +3,7 @@ package com.rathink.ie.ibase.service;
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.base.component.CyclePublisher;
+import com.rathink.ie.ibase.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.ie.foundation.team.model.Company;

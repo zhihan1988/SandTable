@@ -1,6 +1,6 @@
 package com.rathink.ie.internet.component;
 
-import com.rathink.ie.base.component.CyclePublisher;
+import com.rathink.ie.ibase.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.component.BaseCampaignContext;
 import com.rathink.ie.ibase.work.model.CompanyPart;

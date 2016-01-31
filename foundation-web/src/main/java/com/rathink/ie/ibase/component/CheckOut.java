@@ -1,4 +1,4 @@
-package com.rathink.ie.base.component;
+package com.rathink.ie.ibase.component;
 
 import java.lang.annotation.*;
 

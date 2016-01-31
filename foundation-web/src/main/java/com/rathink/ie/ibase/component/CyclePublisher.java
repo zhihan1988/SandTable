@@ -1,17 +1,14 @@
-package com.rathink.ie.base.component;
+package com.rathink.ie.ibase.component;
 
+import com.ming800.core.util.ApplicationContextUtil;
+import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.component.CampContext;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import com.rathink.ie.ibase.service.FlowManager;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.sql.Time;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,18 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Scope("prototype")
-public class CyclePublisher implements ApplicationContextAware {
+public class CyclePublisher {
     private CampContext campaignContext;
     private Map<String, Boolean> companyFinishedMap = new ConcurrentHashMap<>();
     private final Float CYCLE_TIME = 120000F;//每一回合的操作时长1min
     private Float leftTime = CYCLE_TIME;//剩余时长
     private Timer timer;
-
-    private ApplicationContext ctx;
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.ctx = applicationContext;
-    }
 
     public void setCampaignContext(CampContext campaignContext) {
         this.campaignContext = campaignContext;
@@ -72,8 +63,9 @@ public class CyclePublisher implements ApplicationContextAware {
     }
 
     private void publish(){
-        CycleEvent cycleEvent = new CycleEvent(ctx, campaignContext);
-        ctx.publishEvent(cycleEvent);
+        Campaign campaign = campaignContext.getCampaign();
+        FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
+        flowManager.next(campaign.getId());
 
         reset();
     }

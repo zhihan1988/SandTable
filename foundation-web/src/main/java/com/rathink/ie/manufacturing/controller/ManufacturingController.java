@@ -2,7 +2,7 @@ package com.rathink.ie.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
-import com.rathink.ie.base.component.CheckOut;
+import com.rathink.ie.ibase.component.CheckOut;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.ibase.account.model.Account;

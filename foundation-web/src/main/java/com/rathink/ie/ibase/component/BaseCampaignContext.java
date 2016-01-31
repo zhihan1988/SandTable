@@ -1,6 +1,5 @@
 package com.rathink.ie.ibase.component;
 
-import com.rathink.ie.base.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.ibase.service.CompanyTermContext;
 import com.rathink.ie.ibase.work.model.IndustryResource;
@@ -15,19 +14,10 @@ import java.util.Map;
 @Component
 public class BaseCampaignContext<T extends CompanyTermContext> implements CampContext<T> {
 
-    private String campaignId;
     private Campaign campaign;
     private Map<String, T> companyTermContextMap = new HashMap<>();
     protected Map<String, IndustryResource> currentTypeIndustryResourceMap = new HashMap<>();//key:资源类型  value:资源
     private CyclePublisher cyclePublisher;
-
-    public String getCampaignId() {
-        return campaignId;
-    }
-
-    public void setCampaignId(String campaignId) {
-        this.campaignId = campaignId;
-    }
 
     @Override
     public Campaign getCampaign() {

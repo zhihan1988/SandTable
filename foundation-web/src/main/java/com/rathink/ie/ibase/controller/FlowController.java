@@ -2,7 +2,7 @@ package com.rathink.ie.ibase.controller;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.util.ApplicationContextUtil;
-import com.rathink.ie.base.component.CyclePublisher;
+import com.rathink.ie.ibase.component.CyclePublisher;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
 import com.rathink.ie.foundation.team.model.Company;
@@ -60,9 +60,9 @@ public class FlowController {
         String campaignId = request.getParameter("campaignId");
         Campaign campaign = (Campaign) baseManager.getObject(Campaign.class.getName(), campaignId);
         FlowManager flowManager = (FlowManager) ApplicationContextUtil.getBean(campaign.getIndustry().getType() + "FlowManagerImpl");
-        flowManager.reset(campaignId);
+//        flowManager.reset(campaignId);
         campaignCenterManager.initCampaignHandler(campaign);
-        flowManager.begin(campaignId);
+//        flowManager.begin(campaignId);
         return "success";
     }
 
