@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<module name="team" label="团队" version="" package="com.rathink.ie.team" path="">
+<module name="team" label="团队" version="" package="com.rathink.ie.foundation.team" path="">
     <entities>
         <entity name="team" label="团队"
                 basic="simple" others=""

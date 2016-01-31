@@ -1,11 +1,9 @@
 package com.rathink.ie.system.basic.controller;
 
 import com.ming800.core.base.service.BaseManager;
-import com.rathink.ie.ibase.work.model.IndustryAnalyzer;
-import com.rathink.ie.ibase.work.model.IndustryExpression;
-import com.rathink.ie.ibase.work.model.IndustryExpressionSimulation;
-import com.rathink.ie.ibase.work.model.IndustryExpressionVariate;
-import com.sun.org.apache.xpath.internal.operations.Mod;
+import com.rathink.ix.ibase.work.model.IndustryExpression;
+import com.rathink.ix.ibase.work.model.IndustryExpressionSimulation;
+import com.rathink.ix.ibase.work.model.IndustryExpressionVariate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

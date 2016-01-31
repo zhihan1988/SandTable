@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<module name="manufacturing" label="比赛" version="" package="com.rathink.ie.manufacturing.model" path="">
+<module name="manufacturing" label="比赛" version="" package="com.rathink.ix.manufacturing.model" path="">
     <entities>
         <entity name="ProduceLine" label="生产线"
                 basic="simple" others=""
-                model="com.rathink.ie.manufacturing.model.ProduceLine">
+                model="com.rathink.ix.manufacturing.model.ProduceLine">
             <fields>
                 <field name="produceLineType" label="生产线类型" inputType="select_status" key="produceLineType">
                     <statusType fieldName="produceLineType">

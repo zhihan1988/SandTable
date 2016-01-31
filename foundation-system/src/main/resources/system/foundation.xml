@@ -100,7 +100,7 @@
 
         <entity name="IndustryChoice" label="行业"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryResourceChoice">
+                model="com.rathink.ix.ibase.work.model.IndustryResourceChoice">
             <!--<fields>-->
                 <!--<field name="status" label="比赛状态" inputType="text">-->
                     <!--<statusType fieldName="status">-->
@@ -128,7 +128,7 @@
 
         <entity name="IndustryChoiceSetting" label="行业对象"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryResource">
+                model="com.rathink.ix.ibase.work.model.IndustryResource">
             <!--<fields>-->
             <!--<field name="status" label="比赛状态" inputType="text">-->
             <!--<statusType fieldName="status">-->
@@ -156,7 +156,7 @@
 
         <entity name="IndustryExpression" label="公式"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryExpression">
+                model="com.rathink.ix.ibase.work.model.IndustryExpression">
             <does>
                 <do name="plistIndustryExpression" label="公式列表"  result="/foundation/industryExpressionList">
                     <query name="default" label="默认" type="auto" orderBy="id:desc">
@@ -171,7 +171,7 @@
 
         <entity name="IndustryExpressionVariate" label="表达式变量"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.work.model.IndustryExpressionVariate">
+                model="com.rathink.ix.ibase.work.model.IndustryExpressionVariate">
             <does>
                 <do name="listIndustryExpressionVariate" label="变量列表"  result="/foundation/industryExpressionVariateList">
                     <query name="default" label="默认" type="auto" orderBy="id:desc">

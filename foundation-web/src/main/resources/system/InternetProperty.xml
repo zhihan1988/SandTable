@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<module name="property" label="比赛" version="" package="com.rathink.ie.ibase.property" path="">
+<module name="property" label="比赛" version="" package="com.rathink.ix.ibase.property" path="">
     <entities>
         <entity name="CompanyTermProperty" label="属性"
                 basic="simple" others=""
-                model="com.rathink.ie.ibase.property.model.CompanyTermProperty">
+                model="com.rathink.ix.ibase.property.model.CompanyTermProperty">
             <fields>
                 <field name="name" label="属性名称" inputType="select_status" key="name">
                     <statusType fieldName="name">

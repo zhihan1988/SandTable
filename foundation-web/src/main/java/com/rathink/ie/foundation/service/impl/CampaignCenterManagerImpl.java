@@ -5,23 +5,16 @@ import com.ming800.core.does.model.XQuery;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.service.CampaignCenterManager;
-import com.rathink.ie.ibase.component.BaseCampaignContext;
-import com.rathink.ie.ibase.component.CampContext;
-import com.rathink.ie.ibase.property.model.CompanyTerm;
-import com.rathink.ie.ibase.property.model.CompanyTermProperty;
-import com.rathink.ie.ibase.service.*;
-import com.rathink.ie.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ie.ibase.service.InstructionManager;
-import com.rathink.ie.ibase.service.PropertyManager;
-import com.rathink.ie.internet.component.InternetCampContext;
-import com.rathink.ie.internet.service.impl.InternetCompanyTermContext;
-import com.rathink.ie.manufacturing.component.ManufacturingCampContext;
+import com.rathink.ix.ibase.component.BaseCampaignContext;
+import com.rathink.ix.ibase.component.CampContext;
+import com.rathink.ix.ibase.property.model.CompanyTerm;
+import com.rathink.ix.ibase.service.*;
+import com.rathink.ix.internet.component.InternetCampContext;
+import com.rathink.ix.manufacturing.component.ManufacturingCampContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2015/9/14.

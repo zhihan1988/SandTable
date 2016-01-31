@@ -24,6 +24,7 @@
         <property name="packagesToScan">
             <list>
                 <value>com.rathink.ie.**.**.model</value>
+                <value>com.rathink.ix.**.**.model</value>
             </list>
         </property>
     </bean>
