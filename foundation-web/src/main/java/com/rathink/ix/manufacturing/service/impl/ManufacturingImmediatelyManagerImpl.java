@@ -121,6 +121,8 @@ public class ManufacturingImmediatelyManagerImpl implements ManufacturingImmedia
         }
         if (lineBuildNeedCycle == 0) {//建造完成
             produceLine.setStatus(ProduceLine.Status.FREE.name());
+        } else {
+            produceLine.setStatus(ProduceLine.Status.BUILDING.name());
         }
         baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
 

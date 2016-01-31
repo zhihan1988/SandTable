@@ -246,6 +246,8 @@ function refreshProduceLine(line) {
         lineStatusSpan.text("未建造");
     } else if (lineStatus == 'BUILDING') {
         lineStatusSpan.text("建造中");
+    } else if (lineStatus == 'BUILT') {
+        lineStatusSpan.text("建造未完成");
     } else if (lineStatus == 'FREE') {
         lineStatusSpan.text("空闲");
     } else if (lineStatus == 'PRODUCING') {
@@ -255,7 +257,7 @@ function refreshProduceLine(line) {
     } else {
         lineStatusSpan.text("状态异常");
     }
-    if(line.status == 'BUILDING' || line.status == 'REBUILDING'){
+    if(line.status == 'BUILDING'|| line.status == 'BUILT' || line.status == 'REBUILDING'){
         lineStatusSpan.append(" 剩余建设周期:").append("<span class='line-important'>"+line.lineBuildNeedCycle+"</span>");
     }
 
@@ -339,6 +341,8 @@ function initProduceLineButton(line) {
     if(lineStatus=='UN_BUILD'){
         $("<button class='am-btn am-btn-secondary am-btn-once'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
+
+    } else if(lineStatus == 'BUILT'){
         $("<button class='am-btn am-btn-secondary am-btn-once'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'FREE'){
         $("<button class='am-btn am-btn-secondary am-btn-once'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
@@ -363,6 +367,9 @@ function updateProduceLineButton(line) {
     if(lineStatus=='UN_BUILD'){
         $("<button class='am-btn am-btn-secondary am-btn-once'>投资新生产线</button>").attr("id","build_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'BUILDING'){
+
+    } else if(lineStatus == 'BUILT'){
+        $("<button class='am-btn am-btn-secondary am-btn-once'>再投生产线</button>").attr("id","continueBuild_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'FREE'){
         $("<button class='am-btn am-btn-secondary am-btn-once'>生产</button>").attr("id","produce_"+line.id).appendTo(lineButtonDiv);
     } else if (lineStatus == 'PRODUCING'){

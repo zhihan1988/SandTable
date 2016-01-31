@@ -346,6 +346,23 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
 
 
     //更新生产 完成入库
+    protected void processUpdateBuilding(CompanyTermContext companyTermContext) {
+        Company company = companyTermContext.getCompanyTerm().getCompany();
+
+        XQuery xQuery = new XQuery();
+        xQuery.setHql("from ProduceLine where status=:status and company.id=:companyId");
+        xQuery.put("status", ProduceLine.Status.BUILDING.name());
+        xQuery.put("companyId", company.getId());
+        List<ProduceLine> produceLineList = baseManager.listObject(xQuery);
+        if (produceLineList != null) {
+            for (ProduceLine produceLine : produceLineList) {
+                produceLine.setStatus(ProduceLine.Status.BUILT.name());
+                baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
+            }
+        }
+    }
+
+    //更新生产 完成入库
     protected void processUpdateProduce(CompanyTermContext companyTermContext) {
         Company company = companyTermContext.getCompanyTerm().getCompany();
 
@@ -549,6 +566,8 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
             processRebuild(companyTermContext);
             //市场投入周期
             processMarketAreaDevotion(companyTermContext);
+            //更新生产线状态
+            processUpdateBuilding(companyTermContext);
             //更新生产完成入库
             processUpdateProduce(companyTermContext);
             //销售产品所得费用
