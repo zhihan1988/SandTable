@@ -1,17 +1,20 @@
-$(function () {
+var base = "";
+var campaignId;
+var campaignDate;
+var companyId;
+var companyTermId;
+var roundType;
 
+$(function () {
     /*
     //进度条
     var $progress = $.AMUI.progress;
     $progress.configure({ showSpinner: false });*/
-
-    var base = getBaseUrl();
-
-    var campaignId = $("#campaignId").val();
-    var campaignDate = $("#campaignDate").val();
-    var companyId = $("#companyId").val();
-    var companyTermId = $("#companyTermId").val();
-    var roundType = $("#roundType").val();
+    campaignId = $("#campaignId").val();
+    campaignDate = $("#campaignDate").val();
+    companyId = $("#companyId").val();
+    companyTermId = $("#companyTermId").val();
+    roundType = $("#roundType").val();
 
     $("#panel-1").show();
     $("a[id^='button-']").click(function(){
@@ -209,8 +212,4 @@ function update(newReport){
         $("#usuriousLoan").text(usuriousLoan);
         $("#homePage_usuriousLoan").text(usuriousLoan);
     }
-}
-
-function getBaseUrl() {
-    return "";
 }

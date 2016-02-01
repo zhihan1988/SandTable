@@ -1,17 +1,9 @@
 $(function () {
 
-    var base = getBaseUrl();
-
-    var campaignId = $("#campaignId").val();
-    var campaignDate = $("#campaignDate").val();
-    var companyId = $("#companyId").val();
-    var companyTermId = $("#companyTermId").val();
-    var roundType = $("#roundType").val();
-
     $("div[id^='line_']").each(function(){
         var lineId = $(this).attr("id").split("_")[1];
 
-        $.getJSON(getBaseUrl() + "/manufacturing/currentLineState.do",
+        $.getJSON(base + "/manufacturing/currentLineState.do",
             {
                 lineId:lineId
             },
@@ -195,7 +187,7 @@ $(function () {
     $("#produceLinesDiv").delegate("button[id^='confirmRebuild_']","click",function(){
         var lineId = $(this).attr("id").split("_")[1];
         var produceType = $("#produceType_" + lineId).val();
-        $.getJSON(getBaseUrl() + "/manufacturing/reBuildProduceLine.do",
+        $.getJSON(base + "/manufacturing/reBuildProduceLine.do",
             {
                 companyTermId:companyTermId,
                 lineId:lineId,
@@ -213,7 +205,7 @@ $(function () {
     });
     $("#produceLinesDiv").delegate("button[id^='cancelRebuild_']","click",function(){
         var lineId = $(this).attr("id").split("_")[1];
-        $.getJSON(getBaseUrl() + "/manufacturing/currentLineState.do",
+        $.getJSON(base + "/manufacturing/currentLineState.do",
             {
                 lineId:lineId
             },
@@ -378,9 +370,4 @@ function updateProduceLineButton(line) {
 
     }
     $("#line_" + lineId).append(lineButtonDiv)
-}
-
-
-function getBaseUrl() {
-    return "";
 }

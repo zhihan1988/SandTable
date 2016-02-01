@@ -1,13 +1,4 @@
 $(function () {
-
-    var base = getBaseUrl();
-
-    var campaignId = $("#campaignId").val();
-    var campaignDate = $("#campaignDate").val();
-    var companyId = $("#companyId").val();
-    var companyTermId = $("#companyTermId").val();
-    var roundType = $("#roundType").val();
-
     //市场投放
     $("select[id^='marketFee_'],select[id^='instruction_']").change(function(){
         var $choice = $(this);
@@ -242,7 +233,3 @@ $(function () {
     });
 
 })
-
-function getBaseUrl() {
-    return "";
-}
