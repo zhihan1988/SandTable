@@ -69,6 +69,7 @@ public class InternetController extends BaseIndustryController {
         Integer preCampaignDate = campaign.getPreCampaignDate();
 //        CompanyTerm preCompanyTerm = companyTermManager.getCompanyTerm(company.getId(), preCampaignDate);
 
+
         //上一期的属性数据
         List<CompanyTermProperty> preCompanyTermPropertyList = propertyManager.listCompanyTermProperty(preCompanyTerm);
         Map<String, List<CompanyTermProperty>> deptPropertyMap = propertyManager.partCompanyTermPropertyByDept(preCompanyTermPropertyList);
