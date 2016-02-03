@@ -11,6 +11,9 @@ import java.util.Map;
  */
 public interface AccountManager {
 
+    Account packageAccount(String fee, String inType, String outType, Company company);
+
+    @Deprecated
     Account packageAccount(String fee, String inType, String outType, CompanyTerm companyTerm);
 
 

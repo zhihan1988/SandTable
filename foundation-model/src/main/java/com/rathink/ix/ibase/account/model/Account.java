@@ -15,6 +15,7 @@ public class Account {
     private Campaign campaign;
     private Company company;
     private Integer campaignDate;
+    @Deprecated
     private CompanyTerm companyTerm;
     private List<AccountEntry> accountEntryList;
 
@@ -58,12 +59,13 @@ public class Account {
         this.campaignDate = campaignDate;
     }
 
+    @Deprecated
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_term_id")
     public CompanyTerm getCompanyTerm() {
         return companyTerm;
     }
-
+    @Deprecated
     public void setCompanyTerm(CompanyTerm companyTerm) {
         this.companyTerm = companyTerm;
     }

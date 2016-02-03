@@ -37,7 +37,7 @@ $(function () {
         $("#button-2").trigger("click");
     });
 
-    setInterval(isNext, 1000);
+    //setInterval(isNext, 1000);
     function isNext() {
         $.getJSON(base + "/flow/isCampaignNext",
             {

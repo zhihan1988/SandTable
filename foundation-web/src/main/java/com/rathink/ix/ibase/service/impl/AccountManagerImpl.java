@@ -25,6 +25,34 @@ public class AccountManagerImpl implements AccountManager {
 
 
     @Override
+    public Account packageAccount(String fee, String inType, String outType, Company company) {
+        Account account = new Account();
+        account.setCampaign(company.getCampaign());
+        account.setCampaignDate(company.getCurrentCampaignDate());
+        account.setCompany(company);
+//        account.setCompanyTerm(companyTerm);
+
+        List<AccountEntry> accountEntryList = new ArrayList<>();
+        AccountEntry inAccountEntry = new AccountEntry();
+        inAccountEntry.setType(inType);
+        inAccountEntry.setDirection("1");
+        inAccountEntry.setValue(fee);
+        inAccountEntry.setAccount(account);
+        accountEntryList.add(inAccountEntry);
+        AccountEntry outAccountEntity = new AccountEntry();
+        outAccountEntity.setType(outType);
+        outAccountEntity.setDirection("-1");
+        outAccountEntity.setValue(fee);
+        outAccountEntity.setAccount(account);
+        accountEntryList.add(outAccountEntity);
+
+        account.setAccountEntryList(accountEntryList);
+//        baseManager.saveOrUpdate(Account.class.getName(), account);
+
+        return account;
+    }
+
+    @Override
     public Account packageAccount(String fee, String inType, String outType, CompanyTerm companyTerm) {
         Account account = new Account();
         account.setCampaign(companyTerm.getCampaign());

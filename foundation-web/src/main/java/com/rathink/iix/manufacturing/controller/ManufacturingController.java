@@ -1,25 +1,29 @@
-package com.rathink.ix.manufacturing.controller;
+package com.rathink.iix.manufacturing.controller;
 
 import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
-import com.rathink.ix.ibase.component.CheckOut;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.iix.ibase.component.CampaignServer;
+import com.rathink.iix.ibase.component.MemoryCompany;
+import com.rathink.iix.ibase.controller.IBaseController;
+import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
+import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
+import com.rathink.iix.manufacturing.service.ManufacturingService;
 import com.rathink.ix.ibase.account.model.Account;
-import com.rathink.ix.ibase.controller.BaseIndustryController;
+import com.rathink.ix.ibase.component.CheckOut;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
 import com.rathink.ix.ibase.service.CampaignCenter;
-import com.rathink.ix.ibase.service.CompanyTermContext;
 import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.internet.EInstructionStatus;
+import com.rathink.ix.manufacturing.*;
 import com.rathink.ix.manufacturing.component.DevoteCycle;
 import com.rathink.ix.manufacturing.component.ManufacturingCampContext;
+import com.rathink.ix.manufacturing.model.*;
 import com.rathink.ix.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ix.manufacturing.service.ProductManager;
-import com.rathink.ix.manufacturing.*;
-import com.rathink.ix.manufacturing.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +33,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Hean on 2015/10/7.
  */
-
-public class ManufacturingController extends BaseIndustryController {
+@Controller
+@RequestMapping("/manufacturing")
+public class ManufacturingController extends IBaseController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
 
     @Autowired
@@ -47,64 +50,71 @@ public class ManufacturingController extends BaseIndustryController {
     private ManufacturingImmediatelyManager manufacturingImmediatelyManager;
     @Autowired
     private AutoSerialManager autoSerialManager;
+    @Autowired
+    private ManufacturingService manufacturingService;
 
+    @RequestMapping("/reset")
+    @ResponseBody
+    public String reset(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        manufacturingService.reset(campaignId);
+        manufacturingService.begin(campaignId);
+        return "success";
+    }
     @CheckOut
     @RequestMapping("/main")
     public String main(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
-        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
-        Campaign campaign = campaignContext.getCampaign();
-        CompanyTermContext companyTermContext = campaignContext.getCompanyTermContextMap().get(companyId);
-        if (companyTermContext == null) {
-            return "/end";
-        }
 
-        CompanyTerm companyTerm = companyTermContext.getCompanyTerm();
-        Company company = companyTerm.getCompany();
-        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
-        Map<String, IndustryResource> industryResourceMap = campaignContext.getCurrentTypeIndustryResourceMap();
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
+        Campaign campaign = memoryCampaign.getCampaign();
+        Company company = memoryCompany.getCompany();
 
-        Integer currentCampaignDateRemainder = currentCampaignDate % 4;
+        Integer currentCampaignDateRemainder = campaign.getCurrentCampaignDate() % 4;
         Integer currentSeason = currentCampaignDateRemainder == 0 ? 4 : currentCampaignDateRemainder;//当前季度
         model.addAttribute("currentSeason", currentSeason);
         model.addAttribute("company", company);
         model.addAttribute("campaign", campaign);
-        model.addAttribute("companyTerm", companyTerm);
-        model.addAttribute("companyNum", campaignContext.getCompanyTermContextMap().size());
-        List<ProduceLine> produceLineList = baseManager.listObject("from ProduceLine where company.id =" + companyId);
-        model.addAttribute("produceLineList", produceLineList);
-        List<Material> materialList = baseManager.listObject("from Material where company.id =" + companyId);
+        model.addAttribute("companyTerm", null);
+        model.addAttribute("companyNum", memoryCampaign.getMemoryCompanyMap().size());
+
+        model.addAttribute("produceLineList",  memoryCompany.getProduceLineMap().values());
+
+        Collection<Material> materialList = memoryCompany.getMaterialMap().values();
         model.addAttribute("materialList", materialList);
         for (Material material : materialList) {
             model.addAttribute(material.getType(), material);
         }
-        List<Product> productList = baseManager.listObject("from Product where company.id =" + companyId);
+
+        Collection<Product> productList = memoryCompany.getProductMap().values();
+        model.addAttribute("productList", memoryCompany.getProductMap().values());
         for (Product product : productList) {
             model.addAttribute(product.getType(), product);
         }
-        model.addAttribute("productList", productList);
-        List<Market> marketList = baseManager.listObject("from Market where company.id =" + companyId);
+
+        Collection<Market> marketList = memoryCompany.getMarketMap().values();
         model.addAttribute("marketList", marketList);
-        XQuery loanQuery = new XQuery();
-        loanQuery.setHql("from Loan where company.id = :companyId and status = :status");
-        loanQuery.put("companyId", companyId);
-        loanQuery.put("status", Loan.Status.NORMAL.name());
-        List<Loan> loanList = baseManager.listObject(loanQuery);
+
+        List<Loan> loanList = memoryCompany.getLoanMap().values()
+                .stream()
+                .filter(loan -> Loan.Status.NORMAL.name().equals(loan.getStatus()))
+                .collect(Collectors.toList());
         model.addAttribute("loanList", loanList);
 
-        XQuery marketOrderQuery = new XQuery();
-        marketOrderQuery.setHql("from MarketOrder where status =:status and company.id = :companyId");
-        marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
-        marketOrderQuery.put("companyId", company.getId());
-        List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
+        List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values()
+                .stream()
+                .filter(marketOrder -> MarketOrder.Status.NORMAL.name().equals(marketOrder.getStatus()))
+                .collect(Collectors.toList());
         model.addAttribute("marketOrderList", marketOrderList);
-        model.addAttribute("longTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
-        model.addAttribute("shortTermLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
-        model.addAttribute("usuriousLoanResource", industryResourceMap.get(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
+
+        model.addAttribute("longTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
+        model.addAttribute("shortTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
+        model.addAttribute("usuriousLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
 
         if (currentSeason == 1) {
-            IndustryResource marketFeeResource = industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_FEE.name());
+            IndustryResource marketFeeResource = memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name());
             Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
             for (IndustryResourceChoice marketChoice : marketFeeResource.getCurrentIndustryResourceChoiceSet()) {
                 resourceChoiceMap.put(marketChoice.getType(), marketChoice);
@@ -124,17 +134,17 @@ public class ManufacturingController extends BaseIndustryController {
             }
             model.addAttribute("marketMap", marketMap);
 
-            model.addAttribute("marketOrderResource", industryResourceMap.get(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
+            model.addAttribute("marketOrderResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
 
         }
 
-        Integer companyCash = accountManager.getCompanyCash(company);
+        Integer companyCash = memoryCompany.getCompanyCash();
         model.addAttribute("companyCash", companyCash);
-        Integer longTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_LONG_TERM.name());
+        Integer longTermLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_LONG_TERM.name());
         model.addAttribute("longTermLoan", longTermLoan);
-        Integer shortTermLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_SHORT_TERM.name());
+        Integer shortTermLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_SHORT_TERM.name());
         model.addAttribute("shortTermLoan", shortTermLoan);
-        Integer usuriousLoan = accountManager.sumLoan(company, EManufacturingAccountEntityType.LOAN_USURIOUS.name());
+        Integer usuriousLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_USURIOUS.name());
         model.addAttribute("usuriousLoan", usuriousLoan);
 
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
@@ -268,8 +278,12 @@ public class ManufacturingController extends BaseIndustryController {
     @RequestMapping("/currentLineState")
     @ResponseBody
     public Map currentLineState(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String lineId = request.getParameter("lineId");
-        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), lineId);
+
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        ProduceLine produceLine = memoryCompany.getProduceLineMap().get(lineId);
         Map map = new HashMap<>();
         map.put("status", 1);
         map.put("line", produceLine);

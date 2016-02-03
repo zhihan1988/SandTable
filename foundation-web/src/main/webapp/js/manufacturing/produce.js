@@ -5,6 +5,8 @@ $(function () {
 
         $.getJSON(base + "/manufacturing/currentLineState.do",
             {
+                campaignId:campaignId,
+                companyId:companyId,
                 lineId:lineId
             },
             function (data) {
