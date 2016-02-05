@@ -42,12 +42,32 @@ public class ManufacturingMemoryCompany extends MemoryCompany {
         this.materialMap = materialMap;
     }
 
+    public Material getMaterialByType(String type) {
+        Material material = null;
+        for (Material m : materialMap.values()) {
+            if (m.getType().equals(type)) {
+                material = m;
+            }
+        }
+        return material;
+    }
+
     public Map<String, Product> getProductMap() {
         return productMap;
     }
 
     public void setProductMap(Map<String, Product> productMap) {
         this.productMap = productMap;
+    }
+
+    public Product getProductByType(String type) {
+        Product product = null;
+        for (Product p : productMap.values()) {
+            if (p.getType().equals(type)) {
+                product = p;
+            }
+        }
+        return product;
     }
 
     public Map<String, Market> getMarketMap() {

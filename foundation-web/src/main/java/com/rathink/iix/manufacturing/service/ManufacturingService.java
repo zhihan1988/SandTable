@@ -175,6 +175,13 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             processMaterial(memoryCompany);
             //产品研发投入
             processProductDevotion(memoryCompany);
+            //更新生产线状态
+            processUpdateBuilding(memoryCompany);
+            //更新生产完成入库
+            processUpdateProduce(memoryCompany);
+            //转产
+            processRebuild(memoryCompany);
+
         }
     }
 
@@ -252,7 +259,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
     }
 
     //原材料采购
-    private void processMaterial(ManufacturingMemoryCompany memoryCompany) {
+    protected void processMaterial(ManufacturingMemoryCompany memoryCompany) {
         memoryCompany.getMaterialMap().values().stream()
                 .filter(material -> material.getStatus().equals(Material.Status.PURCHASING.name()))
                 .forEach(material -> {
@@ -263,7 +270,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
     }
 
     //产品研发投入
-    private void processProductDevotion(ManufacturingMemoryCompany memoryCompany){
+    protected void processProductDevotion(ManufacturingMemoryCompany memoryCompany){
         memoryCompany.getProductMap().values().stream()
                 .filter(product -> product.getStatus().equals(Product.Status.DEVELOPING.name()))
                 .forEach(product -> {
@@ -278,4 +285,45 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
 
                 });
     }
+
+    //更新生产线状态
+    protected void processUpdateBuilding(ManufacturingMemoryCompany memoryCompany){
+        memoryCompany.getProduceLineMap().values().stream()
+                .filter(produceLine -> produceLine.getStatus().equals(ProduceLine.Status.BUILDING.name()))
+                .forEach(produceLine -> {
+                    produceLine.setStatus(ProduceLine.Status.BUILT.name());
+                });
+    }
+
+    //更新生产 完成入库
+    protected void processUpdateProduce(ManufacturingMemoryCompany memoryCompany){
+        memoryCompany.getProduceLineMap().values().stream()
+                .filter(produceLine -> produceLine.getStatus().equals(ProduceLine.Status.PRODUCING.name()))
+                .forEach(produceLine -> {
+                    Integer produceNeedCycle = produceLine.getProduceNeedCycle();
+                    --produceNeedCycle;
+                    produceLine.setProduceNeedCycle(produceNeedCycle);
+                    if (produceNeedCycle == 0) {
+                        produceLine.setStatus(ProduceLine.Status.FREE.name());
+
+                        Product product = memoryCompany.getProductByType(produceLine.getProduceType());
+                        product.setAmount(product.getAmount() + 1);
+
+                    }
+                });
+    }
+
+    protected void processRebuild(ManufacturingMemoryCompany memoryCompany) {
+        memoryCompany.getProduceLineMap().values().stream()
+                .filter(produceLine -> produceLine.getStatus().equals(ProduceLine.Status.REBUILDING.name()))
+                .forEach(produceLine -> {
+                    Integer lineBuildNeedCycle = produceLine.getLineBuildNeedCycle();
+                    --lineBuildNeedCycle;
+                    produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
+                    if (lineBuildNeedCycle == 0) {
+                        produceLine.setStatus(ProduceLine.Status.FREE.name());
+                    }
+                });
+    }
+
 }

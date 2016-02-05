@@ -349,7 +349,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
     }
 
 
-    //更新生产 完成入库
+    //更新生产线状态
     protected void processUpdateBuilding(CompanyTermContext companyTermContext) {
         Company company = companyTermContext.getCompanyTerm().getCompany();
 

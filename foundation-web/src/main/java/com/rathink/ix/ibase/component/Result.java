@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class Result {
     public static final Integer SUCCESS =  1;
-    public static final Integer ERROR =  0;
+    public static final Integer FAILED =  0;
 
     private Integer status;
     private String message;

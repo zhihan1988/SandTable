@@ -278,17 +278,18 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/currentLineState")
     @ResponseBody
-    public Map currentLineState(HttpServletRequest request, Model model) throws Exception {
+    public Result currentLineState(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
         String lineId = request.getParameter("lineId");
 
         ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
         ProduceLine produceLine = memoryCompany.getProduceLineMap().get(lineId);
-        Map map = new HashMap<>();
-        map.put("status", 1);
-        map.put("line", produceLine);
-        return map;
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("line", produceLine);
+        return result;
     }
 
 
@@ -370,63 +371,145 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/reBuildProduceLine")
     @ResponseBody
-    public Map reBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
-        String companyTermId = request.getParameter("companyTermId");
+    public Result reBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String lineId = request.getParameter("lineId");
         String produceType = request.getParameter("produceType");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), lineId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCE_LINE_REBUILD.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(produceLine);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+        ProduceLine produceLine = memoryCompany.getProduceLineMap().get(lineId);
 
         Integer transferCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getTransferCycle();
         produceLine.setStatus(ProduceLine.Status.REBUILDING.name());
         produceLine.setLineBuildNeedCycle(transferCycle);
         produceLine.setProduceType(produceType);
-        baseManager.saveOrUpdate(ProduceLine.class.getName(), produceLine);
 
-        Map result = new HashMap<>();
-        result.put("status", 1);
-        result.put("line",produceLine);
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("line", produceLine);
         NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
+        Integer companyCash = memoryCompany.getCompanyCash();
         newReport.setCompanyCash(companyCash);
-        result.put("newReport", newReport);
-
+        result.setAttribute("newReport", newReport);
         return result;
     }
 
     @RequestMapping(value = "/produce")
     @ResponseBody
-    public Map produce(HttpServletRequest request, Model model) throws Exception {
+    public Result produce(HttpServletRequest request, Model model) throws Exception {
 
-        String companyTermId = request.getParameter("companyTermId");
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String produceLineId = request.getParameter("produceLineId");
         String produceType = request.getParameter("produceType");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        ProduceLine produceLine = (ProduceLine) baseManager.getObject(ProduceLine.class.getName(), produceLineId);
-        if (ProduceLine.Type.FLEXBILITY.name().equals(produceLine.getProduceLineType())
-                || ProduceLine.Type.MANUAL.name().equals(produceLine.getProduceLineType())) {
-            produceLine.setProduceType(produceType);//processProduce 方法顺利执行的话 会被保存
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
+
+        for (Product product : memoryCompany.getProductMap().values()) {
+            if (product.getType().equals(produceType)) {
+                if (!product.getStatus().equals(Product.Status.DEVELOPED.name())) {
+                    Result result = new Result();
+                    result.setStatus(Result.FAILED);
+                    result.setMessage("该产品未被研发");
+                    return result;
+                }
+            }
         }
-        Product product = productManager.getProduct(companyTerm.getCompany(), produceLine.getProduceType());
-        if (product.getDevelopNeedCycle() > 0) {
-            Map result = new HashMap<>();
-            result.put("status", "-1");
-            result.put("message", "该产品未被研发");
-            return result;
+
+
+        ProduceLine produceLine = memoryCompany.getProduceLineMap().get(produceLineId);
+        if (ProduceLine.Type.HALF_AUTOMATIC.name().equals(produceLine.getProduceLineType())
+                || ProduceLine.Type.AUTOMATIC.name().equals(produceLine.getProduceLineType())) {
+            produceType = produceLine.getProduceType();
+        }
+
+        Material R1 = memoryCompany.getMaterialByType(Material.Type.R1.name());
+        Material R2 = memoryCompany.getMaterialByType(Material.Type.R2.name());
+        Material R3 = memoryCompany.getMaterialByType(Material.Type.R3.name());
+        Material R4 = memoryCompany.getMaterialByType(Material.Type.R4.name());
+        Integer R1Amount = R1.getAmount();
+        Integer R2Amount = R2.getAmount();
+        Integer R3Amount = R3.getAmount();
+        Integer R4Amount = R4.getAmount();
+
+        boolean isMaterialEnough = true;
+        Product.Type productType = Product.Type.valueOf(produceType);
+        switch (productType) {
+            case P1:
+                if (R1Amount >= 1) {
+                    R1Amount = R1Amount - 1;
+                } else {
+                    isMaterialEnough = false;
+                }
+                break;
+            case P2:
+                if (R1Amount >= 1 && R2Amount >= 1) {
+                    R1Amount = R1Amount - 1;
+                    R2Amount = R2Amount - 1;
+                } else {
+                    isMaterialEnough = false;
+                }
+                break;
+            case P3:
+                if (R2Amount >= 2 && R3Amount >= 1) {
+                    R2Amount = R2Amount - 2;
+                    R3Amount = R3Amount - 1;
+                } else {
+                    isMaterialEnough = false;
+                }
+                break;
+            case P4:
+                if (R2Amount >= 1 && R3Amount >= 1 && R4Amount >= 2) {
+                    R2Amount = R2Amount - 1;
+                    R3Amount = R3Amount - 1;
+                    R4Amount = R4Amount - 1;
+                } else {
+                    isMaterialEnough = false;
+                }
+                break;
+            default:
+                throw new NoSuchElementException(productType.name());
+        }
+
+        if (isMaterialEnough) {
+            R1.setAmount(R1Amount);
+            R2.setAmount(R2Amount);
+            R3.setAmount(R3Amount);
+            R4.setAmount(R4Amount);
         } else {
-            Map result = manufacturingImmediatelyManager.processProduce(companyTerm, produceLine);
+            Result result = new Result();
+            result.setStatus(Result.FAILED);
+            result.setMessage("原料不足");
             return result;
         }
+
+        produceLine.setProduceType(produceType);
+        produceLine.setStatus(ProduceLine.Status.PRODUCING.name());
+        Integer produceCycle = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getProduceCycle();
+        produceLine.setProduceNeedCycle(produceCycle);
+
+        String fee = "1";
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.PRODUCE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
+        Account account2 = accountManager.packageAccount(fee, EManufacturingAccountEntityType.FLOATING_CAPITAL_PRODUCT.name(), EManufacturingAccountEntityType.FLOATING_CAPITAL_MATERIAL.name(), company);
+        memoryCompany.addAccount(account2);
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("line", produceLine);
+        NewReport newReport = new NewReport();
+        newReport.setR1Amount(R1Amount);
+        newReport.setR2Amount(R2Amount);
+        newReport.setR3Amount(R3Amount);
+        newReport.setR4Amount(R4Amount);
+        Integer companyCash = memoryCompany.getCompanyCash();
+        newReport.setCompanyCash(companyCash);
+        result.setAttribute("newReport", newReport);
+
+        return result;
     }
 
     @RequestMapping("/devoteMarket")

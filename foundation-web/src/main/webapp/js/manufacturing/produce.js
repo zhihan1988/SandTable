@@ -11,7 +11,7 @@ $(function () {
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.line;
+                    var line = data.map.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);
@@ -57,7 +57,7 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $developButton.replaceWith("研发中");
-                    update(data.newReport);
+                    update(data.map.newReport);
                 }
             });
     });
@@ -129,15 +129,16 @@ $(function () {
         //继续建造
         $.getJSON(base + "/manufacturing/continueBuildProduceLine.do",
             {
-                companyTermId: companyTermId,
+                campaignId:campaignId,
+                companyId:companyId,
                 partId: partId
             },
             function(data){
                 if(data.status == 1) {
                     $build.replaceWith("建造中");
-                    update(data.newReport);
-                    refreshProduceLine(data.line);
-                    updateProduceLineButton(data.line);
+                    update(data.map.newReport);
+                    refreshProduceLine(data.map.line);
+                    updateProduceLineButton(data.map.line);
                 }
             });
     });
@@ -151,7 +152,8 @@ $(function () {
         //开始生产
         $.getJSON(base + "/manufacturing/produce.do",
             {
-                companyTermId: companyTermId,
+                campaignId:campaignId,
+                companyId:companyId,
                 produceLineId: produceLineId,
                 produceType: produceType
             },
@@ -160,9 +162,9 @@ $(function () {
                 var status = data.status;
                 if(status == 1) {
                     $produce.parent().text("生产中");
-                    update(data.newReport);
-                    refreshProduceLine(data.line);
-                    updateProduceLineButton(data.line);
+                    update(data.map.newReport);
+                    refreshProduceLine(data.map.line);
+                    updateProduceLineButton(data.map.line);
                 } else {
                     alert(data.message);
                     //enableButton($produce);
@@ -195,13 +197,14 @@ $(function () {
         var produceType = $("#produceType_" + lineId).val();
         $.getJSON(base + "/manufacturing/reBuildProduceLine.do",
             {
-                companyTermId:companyTermId,
+                campaignId:campaignId,
+                companyId:companyId,
                 lineId:lineId,
                 produceType:produceType
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.line;
+                    var line = data.map.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);
@@ -213,11 +216,13 @@ $(function () {
         var lineId = $(this).attr("id").split("_")[1];
         $.getJSON(base + "/manufacturing/currentLineState.do",
             {
+                campaignId:campaignId,
+                companyId:companyId,
                 lineId:lineId
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.line;
+                    var line = data.map.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);
