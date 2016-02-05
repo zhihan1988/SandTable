@@ -1,6 +1,7 @@
 package com.rathink.iix.ibase.component;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ix.ibase.work.model.CompanyPart;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,10 @@ import java.util.Map;
  */
 public class MemoryCampaign {
     private Campaign campaign;
-    private List<CampaignParty> campaignPartyList = new ArrayList<>();
-    private List<Object> systemMessage = new ArrayList<>();
     private Map<String, MemoryCompany> memoryCompanyMap = new HashMap<>();
+    private Map<String, CampaignParty> campaignPartyMap = new HashMap<>();
     private Map<String, IndustryResource> industryResourceMap = new HashMap<>();
+    private List<Object> systemMessage = new ArrayList<>();
 
     public MemoryCampaign (Campaign campaign) {
         this.campaign = campaign;
@@ -54,5 +55,27 @@ public class MemoryCampaign {
 
     public void putIndustryResource(String type, IndustryResource industryResource) {
         industryResourceMap.put(type, industryResource);
+    }
+
+    public void addCampaignParty(CampaignParty campaignParty) {
+        campaignPartyMap.put(campaignParty.getType(), campaignParty);
+    }
+
+    public CampaignParty getCampaignParty(String partyType) {
+        return campaignPartyMap.get(partyType);
+    }
+
+    public void nextTerm() {
+        Integer currentCampaignDate = campaign.getCurrentCampaignDate();
+        currentCampaignDate++;
+        campaign.setCurrentCampaignDate(currentCampaignDate);
+
+        for (MemoryCompany memoryCompany : getMemoryCompanyMap().values()) {
+            Company company = memoryCompany.getCompany();
+            company.setCurrentCampaignDate(currentCampaignDate);
+        }
+
+        campaignPartyMap.clear();
+        industryResourceMap.clear();
     }
 }

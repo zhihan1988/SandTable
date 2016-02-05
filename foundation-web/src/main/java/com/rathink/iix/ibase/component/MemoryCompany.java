@@ -4,6 +4,7 @@ import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.account.model.AccountEntry;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
+import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class MemoryCompany {
     private Company company;
     private MemoryCampaign memoryCampaign;
     private List<Account> accountList = new ArrayList<>();
+    private List<CompanyTermInstruction> instructionList = new ArrayList<>();
     //instructionlist
     private Queue messageQueue;
 

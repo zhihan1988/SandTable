@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Hean on 2016/2/2.
@@ -59,6 +58,14 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
         init(campaignId);
         initContext(campaignId);
         newRound();
+        randomChoice();
+    }
+
+    public void next(String campaignId) {
+        initContext(campaignId);
+        beforeProcess();
+        newRound();
+        afterProcess();
         randomChoice();
     }
 
@@ -138,11 +145,15 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
      * 开始新的回合
      */
     protected void newRound() {
-        campaign.setCurrentCampaignDate(campaign.getNextCampaignDate());
+        /*campaign.setCurrentCampaignDate(campaign.getNextCampaignDate());
         for (Company company : companyList) {
             company.setCurrentCampaignDate(campaign.getCurrentCampaignDate());
-        }
+        }*/
+        memoryCampaign.nextTerm();
     }
+
+    protected abstract void beforeProcess();
+    protected abstract void afterProcess();
 
     protected abstract void randomChoice();
 

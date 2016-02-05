@@ -37,20 +37,24 @@ $(function () {
         $("#button-2").trigger("click");
     });
 
-    //setInterval(isNext, 1000);
+
+ /*   $("#testNext").click(function(){
+        isNext();
+    })*/
+    setInterval(isNext, 1000);
     function isNext() {
-        $.getJSON(base + "/flow/isCampaignNext",
+        $.getJSON(base + "/iBase/isCampaignNext",
             {
                 campaignId:campaignId,
                 campaignDate: campaignDate,
-                roundType: roundType
+                partyType: "TERM"
             },
             function (data) {
-                var isNext = data.isNext;
+                var isNext = data.map.isNext;
                 if (isNext == true) {
                     location.reload();
                 } else {
-                    $("#unFinishedNum").text(data.unFinishedNum);
+                    $("#unFinishedNum").text(data.map.unFinishedNum);
                     //$.AMUI.progress.set(data.schedule);
                 }
             }
@@ -62,15 +66,16 @@ $(function () {
     $("#endCampaignDate").click(function () {
         if(confirm("是否结束当前回合的操作？")) {
             var $endCampaignDate = $(this);
-            $.post(base + "/flow/companyNext.do",
+            $.post(base + "/iBase/companyNext.do",
             {
                 campaignId: campaignId,
                 companyId: companyId,
-                campaignDate: campaignDate,
-                roundType: roundType
+                partyType: "TERM"
             },
             function (data) {
-                $endCampaignDate.hide();
+                if(data.status == 1) {
+                    $endCampaignDate.hide();
+                }
             }
         );
         }

@@ -7,6 +7,7 @@ import com.rathink.ix.manufacturing.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -14,12 +15,12 @@ import java.util.Map;
  */
 public class ManufacturingMemoryCompany extends MemoryCompany {
 
-    private Map<String, ProduceLine> produceLineMap = new HashMap<>();
-    private Map<String, Material> materialMap = new HashMap<>();
-    private Map<String, Product> productMap = new HashMap<>();
-    private Map<String, Market> marketMap = new HashMap<>();
-    private Map<String, Loan> loanMap = new HashMap<>();
-    private Map<String, MarketOrder> marketOrderMap = new HashMap<>();
+    private Map<String, ProduceLine> produceLineMap = new LinkedHashMap<>();
+    private Map<String, Material> materialMap = new LinkedHashMap<>();
+    private Map<String, Product> productMap = new LinkedHashMap<>();
+    private Map<String, Market> marketMap = new LinkedHashMap<>();
+    private Map<String, Loan> loanMap = new LinkedHashMap<>();
+    private Map<String, MarketOrder> marketOrderMap = new LinkedHashMap<>();
 
     public ManufacturingMemoryCompany(Company company, MemoryCampaign memoryCampaign) {
         super(company, memoryCampaign);

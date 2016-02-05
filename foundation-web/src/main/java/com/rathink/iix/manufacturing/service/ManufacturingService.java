@@ -10,17 +10,21 @@ import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
 import com.rathink.iix.ibase.component.MemoryCompany;
+import com.rathink.iix.ibase.component.TermParty;
 import com.rathink.iix.ibase.service.IBaseService;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
+import com.rathink.ix.ibase.service.CompanyTermContext;
+import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.internet.EAccountEntityType;
+import com.rathink.ix.internet.EInstructionStatus;
 import com.rathink.ix.manufacturing.EManufacturingChoiceBaseType;
+import com.rathink.ix.manufacturing.EManufacturingInstructionBaseType;
 import com.rathink.ix.manufacturing.EManufacturingSerialGroup;
-import com.rathink.ix.manufacturing.component.DevoteCycle;
 import com.rathink.ix.manufacturing.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,7 +109,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                     material.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                     material.setName(materialChoice.getName());
                     material.setType(materialChoice.getType());
-                    material.setAmount("0");
+                    material.setAmount(0);
                     material.setCampaign(campaign);
                     material.setCompany(company);
                     material.setStatus(Material.Status.NORMAL.name());
@@ -123,7 +127,11 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                     product.setDevelopNeedCycle(developNeedCycle);
                     product.setCampaign(campaign);
                     product.setCompany(company);
-                    product.setStatus(Product.Status.NORMAL.name());
+                    if (productChoice.getType().equals("P1")) {
+                        product.setStatus(Product.Status.DEVELOPED.name());
+                    } else {
+                        product.setStatus(Product.Status.UNDEVELOPED.name());
+                    }
                     memoryCompany.getProductMap().put(product.getId(), product);
                 }
                 for (IndustryResourceChoice marketChoice : marketChoiceList) {
@@ -149,6 +157,24 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             Integer currentPeriodIncome = 100;
             Account incomeAccount = accountManager.packageAccount(String.valueOf(currentPeriodIncome), EAccountEntityType.COMPANY_CASH.name(), EAccountEntityType.OTHER.name(), memoryCompany.getCompany());
             memoryCompany.addAccount(incomeAccount);
+        }
+    }
+
+    @Override
+    protected void beforeProcess() {
+        for (Company company : companyList) {
+            ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
+        }
+    }
+
+    @Override
+    protected void afterProcess() {
+        for (Company company : companyList) {
+            ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
+            //原材料入库
+            processMaterial(memoryCompany);
+            //产品研发投入
+            processProductDevotion(memoryCompany);
         }
     }
 
@@ -222,5 +248,34 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
         usuriousLoan.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(usuriousLoan.getId())));
         memoryCampaign.putIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name(), usuriousLoan);
 
+        memoryCampaign.addCampaignParty(new TermParty(memoryCampaign));
+    }
+
+    //原材料采购
+    private void processMaterial(ManufacturingMemoryCompany memoryCompany) {
+        memoryCompany.getMaterialMap().values().stream()
+                .filter(material -> material.getStatus().equals(Material.Status.PURCHASING.name()))
+                .forEach(material -> {
+                    Integer amount = material.getAmount();
+                    material.setAmount(amount + material.getPurchasingAmount());
+                    material.setStatus(Material.Status.NORMAL.name());
+                });
+    }
+
+    //产品研发投入
+    private void processProductDevotion(ManufacturingMemoryCompany memoryCompany){
+        memoryCompany.getProductMap().values().stream()
+                .filter(product -> product.getStatus().equals(Product.Status.DEVELOPING.name()))
+                .forEach(product -> {
+                    Integer developNeedCycle = product.getDevelopNeedCycle();
+                    developNeedCycle--;
+                    product.setDevelopNeedCycle(developNeedCycle);
+                    if (developNeedCycle == 0) {
+                        product.setStatus(Product.Status.DEVELOPED.name());
+                    } else {
+                        product.setStatus(Product.Status.UNDEVELOPED.name());
+                    }
+
+                });
     }
 }

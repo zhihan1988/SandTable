@@ -29,14 +29,15 @@ $(function () {
         if(num!=-1) {
             $.getJSON(base + "/manufacturing/purchase.do",
                 {
-                    companyTermId: companyTermId,
+                    campaignId: campaignId,
+                    companyId: companyId,
                     materialId: materialId,
                     materialNum: num
                 },
                 function(data){
                     if(data.status==1) {
                         $material.replaceWith(num);
-                        update(data.newReport);
+                        update(data.map.newReport);
                     }
                 });
         }
@@ -49,7 +50,8 @@ $(function () {
         //开始建造
         $.getJSON(base + "/manufacturing/devoteProduct.do",
             {
-                companyTermId: companyTermId,
+                campaignId: campaignId,
+                companyId: companyId,
                 partId: productId
             },
             function(data){
@@ -102,7 +104,8 @@ $(function () {
             //开始建造
             $.getJSON(base + "/manufacturing/buildProduceLine.do",
                 {
-                    companyTermId: companyTermId,
+                    campaignId:campaignId,
+                    companyId:companyId,
                     partId: partId,
                     lineType: lineType,
                     produceType: produceType
@@ -110,9 +113,10 @@ $(function () {
                 function(data){
                     //建造结果
                     if(data.status == 1) {
-                        update(data.newReport);
-                        refreshProduceLine(data.line);
-                        updateProduceLineButton(data.line);
+                        console.info(data);
+                        update(data.map.newReport);
+                        refreshProduceLine(data.map.line);
+                        updateProduceLineButton(data.map.line);
                     }
                 });
         }

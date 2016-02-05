@@ -1,6 +1,7 @@
 package com.rathink.ix.manufacturing.model;
 
 import com.rathink.ix.ibase.work.model.CompanyPart;
+import org.omg.PortableInterceptor.INACTIVE;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -15,7 +16,7 @@ import javax.persistence.Table;
 @DiscriminatorValue(value = "MATERIAL")
 public class Material extends CompanyPart {
     public enum Status {
-        NORMAL
+        NORMAL,PURCHASING
     }
 
     public enum Type{
@@ -23,6 +24,7 @@ public class Material extends CompanyPart {
     }
     private String type;
     private String amount;
+    private String purchasingAmount;
 
     @Column(name = "value")
     public String getType() {
@@ -42,7 +44,12 @@ public class Material extends CompanyPart {
         this.amount = amount == null ? null : String.valueOf(amount);
     }
 
-    public void setAmount(String amount) {
-        this.amount = amount;
+    @Column(name = "value3")
+    public Integer getPurchasingAmount() {
+        return purchasingAmount == null ? 0 : Integer.valueOf(purchasingAmount);
+    }
+
+    public void setPurchasingAmount(Integer purchasingAmount) {
+        this.purchasingAmount = purchasingAmount == null ? null : String.valueOf(purchasingAmount);
     }
 }

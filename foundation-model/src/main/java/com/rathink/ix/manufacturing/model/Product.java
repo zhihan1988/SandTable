@@ -16,7 +16,7 @@ import javax.persistence.Table;
 public class Product extends CompanyPart {
     private String type;
     private String amount;
-    private String developNeedCycle;//ʣ����з�����
+    private String developNeedCycle;//剩余研发周期
 
     @Column(name = "value")
     public String getType() {
@@ -46,7 +46,7 @@ public class Product extends CompanyPart {
     }
 
     public enum Status {
-        NORMAL
+        UNDEVELOPED,DEVELOPING,DEVELOPED
     }
     public enum Type {
         P1(1, 0, 0), P2(1, 6, 4), P3(1, 6, 8), P4(1, 6, 12),;

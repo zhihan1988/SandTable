@@ -1,8 +1,5 @@
 package com.rathink.ix.ibase.component;
 
-import org.jgroups.protocols.pbcast.STABLE;
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,4 +38,7 @@ public class Result {
         return map.get(key);
     }
 
+    public Map getMap() {
+        return map;
+    }
 }

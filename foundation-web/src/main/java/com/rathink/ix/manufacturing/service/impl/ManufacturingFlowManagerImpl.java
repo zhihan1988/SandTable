@@ -92,7 +92,7 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
                 material.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
                 material.setName(materialChoice.getName());
                 material.setType(materialChoice.getType());
-                material.setAmount("0");
+                material.setAmount(0);
                 material.setCampaign(campaign);
                 material.setCompany(company);
                 material.setStatus(Material.Status.NORMAL.name());
@@ -109,7 +109,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
                 product.setDevelopNeedCycle(developNeedCycle);
                 product.setCampaign(campaign);
                 product.setCompany(company);
-                product.setStatus(Product.Status.NORMAL.name());
+                if (productChoice.getType().equals("P1")) {
+                    product.setStatus(Product.Status.DEVELOPED.name());
+                } else {
+                    product.setStatus(Product.Status.UNDEVELOPED.name());
+                }
                 baseManager.saveOrUpdate(Product.class.getName(), product);
             }
             for (IndustryResourceChoice marketChoice : marketList) {

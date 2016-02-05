@@ -12,6 +12,7 @@ import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
 import com.rathink.iix.manufacturing.service.ManufacturingService;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.component.CheckOut;
+import com.rathink.ix.ibase.component.Result;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
 import com.rathink.ix.ibase.service.CampaignCenter;
 import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
@@ -293,24 +294,77 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/buildProduceLine")
     @ResponseBody
-    public Map buildProduceLine(HttpServletRequest request, Model model) throws Exception {
-        String companyTermId = request.getParameter("companyTermId");
+    public Result buildProduceLine(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String partId = request.getParameter("partId");
         String produceType = request.getParameter("produceType");
         String lineType = request.getParameter("lineType");
 
-        Map result = manufacturingImmediatelyManager.processProductLineBuild(companyTermId, partId, produceType, lineType);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
 
+        ProduceLine produceLine = memoryCompany.getProduceLineMap().get(partId);
+        produceLine.setProduceType(produceType);
+        produceLine.setProduceLineType(lineType);
+        Integer lineBuildNeedCycle = ProduceLine.Type.valueOf(lineType).getInstallCycle();
+        if (lineBuildNeedCycle > 0) {
+            lineBuildNeedCycle--;
+        }
+        produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
+        if (lineBuildNeedCycle == 0) {//建造完成
+            produceLine.setStatus(ProduceLine.Status.FREE.name());
+        } else {
+            produceLine.setStatus(ProduceLine.Status.BUILDING.name());
+        }
+
+        Integer fee = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
+
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("line", produceLine);
+        NewReport newReport = new NewReport();
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
         return result;
     }
 
     @RequestMapping("/continueBuildProduceLine")
     @ResponseBody
-    public Map continueBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
-        String companyTermId = request.getParameter("companyTermId");
+    public Result continueBuildProduceLine(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String partId = request.getParameter("partId");
 
-        Map result = manufacturingImmediatelyManager.processProductLineContinueBuild(companyTermId, partId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
+
+        ProduceLine produceLine = memoryCompany.getProduceLineMap().get(partId);
+        Integer lineBuildNeedCycle = Integer.valueOf(produceLine.getLineBuildNeedCycle());
+        if (lineBuildNeedCycle > 0) {
+            lineBuildNeedCycle--;
+            produceLine.setLineBuildNeedCycle(lineBuildNeedCycle);
+        }
+        if (lineBuildNeedCycle == 0) {//建造完成
+            produceLine.setStatus(ProduceLine.Status.FREE.name());
+        } else {
+            produceLine.setStatus(ProduceLine.Status.BUILDING.name());
+        }
+
+        Integer fee = ProduceLine.Type.valueOf(produceLine.getProduceLineType()).getPerBuildDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_LINE_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
+
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("line", produceLine);
+        NewReport newReport = new NewReport();
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
         return result;
     }
 
@@ -408,32 +462,29 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/purchase")
     @ResponseBody
-    public Map purchase(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
-        String companyTermId = request.getParameter("companyTermId");
+    public Result purchase(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String materialId = request.getParameter("materialId");
         String materialNum = request.getParameter("materialNum");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Material material = (Material) baseManager.getObject(Material.class.getName(), materialId);
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MATERIAL_PURCHASE.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(material);
-        companyTermInstruction.setValue(materialNum);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
+
+        Material material = memoryCompany.getMaterialMap().get(materialId);
+        material.setStatus(Material.Status.PURCHASING.name());
+        material.setPurchasingAmount(Integer.parseInt(materialNum));
 
         String fee = materialNum;
-        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.FLOATING_CAPITAL_MATERIAL.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+        Account account = accountManager.packageAccount(fee, EManufacturingAccountEntityType.FLOATING_CAPITAL_MATERIAL.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
 
-        result.put("status", 1);
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("material", material);
         NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
-        newReport.setCompanyCash(companyCash);
-        result.put("newReport", newReport);
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
         return result;
     }
 
@@ -441,31 +492,27 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/devoteProduct")
     @ResponseBody
-    public Map devoteProduct(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
-        String companyTermId = request.getParameter("companyTermId");
+    public Result devoteProduct(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String partId = request.getParameter("partId");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Product product = (Product) baseManager.getObject(Product.class.getName(), partId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.PRODUCT_DEVOTION.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(product);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+        Product product = memoryCompany.getProductMap().get(partId);
+        product.setStatus(Product.Status.DEVELOPING.name());
 
         Integer fee = Product.Type.valueOf(product.getType()).getPerDevotion();
-        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.PRODUCT_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
 
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("product", product);
         NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
-        newReport.setCompanyCash(companyCash);
-        result.put("status", 1);
-        result.put("newReport", newReport);
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
         return result;
     }
 
