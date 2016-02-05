@@ -4,7 +4,9 @@ import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
+import com.rathink.iix.ibase.component.MemoryCampaign;
 import com.rathink.iix.ibase.component.MemoryCompany;
 import com.rathink.iix.ibase.controller.IBaseController;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
@@ -139,14 +141,10 @@ public class ManufacturingController extends IBaseController {
 
         }
 
-        Integer companyCash = memoryCompany.getCompanyCash();
-        model.addAttribute("companyCash", companyCash);
-        Integer longTermLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_LONG_TERM.name());
-        model.addAttribute("longTermLoan", longTermLoan);
-        Integer shortTermLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_SHORT_TERM.name());
-        model.addAttribute("shortTermLoan", shortTermLoan);
-        Integer usuriousLoan = memoryCompany.getLoan(EManufacturingAccountEntityType.LOAN_USURIOUS.name());
-        model.addAttribute("usuriousLoan", usuriousLoan);
+        model.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        model.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
+        model.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
+        model.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
 
         model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
         return "/manufacturing/main";
@@ -642,24 +640,74 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/loan")
     @ResponseBody
-    public Map loan(HttpServletRequest request, Model model) throws Exception {
+    public Result loan(HttpServletRequest request, Model model) throws Exception {
 
-        String companyTermId = request.getParameter("companyTermId");
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String choiceId = request.getParameter("choiceId");
-        String value = request.getParameter("value");
+        String loanMoney = request.getParameter("value");
         String type = request.getParameter("type");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Company company = companyTerm.getCompany();
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
+        Campaign campaign = memoryCampaign.getCampaign();
+        Company company = memoryCompany.getCompany();
 
-        Integer maxEnableLoanMoney = manufacturingImmediatelyManager.getMaxLoanMoney(company, type);
-        if (Integer.valueOf(value) > maxEnableLoanMoney) {
-            Map map = new HashMap<>();
-            map.put("status", "-1");
-            map.put("message", "贷款失败，最大可贷金额：" + maxEnableLoanMoney + "M");
-            return map;
+        Integer ratio = 0;
+        switch (EManufacturingAccountEntityType.valueOf(type)) {
+            case LOAN_LONG_TERM:
+            case LOAN_SHORT_TERM: ratio = 2;  break;
+            case LOAN_USURIOUS: ratio = 3; break;
+            default: throw new NoSuchElementException();
+        }
+
+        Integer companyCash = memoryCompany.getCompanyCash();
+        Integer allLoanMoney = memoryCompany.getAllLoan();
+        Integer floatingCapital = memoryCompany.getFloatingCapital();
+        Integer maxEnableLoanMoney = (companyCash + floatingCapital - allLoanMoney) * ratio;
+
+        if (Integer.valueOf(loanMoney) > maxEnableLoanMoney) {
+            Result result = new Result();
+            result.setStatus(Result.FAILED);
+            result.setMessage("贷款失败，最大可贷金额：" + maxEnableLoanMoney + "M");
+            return result;
         } else {
-            Map result = manufacturingImmediatelyManager.loan(companyTermId, choiceId, value, type);
+            Loan loan = new Loan();
+            loan.setId(GenerateUtil.generate());
+            loan.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
+            loan.setDept(EManufacturingDept.FINANCE.name());
+            loan.setStatus(Loan.Status.NORMAL.name());
+            loan.setCampaign(campaign);
+            loan.setCompany(company);
+            loan.setMoney(Integer.valueOf(loanMoney));
+            Loan.Type loanType = Loan.Type.valueOf(type);
+            loan.setNeedRepayCycle(loanType.getCycle());
+            loan.setType(loanType.name());
+            memoryCompany.getLoanMap().put(loan.getId(), loan);
+
+            String loanAccountName = EManufacturingAccountEntityType.valueOf(loanType.name()).name();
+            Account account = accountManager.packageAccount(loanMoney, EManufacturingAccountEntityType.COMPANY_CASH.name(), loanAccountName, company);
+            memoryCompany.addAccount(account);
+
+            Result result = new Result();
+            result.setStatus(Result.SUCCESS);
+            NewReport newReport = new NewReport();
+            newReport.setCompanyCash(memoryCompany.getCompanyCash());
+            switch (loanType) {
+                case LOAN_LONG_TERM:
+                    newReport.setLongTermLoan(memoryCompany.getLongTermLoan());
+                    break;
+                case LOAN_SHORT_TERM:
+                    newReport.setShortTermLoan(memoryCompany.getShortTermLoan());
+                    break;
+                case LOAN_USURIOUS:
+                    newReport.setUsuriousLoan(memoryCompany.getUsuriousLoan());
+                    break;
+                default:
+                    throw new NoSuchElementException(loanType.name());
+            }
+            result.setAttribute("newReport", newReport);
+
             return result;
         }
     }
@@ -668,19 +716,16 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/loanList")
     @ResponseBody
-    public Map loanList(HttpServletRequest request, Model model) throws Exception {
+    public Result loanList(HttpServletRequest request, Model model) throws Exception {
 
+        String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
 
-        XQuery loanQuery = new XQuery();
-        loanQuery.setHql("from Loan where company.id = :companyId and status = :status");
-        loanQuery.put("companyId", companyId);
-        loanQuery.put("status", Loan.Status.NORMAL.name());
-        List<Loan> loanList = baseManager.listObject(loanQuery);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
 
-        Map result = new HashMap<>();
-        result.put("status", 1);
-        result.put("loanList", loanList);
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.setAttribute("loanList", memoryCompany.getLoanMap().values());
         return result;
     }
 

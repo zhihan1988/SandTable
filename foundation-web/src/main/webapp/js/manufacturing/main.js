@@ -111,7 +111,8 @@ $(function () {
         var value = array[1];
         $.getJSON(base + "/manufacturing/loan.do",
             {
-                companyTermId: companyTermId,
+                campaignId: campaignId,
+                companyId: companyId,
                 choiceId: choiceId,
                 value: value,
                 type: type
@@ -119,10 +120,10 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $choice.parent().text("已贷款");
-                    update(data.newReport);
+                    update(data.map.newReport);
                     refreshLoan();
                 } else {
-                    alert(data.message);
+                    alert(data.map.message);
                     $choice.attr("disabled",false).removeClass("am-disabled");
                 }
             }
@@ -132,14 +133,15 @@ $(function () {
     function refreshLoan(){
         $.getJSON(base + "/manufacturing/loanList.do",
             {
+                campaignId: campaignId,
                 companyId: companyId
             },
             function(data){
                 if(data.status == 1) {
                     var tbody = $("#loanListTbody");
                     tbody.html("");
-                    for(var i in data.loanList) {
-                        var loan = data.loanList[i];
+                    for(var i in data.map.loanList) {
+                        var loan = data.map.loanList[i];
                         var tr = $("<tr></tr>");
                         tr.appendTo(tbody);
                         tr.append($("<td>" + loan.loanTypeLable + "</td>"));

@@ -45,33 +45,35 @@ public class MemoryCompany {
         accountList.add(account);
     }
 
-    public Integer getCompanyCash() {
-        Integer companyCash = 0;
-        for (Account account : accountList) {
-            for (AccountEntry accountEntry : account.getAccountEntryList()) {
-                if (accountEntry.getDirection().equals("1")) {
-                    companyCash += Integer.valueOf(accountEntry.getValue());
-                } else if (accountEntry.getDirection().equals("-1")) {
-                    companyCash -= Integer.valueOf(accountEntry.getValue());
-                }
-            }
-        }
-        return companyCash;
-    }
-
-    public Integer getLoan(String type) {
-        Integer companyCash = 0;
+    public Integer sumTypeAccount(String type) {
+        Integer sum = 0;
         for (Account account : accountList) {
             for (AccountEntry accountEntry : account.getAccountEntryList()) {
                 if (accountEntry.getType().equals(type)) {
                     if (accountEntry.getDirection().equals("1")) {
-                        companyCash += Integer.valueOf(accountEntry.getValue());
+                        sum += Integer.valueOf(accountEntry.getValue());
                     } else if (accountEntry.getDirection().equals("-1")) {
-                        companyCash -= Integer.valueOf(accountEntry.getValue());
+                        sum -= Integer.valueOf(accountEntry.getValue());
                     }
                 }
             }
         }
-        return companyCash;
+        return sum;
+    }
+
+    public Integer sumPrefixTypeAccount(String prefix) {
+        Integer sum = 0;
+        for (Account account : accountList) {
+            for (AccountEntry accountEntry : account.getAccountEntryList()) {
+                if (accountEntry.getType().startsWith(prefix)) {
+                    if (accountEntry.getDirection().equals("1")) {
+                        sum += Integer.valueOf(accountEntry.getValue());
+                    } else if (accountEntry.getDirection().equals("-1")) {
+                        sum -= Integer.valueOf(accountEntry.getValue());
+                    }
+                }
+            }
+        }
+        return sum;
     }
 }

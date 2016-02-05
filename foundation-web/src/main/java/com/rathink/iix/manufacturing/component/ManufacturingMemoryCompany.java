@@ -3,6 +3,8 @@ package com.rathink.iix.manufacturing.component;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.iix.ibase.component.MemoryCampaign;
 import com.rathink.iix.ibase.component.MemoryCompany;
+import com.rathink.ix.internet.EAccountEntityType;
+import com.rathink.ix.manufacturing.EManufacturingAccountEntityType;
 import com.rathink.ix.manufacturing.model.*;
 import org.springframework.stereotype.Component;
 
@@ -93,4 +95,36 @@ public class ManufacturingMemoryCompany extends MemoryCompany {
     public void setMarketOrderMap(Map<String, MarketOrder> marketOrderMap) {
         this.marketOrderMap = marketOrderMap;
     }
+
+    //现金
+    public Integer getCompanyCash() {
+        return sumTypeAccount(EManufacturingAccountEntityType.COMPANY_CASH.name());
+    }
+
+    //长期贷款
+    public Integer getLongTermLoan() {
+        return -sumPrefixTypeAccount(EManufacturingAccountEntityType.LOAN_LONG_TERM.name());
+    }
+
+    //短期贷款
+    public Integer getShortTermLoan() {
+        return -sumPrefixTypeAccount(EManufacturingAccountEntityType.LOAN_SHORT_TERM.name());
+    }
+
+    //高利贷
+    public Integer getUsuriousLoan() {
+        return -sumPrefixTypeAccount(EManufacturingAccountEntityType.LOAN_USURIOUS.name());
+    }
+
+    //所有贷款贷款
+    public Integer getAllLoan() {
+        return -sumPrefixTypeAccount("LOAN_");
+    }
+
+    //流动资产
+    public Integer getFloatingCapital() {
+        return sumPrefixTypeAccount("FLOATING_CAPITAL_");
+    }
+
+
 }

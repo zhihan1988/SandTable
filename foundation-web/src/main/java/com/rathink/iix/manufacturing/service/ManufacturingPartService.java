@@ -21,6 +21,8 @@ public class ManufacturingPartService {
     private BaseManager baseManager;
 
 
+
+
     public IndustryResourceChoice[][] getMarketChoiceArray(List<Market> marketList, List<Product> productList, Set<IndustryResourceChoice> marketChoiceList) {
 
         Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
