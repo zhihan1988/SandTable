@@ -196,13 +196,14 @@ $(function () {
         //开始建造
         $.getJSON(base + "/manufacturing/devoteMarket.do",
             {
-                companyTermId: companyTermId,
+                campaignId: campaignId,
+                companyId: companyId,
                 partId: marketId
             },
             function(data){
                 if(data.status == 1) {
                     $marketButton.replaceWith("开发中");
-                    update(data.newReport);
+                    update(data.map.newReport);
                 }
             });
     });

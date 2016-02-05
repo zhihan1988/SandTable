@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @DiscriminatorValue(value = "MARKET")
 public class Market extends CompanyPart {
     private String type;
-    private String devotionNeedCycle;//ʣ��Ŀ�������
+    private String devotionNeedCycle;//剩余开发周期
 
     @Column(name = "value")
     public String getType() {
@@ -36,7 +36,7 @@ public class Market extends CompanyPart {
     }
 
     public enum Status {
-        NORMAL
+        NORMAL,DEVELOPING
     }
 
     public enum Type {

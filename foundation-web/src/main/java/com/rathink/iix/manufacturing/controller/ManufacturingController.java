@@ -6,8 +6,6 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
-import com.rathink.iix.ibase.component.MemoryCampaign;
-import com.rathink.iix.ibase.component.MemoryCompany;
 import com.rathink.iix.ibase.controller.IBaseController;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
@@ -512,32 +510,26 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/devoteMarket")
     @ResponseBody
-    public Map devoteMarket(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
-        String companyTermId = request.getParameter("companyTermId");
+    public Result devoteMarket(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String partId = request.getParameter("partId");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Market market = (Market) baseManager.getObject(Market.class.getName(), partId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
-        companyTermInstruction.setDept(EManufacturingDept.MARKET.name());
-        companyTermInstruction.setCompanyPart(market);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
+        Market market = memoryCompany.getMarketMap().get(partId);
+        market.setStatus(Market.Status.DEVELOPING.name());
         Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
         Account account = accountManager.packageAccount(String.valueOf(fee)
-                , EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
+                , EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
 
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
         NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
-        newReport.setCompanyCash(companyCash);
-        result.put("status", 1);
-        result.put("newReport", newReport);
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
         return result;
     }
 

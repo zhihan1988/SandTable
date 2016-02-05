@@ -13,7 +13,6 @@ import com.rathink.iix.ibase.component.MemoryCampaign;
 import com.rathink.iix.ibase.component.MemoryCompany;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
-import com.rathink.ix.ibase.property.model.CompanyTermProperty;
 import com.rathink.ix.ibase.service.*;
 import com.rathink.ix.ibase.work.model.CompanyPart;
 import com.rathink.ix.ibase.work.model.CompanyTermInstruction;

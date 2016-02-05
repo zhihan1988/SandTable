@@ -18,19 +18,25 @@ import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.internet.EAccountEntityType;
+import com.rathink.ix.manufacturing.EManufacturingAccountEntityType;
 import com.rathink.ix.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ix.manufacturing.EManufacturingSerialGroup;
 import com.rathink.ix.manufacturing.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by Hean on 2016/2/2.
  */
 @Service(value = "manufacturingService")
 public class ManufacturingService extends IBaseService<ManufacturingMemoryCampaign> {
+    private static Logger logger = LoggerFactory.getLogger(ManufacturingService.class);
 
     @Autowired
     protected ManufacturingPartService manufacturingPartService;
@@ -159,6 +165,10 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
     protected void beforeProcess() {
         for (Company company : companyList) {
             ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
+            //杂费
+            processOthers(memoryCompany);
+            //贷款
+            processLoan(memoryCompany);
         }
     }
 
@@ -176,6 +186,14 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             processUpdateProduce(memoryCompany);
             //转产
             processRebuild(memoryCompany);
+            //市场投入周期
+            processMarketAreaDevotion(memoryCompany);
+            //销售产品所得费用
+//            processOrderAccount(companyTermContext);
+//            if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
+//                //延迟交付
+//                processUnDeliveredOrder(companyTermContext);
+//            }
 
         }
     }
@@ -321,4 +339,92 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                 });
     }
 
+    //市场区域开发费用
+    protected void processMarketAreaDevotion(ManufacturingMemoryCompany memoryCompany) {
+        memoryCompany.getMarketMap().values().stream()
+                .filter(market -> market.getStatus().equals(Market.Status.DEVELOPING.name()))
+                .forEach(market -> {
+                    Integer devotionNeedCycle = market.getDevotionNeedCycle();
+                    market.setDevotionNeedCycle(--devotionNeedCycle);
+                    market.setStatus(Market.Status.NORMAL.name());
+                });
+    }
+
+    //杂费
+    protected void processOthers(ManufacturingMemoryCompany memoryCompany){
+        Company company = memoryCompany.getCompany();
+
+        //行政管理费
+        Integer administrationFee = 1;
+        Account administrationAccount = accountManager.packageAccount(String.valueOf(administrationFee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(administrationAccount);
+        logger.info("行政管理费：第{}期-{}-{}", company.getCurrentCampaignDate(), company.getName(), administrationFee);
+
+
+
+        if (company.getCurrentCampaignDate() % 4 == 0) {
+
+            //生产线维护费
+            List<ProduceLine> produceLineList = memoryCompany.getProduceLineMap().values().stream()
+                    .filter(produceLine -> !produceLine.getStatus().equals(ProduceLine.Status.UN_BUILD.name()))
+                    .collect(Collectors.toList());
+            if (produceLineList != null && !produceLineList.isEmpty()) {
+                Integer produceLineMaintenanceFee = produceLineList.size() * 1;
+                Account maintenanceAccount = accountManager.packageAccount(String.valueOf(produceLineMaintenanceFee), EManufacturingAccountEntityType.OTHER.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+                memoryCompany.addAccount(maintenanceAccount);
+                logger.info("生产线维护费：第{}期-{}-{}", company.getCurrentCampaignDate(), company.getName(), produceLineMaintenanceFee);
+            }
+
+
+            //厂房租赁费
+            Integer lineFactoryRent = 0;
+            Set<String> lineNameSet = new HashSet<>();
+            for (ProduceLine produceLine : produceLineList) {
+                lineNameSet.add(produceLine.getName());
+            }
+            if (lineNameSet.contains("生产线1") || lineNameSet.contains("生产线2") || lineNameSet.contains("生产线3") || lineNameSet.contains("生产线4")) {
+                lineFactoryRent += 4;
+            } else if (lineNameSet.contains("生产线5") || lineNameSet.contains("生产线6") || lineNameSet.contains("生产线7")) {
+                lineFactoryRent += 3;
+            } else if (lineNameSet.contains("生产线8")) {
+                lineFactoryRent += 2;
+            }
+            Account lineFactoryRentAccount = accountManager.packageAccount(String.valueOf(lineFactoryRent), EManufacturingAccountEntityType.LINE_FACTORY_RENT_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+            memoryCompany.addAccount(lineFactoryRentAccount);
+            logger.info("厂房租赁费：第{}期-{}-{}", company.getCurrentCampaignDate(), company.getName(), lineFactoryRent);
+
+        }
+    }
+
+    //贷款
+    protected void processLoan(ManufacturingMemoryCompany memoryCompany) {
+        Company company = memoryCompany.getCompany();
+        memoryCompany.getLoanMap().values().stream()
+                .filter(loan -> loan.getStatus().equals(Loan.Status.NORMAL))
+                .forEach(loan -> {
+                    Integer needRepayCycle = loan.getNeedRepayCycle();
+                    needRepayCycle--;
+                    loan.setNeedRepayCycle(needRepayCycle);
+
+                    Loan.Type loanType = Loan.Type.valueOf(loan.getType());
+                    Integer fee = 0;
+                    Integer rateFee = 0;
+                    if (company.getCurrentCampaignDate() % 4 == 0) {//年底付息
+                        rateFee += loan.getMoney() * loanType.getYearRate() / 100;
+                    }
+                    if (needRepayCycle == 0) {//到期还款
+                        loan.setStatus(Loan.Status.FINISH.name());
+                        fee += loan.getMoney();
+                    }
+                    if (fee != 0) {
+                        //需要保证Loan.Type.name跟EManufacturingAccountEntityType中的贷款的名字一直
+                        Account account = accountManager.packageAccount(String.valueOf(fee), loanType.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+                        memoryCompany.addAccount(account);
+                    }
+                    if (rateFee != 0) {
+                        Account account = accountManager.packageAccount(String.valueOf(rateFee), EManufacturingAccountEntityType.INTEREST.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+                        memoryCompany.addAccount(account);
+                    }
+                });
+    }
 }
