@@ -29,7 +29,7 @@ public class CampaignParty<T> {
         this.status = status;
     }
 
-    public void join(T o) {
+    public synchronized void join(T o) {
         joinedSet.add(o);
         if (isAll()) {
             iNotify();

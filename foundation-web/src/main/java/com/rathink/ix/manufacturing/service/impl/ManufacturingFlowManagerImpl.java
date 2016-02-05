@@ -125,7 +125,11 @@ public class ManufacturingFlowManagerImpl extends AbstractFlowManager<Manufactur
                 market.setDevotionNeedCycle(devotionNeedCycle);
                 market.setCompany(company);
                 market.setCampaign(campaign);
-                market.setStatus(Market.Status.NORMAL.name());
+                if (market.getType().equals(Market.Type.LOCAL.name())) {
+                    market.setStatus(Market.Status.DEVELOPED.name());
+                } else {
+                    market.setStatus(Market.Status.UNDEVELOPED.name());
+                }
                 baseManager.saveOrUpdate(Market.class.getName(), market);
             }
 

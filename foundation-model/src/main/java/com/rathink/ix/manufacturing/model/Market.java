@@ -36,7 +36,7 @@ public class Market extends CompanyPart {
     }
 
     public enum Status {
-        NORMAL,DEVELOPING
+        UNDEVELOPED, DEVELOPING, DEVELOPED,
     }
 
     public enum Type {

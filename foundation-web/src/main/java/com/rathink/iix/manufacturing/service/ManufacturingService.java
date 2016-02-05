@@ -145,7 +145,11 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                     market.setDevotionNeedCycle(devotionNeedCycle);
                     market.setCompany(company);
                     market.setCampaign(campaign);
-                    market.setStatus(Market.Status.NORMAL.name());
+                    if (market.getType().equals(Market.Type.LOCAL.name())) {
+                        market.setStatus(Market.Status.DEVELOPED.name());
+                    } else {
+                        market.setStatus(Market.Status.UNDEVELOPED.name());
+                    }
                     memoryCompany.getMarketMap().put(market.getId(), market);
                 }
 
@@ -210,7 +214,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             marketFeeResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketFeeResource.getId())));
             memoryCampaign.putIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name(), marketFeeResource);
 
-            Market.Type[] marketTypeArray;
+           /* Market.Type[] marketTypeArray;
             String[] productTypeArray;
             if (currentCampaignDate == 1) {
                 marketTypeArray = new Market.Type[]{Market.Type.LOCAL};
@@ -250,7 +254,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                     }
                     marketOrderChoiceMap.put(market, marketOrderChoiceList);
                 }
-            }
+            }*/
             //todo   投票环节
 //            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
 //            campaignContext.setDevoteCycle(devoteCycle);
@@ -346,7 +350,11 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                 .forEach(market -> {
                     Integer devotionNeedCycle = market.getDevotionNeedCycle();
                     market.setDevotionNeedCycle(--devotionNeedCycle);
-                    market.setStatus(Market.Status.NORMAL.name());
+                    if (devotionNeedCycle == 0) {
+                        market.setStatus(Market.Status.DEVELOPED.name());
+                    } else {
+                        market.setStatus(Market.Status.UNDEVELOPED.name());
+                    }
                 });
     }
 

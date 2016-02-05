@@ -81,8 +81,13 @@ public class ManufacturingController extends IBaseController {
         model.addAttribute("companyTerm", null);
         model.addAttribute("companyNum", memoryCampaign.getMemoryCompanyMap().size());
 
-        model.addAttribute("produceLineList",  memoryCompany.getProduceLineMap().values());
+        //主页
+        model.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        model.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
+        model.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
+        model.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
 
+        //生产
         Collection<Material> materialList = memoryCompany.getMaterialMap().values();
         model.addAttribute("materialList", materialList);
         for (Material material : materialList) {
@@ -94,27 +99,14 @@ public class ManufacturingController extends IBaseController {
         for (Product product : productList) {
             model.addAttribute(product.getType(), product);
         }
+        model.addAttribute("produceLineList",  memoryCompany.getProduceLineMap().values());
 
+
+        //市场
         Collection<Market> marketList = memoryCompany.getMarketMap().values();
         model.addAttribute("marketList", marketList);
 
-        List<Loan> loanList = memoryCompany.getLoanMap().values()
-                .stream()
-                .filter(loan -> Loan.Status.NORMAL.name().equals(loan.getStatus()))
-                .collect(Collectors.toList());
-        model.addAttribute("loanList", loanList);
-
-        List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values()
-                .stream()
-                .filter(marketOrder -> MarketOrder.Status.NORMAL.name().equals(marketOrder.getStatus()))
-                .collect(Collectors.toList());
-        model.addAttribute("marketOrderList", marketOrderList);
-
-        model.addAttribute("longTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
-        model.addAttribute("shortTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
-        model.addAttribute("usuriousLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
-
-        if (currentSeason == 1) {
+        if (currentSeason == 1) {    //竞标
             IndustryResource marketFeeResource = memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name());
             Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
             for (IndustryResourceChoice marketChoice : marketFeeResource.getCurrentIndustryResourceChoiceSet()) {
@@ -138,14 +130,36 @@ public class ManufacturingController extends IBaseController {
             model.addAttribute("marketOrderResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
 
         }
+        List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values()
+                .stream()
+                .filter(marketOrder -> MarketOrder.Status.NORMAL.name().equals(marketOrder.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("marketOrderList", marketOrderList);
 
-        model.addAttribute("companyCash", memoryCompany.getCompanyCash());
-        model.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
-        model.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
-        model.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
 
-        model.addAttribute("roundType", EManufacturingRoundType.DATE_ROUND.name());
+        //财务
+        List<Loan> loanList = memoryCompany.getLoanMap().values()
+                .stream()
+                .filter(loan -> Loan.Status.NORMAL.name().equals(loan.getStatus()))
+                .collect(Collectors.toList());
+        model.addAttribute("loanList", loanList);
+        model.addAttribute("longTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
+        model.addAttribute("shortTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
+        model.addAttribute("usuriousLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
+
         return "/manufacturing/main";
+    }
+
+    @RequestMapping("/bidding")
+    @ResponseBody
+    public Result bidding(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
+
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        return result;
     }
 
     @RequestMapping("/finishDevotion")
@@ -271,6 +285,44 @@ public class ManufacturingController extends IBaseController {
 
         return result;
     }
+
+    @RequestMapping("/deliverOrder")
+    @ResponseBody
+    public Map deliverOrder(HttpServletRequest request, Model model) throws Exception {
+
+        String companyTermId = request.getParameter("companyTermId");
+        String orderId = request.getParameter("orderId");
+
+        Map result = manufacturingImmediatelyManager.processDeliveredOrder(companyTermId, orderId);
+
+        return result;
+    }
+
+    @RequestMapping("/devoteMarket")
+    @ResponseBody
+    public Result devoteMarket(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
+        String partId = request.getParameter("partId");
+
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
+
+        Market market = memoryCompany.getMarketMap().get(partId);
+        market.setStatus(Market.Status.DEVELOPING.name());
+        Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
+        Account account = accountManager.packageAccount(String.valueOf(fee)
+                , EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        NewReport newReport = new NewReport();
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.setAttribute("newReport", newReport);
+        return result;
+    }
+
 
     @RequestMapping("/currentLineState")
     @ResponseBody
@@ -508,31 +560,6 @@ public class ManufacturingController extends IBaseController {
         return result;
     }
 
-    @RequestMapping("/devoteMarket")
-    @ResponseBody
-    public Result devoteMarket(HttpServletRequest request, Model model) throws Exception {
-        String campaignId = request.getParameter("campaignId");
-        String companyId = request.getParameter("companyId");
-        String partId = request.getParameter("partId");
-
-        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
-        Company company = memoryCompany.getCompany();
-
-        Market market = memoryCompany.getMarketMap().get(partId);
-        market.setStatus(Market.Status.DEVELOPING.name());
-        Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
-        Account account = accountManager.packageAccount(String.valueOf(fee)
-                , EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
-        memoryCompany.addAccount(account);
-
-        Result result = new Result();
-        result.setStatus(Result.SUCCESS);
-        NewReport newReport = new NewReport();
-        newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
-        return result;
-    }
-
     @RequestMapping("/purchase")
     @ResponseBody
     public Result purchase(HttpServletRequest request, Model model) throws Exception {
@@ -586,47 +613,6 @@ public class ManufacturingController extends IBaseController {
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
         result.setAttribute("newReport", newReport);
-        return result;
-    }
-
-    @RequestMapping("/devoteMarketArea")
-    @ResponseBody
-    public Map devoteMarketArea(HttpServletRequest request, Model model) throws Exception {
-        Map result = new HashMap<>();
-        String companyTermId = request.getParameter("companyTermId");
-        String partId = request.getParameter("partId");
-
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        Market market = (Market) baseManager.getObject(Market.class.getName(), partId);
-
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.UN_PROCESS.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_DEVOTION.name());
-        companyTermInstruction.setDept(EManufacturingDept.MARKET.name());
-        companyTermInstruction.setCompanyPart(market);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
-
-        Integer fee = Market.Type.valueOf(market.getType()).getPerDevotion();
-        Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.MARKET_DEVOTION_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-        baseManager.saveOrUpdate(Account.class.getName(), account);
-
-        NewReport newReport = new NewReport();
-        Integer companyCash = accountManager.getCompanyCash(companyTerm.getCompany());
-        newReport.setCompanyCash(companyCash);
-        result.put("newReport", newReport);
-        return result;
-    }
-
-    @RequestMapping("/deliverOrder")
-    @ResponseBody
-    public Map deliverOrder(HttpServletRequest request, Model model) throws Exception {
-
-        String companyTermId = request.getParameter("companyTermId");
-        String orderId = request.getParameter("orderId");
-
-        Map result = manufacturingImmediatelyManager.processDeliveredOrder(companyTermId, orderId);
-
         return result;
     }
 
