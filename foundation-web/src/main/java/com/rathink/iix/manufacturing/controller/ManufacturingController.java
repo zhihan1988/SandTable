@@ -6,9 +6,11 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
+import com.rathink.iix.ibase.component.MemoryCompany;
 import com.rathink.iix.ibase.controller.IBaseController;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
+import com.rathink.iix.manufacturing.component.MarketBiddingParty;
 import com.rathink.iix.manufacturing.service.ManufacturingService;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.component.CheckOut;
@@ -16,7 +18,6 @@ import com.rathink.ix.ibase.component.Result;
 import com.rathink.ix.ibase.property.model.CompanyTerm;
 import com.rathink.ix.ibase.service.CampaignCenter;
 import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
-import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.internet.EInstructionStatus;
 import com.rathink.ix.manufacturing.*;
@@ -107,29 +108,10 @@ public class ManufacturingController extends IBaseController {
         model.addAttribute("marketList", marketList);
 
         if (currentSeason == 1) {    //竞标
-            IndustryResource marketFeeResource = memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name());
-            Map<String, IndustryResourceChoice> resourceChoiceMap = new HashMap<>();
-            for (IndustryResourceChoice marketChoice : marketFeeResource.getCurrentIndustryResourceChoiceSet()) {
-                resourceChoiceMap.put(marketChoice.getType(), marketChoice);
-            }
-
-            Map marketMap = new HashMap<>();
-            for (Market market : marketList) {
-                if (market.getDevotionNeedCycle() == 0) {
-                    Map productMap = new LinkedHashMap<>();
-                    for (Product product : productList) {
-                        if (product.getDevelopNeedCycle() == 0) {
-                            productMap.put(product.getType(), resourceChoiceMap.get(market.getType() + "_" + product.getType()));
-                        }
-                    }
-                    marketMap.put(market.getType(), productMap);
-                }
-            }
-            model.addAttribute("marketMap", marketMap);
-
+            model.addAttribute("marketFeeResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name()));
             model.addAttribute("marketOrderResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
-
         }
+
         List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values()
                 .stream()
                 .filter(marketOrder -> MarketOrder.Status.NORMAL.name().equals(marketOrder.getStatus()))
@@ -150,53 +132,50 @@ public class ManufacturingController extends IBaseController {
         return "/manufacturing/main";
     }
 
-    @RequestMapping("/bidding")
+
+    @RequestMapping("/finishDevotion")
     @ResponseBody
-    public Result bidding(HttpServletRequest request, Model model) throws Exception {
+    public Result finishDevotion(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
+        String devotions = request.getParameter("devotions");
+
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
+        Company company = memoryCompany.getCompany();
+        MarketBiddingParty marketBiddingParty = (MarketBiddingParty) memoryCampaign.getCampaignParty("BIDDING");
+
+        Integer totalMarketFee = 0;
+        try {
+            for (String devotion : devotions.split(";")) {
+                String[] devotionArray = devotion.split(":");
+                String marketType = devotionArray[0];
+                Integer fee = Integer.valueOf(devotionArray[1]);
+                marketBiddingParty.addBidding(companyId, marketType, fee);
+
+                totalMarketFee += fee;
+            }
+        } catch (Exception e) {
+            logger.error("竞标数据格式异常：" + devotions, e);
+            Result result = new Result();
+            result.setStatus(Result.FAILED);
+            result.setMessage("竞标数据格式异常");
+            return result;
+        }
+
+
+        Account account = accountManager.packageAccount(String.valueOf(totalMarketFee), EManufacturingAccountEntityType.MARKET_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), company);
+        memoryCompany.addAccount(account);
+
+        marketBiddingParty.join(companyId);
 
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        return result;
-    }
-
-    @RequestMapping("/finishDevotion")
-    @ResponseBody
-    public Map finishDevotion(HttpServletRequest request, Model model) throws Exception {
-        String campaignId = request.getParameter("campaignId");
-        String companyId = request.getParameter("companyId");
-        String companyTermId = request.getParameter("companyTermId");
-
-        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
-
-        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
-        devoteCycle.finishDevote(companyId);
-
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
-        List<CompanyTermInstruction> marketFeeInstructionList = instructionManager.listCompanyInstruction(companyTerm, EManufacturingChoiceBaseType.MARKET_FEE.name());
-        if (marketFeeInstructionList != null) {
-            Integer totalMoney = 0;
-            for (CompanyTermInstruction marketFeeInstruction : marketFeeInstructionList) {
-                marketFeeInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-                baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), marketFeeInstruction);
-                totalMoney += Integer.valueOf(marketFeeInstruction.getValue());
-            }
-            Account account = accountManager.packageAccount(String.valueOf(totalMoney), EManufacturingAccountEntityType.MARKET_FEE.name(), EManufacturingAccountEntityType.COMPANY_CASH.name(), companyTerm);
-            baseManager.saveOrUpdate(Account.class.getName(), account);
-        }
-
-        Map map = new HashMap<>();
-        map.put("status", 1);
-        map.put("cycleStatus", devoteCycle.getCurrentStatus());
-
         NewReport newReport = new NewReport();
-        Company company = (Company) baseManager.getObject(Company.class.getName(), companyId);
-        Integer companyCash = accountManager.getCompanyCash(company);
-        newReport.setCompanyCash(companyCash);
-        map.put("newReport", newReport);
-        return map;
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.addAttribute("newReport", newReport);
+        return result;
     }
 
     @RequestMapping("/refreshDevoteCycleStatus")
@@ -319,7 +298,7 @@ public class ManufacturingController extends IBaseController {
         result.setStatus(Result.SUCCESS);
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -336,7 +315,7 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("line", produceLine);
+        result.addAttribute("line", produceLine);
         return result;
     }
 
@@ -374,10 +353,10 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("line", produceLine);
+        result.addAttribute("line", produceLine);
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -410,10 +389,10 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("line", produceLine);
+        result.addAttribute("line", produceLine);
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -436,11 +415,11 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("line", produceLine);
+        result.addAttribute("line", produceLine);
         NewReport newReport = new NewReport();
         Integer companyCash = memoryCompany.getCompanyCash();
         newReport.setCompanyCash(companyCash);
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -547,7 +526,7 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("line", produceLine);
+        result.addAttribute("line", produceLine);
         NewReport newReport = new NewReport();
         newReport.setR1Amount(R1Amount);
         newReport.setR2Amount(R2Amount);
@@ -555,7 +534,7 @@ public class ManufacturingController extends IBaseController {
         newReport.setR4Amount(R4Amount);
         Integer companyCash = memoryCompany.getCompanyCash();
         newReport.setCompanyCash(companyCash);
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
 
         return result;
     }
@@ -581,10 +560,10 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("material", material);
+        result.addAttribute("material", material);
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -609,10 +588,10 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("product", product);
+        result.addAttribute("product", product);
         NewReport newReport = new NewReport();
         newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.setAttribute("newReport", newReport);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -684,7 +663,7 @@ public class ManufacturingController extends IBaseController {
                 default:
                     throw new NoSuchElementException(loanType.name());
             }
-            result.setAttribute("newReport", newReport);
+            result.addAttribute("newReport", newReport);
 
             return result;
         }
@@ -703,7 +682,7 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.setAttribute("loanList", memoryCompany.getLoanMap().values());
+        result.addAttribute("loanList", memoryCompany.getLoanMap().values());
         return result;
     }
 

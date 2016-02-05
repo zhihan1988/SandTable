@@ -14,6 +14,7 @@ import com.rathink.iix.ibase.component.TermParty;
 import com.rathink.iix.ibase.service.IBaseService;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
+import com.rathink.iix.manufacturing.component.MarketBiddingParty;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
@@ -258,6 +259,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             //todo   投票环节
 //            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
 //            campaignContext.setDevoteCycle(devoteCycle);
+            memoryCampaign.addCampaignParty(new MarketBiddingParty(memoryCampaign));
         }
 
         IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_LONG_TERM.name());

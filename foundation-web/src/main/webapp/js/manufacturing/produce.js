@@ -11,7 +11,7 @@ $(function () {
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.map.line;
+                    var line = data.model.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);
@@ -37,7 +37,7 @@ $(function () {
                 function(data){
                     if(data.status==1) {
                         $material.replaceWith(num);
-                        update(data.map.newReport);
+                        update(data.model.newReport);
                     }
                 });
         }
@@ -57,7 +57,7 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $developButton.replaceWith("研发中");
-                    update(data.map.newReport);
+                    update(data.model.newReport);
                 }
             });
     });
@@ -114,9 +114,9 @@ $(function () {
                     //建造结果
                     if(data.status == 1) {
                         console.info(data);
-                        update(data.map.newReport);
-                        refreshProduceLine(data.map.line);
-                        updateProduceLineButton(data.map.line);
+                        update(data.model.newReport);
+                        refreshProduceLine(data.model.line);
+                        updateProduceLineButton(data.model.line);
                     }
                 });
         }
@@ -136,9 +136,9 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $build.replaceWith("建造中");
-                    update(data.map.newReport);
-                    refreshProduceLine(data.map.line);
-                    updateProduceLineButton(data.map.line);
+                    update(data.model.newReport);
+                    refreshProduceLine(data.model.line);
+                    updateProduceLineButton(data.model.line);
                 }
             });
     });
@@ -162,9 +162,9 @@ $(function () {
                 var status = data.status;
                 if(status == 1) {
                     $produce.parent().text("生产中");
-                    update(data.map.newReport);
-                    refreshProduceLine(data.map.line);
-                    updateProduceLineButton(data.map.line);
+                    update(data.model.newReport);
+                    refreshProduceLine(data.model.line);
+                    updateProduceLineButton(data.model.line);
                 } else {
                     alert(data.message);
                     //enableButton($produce);
@@ -204,7 +204,7 @@ $(function () {
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.map.line;
+                    var line = data.model.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);
@@ -222,7 +222,7 @@ $(function () {
             },
             function (data) {
                 if(data.status==1){
-                    var line = data.map.line;
+                    var line = data.model.line;
 
                     refreshProduceLine(line);
                     initProduceLineButton(line);

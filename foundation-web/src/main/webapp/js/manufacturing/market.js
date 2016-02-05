@@ -1,6 +1,6 @@
 $(function () {
     //市场投放
-    $("select[id^='marketFee_'],select[id^='instruction_']").change(function(){
+    $("select[id^='instruction_']").change(function(){
         var $choice = $(this);
         var array = $choice.val().split("#");
         var choiceId = array[0];
@@ -26,11 +26,21 @@ $(function () {
     $("#finishDevotion").click(function(){
         var $finishDevotionButton = $(this);
         $finishDevotionButton.attr("disabled",true).addClass("am-disabled");
+
+        var devotions = "";
+        $("select[id^='marketFee_']").each(function(){
+            var marketType = $(this).val().split("#")[0];
+            var fee = $(this).val().split("#")[1];
+            if(fee!=-1) {
+                devotions = devotions + marketType + ":" + fee + ";";
+            }
+        });
+
         $.getJSON(base + "/manufacturing/finishDevotion.do",
             {
                 campaignId: campaignId,
                 companyId: companyId,
-                companyTermId: companyTermId
+                devotions: devotions
             }, function(data){
                 if(data.status == 1) {
                     $finishDevotionButton.text("等待竞标结果").attr("disabled", true).addClass("am-disabled");;
@@ -203,7 +213,7 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $marketButton.replaceWith("开发中");
-                    update(data.map.newReport);
+                    update(data.model.newReport);
                 }
             });
     });

@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by Hean on 2016/2/2.
  */
-public class MarketBiddingParty extends CampaignParty{
+public class MarketBiddingParty extends CampaignParty<String> {
 //    private List companyBiddingPriceList;
     private Object sortedCompany;
     private Map<String, List<CompanyBidding>> marketBiddingMap = new HashMap<>();
@@ -17,7 +17,7 @@ public class MarketBiddingParty extends CampaignParty{
         super(memoryCampaign, "BIDDING");
     }
 
-    public void addBidding(String market, String companyId, Integer fee) {
+    public void addBidding(String companyId, String market, Integer fee) {
         CompanyBidding companyBidding = new CompanyBidding(companyId, fee);
         if (marketBiddingMap.containsKey(market)) {
             marketBiddingMap.get(market).add(companyBidding);
@@ -34,7 +34,7 @@ public class MarketBiddingParty extends CampaignParty{
         for (List<CompanyBidding> companyBiddingList : marketBiddingMap.values()) {
             Collections.sort(companyBiddingList);
         }
-
+        System.out.println(123);
 //        MarketOrderParty marketOrderParty = new MarketOrderParty(memoryCampaign);
     }
 

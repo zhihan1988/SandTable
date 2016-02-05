@@ -12,7 +12,7 @@ public class Result {
 
     private Integer status;
     private String message;
-    private Map map = new HashMap<>();
+    private Map model = new HashMap<>();
 
     public Integer getStatus() {
         return status;
@@ -30,15 +30,15 @@ public class Result {
         this.message = message;
     }
 
-    public void setAttribute(String key, Object value) {
-        map.put(key, value);
+    public void addAttribute(String key, Object value) {
+        model.put(key, value);
     }
 
     public Object getAttribute(String key) {
-        return map.get(key);
+        return model.get(key);
     }
 
-    public Map getMap() {
-        return map;
+    public Map getModel() {
+        return model;
     }
 }

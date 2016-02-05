@@ -176,39 +176,38 @@
 
                     <div class="am-tabs" data-am-tabs>
                         <ul class="am-tabs-nav am-nav am-nav-tabs">
-                            <li class="am-active"><a href="#tab1">本地</a></li>
-                            <c:if test="${marketMap['AREA'] != null}">
-                                <li><a href="#tab2">区域</a></li>
-                            </c:if>
-                            <c:if test="${marketMap['DOMESTIC'] != null}">
-                                <li><a href="#tab3">国内</a></li>
-                            </c:if>
-                            <c:if test="${marketMap['ASIA'] != null}">
-                                <li><a href="#tab4">亚洲</a></li>
-                            </c:if>
-                            <c:if test="${marketMap['INTERNATIONAL'] != null}">
-                                <li><a href="#tab5">国际</a></li>
-                            </c:if>
+                            <li class="am-active"><a href="#tab_LOCAL">本地</a></li>
+                            <li><a href="#tab_AREA">区域</a></li>
+                            <li><a href="#tab_DOMESTIC">国内</a></li>
+                            <li><a href="#tab_INTERNATIONAL">国际</a></li>
                         </ul>
 
                         <div class="am-tabs-bd">
-                            <c:forEach items="${marketMap}" var="market" varStatus="status">
-                                <div class="am-tab-panel am-fade am-in am-active" id="tab${status.index+1}">
+                            <c:forEach items="${marketList}" var="market" varStatus="varStatus">
+                                <div class="am-tab-panel am-fade <c:if test="${varStatus.index==0}">am-active am-in </c:if>" id="tab_${market.type}">
                                     <table class="am-table">
                                         <tr>
                                             <th>产品类型</th>
                                             <th>投放金额(M)</th>
                                         </tr>
-                                        <c:forEach items="${market.value}" var="productChoiceMap">
+                                        <c:forEach items="${productList}" var="product">
                                             <tr>
-                                                <td>${productChoiceMap.key}</td>
+                                                <td>${product.type}</td>
                                                 <td>
-                                                    <select id="marketFee_${productChoiceMap.value.id}">
-                                                        <option value="${productChoiceMap.value.id}#-1">未投入</option>
-                                                        <c:forEach items="${fn:split(productChoiceMap.value.industryResource.valueSet, ',')}" var="fee">
-                                                            <option value="${productChoiceMap.value.id}#${fee}">${fee}</option>
-                                                        </c:forEach>
-                                                    </select>
+                                                    <c:choose>
+                                                        <c:when test="${market.status=='DEVELOPED' && product.status=='DEVELOPED'}">
+                                                            <select id="marketFee_${market.type}_${product.type}">
+                                                                <option value="${market.type}_${product.type}#-1">未投入</option>
+                                                                <c:forEach items="${fn:split(marketFeeResource.valueSet, ',')}" var="fee">
+                                                                    <option value="${market.type}_${product.type}#${fee}">${fee}</option>
+                                                                </c:forEach>
+                                                            </select>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            未开发
+                                                        </c:otherwise>
+                                                    </c:choose>
+
                                                 </td>
                                             </tr>
                                         </c:forEach>

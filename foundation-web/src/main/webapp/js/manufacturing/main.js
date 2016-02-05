@@ -50,11 +50,11 @@ $(function () {
                 partyType: "TERM"
             },
             function (data) {
-                var isNext = data.map.isNext;
+                var isNext = data.model.isNext;
                 if (isNext == true) {
                     location.reload();
                 } else {
-                    $("#unFinishedNum").text(data.map.unFinishedNum);
+                    $("#unFinishedNum").text(data.model.unFinishedNum);
                     //$.AMUI.progress.set(data.schedule);
                 }
             }
@@ -120,10 +120,10 @@ $(function () {
             function(data){
                 if(data.status == 1) {
                     $choice.parent().text("已贷款");
-                    update(data.map.newReport);
+                    update(data.model.newReport);
                     refreshLoan();
                 } else {
-                    alert(data.map.message);
+                    alert(data.model.message);
                     $choice.attr("disabled",false).removeClass("am-disabled");
                 }
             }
@@ -140,8 +140,8 @@ $(function () {
                 if(data.status == 1) {
                     var tbody = $("#loanListTbody");
                     tbody.html("");
-                    for(var i in data.map.loanList) {
-                        var loan = data.map.loanList[i];
+                    for(var i in data.model.loanList) {
+                        var loan = data.model.loanList[i];
                         var tr = $("<tr></tr>");
                         tr.appendTo(tbody);
                         tr.append($("<td>" + loan.loanTypeLable + "</td>"));

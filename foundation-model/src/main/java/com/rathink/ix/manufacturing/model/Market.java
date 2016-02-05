@@ -40,15 +40,15 @@ public class Market extends CompanyPart {
     }
 
     public enum Type {
-        LOCAL(0,0),AREA(1,1),DOMESTIC(2,1),ASIA(3,1), INTERNATIONAL(4, 1),;
+        LOCAL(0,0),AREA(1,1),DOMESTIC(2,1),INTERNATIONAL(4, 1);
 
         Type(Integer devotionNeedCycle, Integer perDevotion) {
             this.devotionNeedCycle = devotionNeedCycle;
             this.perDevotion = perDevotion;
         }
 
-        private Integer devotionNeedCycle;//�����г�ʣ�������
-        private Integer perDevotion;//����Ͷ��
+        private Integer devotionNeedCycle;//开发周期
+        private Integer perDevotion;//每期的投入
 
         public Integer getDevotionNeedCycle() {
             return devotionNeedCycle;
