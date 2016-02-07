@@ -215,51 +215,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             marketFeeResource.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(marketFeeResource.getId())));
             memoryCampaign.putIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name(), marketFeeResource);
 
-           /* Market.Type[] marketTypeArray;
-            String[] productTypeArray;
-            if (currentCampaignDate == 1) {
-                marketTypeArray = new Market.Type[]{Market.Type.LOCAL};
-                productTypeArray = new String[]{"P1"};
-            } else if (currentCampaignDate == 5) {
-                marketTypeArray = new Market.Type[]{Market.Type.LOCAL, Market.Type.AREA};
-                productTypeArray = new String[]{"P1", "P2"};
-            } else {
-                marketTypeArray = Market.Type.values();
-                productTypeArray = new String[]{"P1", "P2", "P3", "P4"};
-            }
-            List<String> marketList = new ArrayList<>();
-            for (Market.Type m : marketTypeArray) {
-                for (String p : productTypeArray) {
-                    marketList.add(m.name() + "_" + p);
-                }
-            }
-
-            Integer companyNum = memoryCampaign.getMemoryCompanyMap().size();
-            Map<String, List<MarketOrderChoice>> marketOrderChoiceMap = new HashMap<>();
-
-            for (String market : marketList) {
-                XQuery xQuery = new XQuery();
-                String hql = "from IndustryResourceChoice where industryResource.name = :baseType and type = :type";
-                xQuery.setHql(hql);
-                xQuery.put("baseType", EManufacturingChoiceBaseType.MARKET_ORDER.name());
-                xQuery.put("type", market);
-                PageEntity pageEntity = new PageEntity();
-                pageEntity.setIndex(1);
-                pageEntity.setSize(companyNum);
-                xQuery.setPageEntity(pageEntity);
-                List<IndustryResourceChoice> industryResourceChoiceList = baseManager.listPageInfo(xQuery).getList();
-                if (industryResourceChoiceList != null) {
-                    List<MarketOrderChoice> marketOrderChoiceList = new LinkedList<>();
-                    for (IndustryResourceChoice industryResourceChoice : industryResourceChoiceList) {
-                        marketOrderChoiceList.add(new MarketOrderChoice(industryResourceChoice));
-                    }
-                    marketOrderChoiceMap.put(market, marketOrderChoiceList);
-                }
-            }*/
-            //todo   投票环节
-//            DevoteCycle devoteCycle = new DevoteCycle(campaignContext, marketList, marketOrderChoiceMap);
-//            campaignContext.setDevoteCycle(devoteCycle);
-            memoryCampaign.addCampaignParty(new MarketBiddingParty(memoryCampaign));
+            memoryCampaign.getCampaignPartyMap().put(MarketBiddingParty.TYPE, new MarketBiddingParty(memoryCampaign));
         }
 
         IndustryResource longTermLoanResource = industryResourceManager.getUniqueIndustryResource(industryId, EManufacturingChoiceBaseType.LOAN_LONG_TERM.name());
@@ -274,7 +230,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
         usuriousLoan.setCurrentIndustryResourceChoiceSet(new LinkedHashSet<>(industryResourceChoiceManager.listIndustryResourceChoice(usuriousLoan.getId())));
         memoryCampaign.putIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name(), usuriousLoan);
 
-        memoryCampaign.addCampaignParty(new TermParty(memoryCampaign));
+        memoryCampaign.getCampaignPartyMap().put(TermParty.TYPE, new TermParty(memoryCampaign));
     }
 
     //原材料采购

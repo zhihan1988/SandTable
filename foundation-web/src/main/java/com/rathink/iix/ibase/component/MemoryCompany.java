@@ -1,13 +1,13 @@
 package com.rathink.iix.ibase.component;
 
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.iix.manufacturing.message.IMessage;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.account.model.AccountEntry;
-import com.rathink.ix.ibase.property.model.CompanyTerm;
 import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -20,7 +20,7 @@ public class MemoryCompany {
     private List<Account> accountList = new ArrayList<>();
     private List<CompanyTermInstruction> instructionList = new ArrayList<>();
     //instructionlist
-    private Queue messageQueue;
+    private Queue<IMessage> messageQueue = new LinkedList<>();
 
     public MemoryCompany(Company company, MemoryCampaign memoryCampaign) {
         this.company = company;
@@ -39,7 +39,17 @@ public class MemoryCompany {
 
     }
 
+    public void offerMessage(IMessage message) {
+        messageQueue.offer(message);
+    }
 
+    public IMessage pollMessage() {
+        return messageQueue.poll();
+    }
+
+    public IMessage peekMessage(){
+        return messageQueue.peek();
+    }
 
     public void addAccount(Account account){
         accountList.add(account);

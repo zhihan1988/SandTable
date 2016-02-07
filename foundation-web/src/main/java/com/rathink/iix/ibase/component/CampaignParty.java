@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by Hean on 2016/2/2.
  */
-public class CampaignParty<T> {
+public abstract class CampaignParty<T> {
     protected MemoryCampaign memoryCampaign;
     protected Set<T> joinedSet = new HashSet<>();
     private String type;
@@ -36,11 +36,27 @@ public class CampaignParty<T> {
         }
     }
 
+    /**
+     * 是否全部操作完成
+     * @return
+     */
     public boolean isAll() {
-        return memoryCampaign.getMemoryCompanyMap().size() == joinedSet.size();
+        return joinedSet.size() >= memoryCampaign.getMemoryCompanyMap().size();
     }
 
-    public void iNotify() {
-
+    /**
+     * 未完成的数量
+     * @return
+     */
+    public Integer getUnFinishedNum() {
+        Integer allNum = memoryCampaign.getMemoryCompanyMap().size();
+        Integer joinedNum = joinedSet.size();
+        return allNum - joinedNum;
     }
+
+
+    /**
+     * 全部完成后执行的操作
+     */
+    public abstract void iNotify();
 }

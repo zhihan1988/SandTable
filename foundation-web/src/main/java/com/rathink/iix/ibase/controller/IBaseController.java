@@ -3,6 +3,7 @@ package com.rathink.iix.ibase.controller;
 import com.ming800.core.base.service.BaseManager;
 import com.rathink.ie.foundation.service.CampaignManager;
 import com.rathink.iix.ibase.component.*;
+import com.rathink.iix.manufacturing.message.IMessage;
 import com.rathink.ix.ibase.component.Result;
 import com.rathink.ix.ibase.service.*;
 import com.rathink.ix.internet.service.InternetWorkManager;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Hean on 2016/2/2.
@@ -45,7 +48,7 @@ public class IBaseController {
         String partyType = request.getParameter("partyType");
         String companyId = request.getParameter("companyId");
 
-        TermParty termParty = (TermParty)CampaignServer.getMemoryCampaign(campaignId).getCampaignParty(partyType);
+        TermParty termParty = (TermParty)CampaignServer.getMemoryCampaign(campaignId).getCampaignPartyMap().get(partyType);
         termParty.join(companyId);
 
         return;
@@ -60,7 +63,7 @@ public class IBaseController {
         String clientCampaignDate = request.getParameter("campaignDate");
 
         MemoryCampaign memoryCampaign = CampaignServer.getMemoryCampaign(campaignId);
-        TermParty termParty = (TermParty)memoryCampaign.getCampaignParty(partyType);
+        TermParty termParty = (TermParty)memoryCampaign.getCampaignPartyMap().get(partyType);
         Integer serverCampaignDate = memoryCampaign.getCampaign().getCurrentCampaignDate();
 
         Result result = new Result();
@@ -74,4 +77,23 @@ public class IBaseController {
         }
         return result;
     }
+
+    @RequestMapping("/listen")
+    @ResponseBody
+    public Result listen(HttpServletRequest request, Model model) throws Exception {
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
+        MemoryCompany memoryCompany = CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+
+        List<IMessage> messages = new ArrayList<>();
+        while (memoryCompany.peekMessage() != null) {
+            messages.add(memoryCompany.pollMessage());
+        }
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.addAttribute("messages", messages);
+        return result;
+    }
+
 }

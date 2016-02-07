@@ -2,6 +2,7 @@ package com.rathink.iix.ibase.component;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.iix.manufacturing.message.IMessage;
 import com.rathink.ix.ibase.work.model.CompanyPart;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import org.springframework.stereotype.Component;
@@ -41,8 +42,10 @@ public class MemoryCampaign {
         return memoryCompanyMap;
     }
 
-    public void broadcast() {
-
+    public void broadcast(IMessage message) {
+        for (MemoryCompany memoryCompany : memoryCompanyMap.values()) {
+            memoryCompany.offerMessage(message);
+        }
     }
 
     public void listenMesage() {
@@ -57,12 +60,8 @@ public class MemoryCampaign {
         industryResourceMap.put(type, industryResource);
     }
 
-    public void addCampaignParty(CampaignParty campaignParty) {
-        campaignPartyMap.put(campaignParty.getType(), campaignParty);
-    }
-
-    public CampaignParty getCampaignParty(String partyType) {
-        return campaignPartyMap.get(partyType);
+    public Map<String, CampaignParty> getCampaignPartyMap() {
+        return campaignPartyMap;
     }
 
     public void nextTerm() {

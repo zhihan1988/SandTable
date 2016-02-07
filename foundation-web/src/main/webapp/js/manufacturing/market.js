@@ -181,7 +181,7 @@ $(function () {
                     choiceId: choiceId,
                     value: value
                 }, function(data){
-                    if(data.status == 1) {
+                    if(data.model.status == 1) {
                         intervalFlag = setInterval(refreshDevoteCycleStatus, 5000);
                         $("#confirmOrder").text("选单完成");
 
@@ -192,7 +192,7 @@ $(function () {
                         $unDeliveredOrderSize.text(unDeliveredOrderSize);
 
                     } else {
-                        alert(data.message);
+                        alert(data.model.message);
                     }
                 }
             );

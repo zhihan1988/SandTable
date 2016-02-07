@@ -6,23 +6,17 @@ import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
-import com.rathink.iix.ibase.component.MemoryCompany;
 import com.rathink.iix.ibase.controller.IBaseController;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
 import com.rathink.iix.manufacturing.component.MarketBiddingParty;
+import com.rathink.iix.manufacturing.component.MarketOrderParty;
 import com.rathink.iix.manufacturing.service.ManufacturingService;
 import com.rathink.ix.ibase.account.model.Account;
 import com.rathink.ix.ibase.component.CheckOut;
 import com.rathink.ix.ibase.component.Result;
-import com.rathink.ix.ibase.property.model.CompanyTerm;
-import com.rathink.ix.ibase.service.CampaignCenter;
-import com.rathink.ix.ibase.work.model.CompanyTermInstruction;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
-import com.rathink.ix.internet.EInstructionStatus;
 import com.rathink.ix.manufacturing.*;
-import com.rathink.ix.manufacturing.component.DevoteCycle;
-import com.rathink.ix.manufacturing.component.ManufacturingCampContext;
 import com.rathink.ix.manufacturing.model.*;
 import com.rathink.ix.manufacturing.service.ManufacturingImmediatelyManager;
 import com.rathink.ix.manufacturing.service.ProductManager;
@@ -143,7 +137,7 @@ public class ManufacturingController extends IBaseController {
         ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
         ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
         Company company = memoryCompany.getCompany();
-        MarketBiddingParty marketBiddingParty = (MarketBiddingParty) memoryCampaign.getCampaignParty("BIDDING");
+        MarketBiddingParty marketBiddingParty = (MarketBiddingParty) memoryCampaign.getCampaignPartyMap().get("BIDDING");
 
         Integer totalMarketFee = 0;
         try {
@@ -178,7 +172,7 @@ public class ManufacturingController extends IBaseController {
         return result;
     }
 
-    @RequestMapping("/refreshDevoteCycleStatus")
+/*    @RequestMapping("/refreshDevoteCycleStatus")
     @ResponseBody
     public Map refreshDevoteCycleStatus(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
@@ -197,19 +191,27 @@ public class ManufacturingController extends IBaseController {
         }
 
         return map;
-    }
-
+    }*/
 
     @RequestMapping("/chooseOrder")
     @ResponseBody
-    public Map chooseOrder(HttpServletRequest request, Model model) throws Exception {
+    public Result chooseOrder(HttpServletRequest request, Model model) throws Exception {
 
-        String companyTermId = request.getParameter("companyTermId");
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String choiceId = request.getParameter("choiceId");
         String value = request.getParameter("value");
 
-        CompanyTerm companyTerm = (CompanyTerm) baseManager.getObject(CompanyTerm.class.getName(), companyTermId);
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
+        Campaign campaign = memoryCampaign.getCampaign();
+        Company company = memoryCompany.getCompany();
+
+
         IndustryResourceChoice industryResourceChoice = (IndustryResourceChoice) baseManager.getObject(IndustryResourceChoice.class.getName(), choiceId);
+
+        MarketOrderParty marketOrderParty = (MarketOrderParty) memoryCampaign.getCampaignPartyMap().get("ORDER");
+        marketOrderParty.chooseOrder(companyId, choiceId);
 
         MarketOrderChoice marketOrderChoice = new MarketOrderChoice(industryResourceChoice);
         MarketOrder marketOrder = new MarketOrder();
@@ -217,33 +219,19 @@ public class ManufacturingController extends IBaseController {
         marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
         marketOrder.setDept(EManufacturingDept.MARKET.name());
         marketOrder.setStatus(MarketOrder.Status.NORMAL.name());
-        marketOrder.setCampaign(companyTerm.getCampaign());
-        marketOrder.setCompany(companyTerm.getCompany());
-//                marketOrder.setName();
+        marketOrder.setCampaign(campaign);
+        marketOrder.setCompany(company);
         marketOrder.setUnitPrice(marketOrderChoice.getUnitPrice());
         marketOrder.setAmount(marketOrderChoice.getAmount());
         marketOrder.setTotalPrice(marketOrderChoice.getTotalPrice());
         marketOrder.setProfit(marketOrderChoice.getProfit());
         marketOrder.setNeedAccountCycle(marketOrderChoice.getAccountPeriod());
         marketOrder.setProductType(marketOrderChoice.getProductType());
-        baseManager.saveOrUpdate(MarketOrder.class.getName(), marketOrder);
 
-        CompanyTermInstruction companyTermInstruction = new CompanyTermInstruction();
-        companyTermInstruction.setStatus(EInstructionStatus.PROCESSED.getValue());
-        companyTermInstruction.setBaseType(EManufacturingInstructionBaseType.MARKET_ORDER.name());
-        companyTermInstruction.setDept(EManufacturingDept.PRODUCT.name());
-        companyTermInstruction.setCompanyPart(marketOrder);
-        companyTermInstruction.setCompanyTerm(companyTerm);
-        companyTermInstruction.setValue(value);
-        baseManager.saveOrUpdate(CompanyTermInstruction.class.getName(), companyTermInstruction);
+        memoryCompany.getMarketOrderMap().put(marketOrder.getId(), marketOrder);
 
-
-        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(companyTerm.getCampaign().getId());
-        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
-        devoteCycle.chooseOrder(choiceId);
-
-        Map result = new HashMap<>();
-        result.put("status", 1);
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
         return result;
     }
 
