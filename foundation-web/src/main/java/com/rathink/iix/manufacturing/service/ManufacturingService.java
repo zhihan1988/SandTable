@@ -2,7 +2,6 @@ package com.rathink.iix.manufacturing.service;
 
 import com.ming800.core.base.service.BaseManager;
 import com.ming800.core.does.model.XQuery;
-import com.ming800.core.taglib.PageEntity;
 import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
@@ -28,8 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collector;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -168,17 +169,24 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
 
     @Override
     protected void beforeProcess() {
+        Integer currentCampaignDate = memoryCampaign.getCampaign().getCurrentCampaignDate();
         for (Company company : companyList) {
             ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
             //杂费
             processOthers(memoryCompany);
             //贷款
             processLoan(memoryCompany);
+
+            if (currentCampaignDate % 4 == 0) {
+                //延迟交付
+                processUnDeliveredOrder(memoryCompany);
+            }
         }
     }
 
     @Override
     protected void afterProcess() {
+
         for (Company company : companyList) {
             ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
             //原材料入库
@@ -194,11 +202,7 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
             //市场投入周期
             processMarketAreaDevotion(memoryCompany);
             //销售产品所得费用
-//            processOrderAccount(companyTermContext);
-//            if (companyTermContext.getCompanyTerm().getCampaignDate() % 4 == 0) {
-//                //延迟交付
-//                processUnDeliveredOrder(companyTermContext);
-//            }
+            processOrderAccount(memoryCompany);
 
         }
     }
@@ -316,6 +320,31 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                 });
     }
 
+    //处理订单账款
+    private void processOrderAccount(ManufacturingMemoryCompany memoryCompany) {
+        Company company = memoryCompany.getCompany();
+        memoryCompany.getMarketOrderMap().values().stream()
+                .filter(marketOrder -> marketOrder.getStatus().equals(MarketOrder.Status.DELIVERED.name()))
+                .forEach(marketOrder -> {
+                    Integer needAccountCycle = marketOrder.getNeedAccountCycle();
+                    needAccountCycle--;
+                    marketOrder.setNeedAccountCycle(needAccountCycle);
+                    if (needAccountCycle == 0) {
+                        marketOrder.setStatus(MarketOrder.Status.FINISH.name());
+                        Integer fee = marketOrder.getTotalPrice();
+                        Integer profit = marketOrder.getProfit();
+                        Integer productFee = fee - profit;//产品费用（成本费+加工费）
+
+                        Account account = accountManager.packageAccount(String.valueOf(profit), EManufacturingAccountEntityType.COMPANY_CASH.name(),
+                                EManufacturingAccountEntityType.ORDER_FEE.name(), company);
+                        memoryCompany.addAccount(account);
+                        Account account2 = accountManager.packageAccount(String.valueOf(productFee), EManufacturingAccountEntityType.COMPANY_CASH.name(),
+                                EManufacturingAccountEntityType.FLOATING_CAPITAL_PRODUCT.name(), company);
+                        memoryCompany.addAccount(account2);
+                    }
+                });
+    }
+
     //杂费
     protected void processOthers(ManufacturingMemoryCompany memoryCompany){
         Company company = memoryCompany.getCompany();
@@ -392,5 +421,24 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
                         memoryCompany.addAccount(account);
                     }
                 });
+    }
+
+    //处理未交付的订单 扣费等
+    protected void processUnDeliveredOrder(ManufacturingMemoryCompany memoryCompany) {
+        Integer fee = 0;
+        List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values().stream()
+                .filter(marketOrder -> marketOrder.getStatus().equals(MarketOrder.Status.NORMAL.name()))
+                .collect(Collectors.toList());
+
+        if (marketOrderList != null && !marketOrderList.isEmpty()) {
+            for (MarketOrder marketOrder : marketOrderList) {
+                fee += Integer.valueOf(marketOrder.getTotalPrice());
+            }
+            fee = fee * 10 / 100 + 1;
+
+            Account account = accountManager.packageAccount(String.valueOf(fee), EManufacturingAccountEntityType.ORDER_DELAY_FEE.name()
+                    , EManufacturingAccountEntityType.COMPANY_CASH.name(), memoryCompany.getCompany());
+            memoryCompany.addAccount(account);
+        }
     }
 }

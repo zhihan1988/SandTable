@@ -134,8 +134,8 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
     protected void initContext(String campaignId) {
         this.memoryCampaign = (T)CampaignServer.getMemoryCampaign(campaignId);
         this.campaign = memoryCampaign.getCampaign();
+        this.companyList = new ArrayList<>();
         for (MemoryCompany memoryCompany : memoryCampaign.getMemoryCompanyMap().values()) {
-            this.companyList = new ArrayList<>();
             this.companyList.add(memoryCompany.getCompany());
         }
     }

@@ -18,6 +18,8 @@ function listen(){
                         listOrderForChoose();
                     } else if(message.type=='EndChooseOrderMessage'){
                         endChooseOrder();
+                   /* } else if (message.type=='DieOutMessage'){
+                        location.href = base + '/dieOut';*/
                     } else{
                         alert(message.type+"!!!");
                     }
