@@ -43,7 +43,7 @@ public class IBaseController {
 
     @RequestMapping("/companyNext")
     @ResponseBody
-    public void companyNext(HttpServletRequest request, Model model) throws Exception {
+    public Result companyNext(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String partyType = request.getParameter("partyType");
         String companyId = request.getParameter("companyId");
@@ -51,7 +51,9 @@ public class IBaseController {
         TermParty termParty = (TermParty)CampaignServer.getMemoryCampaign(campaignId).getCampaignPartyMap().get(partyType);
         termParty.join(companyId);
 
-        return;
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        return result;
     }
 
     @RequestMapping("/isCampaignNext")

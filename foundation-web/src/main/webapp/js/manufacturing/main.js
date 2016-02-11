@@ -40,18 +40,18 @@ $(function () {
     $("#endCampaignDate").click(function () {
         if(confirm("是否结束当前回合的操作？")) {
             var $endCampaignDate = $(this);
-            $.post(base + "/iBase/companyNext.do",
-            {
-                campaignId: campaignId,
-                companyId: companyId,
-                partyType: "TERM"
-            },
-            function (data) {
-                if(data.status == 1) {
-                    $endCampaignDate.hide();
+            $.getJSON(base + "/iBase/companyNext.do",
+                {
+                    campaignId: campaignId,
+                    companyId: companyId,
+                    partyType: "TERM"
+                },
+                function(data){
+                    if(data.status == 1) {
+                        $endCampaignDate.hide();
+                    }
                 }
-            }
-        );
+            );
         }
     });
 

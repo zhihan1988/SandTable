@@ -18,6 +18,7 @@ import java.util.Map;
 public class MemoryCampaign {
     private Campaign campaign;
     private Map<String, MemoryCompany> memoryCompanyMap = new HashMap<>();
+    private Map<String, MemoryCompany> dieOutMemoryCompanyMap = new HashMap<>();
     private Map<String, CampaignParty> campaignPartyMap = new HashMap<>();
     private Map<String, IndustryResource> industryResourceMap = new HashMap<>();
     private List<Object> systemMessage = new ArrayList<>();
@@ -40,6 +41,14 @@ public class MemoryCampaign {
 
     public Map<String, MemoryCompany> getMemoryCompanyMap() {
         return memoryCompanyMap;
+    }
+
+    /**
+     * 公司淘汰
+     * @param companyId
+     */
+    public void die(String companyId) {
+        dieOutMemoryCompanyMap.put(companyId, memoryCompanyMap.remove(companyId));
     }
 
     public void broadcast(IMessage message) {

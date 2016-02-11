@@ -17,8 +17,6 @@ import com.rathink.ix.ibase.component.Result;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.manufacturing.*;
 import com.rathink.ix.manufacturing.model.*;
-import com.rathink.ix.manufacturing.service.ManufacturingImmediatelyManager;
-import com.rathink.ix.manufacturing.service.ProductManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +39,6 @@ import java.util.stream.Collectors;
 public class ManufacturingController extends IBaseController {
     private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
 
-    @Autowired
-    private ProductManager productManager;
-    @Autowired
-    private ManufacturingImmediatelyManager manufacturingImmediatelyManager;
     @Autowired
     private AutoSerialManager autoSerialManager;
     @Autowired
@@ -82,6 +76,12 @@ public class ManufacturingController extends IBaseController {
         model.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
         model.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
         model.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
+
+        //资金流断裂淘汰
+        if (memoryCompany.getCompanyCash() < 0) {
+            memoryCampaign.die(companyId);
+            return "/end";
+        }
 
         //生产
         Collection<Material> materialList = memoryCompany.getMaterialMap().values();
