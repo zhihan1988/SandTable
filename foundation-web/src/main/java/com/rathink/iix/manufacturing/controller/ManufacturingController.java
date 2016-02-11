@@ -3,6 +3,7 @@ package com.rathink.iix.manufacturing.controller;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.ie.foundation.util.GenerateUtil;
 import com.rathink.iix.ibase.component.CampaignServer;
 import com.rathink.iix.ibase.controller.IBaseController;
@@ -80,7 +81,10 @@ public class ManufacturingController extends IBaseController {
         //资金流断裂淘汰
         if (memoryCompany.getCompanyCash() < 0) {
             memoryCampaign.die(companyId);
-            return "/end";
+            return "/manufacturing/end";
+        }
+        if (company.getStatus().equals(ECompanyStatus.FINISH.name())) {
+            return "/manufacturing/finish";
         }
 
         //生产

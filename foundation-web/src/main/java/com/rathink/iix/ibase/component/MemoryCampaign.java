@@ -2,6 +2,7 @@ package com.rathink.iix.ibase.component;
 
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
+import com.rathink.ie.foundation.team.model.ECompanyStatus;
 import com.rathink.iix.manufacturing.message.IMessage;
 import com.rathink.ix.ibase.work.model.CompanyPart;
 import com.rathink.ix.ibase.work.model.IndustryResource;
@@ -48,7 +49,9 @@ public class MemoryCampaign {
      * @param companyId
      */
     public void die(String companyId) {
-        dieOutMemoryCompanyMap.put(companyId, memoryCompanyMap.remove(companyId));
+        MemoryCompany mc = memoryCompanyMap.remove(companyId);
+        mc.getCompany().setStatus(ECompanyStatus.END.name());
+        dieOutMemoryCompanyMap.put(companyId, mc);
     }
 
     public void broadcast(IMessage message) {

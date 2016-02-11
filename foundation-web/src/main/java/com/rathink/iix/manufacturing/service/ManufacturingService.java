@@ -15,6 +15,7 @@ import com.rathink.iix.manufacturing.component.ManufacturingMemoryCampaign;
 import com.rathink.iix.manufacturing.component.ManufacturingMemoryCompany;
 import com.rathink.iix.manufacturing.component.MarketBiddingParty;
 import com.rathink.ix.ibase.account.model.Account;
+import com.rathink.ix.ibase.service.CompanyTermContext;
 import com.rathink.ix.ibase.work.model.IndustryResource;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.internet.EAccountEntityType;
@@ -235,6 +236,19 @@ public class ManufacturingService extends IBaseService<ManufacturingMemoryCampai
         memoryCampaign.putIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name(), usuriousLoan);
 
         memoryCampaign.getCampaignPartyMap().put(TermParty.TYPE, new TermParty(memoryCampaign));
+    }
+
+    @Override
+    protected void end() {
+        Integer endDate = campaign.getIndustry().getTotalTerm() + 1;
+        if (campaign.getCurrentCampaignDate().equals(endDate)) {
+            companyList.stream().forEach(company -> {
+                company.setStatus(ECompanyStatus.FINISH.name());
+                ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(company.getId());
+                company.setResult(memoryCompany.getCompanyCash() * 4 * 10);
+            });
+            campaign.setStatus(Campaign.Status.EDN.name());
+        }
     }
 
     //原材料采购

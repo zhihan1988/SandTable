@@ -11,6 +11,6 @@
     <title></title>
 </head>
 <body>
-    现金流断裂，游戏结束
+    现金流断裂，比赛结束
 </body>
 </html>

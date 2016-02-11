@@ -66,6 +66,7 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
         newRound();
         afterProcess();
         randomChoice();
+        end();
     }
 
     public void reset(String campaignId){
@@ -155,5 +156,7 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
     protected abstract void afterProcess();
 
     protected abstract void randomChoice();
+
+    protected abstract void end();
 
 }
