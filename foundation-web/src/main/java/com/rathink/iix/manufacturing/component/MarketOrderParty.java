@@ -7,6 +7,8 @@ import com.ming800.core.util.ApplicationContextUtil;
 import com.rathink.iix.ibase.component.CampaignParty;
 import com.rathink.iix.ibase.component.MemoryCampaign;
 import com.rathink.iix.ibase.component.MemoryCompany;
+import com.rathink.iix.manufacturing.message.EndChooseOrderMessage;
+import com.rathink.iix.manufacturing.message.RefreshChooseOrderMessage;
 import com.rathink.ix.ibase.work.model.IndustryResourceChoice;
 import com.rathink.ix.manufacturing.EManufacturingChoiceBaseType;
 import com.rathink.ix.manufacturing.model.Market;
@@ -32,7 +34,7 @@ public class MarketOrderParty extends CampaignParty<String> {
         this.marketQueue = marketQueue;
         this.marketCompanyQueueMap = marketCompanyQueueMap;
 
-        BaseManager baseManager = (BaseManager) ApplicationContextUtil.getBean("BaseManagerImpl");
+        BaseManager baseManager = (BaseManager) ApplicationContextUtil.getBean("baseManagerImpl");
         for (String market : marketCompanyQueueMap.keySet()) {
             Integer companyNum = marketCompanyQueueMap.get(market).size();
             XQuery xQuery = new XQuery();
@@ -69,21 +71,29 @@ public class MarketOrderParty extends CampaignParty<String> {
 
         marketCompanyQueueMap.get(getCurrentMarket()).poll();
         super.join(companyId);
+        if (!isAll()) {
+            memoryCampaign.broadcast(new RefreshChooseOrderMessage());
+        }
     }
 
     public void giveUp(String companyId) {
         marketCompanyQueueMap.get(getCurrentMarket()).poll();
         super.join(companyId);
+        if (!isAll()) {
+            memoryCampaign.broadcast(new RefreshChooseOrderMessage());
+        }
     }
 
     @Override
     public void iNotify() {
+        //进入下一个市场环节
+        marketQueue.poll();
         if (marketQueue.isEmpty()) {
             //结束竞单环节
             setStatus(Status.DONE.name());
+            memoryCampaign.broadcast(new EndChooseOrderMessage());
         } else {
-            //进入下一个市场环节
-            marketQueue.poll();
+            memoryCampaign.broadcast(new RefreshChooseOrderMessage());
         }
     }
 

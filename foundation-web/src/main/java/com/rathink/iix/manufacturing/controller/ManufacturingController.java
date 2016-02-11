@@ -172,26 +172,22 @@ public class ManufacturingController extends IBaseController {
         return result;
     }
 
-/*    @RequestMapping("/refreshDevoteCycleStatus")
+    @RequestMapping("/listOrderForChoose")
     @ResponseBody
-    public Map refreshDevoteCycleStatus(HttpServletRequest request, Model model) throws Exception {
+    public Result listOrderForChoose(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        MarketOrderParty marketOrderParty = (MarketOrderParty) memoryCampaign.getCampaignPartyMap().get(MarketOrderParty.TYPE);
+        MarketBiddingParty marketBiddingParty = (MarketBiddingParty) memoryCampaign.getCampaignPartyMap().get(MarketBiddingParty.TYPE);
 
-        ManufacturingCampContext campaignContext = (ManufacturingCampContext) CampaignCenter.getCampaignHandler(campaignId);
-        DevoteCycle devoteCycle = campaignContext.getDevoteCycle();
-
-        Map map = new HashMap<>();
-        map.put("status", 1);
-        map.put("cycleStatus", devoteCycle.getCurrentStatus());
-        if (devoteCycle.getCurrentStatus() == 2) {
-            map.put("market", devoteCycle.getCurrentMarket());
-            map.put("company", devoteCycle.getCurrentCompany());
-            map.put("marketOrderChoiceList", devoteCycle.getCurrentMarketOrdeChoiceList());
-            map.put("companyOrderList", devoteCycle.getCompanyOrderMapByMarket());
-        }
-
-        return map;
-    }*/
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.addAttribute("market", marketOrderParty.getCurrentMarket());
+        result.addAttribute("company", marketOrderParty.getCurrentCompany());
+        result.addAttribute("marketOrderChoiceList", marketOrderParty.getCurrentMarketOrderChoiceList());
+        result.addAttribute("biddingResult",marketBiddingParty.getBiddingResult(marketOrderParty.getCurrentMarket()));
+        return result;
+    }
 
     @RequestMapping("/chooseOrder")
     @ResponseBody
@@ -238,18 +234,21 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/listCurrentMarketOrder")
     @ResponseBody
-    public Map listCurrentMarketOrder(HttpServletRequest request, Model model) throws Exception {
+    public Result listCurrentMarketOrder(HttpServletRequest request, Model model) throws Exception {
+
+        String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
-        XQuery marketOrderQuery = new XQuery();
-        marketOrderQuery.setHql("from MarketOrder where status =:status and company.id = :companyId");
-        marketOrderQuery.put("status", MarketOrder.Status.NORMAL.name());
-        marketOrderQuery.put("companyId", companyId);
-        List<MarketOrder> marketOrderList = baseManager.listObject(marketOrderQuery);
 
-        Map result = new HashMap<>();
-        result.put("status", 1);
-        result.put("marketOrderList", marketOrderList);
+        ManufacturingMemoryCampaign memoryCampaign = (ManufacturingMemoryCampaign) CampaignServer.getMemoryCampaign(campaignId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) memoryCampaign.getMemoryCompany(companyId);
 
+        List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values().stream()
+                .filter(marketOrder -> marketOrder.getStatus().equals(MarketOrder.Status.NORMAL.name()))
+                .collect(Collectors.toList());
+
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.addAttribute("marketOrderList", marketOrderList);
         return result;
     }
 

@@ -1,8 +1,5 @@
 package com.rathink.iix.manufacturing.message;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Hean on 2016/2/6.
  */

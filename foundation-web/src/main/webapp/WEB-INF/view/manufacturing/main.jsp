@@ -10,6 +10,7 @@
     <script src="<c:url value='/js/manufacturing/main.js'/>"></script>
     <script src="<c:url value='/js/manufacturing/market.js'/>"></script>
     <script src="<c:url value='/js/manufacturing/produce.js'/>"></script>
+    <script src="<c:url value='/js/manufacturing/listen.js'/>"></script>
     <style type="text/css">
         .navbar-button-selected{
             /*background: orange;*/

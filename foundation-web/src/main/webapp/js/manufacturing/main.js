@@ -37,57 +37,6 @@ $(function () {
         $("#button-2").trigger("click");
     });
 
-
- /*   $("#testNext").click(function(){
-        isNext();
-    })*/
-    setInterval(listen, 5000);
-    function listen(){
-        $.getJSON(base + "/iBase/listen",
-            {
-                campaignId:campaignId,
-                companyId: companyId
-            },
-            function (data) {
-                var messageQueue = data.model.messages;
-                if(messageQueue && messageQueue!='') {
-                    for(var i in messageQueue) {
-                        var message = messageQueue[i];
-                        if(message.type == 'NextTermMessage'){
-                            location.reload();
-                        } else if(message.type=='ShowUnFinishNumMessage'){
-                            $("#unFinishedNum").text(message.message);
-                        } else {
-                            alert(message.type+"!!!");
-                        }
-                    }
-                }
-            }
-        );
-
-    }
-
-    function isNext() {
-        $.getJSON(base + "/iBase/isCampaignNext",
-            {
-                campaignId:campaignId,
-                campaignDate: campaignDate,
-                partyType: "TERM"
-            },
-            function (data) {
-                var isNext = data.model.isNext;
-                if (isNext == true) {
-                    location.reload();
-                } else {
-                    $("#unFinishedNum").text(data.model.unFinishedNum);
-                    //$.AMUI.progress.set(data.schedule);
-                }
-            }
-        );
-
-    }
-
-
     $("#endCampaignDate").click(function () {
         if(confirm("是否结束当前回合的操作？")) {
             var $endCampaignDate = $(this);

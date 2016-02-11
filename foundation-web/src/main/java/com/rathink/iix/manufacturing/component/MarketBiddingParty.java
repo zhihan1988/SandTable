@@ -1,7 +1,9 @@
 package com.rathink.iix.manufacturing.component;
 
+import com.rathink.ie.foundation.team.model.Company;
 import com.rathink.iix.ibase.component.CampaignParty;
 import com.rathink.iix.ibase.component.MemoryCampaign;
+import com.rathink.iix.manufacturing.message.RefreshChooseOrderMessage;
 import com.rathink.ix.manufacturing.model.Market;
 import com.rathink.ix.manufacturing.model.Product;
 
@@ -22,17 +24,6 @@ public class MarketBiddingParty extends CampaignParty<String> {
         setStatus(Status.DOING.name());
     }
 
-    public void addBidding(String companyId, String market, Integer fee) {
-        CompanyBidding companyBidding = new CompanyBidding(companyId, fee);
-        if (marketBiddingMap.containsKey(market)) {
-            marketBiddingMap.get(market).add(companyBidding);
-        } else {
-            List<CompanyBidding> companyBiddingList = new ArrayList<>();
-            companyBiddingList.add(companyBidding);
-            marketBiddingMap.put(market, companyBiddingList);
-        }
-    }
-
     @Override
     public void iNotify() {
         Queue<String> marketQueue = new LinkedList<>();//市场队列 例：LOCAL_P1
@@ -51,7 +42,7 @@ public class MarketBiddingParty extends CampaignParty<String> {
             Collections.sort(companyBiddingList);
             Queue<String> companyIdQueue = new LinkedList<>();
             for (CompanyBidding companyBidding : companyBiddingList) {
-                companyIdQueue.offer(companyBidding.getCompanyId());
+                companyIdQueue.offer(companyBidding.getBiddingCompanyId());
             }
             marketCompanyQueueMap.put(market, companyIdQueue);
         }
@@ -59,18 +50,53 @@ public class MarketBiddingParty extends CampaignParty<String> {
         memoryCampaign.getCampaignPartyMap().put(MarketOrderParty.TYPE, new MarketOrderParty(memoryCampaign, marketQueue, marketCompanyQueueMap));
 
         setStatus(Status.DONE.name());
+        memoryCampaign.broadcast(new RefreshChooseOrderMessage());
+    }
+
+    /**
+     * 添加公司竞标
+     *
+     * @param companyId
+     * @param market
+     * @param fee
+     */
+    public void addBidding(String companyId, String market, Integer fee) {
+        Company company = memoryCampaign.getMemoryCompany(companyId).getCompany();
+        CompanyBidding companyBidding = new CompanyBidding(companyId, company.getName(), fee);
+        if (marketBiddingMap.containsKey(market)) {
+            marketBiddingMap.get(market).add(companyBidding);
+        } else {
+            List<CompanyBidding> companyBiddingList = new ArrayList<>();
+            companyBiddingList.add(companyBidding);
+            marketBiddingMap.put(market, companyBiddingList);
+        }
+    }
+
+    /**
+     * 获得某一市场范围内的公司排名
+     * @param market
+     * @return
+     */
+    public List<CompanyBidding> getBiddingResult(String market) {
+        return marketBiddingMap.get(market);
     }
 
     private class CompanyBidding implements Comparable<CompanyBidding>{
-        private String companyId;
+        private String biddingCompanyId;
+        private String biddingCompanyName;
         private Integer fee;
-        public CompanyBidding(String companyId, Integer fee) {
-            this.companyId = companyId;
+        public CompanyBidding(String biddingCompanyId, String biddingCompanyName, Integer fee) {
+            this.biddingCompanyId = biddingCompanyId;
+            this.biddingCompanyName = biddingCompanyName;
             this.fee = fee;
         }
 
-        public String getCompanyId() {
-            return companyId;
+        public String getBiddingCompanyId() {
+            return biddingCompanyId;
+        }
+
+        public String getBiddingCompanyName() {
+            return biddingCompanyName;
         }
 
         public Integer getFee() {
