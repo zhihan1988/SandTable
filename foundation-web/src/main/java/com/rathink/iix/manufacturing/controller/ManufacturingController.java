@@ -1,6 +1,5 @@
 package com.rathink.iix.manufacturing.controller;
 
-import com.ming800.core.does.model.XQuery;
 import com.ming800.core.p.service.AutoSerialManager;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.foundation.team.model.Company;
@@ -29,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -211,6 +212,7 @@ public class ManufacturingController extends IBaseController {
 
         MarketOrderChoice marketOrderChoice = new MarketOrderChoice(industryResourceChoice);
         MarketOrder marketOrder = new MarketOrder();
+        marketOrder.setId(GenerateUtil.generate());
         marketOrder.setName(marketOrderChoice.getName());
         marketOrder.setSerial(autoSerialManager.nextSerial(EManufacturingSerialGroup.MANUFACTURING_PART.name()));
         marketOrder.setDept(EManufacturingDept.MARKET.name());
@@ -254,13 +256,46 @@ public class ManufacturingController extends IBaseController {
 
     @RequestMapping("/deliverOrder")
     @ResponseBody
-    public Map deliverOrder(HttpServletRequest request, Model model) throws Exception {
+    public Result deliverOrder(HttpServletRequest request, Model model) throws Exception {
 
-        String companyTermId = request.getParameter("companyTermId");
+        String campaignId = request.getParameter("campaignId");
+        String companyId = request.getParameter("companyId");
         String orderId = request.getParameter("orderId");
 
-        Map result = manufacturingImmediatelyManager.processDeliveredOrder(companyTermId, orderId);
+        ManufacturingMemoryCompany memoryCompany = (ManufacturingMemoryCompany) CampaignServer.getMemoryCampaign(campaignId).getMemoryCompany(companyId);
+        MarketOrder marketOrder = memoryCompany.getMarketOrderMap().get(orderId);
+        Product product = memoryCompany.getProductByType(marketOrder.getProductType());
+        if(product.getAmount()<marketOrder.getAmount()) {
+            Result result = new Result();
+            result.setStatus(Result.FAILED);
+            result.setMessage("产品库存不足");
+            return result;
+        }
 
+        marketOrder.setStatus(MarketOrder.Status.DELIVERED.name());
+        product.setAmount(product.getAmount() - 1);
+
+        NewReport newReport = new NewReport();
+        Product.Type productType = Product.Type.valueOf(product.getType());
+        switch (productType) {
+            case P1:
+                newReport.setP1Amount(product.getAmount());
+                break;
+            case P2:
+                newReport.setP2Amount(product.getAmount());
+                break;
+            case P3:
+                newReport.setP3Amount(product.getAmount());
+                break;
+            case P4:
+                newReport.setP4Amount(product.getAmount());
+                break;
+            default:
+                throw new NoSuchElementException(productType+"");
+        }
+        Result result = new Result();
+        result.setStatus(Result.SUCCESS);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 

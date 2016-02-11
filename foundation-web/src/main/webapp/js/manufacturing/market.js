@@ -109,12 +109,13 @@ $(function () {
         var orderId = $order.attr("id").split("_")[1];
         $.getJSON(base + "/manufacturing/deliverOrder.do",
             {
-                companyTermId: companyTermId,
+                campaignId: campaignId,
+                companyId: companyId,
                 orderId: orderId
             }, function(data){
                 if(data.status == 1) {
                     $order.replaceWith("已交付");
-                    update(data.newReport);
+                    update(data.model.newReport);
 
                     //减少首页未交付订单的数量
                     var $unDeliveredOrderSize = $("#unDeliveredOrderSize");
@@ -143,8 +144,6 @@ function listOrderForChoose(){
                 var market = data.model.market;
                 var marketOrderChoiceList = data.model.marketOrderChoiceList;
                 var biddingResult = data.model.biddingResult;
-                console.info(marketOrderChoiceList);
-                console.info(biddingResult);
 
                 var companyOrderTbody = $("<tbody id='companyOrderTbody'></tbody>");
                 for(var i in biddingResult){

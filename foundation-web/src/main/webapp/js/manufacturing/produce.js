@@ -113,7 +113,6 @@ $(function () {
                 function(data){
                     //建造结果
                     if(data.status == 1) {
-                        console.info(data);
                         update(data.model.newReport);
                         refreshProduceLine(data.model.line);
                         updateProduceLineButton(data.model.line);
