@@ -54,9 +54,9 @@ public class ManufacturingController extends IBaseController {
         return "success";
     }
 
-    @RequestMapping("/init")
+    @RequestMapping("/current")
     @ResponseBody
-    public Result main(HttpServletRequest request, Model model) throws Exception {
+    public Result current(HttpServletRequest request, Model model) throws Exception {
         Result result = new Result();
 
         String campaignId = request.getParameter("campaignId");
@@ -81,17 +81,8 @@ public class ManufacturingController extends IBaseController {
         result.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
 
         //生产
-        Collection<Material> materialList = memoryCompany.getMaterialMap().values();
-        result.addAttribute("materialList", materialList);
-        for (Material material : materialList) {
-            result.addAttribute(material.getType(), material);
-        }
-
-        Collection<Product> productList = memoryCompany.getProductMap().values();
+        result.addAttribute("materialList", memoryCompany.getMaterialMap().values());
         result.addAttribute("productList", memoryCompany.getProductMap().values());
-        for (Product product : productList) {
-            result.addAttribute(product.getType(), product);
-        }
         result.addAttribute("produceLineList", memoryCompany.getProduceLineMap().values());
 
 
@@ -165,9 +156,7 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        NewReport newReport = new NewReport();
-        newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.addAttribute("newReport", newReport);
+        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
         return result;
     }
 
@@ -273,27 +262,10 @@ public class ManufacturingController extends IBaseController {
         marketOrder.setStatus(MarketOrder.Status.DELIVERED.name());
         product.setAmount(product.getAmount() - 1);
 
-        NewReport newReport = new NewReport();
-        Product.Type productType = Product.Type.valueOf(product.getType());
-        switch (productType) {
-            case P1:
-                newReport.setP1Amount(product.getAmount());
-                break;
-            case P2:
-                newReport.setP2Amount(product.getAmount());
-                break;
-            case P3:
-                newReport.setP3Amount(product.getAmount());
-                break;
-            case P4:
-                newReport.setP4Amount(product.getAmount());
-                break;
-            default:
-                throw new NoSuchElementException(productType+"");
-        }
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        result.addAttribute("newReport", newReport);
+        result.addAttribute("marketOrder", marketOrder);
+        result.addAttribute("product", product);
         return result;
     }
 
@@ -316,9 +288,8 @@ public class ManufacturingController extends IBaseController {
 
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
-        NewReport newReport = new NewReport();
-        newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.addAttribute("newReport", newReport);
+        result.addAttribute("market", market);
+        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
         return result;
     }
 
@@ -571,9 +542,7 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("material", material);
-        NewReport newReport = new NewReport();
-        newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.addAttribute("newReport", newReport);
+        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
         return result;
     }
 
@@ -599,9 +568,7 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("product", product);
-        NewReport newReport = new NewReport();
-        newReport.setCompanyCash(memoryCompany.getCompanyCash());
-        result.addAttribute("newReport", newReport);
+        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
         return result;
     }
 
@@ -658,22 +625,25 @@ public class ManufacturingController extends IBaseController {
 
             Result result = new Result();
             result.setStatus(Result.SUCCESS);
-            NewReport newReport = new NewReport();
-            newReport.setCompanyCash(memoryCompany.getCompanyCash());
+
+            result.addAttribute("loan", loan);
+            result.addAttribute("companyCash", memoryCompany.getCompanyCash());
             switch (loanType) {
                 case LOAN_LONG_TERM:
-                    newReport.setLongTermLoan(memoryCompany.getLongTermLoan());
+                    result.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
+//                    newReport.setLongTermLoan(memoryCompany.getLongTermLoan());
                     break;
                 case LOAN_SHORT_TERM:
-                    newReport.setShortTermLoan(memoryCompany.getShortTermLoan());
+                    result.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
+//                    newReport.setShortTermLoan(memoryCompany.getShortTermLoan());
                     break;
                 case LOAN_USURIOUS:
-                    newReport.setUsuriousLoan(memoryCompany.getUsuriousLoan());
+                    result.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
+//                    newReport.setUsuriousLoan(memoryCompany.getUsuriousLoan());
                     break;
                 default:
                     throw new NoSuchElementException(loanType.name());
             }
-            result.addAttribute("newReport", newReport);
 
             return result;
         }
