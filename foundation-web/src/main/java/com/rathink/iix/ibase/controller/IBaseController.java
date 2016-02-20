@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Hean on 2016/2/2.
  */
 @Controller
-@RequestMapping("/iBase")
+@RequestMapping("/old/iBase")
 public class IBaseController {
 
     @Autowired

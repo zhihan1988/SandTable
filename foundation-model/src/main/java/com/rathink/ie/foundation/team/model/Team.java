@@ -1,5 +1,6 @@
 package com.rathink.ie.foundation.team.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rathink.ie.foundation.campaign.model.Campaign;
 import com.rathink.ie.user.model.User;
 import com.rathink.ie.user.model.UserTeamPosition;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler","director","campaign","userPositionList"})
 @Entity
 @Table(name = "team")
 @Inheritance(strategy=InheritanceType.JOINED)

@@ -13,7 +13,7 @@
 
 <c:choose>
     <c:when test="${campaign.industry.type == 'manufacturing'}">
-        <a href="<c:url value="/manufacturing/main.do?companyId=${myCompany.id}&campaignId=${myCompany.campaign.id}"/>">开始经营</a>
+        <a href="<c:url value="/old/manufacturing/main.do?companyId=${myCompany.id}&campaignId=${myCompany.campaign.id}"/>">开始经营</a>
     </c:when>
     <c:when test="${campaign.industry.type == 'internet'}">
         <a href="<c:url value="/internet/main.do?companyId=${myCompany.id}&campaignId=${myCompany.campaign.id}"/>">开始经营</a>

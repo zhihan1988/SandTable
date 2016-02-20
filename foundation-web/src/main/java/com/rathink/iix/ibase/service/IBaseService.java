@@ -101,13 +101,13 @@ public abstract class IBaseService<T extends MemoryCampaign> implements FlowMana
         }
 
         //删除所有属性信息 及财务信息
-        XQuery xQuery = new XQuery();
+       /* XQuery xQuery = new XQuery();
         xQuery.setHql("from CompanyTerm where campaign.id = :campaignId");
         xQuery.put("campaignId", campaignId);
         List<CompanyTerm> companyTermList = baseManager.listObject(xQuery);
         if (companyTermList != null) {
             companyTermList.forEach(session::delete);
-        }
+        }*/
 
         campaign.setCurrentCampaignDate(0);
         campaign.setStatus(Campaign.Status.PREPARE.getValue());

@@ -1,4 +1,4 @@
-var base = "";
+var base = "/old";
 var campaignId;
 var campaignDate;
 var companyId;

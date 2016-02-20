@@ -36,9 +36,9 @@ import java.util.stream.Collectors;
  * Created by Hean on 2015/10/7.
  */
 @Controller
-@RequestMapping("/manufacturing")
-public class ManufacturingController extends IBaseController {
-    private static Logger logger = LoggerFactory.getLogger(ManufacturingController.class);
+@RequestMapping("/old/manufacturing")
+public class OldManufacturingController extends IBaseController {
+    private static Logger logger = LoggerFactory.getLogger(OldManufacturingController.class);
 
     @Autowired
     private AutoSerialManager autoSerialManager;
@@ -53,12 +53,9 @@ public class ManufacturingController extends IBaseController {
         manufacturingService.begin(campaignId);
         return "success";
     }
-
-    @RequestMapping("/init")
-    @ResponseBody
-    public Result main(HttpServletRequest request, Model model) throws Exception {
-        Result result = new Result();
-
+    @CheckOut
+    @RequestMapping("/main")
+    public String main(HttpServletRequest request, Model model) throws Exception {
         String campaignId = request.getParameter("campaignId");
         String companyId = request.getParameter("companyId");
 
@@ -69,60 +66,69 @@ public class ManufacturingController extends IBaseController {
 
         Integer currentCampaignDateRemainder = campaign.getCurrentCampaignDate() % 4;
         Integer currentSeason = currentCampaignDateRemainder == 0 ? 4 : currentCampaignDateRemainder;//当前季度
-        result.addAttribute("currentSeason", currentSeason);
-        result.addAttribute("company", company);
-        result.addAttribute("campaign", campaign);
-        result.addAttribute("companyNum", memoryCampaign.getMemoryCompanyMap().size());
+        model.addAttribute("currentSeason", currentSeason);
+        model.addAttribute("company", company);
+        model.addAttribute("campaign", campaign);
+        model.addAttribute("companyTerm", null);
+        model.addAttribute("companyNum", memoryCampaign.getMemoryCompanyMap().size());
 
         //主页
-        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
-        result.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
-        result.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
-        result.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
+        model.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        model.addAttribute("longTermLoan", memoryCompany.getLongTermLoan());
+        model.addAttribute("shortTermLoan", memoryCompany.getShortTermLoan());
+        model.addAttribute("usuriousLoan", memoryCompany.getUsuriousLoan());
+
+        //资金流断裂淘汰
+        if (memoryCompany.getCompanyCash() < 0) {
+            memoryCampaign.die(companyId);
+            return "/manufacturing/end";
+        }
+        if (company.getStatus().equals(ECompanyStatus.FINISH.name())) {
+            return "/manufacturing/finish";
+        }
 
         //生产
         Collection<Material> materialList = memoryCompany.getMaterialMap().values();
-        result.addAttribute("materialList", materialList);
+        model.addAttribute("materialList", materialList);
         for (Material material : materialList) {
-            result.addAttribute(material.getType(), material);
+            model.addAttribute(material.getType(), material);
         }
 
         Collection<Product> productList = memoryCompany.getProductMap().values();
-        result.addAttribute("productList", memoryCompany.getProductMap().values());
+        model.addAttribute("productList", memoryCompany.getProductMap().values());
         for (Product product : productList) {
-            result.addAttribute(product.getType(), product);
+            model.addAttribute(product.getType(), product);
         }
-        result.addAttribute("produceLineList", memoryCompany.getProduceLineMap().values());
+        model.addAttribute("produceLineList",  memoryCompany.getProduceLineMap().values());
 
 
         //市场
-       /* Collection<Market> marketList = memoryCompany.getMarketMap().values();
-        result.addAttribute("marketList", marketList);
+        Collection<Market> marketList = memoryCompany.getMarketMap().values();
+        model.addAttribute("marketList", marketList);
 
         if (currentSeason == 1) {    //竞标
-            result.addAttribute("marketFeeResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name()));
-            result.addAttribute("marketOrderResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
+            model.addAttribute("marketFeeResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_FEE.name()));
+            model.addAttribute("marketOrderResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.MARKET_ORDER.name()));
         }
 
         List<MarketOrder> marketOrderList = memoryCompany.getMarketOrderMap().values()
                 .stream()
                 .filter(marketOrder -> MarketOrder.Status.NORMAL.name().equals(marketOrder.getStatus()))
                 .collect(Collectors.toList());
-        result.addAttribute("marketOrderList", marketOrderList);*/
+        model.addAttribute("marketOrderList", marketOrderList);
 
 
         //财务
-     /*   List<Loan> loanList = memoryCompany.getLoanMap().values()
+        List<Loan> loanList = memoryCompany.getLoanMap().values()
                 .stream()
                 .filter(loan -> Loan.Status.NORMAL.name().equals(loan.getStatus()))
                 .collect(Collectors.toList());
-        result.addAttribute("loanList", loanList);
-        result.addAttribute("longTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
-        result.addAttribute("shortTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
-        result.addAttribute("usuriousLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));*/
+        model.addAttribute("loanList", loanList);
+        model.addAttribute("longTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_LONG_TERM.name()));
+        model.addAttribute("shortTermLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_SHORT_TERM.name()));
+        model.addAttribute("usuriousLoanResource", memoryCampaign.getIndustryResource(EManufacturingChoiceBaseType.LOAN_USURIOUS.name()));
 
-        result.setStatus(Result.SUCCESS);
-        return result;
+        return "/manufacturing/main";
     }
 
 
@@ -374,7 +380,9 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("line", produceLine);
-        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        NewReport newReport = new NewReport();
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -408,7 +416,9 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("line", produceLine);
-        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        NewReport newReport = new NewReport();
+        newReport.setCompanyCash(memoryCompany.getCompanyCash());
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -432,7 +442,10 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("line", produceLine);
-        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        NewReport newReport = new NewReport();
+        Integer companyCash = memoryCompany.getCompanyCash();
+        newReport.setCompanyCash(companyCash);
+        result.addAttribute("newReport", newReport);
         return result;
     }
 
@@ -540,11 +553,14 @@ public class ManufacturingController extends IBaseController {
         Result result = new Result();
         result.setStatus(Result.SUCCESS);
         result.addAttribute("line", produceLine);
-        result.addAttribute("R1", R1);
-        result.addAttribute("R2", R2);
-        result.addAttribute("R3", R3);
-        result.addAttribute("R4", R4);
-        result.addAttribute("companyCash", memoryCompany.getCompanyCash());
+        NewReport newReport = new NewReport();
+        newReport.setR1Amount(R1Amount);
+        newReport.setR2Amount(R2Amount);
+        newReport.setR3Amount(R3Amount);
+        newReport.setR4Amount(R4Amount);
+        Integer companyCash = memoryCompany.getCompanyCash();
+        newReport.setCompanyCash(companyCash);
+        result.addAttribute("newReport", newReport);
 
         return result;
     }

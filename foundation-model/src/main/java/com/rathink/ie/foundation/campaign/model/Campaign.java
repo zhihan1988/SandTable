@@ -1,10 +1,11 @@
 package com.rathink.ie.foundation.campaign.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.Date;
 
-
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler","industry"})
 @Entity
 @Table(name = "campaign")
     public class Campaign {
