@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery-1.11.1.min.js"></script>
+    <script src="doT.js"></script>
+    <script src="model.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+
+<div id="testDiv"></div>
+
+<script id="testTemplate">
+        {{for (var i = 0 ; i<it.length ; i++){ }}
+        <table>
+        <tr>
+        <td>{{=it[i].id}}</td>
+        <td>{{=it[i].name}}</td>
+        </tr>
+        </table>
+        {{ } }}
+</script>
+
+
+<script>
+    //逻辑model的属性直接对应模版，更新的时候直接生成模版代码，然后插入到指定的位置.logicModeld对应着整个页面的元素
+    var logicModel = {
+        totalCash:"",//template
+        totalDebt:"",
+        debtList: "",
+        humanList:"",
+        market:"",
+        product:""
+    };
+    $().ready(function () {
+        var classNameList = ["CompanyPart"];//页面传递过来的对象，作为init初始化的参数
+        //测试数据
+        var testData = {
+            "CompanyPart": [{
+                "id": "id:1",
+                "serial": "1",
+                "dept": "1",
+                "campaign": "1",
+                "company": "1",
+                "name": "name:1",
+                "status": "1"
+            }, {
+                "id": "id:2",
+                "serial": "1",
+                "dept": "1",
+                "campaign": "1",
+                "company": "1",
+                "name": "name:2",
+                "status": "1"
+            }]
+        };
+        var template = $("#testTemplate").text();
+        var templateMap = new Object();
+        templateMap["CompanyPart"]=template;
+        var html = initPage(templateMap,testData,classNameList)["CompanyPart"];
+        $("#testDiv").html(html);
+    });
+
+
+</script>
+
+</body>
+</html>

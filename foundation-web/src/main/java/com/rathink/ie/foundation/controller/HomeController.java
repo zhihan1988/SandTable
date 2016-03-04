@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -46,6 +47,11 @@ public class HomeController {
 
 
         return "/manufacturing";
+    }
+
+    @RequestMapping({"/reactTest.do"})
+    public String reactTest(HttpServletRequest request){
+        return "/react/react";
     }
 
 
